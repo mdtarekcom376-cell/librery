@@ -959,6 +959,17 @@ function verifySignedToken(token: string): string | null {
 const app = express();
 app.use(express.json({ limit: "50mb" }));
 
+// Normalize request URL for serverless/Vercel environments where the '/api' prefix might be stripped in rewrites
+app.use((req, res, next) => {
+  if (req.url && !req.url.startsWith("/api/") && req.url !== "/api") {
+    const queryIndex = req.url.indexOf("?");
+    const pathPart = queryIndex === -1 ? req.url : req.url.substring(0, queryIndex);
+    const queryPart = queryIndex === -1 ? "" : req.url.substring(queryIndex);
+    req.url = "/api" + (pathPart.startsWith("/") ? "" : "/") + pathPart + queryPart;
+  }
+  next();
+});
+
   // CORS-like permissions (since it's a single container we keep it internal)
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -990,27 +1001,32 @@ app.use(express.json({ limit: "50mb" }));
 
   // Login Endpoint
   app.post("/api/auth/login", async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: "ইউজারনেম ও পাসওয়ার্ড আবশ্যক!" });
-    }
+    try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "ইউজারনেম ও পাসওয়ার্ড আবশ্যক!" });
+      }
 
-    const db = readDb();
-    const inputHash = hashPassword(password);
+      const db = readDb();
+      const inputHash = hashPassword(password);
 
-    if (db.admin.username === username && db.admin.passwordHash === inputHash) {
-      const token = generateSignedToken(username);
-      ACTIVE_SESSIONS.add(token);
+      if (db.admin.username === username && db.admin.passwordHash === inputHash) {
+        const token = generateSignedToken(username);
+        ACTIVE_SESSIONS.add(token);
 
-      console.log("[Google Sheets] Successful admin login! Triggering background auto-sync...");
-      // Trigger background auto-sync with a healthy 60-second limit and do not block the login response
-      importGoogleSheetsData(60000).catch(err => {
-        console.log("[Google Sheets Auto-Import Login Background Note]:", err.message || err);
-      });
+        console.log("[Google Sheets] Successful admin login! Triggering background auto-sync...");
+        // Trigger background auto-sync with a healthy 60-second limit and do not block the login response
+        importGoogleSheetsData(60000).catch(err => {
+          console.log("[Google Sheets Auto-Import Login Background Note]:", err.message || err);
+        });
 
-      return res.json({ token, username: db.admin.username });
-    } else {
-      return res.status(401).json({ error: "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" });
+        return res.json({ token, username: db.admin.username });
+      } else {
+        return res.status(401).json({ error: "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" });
+      }
+    } catch (err: any) {
+      console.error("Login endpoint failed:", err);
+      return res.status(500).json({ error: `সার্ভার এরর (লগইন): ${err.message || err}` });
     }
   });
 
