@@ -40,6 +40,9 @@ import {
   Loader2,
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
+import foundersImg from "../assets/images/founders.png";
+import cornerBanner from "../assets/images/corner-banner.jpg";
+import Hero3DImage from "./Hero3DImage";
 
 /* ===========================================
    DEMO DATA CONSTANTS
@@ -340,7 +343,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
   const logoSrc = logoBase64 || akkhorLogo;
 
   // Hero headline words for staggered animation
-  const heroWords = "বইয়ের চেয়ে বিশ্বস্ত বন্ধু আর হয় না".split(" ");
+  const heroWords = "অক্ষরে অক্ষরে জ্ঞানের পথে".split(" ");
 
   return (
     <div className="homepage">
@@ -492,7 +495,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              জ্ঞানের একটি ঘর, একটি হৃদয়ে
+              বইয়ের আলোয় আলোকিত হোক জীবন
             </motion.p>
 
             {/* Headline — word by word reveal */}
@@ -518,7 +521,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
             >
-              অক্ষর পাঠাগার আপনার লাইব্রেরির প্রতিটি বই, সদস্য আর লেনদেন এক জায়গায় গুছিয়ে রাখে — বাংলায়, সহজে।
+              আপনার পছন্দের বই খুঁজে পেতে এবং পাঠাগার এর সাথে যুক্ত থাকতে ভিজিট করুন অক্ষর পাঠাগার।
             </motion.p>
 
             {/* CTA row */}
@@ -565,64 +568,42 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
             </motion.div>
           </div>
 
-          {/* Right: Quill SVG + floating books */}
+          {/* Right: Hero 3D Image */}
           <motion.div
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center w-full h-80 md:h-[450px]"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <div className="w-64 h-72 md:w-80 md:h-96">
-              <QuillSVG />
-            </div>
-            {/* Floating demo book cards */}
-            <div className="absolute -top-2 -left-4 md:left-0 float-book" style={{ zIndex: 2 }}>
-              <BookSpine title={DEMO_BOOKS[0].title} author={DEMO_BOOKS[0].author} color={DEMO_BOOKS[0].color} />
-            </div>
-            <div className="absolute top-12 -right-2 md:right-0 float-book-delayed" style={{ zIndex: 2 }}>
-              <BookSpine title={DEMO_BOOKS[2].title} author={DEMO_BOOKS[2].author} color={DEMO_BOOKS[2].color} />
-            </div>
-            <div className="absolute bottom-4 left-8 md:left-16 float-book-slow hidden md:block" style={{ zIndex: 2 }}>
-              <BookSpine title={DEMO_BOOKS[1].title} author={DEMO_BOOKS[1].author} color={DEMO_BOOKS[1].color} />
-            </div>
+            <Hero3DImage />
           </motion.div>
         </div>
       </section>
 
       {/* ======================================
-          §4.3 FEATURES
+          §4.3 WHY AKKHOR PATHAGAR
           ====================================== */}
       <section id="features" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="কেন অক্ষর পাঠাগার" heading="লাইব্রেরি চালানো হোক ঝামেলাহীন" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((feature, i) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={feature.title}
-                  className="hp-card p-6"
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-10%" }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                    style={{ background: "var(--sky-tint)" }}
-                  >
-                    <Icon size={22} style={{ color: "var(--book-blue)" }} />
-                  </div>
-                  <h3 className="font-display-bn text-lg font-bold mb-1" style={{ color: "var(--ink-navy)" }}>
-                    {feature.title}
-                  </h3>
-                  <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>
-                    {feature.desc}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
+          <motion.div 
+            className="hp-card p-8 md:p-12 text-center max-w-4xl mx-auto relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.5 }}
+            style={{ 
+              boxShadow: "0 20px 50px -10px rgba(28, 143, 224, 0.15)",
+              background: "linear-gradient(135deg, #ffffff 0%, #f1f8ff 100%)"
+            }}
+          >
+            <div className="absolute top-0 left-0 w-2 h-full" style={{ background: "var(--flame-gradient)" }}></div>
+            <p className="font-body-bn text-xl md:text-2xl leading-relaxed z-10 relative" style={{ color: "var(--ink-navy)" }}>
+              <strong style={{ color: "var(--book-blue)", fontSize: "1.15em" }}>"অক্ষর পাঠাগার"</strong> একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। 
+              যা <span style={{ background: "var(--flame-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent", fontWeight: "bold" }}>জ্ঞানচর্চা ও মানবিক মূল্যবোধে</span> বিশ্বাসী। 
+              সংগঠনটি শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছে।
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -633,7 +614,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="কর্নার" heading="আপনার বইগুলো যেভাবে সাজানো" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-            {/* Left: Shelf illustration */}
+            {/* Left: Shelf Image Placeholder */}
             <motion.div
               className="hidden lg:flex flex-col items-center justify-center"
               initial={{ opacity: 0, x: -30 }}
@@ -641,35 +622,18 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.6 }}
             >
-              <svg viewBox="0 0 300 320" className="w-full max-w-sm">
-                {/* Bookshelf */}
-                {[0, 1, 2].map((row) => (
-                  <React.Fragment key={row}>
-                    {/* Shelf plank */}
-                    <rect x="30" y={80 + row * 90} width="240" height="8" rx="2" fill="#16233F" opacity="0.15" />
-                    {/* Books on shelf */}
-                    {[0, 1, 2, 3, 4].map((col) => {
-                      const colors = ["#1C8FE0", "#0D5FA0", "#F7941D", "#EC2C7B", "#29ABE2"];
-                      const heights = [55, 62, 48, 58, 52];
-                      return (
-                        <rect
-                          key={col}
-                          x={40 + col * 46}
-                          y={80 + row * 90 - heights[col]}
-                          width={32}
-                          height={heights[col]}
-                          rx="3"
-                          fill={colors[(col + row) % colors.length]}
-                          opacity={0.7 + (col % 2) * 0.15}
-                        />
-                      );
-                    })}
-                  </React.Fragment>
-                ))}
-                {/* Shelf sides */}
-                <rect x="25" y="18" width="6" height="280" rx="3" fill="#16233F" opacity="0.12" />
-                <rect x="269" y="18" width="6" height="280" rx="3" fill="#16233F" opacity="0.12" />
-              </svg>
+              <div className="relative">
+                <img 
+                  src={cornerBanner} 
+                  alt="Corner Visual" 
+                  className="rounded-2xl shadow-xl w-full max-w-sm object-cover"
+                  style={{ border: "4px solid white" }}
+                />
+                <div 
+                  className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full -z-10"
+                  style={{ background: "var(--flame-gradient)", filter: "blur(20px)", opacity: 0.6 }}
+                ></div>
+              </div>
             </motion.div>
 
             {/* Right: Accordion */}
@@ -853,7 +817,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               </span>
               <h3 className="font-display-bn text-xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>সদস্য</h3>
               <p className="font-display-lat text-3xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
-                ডেমো ফি<span className="text-base font-normal">/মাস</span>
+                ৩০০ ৳<span className="text-base font-normal">/মাস</span>
               </p>
               <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>পূর্ণাঙ্গ সদস্যপদ</p>
               <ul className="space-y-2.5 mb-8 flex-1">
@@ -887,9 +851,9 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
-              <h3 className="font-display-bn text-xl font-bold" style={{ color: "var(--ink-navy)" }}>প্যাট্রন</h3>
+              <h3 className="font-display-bn text-xl font-bold" style={{ color: "var(--ink-navy)" }}>আজীবন সদস্য</h3>
               <p className="font-display-lat text-3xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
-                ডেমো ফি<span className="text-base font-normal">/বছর</span>
+                এককালীন
               </p>
               <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>অগ্রাধিকার সুবিধা</p>
               <ul className="space-y-2.5 mb-8 flex-1">
@@ -899,7 +863,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                   { text: "বর্ধিত মেয়াদ", included: true },
                   { text: "বিশেষ ইভেন্ট অ্যাক্সেস", included: true },
                   { text: "SMS রিমাইন্ডার", included: true },
-                  { text: "পৃষ্ঠপোষক ব্যাজ", included: true },
+                  { text: "আজীবন সদস্য ব্যাজ", included: true },
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 font-body-bn text-sm" style={{ color: item.included ? "var(--ink-navy)" : "#94a3b8" }}>
                     {item.included
@@ -925,7 +889,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="আমাদের গল্প" heading="কেন অক্ষর পাঠাগার তৈরি হলো" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
-            {/* Left: Founder placeholder */}
+            {/* Left: Founder Image */}
             <motion.div
               className="flex justify-center"
               initial={{ opacity: 0, x: -24 }}
@@ -933,21 +897,13 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5 }}
             >
-              <div className="w-52 h-52 md:w-64 md:h-64 rounded-full flex items-center justify-center" style={{ background: "var(--sky-tint)", border: "3px solid var(--book-blue)" }}>
-                <div className="text-center">
-                  <div
-                    className="w-20 h-20 rounded-full mx-auto flex items-center justify-center font-display-bn text-2xl font-bold mb-3"
-                    style={{ background: "var(--blue-gradient)", color: "white" }}
-                  >
-                    ডে.না.
-                  </div>
-                  <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
-                    প্রতিষ্ঠাতা
-                  </p>
-                  <p className="text-xs font-body-bn" style={{ color: "#64748b" }}>
-                    [ডেমো নাম]
-                  </p>
-                </div>
+              <div className="relative">
+                <img 
+                  src={foundersImg} 
+                  alt="Akkhor Pathagar Founders" 
+                  className="w-56 h-56 md:w-72 md:h-72 object-contain"
+                  style={{ filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.15))" }}
+                />
               </div>
             </motion.div>
 
@@ -1237,37 +1193,69 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                   <MapPin size={20} style={{ color: "var(--book-blue)" }} className="shrink-0 mt-0.5" />
                   <div>
                     <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>ঠিকানা</p>
-                    <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>ঢাকা, বাংলাদেশ [ডেমো ঠিকানা]</p>
+                    <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Phone size={20} style={{ color: "var(--book-blue)" }} className="shrink-0 mt-0.5" />
                   <div>
                     <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>ফোন</p>
-                    <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>+880 XXXX-XXXXXX [ডেমো]</p>
+                    <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>01642816737, 01798084404</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail size={20} style={{ color: "var(--book-blue)" }} className="shrink-0 mt-0.5" />
                   <div>
                     <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>ইমেইল</p>
-                    <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>demo@akkhorpathagar.com [ডেমো]</p>
+                    <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>okkhorpathagar@gmail.com</p>
                   </div>
                 </div>
               </div>
 
               {/* Social icons */}
-              <div className="flex items-center gap-3">
-                {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                  <button
-                    key={i}
-                    className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none transition-colors"
-                    style={{ background: "var(--sky-tint)", color: "var(--book-blue)" }}
-                    aria-label="Social link [DEMO]"
-                  >
-                    <Icon size={18} />
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href="https://www.facebook.com/OkkhhorPathagar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 rounded-xl flex items-center justify-center cursor-pointer border-none gap-2"
+                  style={{ 
+                    background: "var(--book-blue)", 
+                    color: "white", 
+                    boxShadow: "0 0 20px rgba(28, 143, 224, 0.4)",
+                    textDecoration: "none"
+                  }}
+                >
+                  <Facebook size={18} />
+                  <span className="font-display-lat text-sm font-bold">Facebook</span>
+                </a>
+                <a
+                  href="https://instagram.com/okkhorpathagar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none transition-colors"
+                  style={{ background: "var(--sky-tint)", color: "var(--book-blue)", textDecoration: "none" }}
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none transition-colors"
+                  style={{ background: "var(--sky-tint)", color: "var(--book-blue)", textDecoration: "none" }}
+                >
+                  <Twitter size={18} />
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none transition-colors"
+                  style={{ background: "var(--sky-tint)", color: "var(--book-blue)", textDecoration: "none" }}
+                >
+                  <Linkedin size={18} />
+                </a>
               </div>
             </motion.div>
           </div>
@@ -1323,9 +1311,9 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                 যোগাযোগ
               </h4>
               <div className="flex flex-col gap-2 font-body-bn text-sm" style={{ color: "#94a3b8" }}>
-                <span>ঢাকা, বাংলাদেশ [ডেমো]</span>
-                <span>+880 XXXX-XXXXXX [ডেমো]</span>
-                <span>demo@akkhorpathagar.com</span>
+                <span>পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা</span>
+                <span>01642816737, 01798084404</span>
+                <span>okkhorpathagar@gmail.com</span>
               </div>
             </div>
 
