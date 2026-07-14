@@ -139,6 +139,25 @@ interface PaymentMethod {
   number: string;
 }
 
+interface Review {
+  id: string;
+  memberFormNumber: string;
+  memberName: string;
+  subject: string;
+  content: string;
+  rating: number;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  reviewedAt?: string;
+}
+
+interface Notice {
+  id: string;
+  subject: string;
+  content: string;
+  createdAt: string;
+}
+
 interface DatabaseSchema {
   admin: {
     username: string;
@@ -180,6 +199,8 @@ interface DatabaseSchema {
     messagingSenderId: string;
     appId: string;
   };
+  reviews?: Review[];
+  notices?: Notice[];
 }
 
 // Initialize active database store
@@ -3637,6 +3658,173 @@ if (process.env.VERCEL) {
       issues: db.issues,
       auditLogs: db.auditLogs,
     });
+  });
+
+  // =============================================
+  // REVIEWS API (Member submission + Admin management)
+  // =============================================
+
+  // Member submits a review (requires member auth via form number in body)
+  app.post("/api/reviews", (req, res) => {
+    try {
+      const { memberFormNumber, memberName, subject, content, rating } = req.body;
+      if (!memberFormNumber || !memberName || !subject || !content) {
+        return res.status(400).json({ error: "সব তথ্য পূরণ করুন।" });
+      }
+      const db = readDb();
+      if (!db.reviews) db.reviews = [];
+      const newReview: Review = {
+        id: `rev-${Date.now()}`,
+        memberFormNumber,
+        memberName,
+        subject,
+        content,
+        rating: Math.min(5, Math.max(1, rating || 5)),
+        status: "pending",
+        createdAt: formatCurrentDateTime(),
+      };
+      db.reviews.push(newReview);
+      writeDb(db);
+      addLog("রিভিউ জমা", `সদস্য ${memberName} (ফরম: ${memberFormNumber}) রিভিউ জমা দিয়েছেন: "${subject}"`);
+      res.json({ success: true, review: newReview });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ জমা দিতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Get all reviews
+  app.get("/api/reviews", authenticateAdmin, (req, res) => {
+    try {
+      const db = readDb();
+      res.json(db.reviews || []);
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Approve a review
+  app.put("/api/reviews/:id/approve", authenticateAdmin, (req, res) => {
+    try {
+      const db = readDb();
+      if (!db.reviews) db.reviews = [];
+      const review = db.reviews.find(r => r.id === req.params.id);
+      if (!review) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
+      review.status = "approved";
+      review.reviewedAt = formatCurrentDateTime();
+      writeDb(db);
+      addLog("রিভিউ অনুমোদন", `রিভিউ অনুমোদিত হয়েছে: "${review.subject}" — ${review.memberName}`);
+      res.json({ success: true, review });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ অনুমোদন করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Reject a review
+  app.put("/api/reviews/:id/reject", authenticateAdmin, (req, res) => {
+    try {
+      const db = readDb();
+      if (!db.reviews) db.reviews = [];
+      const review = db.reviews.find(r => r.id === req.params.id);
+      if (!review) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
+      review.status = "rejected";
+      review.reviewedAt = formatCurrentDateTime();
+      writeDb(db);
+      addLog("রিভিউ প্রত্যাখ্যান", `রিভিউ প্রত্যাখ্যাত হয়েছে: "${review.subject}" — ${review.memberName}`);
+      res.json({ success: true, review });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ প্রত্যাখ্যান করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Delete a review
+  app.delete("/api/reviews/:id", authenticateAdmin, (req, res) => {
+    try {
+      const db = readDb();
+      if (!db.reviews) db.reviews = [];
+      const idx = db.reviews.findIndex(r => r.id === req.params.id);
+      if (idx === -1) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
+      const removed = db.reviews.splice(idx, 1)[0];
+      writeDb(db);
+      addLog("রিভিউ মুছে ফেলা", `রিভিউ মুছে ফেলা হয়েছে: "${removed.subject}" — ${removed.memberName}`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ মুছতে ব্যর্থ।" });
+    }
+  });
+
+  // Public: Get approved reviews only
+  app.get("/api/public/reviews", (req, res) => {
+    try {
+      const db = readDb();
+      const approved = (db.reviews || []).filter(r => r.status === "approved");
+      res.json(approved);
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // =============================================
+  // NOTICES API (Admin posting, public viewing)
+  // =============================================
+
+  // Admin: Create a notice (immediately published)
+  app.post("/api/notices", authenticateAdmin, (req, res) => {
+    try {
+      const { subject, content } = req.body;
+      if (!subject || !content) {
+        return res.status(400).json({ error: "বিষয় এবং বিস্তারিত উভয়ই পূরণ করুন।" });
+      }
+      const db = readDb();
+      if (!db.notices) db.notices = [];
+      const newNotice: Notice = {
+        id: `notice-${Date.now()}`,
+        subject,
+        content,
+        createdAt: formatCurrentDateTime(),
+      };
+      db.notices.push(newNotice);
+      writeDb(db);
+      addLog("নটিশ প্রকাশ", `নতুন নটিশ প্রকাশিত: "${subject}"`);
+      res.json({ success: true, notice: newNotice });
+    } catch (err: any) {
+      res.status(500).json({ error: "নটিশ প্রকাশ করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Get all notices
+  app.get("/api/notices", authenticateAdmin, (req, res) => {
+    try {
+      const db = readDb();
+      res.json(db.notices || []);
+    } catch (err: any) {
+      res.status(500).json({ error: "নটিশ লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Delete a notice
+  app.delete("/api/notices/:id", authenticateAdmin, (req, res) => {
+    try {
+      const db = readDb();
+      if (!db.notices) db.notices = [];
+      const idx = db.notices.findIndex(n => n.id === req.params.id);
+      if (idx === -1) return res.status(404).json({ error: "নটিশ পাওয়া যায়নি।" });
+      const removed = db.notices.splice(idx, 1)[0];
+      writeDb(db);
+      addLog("নটিশ মুছে ফেলা", `নটিশ মুছে ফেলা হয়েছে: "${removed.subject}"`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "নটিশ মুছতে ব্যর্থ।" });
+    }
+  });
+
+  // Public: Get all published notices
+  app.get("/api/public/notices", (req, res) => {
+    try {
+      const db = readDb();
+      res.json(db.notices || []);
+    } catch (err: any) {
+      res.status(500).json({ error: "নটিশ লোড করতে ব্যর্থ।" });
+    }
   });
 
   // Vite middleware setup and server listening

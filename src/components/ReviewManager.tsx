@@ -1,0 +1,207 @@
+import React, { useState, useEffect } from "react";
+import { CheckCircle2, XCircle, Trash2, Star, RefreshCw, Clock, Filter } from "lucide-react";
+import { apiClient } from "../api";
+import type { Review } from "../types";
+
+export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () => void }) {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const loadReviews = async () => {
+    setLoading(true);
+    try {
+      const data = await apiClient.get("/reviews");
+      setReviews(data);
+    } catch (err) {
+      console.error("রিভিউ লোড করতে ব্যর্থ:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadReviews(); }, []);
+
+  const handleApprove = async (id: string) => {
+    setActionLoading(id);
+    try {
+      await apiClient.put(`/reviews/${id}/approve`, {});
+      await loadReviews();
+      onRefreshStats?.();
+    } catch (err: any) {
+      alert(err.message || "অনুমোদন করতে ব্যর্থ।");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    setActionLoading(id);
+    try {
+      await apiClient.put(`/reviews/${id}/reject`, {});
+      await loadReviews();
+      onRefreshStats?.();
+    } catch (err: any) {
+      alert(err.message || "প্রত্যাখ্যান করতে ব্যর্থ।");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("এই রিভিউটি স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+    setActionLoading(id);
+    try {
+      await apiClient.delete(`/reviews/${id}`);
+      await loadReviews();
+      onRefreshStats?.();
+    } catch (err: any) {
+      alert(err.message || "মুছতে ব্যর্থ।");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const filtered = reviews.filter(r => filter === "all" ? true : r.status === filter);
+  const pendingCount = reviews.filter(r => r.status === "pending").length;
+  const approvedCount = reviews.filter(r => r.status === "approved").length;
+  const rejectedCount = reviews.filter(r => r.status === "rejected").length;
+
+  const statusColors: Record<string, string> = {
+    pending: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    approved: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    rejected: "text-red-400 bg-red-400/10 border-red-400/20",
+  };
+  const statusLabels: Record<string, string> = {
+    pending: "অপেক্ষমাণ",
+    approved: "অনুমোদিত",
+    rejected: "প্রত্যাখ্যাত",
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg sm:text-xl font-bold">📝 রিভিউ ম্যানেজমেন্ট</h2>
+          <p className="text-xs text-slate-400 mt-1">সদস্যদের জমাদানকৃত রিভিউ অনুমোদন বা প্রত্যাখ্যান করুন</p>
+        </div>
+        <button
+          onClick={loadReviews}
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold bg-cyan-950/40 text-cyan-300 border border-cyan-500/20 rounded-lg hover:bg-cyan-950 transition-colors cursor-pointer"
+        >
+          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          রিফ্রেশ
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: "অপেক্ষমাণ", count: pendingCount, color: "text-amber-400 bg-amber-950/30 border-amber-500/20" },
+          { label: "অনুমোদিত", count: approvedCount, color: "text-emerald-400 bg-emerald-950/30 border-emerald-500/20" },
+          { label: "প্রত্যাখ্যাত", count: rejectedCount, color: "text-red-400 bg-red-950/30 border-red-500/20" },
+        ].map(s => (
+          <div key={s.label} className={`p-3 rounded-xl border text-center ${s.color}`}>
+            <p className="text-2xl font-bold">{s.count}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider mt-1">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {(["pending", "approved", "rejected", "all"] as const).map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all border ${
+              filter === f
+                ? "bg-purple-950/50 text-purple-300 border-purple-500/30"
+                : "bg-transparent text-slate-400 border-white/5 hover:border-white/10 hover:text-white"
+            }`}
+          >
+            <Filter size={11} className="inline mr-1" />
+            {f === "all" ? "সবগুলো" : statusLabels[f]} ({f === "all" ? reviews.length : f === "pending" ? pendingCount : f === "approved" ? approvedCount : rejectedCount})
+          </button>
+        ))}
+      </div>
+
+      {/* Review Cards */}
+      {loading ? (
+        <div className="text-center py-12">
+          <RefreshCw size={24} className="animate-spin text-slate-500 mx-auto" />
+          <p className="text-xs text-slate-500 mt-2">লোড হচ্ছে...</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 bg-white/[0.02] border border-white/5 rounded-2xl">
+          <p className="text-sm text-slate-500">কোনো রিভিউ নেই</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(review => (
+            <div
+              key={review.id}
+              className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 hover:border-white/10 transition-colors"
+            >
+              {/* Top row */}
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-sm truncate">{review.subject}</h3>
+                  <p className="text-[10px] text-slate-500 mt-0.5">
+                    {review.memberName} (ফরম: {review.memberFormNumber}) • {review.createdAt}
+                  </p>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusColors[review.status]}`}>
+                  {statusLabels[review.status]}
+                </span>
+              </div>
+
+              {/* Stars */}
+              <div className="flex gap-0.5 mb-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} size={14} fill={i < review.rating ? "#F7941D" : "none"} stroke={i < review.rating ? "#F7941D" : "#475569"} />
+                ))}
+              </div>
+
+              {/* Content */}
+              <p className="text-sm text-slate-300 leading-relaxed mb-4 whitespace-pre-wrap">
+                {review.content}
+              </p>
+
+              {/* Actions */}
+              <div className="flex gap-2 flex-wrap">
+                {review.status === "pending" && (
+                  <>
+                    <button
+                      onClick={() => handleApprove(review.id)}
+                      disabled={actionLoading === review.id}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-500/20 rounded-lg hover:bg-emerald-950 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <CheckCircle2 size={13} /> অনুমোদন
+                    </button>
+                    <button
+                      onClick={() => handleReject(review.id)}
+                      disabled={actionLoading === review.id}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-red-950/40 text-red-300 border border-red-500/20 rounded-lg hover:bg-red-950 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <XCircle size={13} /> প্রত্যাখ্যান
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => handleDelete(review.id)}
+                  disabled={actionLoading === review.id}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-slate-800/40 text-slate-400 border border-white/5 rounded-lg hover:bg-red-950/50 hover:text-red-300 hover:border-red-500/20 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <Trash2 size={13} /> মুছুন
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

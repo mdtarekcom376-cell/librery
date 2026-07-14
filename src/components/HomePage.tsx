@@ -36,8 +36,10 @@ import {
   Phone,
   MapPin,
   Calendar,
+  CalendarClock,
   Send,
   Loader2,
+  Book,
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
 import foundersImg from "../assets/images/founders.png";
@@ -51,14 +53,42 @@ import Hero3DImage from "./Hero3DImage";
    =========================================== */
 
 const DEMO_BOOKS = [
-  { id: "1", title: "পথের পাঁচালী", author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়", color: "#1C8FE0", corner: "উপন্যাস" },
-  { id: "2", title: "গীতাঞ্জলি", author: "রবীন্দ্রনাথ ঠাকুর", color: "#0D5FA0", corner: "রবীন্দ্রনাথ কর্নার" },
-  { id: "3", title: "অগ্নিবীণা", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "নজরুল কর্নার" },
-  { id: "4", title: "শেষের কবিতা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#EC2C7B", corner: "রবীন্দ্রনাথ কর্নার" },
-  { id: "5", title: "দেবদাস", author: "শরৎচন্দ্র চট্টোপাধ্যায়", color: "#16233F", corner: "উপন্যাস" },
-  { id: "6", title: "ফেলুদা সমগ্র", author: "সত্যজিৎ রায়", color: "#29ABE2", corner: "গল্প" },
-  { id: "7", title: "চাঁদের পাহাড়", author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়", color: "#0D5FA0", corner: "উপন্যাস" },
-  { id: "8", title: "সঞ্চয়িতা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#F7941D", corner: "কবিতা" },
+  // নজরুল কর্নার
+  { id: "1", title: "অগ্নিবীণা", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "নজরুল কর্নার", reads: 98 },
+  { id: "2", title: "বিষের বাঁশী", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "নজরুল কর্নার", reads: 82 },
+  { id: "3", title: "সাম্যবাদী", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "নজরুল কর্নার", reads: 75 },
+  { id: "4", title: "সর্বহারা", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "নজরুল কর্নার", reads: 60 },
+  { id: "5", title: "দোলনচাঁপা", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "নজরুল কর্নার", reads: 55 },
+  // রবীন্দ্রনাথ কর্নার
+  { id: "6", title: "গীতাঞ্জলি", author: "রবীন্দ্রনাথ ঠাকুর", color: "#0D5FA0", corner: "রবীন্দ্রনাথ কর্নার", reads: 120 },
+  { id: "7", title: "শেষের কবিতা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#EC2C7B", corner: "রবীন্দ্রনাথ কর্নার", reads: 105 },
+  { id: "8", title: "গোরা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#0D5FA0", corner: "রবীন্দ্রনাথ কর্নার", reads: 90 },
+  { id: "9", title: "ঘরে-বাইরে", author: "রবীন্দ্রনাথ ঠাকুর", color: "#0D5FA0", corner: "রবীন্দ্রনাথ কর্নার", reads: 78 },
+  { id: "10", title: "সঞ্চয়িতা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#0D5FA0", corner: "রবীন্দ্রনাথ কর্নার", reads: 68 },
+  // উপন্যাস
+  { id: "11", title: "পথের পাঁচালী", author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়", color: "#1C8FE0", corner: "উপন্যাস", reads: 135 },
+  { id: "12", title: "দেবদাস", author: "শরৎচন্দ্র চট্টোপাধ্যায়", color: "#16233F", corner: "উপন্যাস", reads: 112 },
+  { id: "13", title: "চাঁদের পাহাড়", author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়", color: "#0D5FA0", corner: "উপন্যাস", reads: 95 },
+  { id: "14", title: "শ্রীকান্ত", author: "শরৎচন্দ্র চট্টোপাধ্যায়", color: "#16233F", corner: "উপন্যাস", reads: 88 },
+  { id: "15", title: "আরণ্যক", author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়", color: "#1C8FE0", corner: "উপন্যাস", reads: 72 },
+  // গল্প
+  { id: "16", title: "ফেলুদা সমগ্র", author: "সত্যজিৎ রায়", color: "#29ABE2", corner: "গল্প", reads: 140 },
+  { id: "17", title: "গল্পগুচ্ছ", author: "রবীন্দ্রনাথ ঠাকুর", color: "#29ABE2", corner: "গল্প", reads: 110 },
+  { id: "18", title: "প্রফেসর শঙ্কু", author: "সত্যজিৎ রায়", color: "#29ABE2", corner: "গল্প", reads: 102 },
+  { id: "19", title: "হীরক রাজার দেশে", author: "সত্যজিৎ রায়", color: "#29ABE2", corner: "গল্প", reads: 85 },
+  { id: "20", title: "মহেশ", author: "শরৎচন্দ্র চট্টোপাধ্যায়", color: "#29ABE2", corner: "গল্প", reads: 65 },
+  // কবিতা
+  { id: "21", title: "সোনার তরী", author: "রবীন্দ্রনাথ ঠাকুর", color: "#F7941D", corner: "কবিতা", reads: 95 },
+  { id: "22", title: "বলাকা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#F7941D", corner: "কবিতা", reads: 80 },
+  { id: "23", title: "চিত্রা", author: "রবীন্দ্রনাথ ঠাকুর", color: "#F7941D", corner: "কবিতা", reads: 70 },
+  { id: "24", title: "বাঁধন হারা", author: "কাজী নজরুল ইসলাম", color: "#F7941D", corner: "কবিতা", reads: 62 },
+  { id: "25", title: "রূপসী বাংলা", author: "জীবনানন্দ দাশ", color: "#F7941D", corner: "কবিতা", reads: 58 },
+  // ইতিহাস
+  { id: "26", title: "বাংলাদেশের ইতিহাস", author: "রমেশচন্দ্র মজুমদার", color: "#16233F", corner: "ইতিহাস", reads: 88 },
+  { id: "27", title: "একাত্তরের দিনগুলি", author: "জাহানারা ইমাম", color: "#16233F", corner: "ইতিহাস", reads: 105 },
+  { id: "28", title: "মুক্তিযুদ্ধের ইতিহাস", author: "মুনতাসীর মামুন", color: "#16233F", corner: "ইতিহাস", reads: 72 },
+  { id: "29", title: "ভারতবর্ষের ইতিহাস", author: "অক্ষয়কুমার মৈত্রেয়", color: "#16233F", corner: "ইতিহাস", reads: 55 },
+  { id: "30", title: "বাঙালির ইতিহাস", author: "নীহাররঞ্জন রায়", color: "#16233F", corner: "ইতিহাস", reads: 48 },
 ];
 
 const DEMO_CORNER_COUNTS: Record<string, number> = {
@@ -305,6 +335,8 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
   const carouselRef = useRef<HTMLDivElement>(null);
   const [realBooks, setRealBooks] = useState<any[]>([]);
   const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
+  const [liveReviews, setLiveReviews] = useState<any[]>([]);
+  const [liveNotices, setLiveNotices] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -336,8 +368,28 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
       }
     };
 
+    const fetchReviewsAndNotices = async () => {
+      try {
+        const [reviewsRes, noticesRes] = await Promise.all([
+          fetch("/api/public/reviews"),
+          fetch("/api/public/notices")
+        ]);
+        if (reviewsRes.ok) {
+          const r = await reviewsRes.json();
+          if (Array.isArray(r)) setLiveReviews(r.slice(0, 3));
+        }
+        if (noticesRes.ok) {
+          const n = await noticesRes.json();
+          if (Array.isArray(n)) setLiveNotices(n.slice(0, 3));
+        }
+      } catch (e) {
+        console.warn("Failed to load reviews/notices", e);
+      }
+    };
+
     fetchBooks();
     fetchSales();
+    fetchReviewsAndNotices();
   }, []);
 
   const displayBooks = realBooks.length >= 5 ? realBooks : [...realBooks, ...DEMO_BOOKS];
@@ -732,21 +784,47 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                           transition={{ duration: 0.3 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-5 pb-4">
-                            <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>
-                              এই কর্নারে মোট <strong>{count}টি</strong> বই সংরক্ষিত আছে। ব্রাউজ করুন এবং আপনার পছন্দের বই খুঁজে নিন।
+                          <div className="px-5 pb-5">
+                            <div className="flex items-center gap-2 mb-4 pb-3" style={{ borderBottom: '1px solid #e2e8f0' }}>
+                              <Book size={16} style={{ color: "var(--book-blue)" }} />
+                              <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>
+                                এই কর্নারে মোট <strong style={{ color: "var(--ink-navy)", fontSize: '1.1em' }}>{count}টি</strong> বই সংরক্ষিত আছে
+                              </p>
+                            </div>
+                            <p className="font-body-bn text-xs font-bold uppercase tracking-wider mb-3" style={{ color: "var(--book-blue)" }}>
+                              🔥 সর্বাধিক পঠিত বই
                             </p>
-                            <div className="flex gap-2 mt-3 flex-wrap">
+                            <div className="space-y-2">
                               {DEMO_BOOKS.filter((b) => b.corner === corner)
-                                .slice(0, 3)
-                                .map((book) => (
-                                  <span
+                                .sort((a, b) => (b.reads || 0) - (a.reads || 0))
+                                .slice(0, 5)
+                                .map((book, idx) => (
+                                  <div
                                     key={book.id}
-                                    className="text-xs px-3 py-1 rounded-full font-body-bn"
-                                    style={{ background: "var(--sky-tint)", color: "var(--book-blue-deep)" }}
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+                                    style={{ background: idx === 0 ? 'var(--sky-tint)' : 'transparent' }}
                                   >
-                                    {book.title}
-                                  </span>
+                                    <span
+                                      className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-display-lat text-xs font-bold"
+                                      style={{
+                                        background: idx < 3 ? 'var(--flame-gradient)' : '#e2e8f0',
+                                        color: idx < 3 ? 'white' : '#64748b',
+                                      }}
+                                    >
+                                      {idx + 1}
+                                    </span>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-body-bn text-sm font-semibold truncate" style={{ color: 'var(--ink-navy)' }}>
+                                        {book.title}
+                                      </p>
+                                      <p className="font-body-bn text-xs truncate" style={{ color: '#94a3b8' }}>
+                                        {book.author}
+                                      </p>
+                                    </div>
+                                    <span className="flex-shrink-0 font-display-lat text-xs px-2 py-0.5 rounded-full" style={{ background: '#f1f5f9', color: '#64748b' }}>
+                                      {book.reads} বার
+                                    </span>
+                                  </div>
                                 ))}
                             </div>
                           </div>
@@ -949,7 +1027,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="about" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="আমাদের গল্প" heading="কেন অক্ষর পাঠাগার তৈরি হলো" />
+          <SectionHeader eyebrow="আমাদের গল্প" heading="" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
             {/* Left: Founder Image */}
             <motion.div
@@ -976,13 +1054,20 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5 }}
             >
-              <p className="font-body-bn text-base leading-relaxed mb-5" style={{ color: "#475569" }}>
-                ছোট্ট একটি স্বপ্ন থেকে শুরু — বাংলাদেশের প্রতিটি ছোট লাইব্রেরিকে ডিজিটাল করে তোলা।
-                কাগজের রেজিস্টারে বইয়ের হিসাব রাখার দিন শেষ করে, আমরা অক্ষর পাঠাগার তৈরি করেছি
-                যাতে প্রতিটি বই, প্রতিটি সদস্য, প্রতিটি লেনদেন — সব এক জায়গায় থাকে।
+              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
+                একটি বই বদলে দিতে পারে একজন মানুষকে, একজন মানুষ বদলে দিতে পারে একটি সমাজ, আর একটি পাঠাগার বদলে দিতে পারে গোটা একটি জাতিকে।
+              </p>
+              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
+                বই শুধু জ্ঞানের উৎস নয়; এটি একটি উন্নত, সচেতন ও মানবিক সমাজ গঠনের অন্যতম ভিত্তি। সেই জ্ঞানের আলো সবার কাছে—বিশেষ করে বিনামূল্যে বই পড়ার সুযোগের মাধ্যমে—পৌঁছে দিতেই অক্ষর পাঠাগারের পথচলা।
+              </p>
+              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
+                সমাজে জ্ঞানের আলো ছড়িয়ে দেওয়ার দৃঢ় প্রত্যয় নিয়ে আমরা কয়েকজন উদ্যমী মানুষ হাতে হাত মিলিয়ে গড়ে তুলেছি একটি উন্মুক্ত পাঠাগার, যেখানে জ্ঞানের দুয়ার সবার জন্য সমানভাবে উন্মুক্ত।
+              </p>
+              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
+                আমরা সুবিধাবঞ্চিত, অবহেলিত ও মেধাবী শিক্ষার্থীদের নৈতিক, জ্ঞানভিত্তিক ও মূল্যবোধনির্ভর শিক্ষায় উদ্বুদ্ধ করতে, শিশু ও প্রাপ্তবয়স্ক শিক্ষার মাধ্যমে নিরক্ষরতা হ্রাসে ভূমিকা রাখতে এবং বইকে মানুষের নিত্যসঙ্গী করে তুলতে নিরলসভাবে কাজ করে যাচ্ছি।
               </p>
               <p className="font-body-bn text-base leading-relaxed mb-6" style={{ color: "#475569" }}>
-                সম্পূর্ণ বাংলায়, সহজবোধ্য ইন্টারফেসে, যেকোনো ডিভাইস থেকে ব্যবহারযোগ্য — এটাই ছিল আমাদের লক্ষ্য।
+                আমাদের বিশ্বাস, প্রতিটি মানুষের হাতে একটি বই এবং প্রতিটি এলাকায় একটি কার্যকর পাঠাগার গড়ে উঠলে জ্ঞানের আলো পৌঁছে যাবে প্রতিটি হৃদয়ে; গড়ে উঠবে একটি আলোকিত, নৈতিক, মানবিক ও সমৃদ্ধ সমাজ।
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {[
@@ -1104,12 +1189,12 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="testimonials" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="মতামত" heading="সদস্যরা যা বলেন" />
+          <SectionHeader eyebrow="মতামত" heading="সদস্যদের রিভিউ" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* DEMO_MEMBERS */}
-            {DEMO_MEMBERS.map((member, i) => (
+            {/* Reviews list */}
+            {(liveReviews.length > 0 ? liveReviews : DEMO_MEMBERS).map((member, i) => (
               <motion.div
-                key={i}
+                key={member.id || i}
                 className="hp-card p-6"
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -1117,27 +1202,34 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                 transition={{ duration: 0.4, delay: i * 0.1 }}
               >
                 {/* Stars */}
-                <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: 5 }).map((_, starIdx) => (
-                    <Star
-                      key={starIdx}
-                      size={16}
-                      fill={starIdx < member.rating ? "#F7941D" : "none"}
-                      stroke={starIdx < member.rating ? "#F7941D" : "#cbd5e1"}
-                    />
-                  ))}
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, starIdx) => (
+                      <Star
+                        key={starIdx}
+                        size={16}
+                        fill={starIdx < member.rating ? "#F7941D" : "none"}
+                        stroke={starIdx < member.rating ? "#F7941D" : "#cbd5e1"}
+                      />
+                    ))}
+                  </div>
+                  {member.subject && (
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full line-clamp-1 max-w-[120px]" title={member.subject}>
+                      {member.subject}
+                    </span>
+                  )}
                 </div>
                 <p className="font-body-bn text-sm leading-relaxed mb-5" style={{ color: "#475569" }}>
-                  "{member.quote}"
+                  "{member.content || member.quote}"
                 </p>
                 <div className="flex items-center gap-3">
-                  <InitialsAvatar initials={member.initials} />
+                  <InitialsAvatar initials={member.initials || member.memberName?.substring(0, 2) || "স."} />
                   <div>
                     <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
-                      {member.name}
+                      {member.memberName || member.name}
                     </p>
                     <p className="text-xs font-body-bn" style={{ color: "#94a3b8" }}>
-                      সদস্য [DEMO]
+                      সদস্য {member.memberFormNumber ? `(ফরম: ${member.memberFormNumber})` : "[DEMO]"}
                     </p>
                   </div>
                 </div>
@@ -1152,9 +1244,9 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="news" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="সর্বশেষ" heading="লাইব্রেরির খবর" />
+          <SectionHeader eyebrow="সর্বশেষ" heading="পাঠাগারের নটিশ বোর্ড" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {DEMO_NEWS.map((news, i) => (
+            {(liveNotices.length > 0 ? liveNotices : DEMO_NEWS).map((news, i) => (
               <motion.div
                 key={news.id}
                 className="hp-card p-6"
@@ -1166,21 +1258,23 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar size={14} style={{ color: "var(--flame-orange)" }} />
                   <span className="text-xs font-ui" style={{ color: "var(--flame-orange)" }}>
-                    {news.date}
+                    {news.createdAt || news.date}
                   </span>
                 </div>
                 <h4 className="font-display-bn text-lg font-bold mb-2" style={{ color: "var(--ink-navy)" }}>
-                  {news.title}
+                  {news.subject || news.title}
                 </h4>
                 <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>
-                  {news.summary}
+                  {news.content || news.summary}
                 </p>
-                <button
-                  className="mt-4 text-sm font-ui font-bold flex items-center gap-1 cursor-pointer bg-transparent border-none"
-                  style={{ color: "var(--book-blue)" }}
-                >
-                  বিস্তারিত <ChevronRight size={14} />
-                </button>
+                {news.summary && (
+                  <button
+                    className="mt-4 text-sm font-ui font-bold flex items-center gap-1 cursor-pointer bg-transparent border-none"
+                    style={{ color: "var(--book-blue)" }}
+                  >
+                    বিস্তারিত <ChevronRight size={14} />
+                  </button>
+                )}
               </motion.div>
             ))}
           </div>
@@ -1442,7 +1536,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           {/* Bottom bar */}
           <div className="border-t pt-6" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
             <p className="text-center font-body-bn text-xs" style={{ color: "#64748b" }}>
-              © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
+              © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩 | Developed by <a href="https://artx.techvrs.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ textDecoration: 'none', color: 'inherit', borderBottom: '1px solid rgba(255,255,255,0.3)' }}>ARTX</a>
             </p>
           </div>
         </div>
@@ -1459,11 +1553,11 @@ function StatsSection() {
   const inView = useInView(ref, { once: true, margin: "-10%" });
 
   const statItems = [
-    { label: "মোট বই", value: DEMO_STATS.totalBooks, suffix: "+" },
-    { label: "সক্রিয় সদস্য", value: DEMO_STATS.activeMembers, suffix: "+" },
+    { label: "মোট বই", value: DEMO_STATS.totalBooks, suffix: "+", icon: Book },
+    { label: "সক্রিয় সদস্য", value: DEMO_STATS.activeMembers, suffix: "+", icon: Users },
     { label: "ইস্যুকৃত বই", value: DEMO_STATS.issuedBooks, suffix: "+" },
     { label: "সক্রিয় কর্নার", value: DEMO_STATS.activeCorners, suffix: "" },
-    { label: "চালু আছে (বছর)", value: DEMO_STATS.yearsRunning, suffix: "" },
+    { label: "চালু আছে (বছর)", value: DEMO_STATS.yearsRunning, suffix: "", icon: CalendarClock },
   ];
 
   return (
@@ -1480,18 +1574,23 @@ function StatsSection() {
   );
 }
 
-function StatCard({ stat, index, inView, key }: { stat: { label: string; value: number; suffix: string }; index: number; inView: boolean; key?: React.Key }) {
+function StatCard({ stat, index, inView }: { stat: { label: string; value: number; suffix: string; icon?: React.ElementType }; index: number; inView: boolean }) {
   const displayValue = useCountUp(stat.value, inView);
+  const Icon = stat.icon;
 
   return (
     <motion.div
-      key={key}
       className="hp-card p-5 text-center"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
     >
+      {Icon && (
+        <div className="flex justify-center mb-3">
+          <Icon size={32} style={{ color: "var(--book-blue)" }} strokeWidth={1.5} />
+        </div>
+      )}
       <p className="font-display-lat text-3xl md:text-4xl font-bold" style={{ color: "var(--ink-navy)" }}>
         {displayValue.toLocaleString()}{stat.suffix}
       </p>

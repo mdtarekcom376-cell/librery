@@ -25,7 +25,10 @@ import {
   Store,
   UserCheck,
   HelpCircle,
-  ArrowLeft
+  ArrowLeft,
+  Star,
+  Bell,
+  MessageSquare
 } from "lucide-react";
 import JSZip from "jszip";
 
@@ -43,6 +46,8 @@ import Settings from "./components/Settings";
 import PreviewModal from "./components/PreviewModal";
 import PublicPortal from "./components/PublicPortal";
 import SalesCorner from "./components/SalesCorner";
+import ReviewManager from "./components/ReviewManager";
+import NoticeManager from "./components/NoticeManager";
 import { RegistrationModal } from "./components/RegistrationModal";
 import HomePage from "./components/HomePage";
 import PublicSalesPage from "./components/PublicSalesPage";
@@ -694,6 +699,8 @@ export default function App() {
         { id: "notes", label: "নোট ও প্যাড", icon: FileEdit },
         { id: "history", label: "অডিট লগ ইতিহাস", icon: History },
         { id: "sms", label: "রিমাইন্ডার ও এসএমএস", icon: MailWarning },
+        { id: "reviews", label: "রিভিউ ম্যানেজমেন্ট", icon: Star },
+        { id: "notices", label: "নটিশ বোর্ড", icon: Bell },
         { id: "shop", label: "বিক্রয় কর্নার", icon: Store },
         { id: "settings", label: "সেটিংস", icon: Sliders }
       ];
@@ -704,6 +711,7 @@ export default function App() {
         { id: "leaderboard", label: "বইয়ের লিডারবোর্ড", icon: Sparkles },
         { id: "my-tracker", label: "আমার বই ট্র্যাকার", icon: ClipboardList },
         { id: "wishlist", label: "আমার উইশলিস্ট", icon: Heart },
+        { id: "add-review", label: "রিভিউ দিন", icon: MessageSquare },
         { id: "shop", label: "বিক্রয় কর্নার", icon: Store }
       ];
     } else {
@@ -1534,6 +1542,14 @@ export default function App() {
                 onPreviewMembersList={dispatchMembersListPreview}
                 onPreviewBulkHistory={dispatchBulkHistoryPreview}
               />
+            )}
+
+            {userRole === "admin" && activeTab === "reviews" && (
+              <ReviewManager onRefreshStats={handleRefreshStats} />
+            )}
+
+            {userRole === "admin" && activeTab === "notices" && (
+              <NoticeManager onRefreshStats={handleRefreshStats} />
             )}
 
           </div>

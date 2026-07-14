@@ -17,7 +17,9 @@ import {
   FileText,
   RefreshCw,
   Award,
-  BookOpen
+  BookOpen,
+  Star,
+  MessageSquare
 } from "lucide-react";
 import { apiClient } from "../api";
 import { Book as BookType } from "../types";
@@ -58,6 +60,14 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
   const [wishError, setWishError] = useState("");
   const [wishSuccess, setWishSuccess] = useState("");
   const [wishLoading, setWishLoading] = useState(false);
+
+  // Review submission state
+  const [reviewSubject, setReviewSubject] = useState("");
+  const [reviewContent, setReviewContent] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   // Loader state
   const [loading, setLoading] = useState(false);
@@ -168,6 +178,45 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
       setWishError(err.message || "উইশ জমা করতে সমস্যা হয়েছে।");
     } finally {
       setWishLoading(false);
+    }
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setReviewError("");
+    setReviewSuccess("");
+
+    if (!reviewSubject.trim() || !reviewContent.trim()) {
+      setReviewError("বিষয় এবং বিস্তারিত রিভিউ দুটিই পূরণ করতে হবে।");
+      return;
+    }
+    if (userRole !== "member" || !memberInfo) {
+      setReviewError("রিভিউ দেওয়ার জন্য সদস্য হওয়া প্রয়োজন।");
+      return;
+    }
+
+    setReviewLoading(true);
+    try {
+      const payload = {
+        memberFormNumber: memberInfo.formNumber,
+        memberName: memberInfo.name,
+        subject: reviewSubject.trim(),
+        content: reviewContent.trim(),
+        rating: reviewRating
+      };
+      const res = await apiClient.post("/reviews", payload);
+      if (res && res.success) {
+        setReviewSuccess("আপনার রিভিউ সফলভাবে জমা হয়েছে। অ্যাডমিন অনুমোদনের পর প্রকাশিত হবে।");
+        setReviewSubject("");
+        setReviewContent("");
+        setReviewRating(5);
+      } else {
+        setReviewError(res.error || "রিভিউ জমা দিতে ব্যর্থ হয়েছে।");
+      }
+    } catch (err: any) {
+      setReviewError(err.message || "রিভিউ জমা করতে সমস্যা হয়েছে।");
+    } finally {
+      setReviewLoading(false);
     }
   };
 
@@ -1354,6 +1403,93 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
                </div>
              );
           })()}
+        </div>
+      )}
+
+      {/* 5B. ADD REVIEW TAB */}
+      {activeTab === "add-review" && userRole === "member" && (
+        <div className="animate-in fade-in duration-150 space-y-6">
+          <div className="border-b border-purple-500/10 pb-4 mb-2">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <MessageSquare size={20} className="text-purple-400" />
+              আপনার রিভিউ জমা দিন
+            </h2>
+            <p className="text-xs text-slate-400">লাইব্রেরি সম্পর্কে আপনার মতামত, বা পঠিত কোনো বইয়ের বিস্তারিত রিভিউ আমাদের জানান</p>
+          </div>
+
+          <div className="glass-panel p-6 rounded-2xl border border-white/5 max-w-2xl mx-auto mt-6">
+            <form onSubmit={handleReviewSubmit} className="space-y-5">
+              
+              <div>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-2">
+                  বইয়ের নাম অথবা বিষয় (Subject)
+                </label>
+                <input
+                  type="text"
+                  value={reviewSubject}
+                  onChange={(e) => setReviewSubject(e.target.value)}
+                  placeholder="যেমন: অসাধারণ লাইব্রেরি ম্যানেজমেন্ট, অথবা 'গীতাঞ্জলি' বইটির রিভিউ..."
+                  className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/20"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-2">
+                  রেটিং (Rating)
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      className="cursor-pointer"
+                    >
+                      <Star
+                        size={24}
+                        fill={star <= reviewRating ? "#F7941D" : "none"}
+                        stroke={star <= reviewRating ? "#F7941D" : "#475569"}
+                        className="transition-colors"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-2">
+                  আপনার রিভিউ (Your Review)
+                </label>
+                <textarea
+                  value={reviewContent}
+                  onChange={(e) => setReviewContent(e.target.value)}
+                  placeholder="আপনার মতামত বিস্তারিত লিখুন..."
+                  rows={6}
+                  className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/20 resize-y"
+                ></textarea>
+              </div>
+
+              {reviewError && (
+                <div className="p-3 bg-red-950/40 border border-red-500/20 rounded-xl text-xs text-red-400">
+                  {reviewError}
+                </div>
+              )}
+              {reviewSuccess && (
+                <div className="p-3 bg-emerald-950/40 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 font-bold flex items-center gap-2">
+                  <Check size={16} /> {reviewSuccess}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={reviewLoading}
+                className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-750 text-white font-bold rounded-xl text-sm shadow-xl shadow-purple-600/10 hover:shadow-cyan-600/20 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {reviewLoading ? <RefreshCw className="animate-spin" size={16} /> : <MessageSquare size={16} />}
+                রিভিউ জমা দিন
+              </button>
+            </form>
+          </div>
         </div>
       )}
 

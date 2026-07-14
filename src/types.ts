@@ -133,3 +133,22 @@ export interface ShopItem {
   createdAt: string;
 }
 
+export interface Review {
+  id: string;
+  memberFormNumber: string;
+  memberName: string;
+  subject: string;
+  content: string;
+  rating: number;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  reviewedAt?: string;
+}
+
+export interface Notice {
+  id: string;
+  subject: string;
+  content: string;
+  createdAt: string;
+}
+
