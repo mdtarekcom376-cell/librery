@@ -960,15 +960,17 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 
 // Normalize request URL for serverless/Vercel environments where the '/api' prefix might be stripped in rewrites
-app.use((req, res, next) => {
-  if (req.url && !req.url.startsWith("/api/") && req.url !== "/api") {
-    const queryIndex = req.url.indexOf("?");
-    const pathPart = queryIndex === -1 ? req.url : req.url.substring(0, queryIndex);
-    const queryPart = queryIndex === -1 ? "" : req.url.substring(queryIndex);
-    req.url = "/api" + (pathPart.startsWith("/") ? "" : "/") + pathPart + queryPart;
-  }
-  next();
-});
+if (process.env.VERCEL) {
+  app.use((req, res, next) => {
+    if (req.url && !req.url.startsWith("/api/") && req.url !== "/api") {
+      const queryIndex = req.url.indexOf("?");
+      const pathPart = queryIndex === -1 ? req.url : req.url.substring(0, queryIndex);
+      const queryPart = queryIndex === -1 ? "" : req.url.substring(queryIndex);
+      req.url = "/api" + (pathPart.startsWith("/") ? "" : "/") + pathPart + queryPart;
+    }
+    next();
+  });
+}
 
   // CORS-like permissions (since it's a single container we keep it internal)
   app.use((req, res, next) => {

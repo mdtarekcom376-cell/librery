@@ -104,7 +104,7 @@ const NAV_LINKS = [
   { label: "বইয়ের কর্নার", href: "#corners" },
   { label: "সদস্যপদ", href: "#membership" },
   { label: "আমাদের সম্পর্কে", href: "#about" },
-  { label: "বিক্রয় কর্নার", href: "#sales" },
+  { label: "বিক্রয় কর্নার", href: "#sales", isPage: true },
   { label: "মতামত", href: "#testimonials" },
   { label: "যোগাযোগ", href: "#contact" },
 ];
@@ -291,9 +291,11 @@ interface HomePageProps {
   onMemberLogin: () => void;   // Navigate to member login
   onGuestEntry: () => void;    // Enter as guest
   logoBase64?: string;         // Dynamic logo from server
+  onSalesCorner?: () => void;  // Navigate to dedicated sales page
+  onBookSelect?: (book: any) => void; // Show book details
 }
 
-export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBase64 }: HomePageProps) {
+export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect }: HomePageProps) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openCorner, setOpenCorner] = useState<string | null>("নজরুল কর্নার");
@@ -301,6 +303,44 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSent, setContactSent] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [realBooks, setRealBooks] = useState<any[]>([]);
+  const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await fetch("/api/public/books");
+        if (res.ok) {
+          const data = await res.json();
+          const booksArray = Array.isArray(data) ? data : (data.books || []);
+          if (Array.isArray(booksArray)) {
+            setRealBooks(booksArray.filter((b: any) => b.imageUrl));
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load real books", e);
+      }
+    };
+    
+    const fetchSales = async () => {
+      try {
+        const res = await fetch("/api/public/shop/items");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.shopItems && Array.isArray(data.shopItems)) {
+            setHotSalesItems(data.shopItems.slice(0, 5));
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load sales items", e);
+      }
+    };
+
+    fetchBooks();
+    fetchSales();
+  }, []);
+
+  const displayBooks = realBooks.length >= 5 ? realBooks : [...realBooks, ...DEMO_BOOKS];
 
   // Scroll listener for sticky header
   useEffect(() => {
@@ -377,7 +417,13 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
             {NAV_LINKS.map((link) => (
               <button
                 key={link.href}
-                onClick={() => scrollTo(link.href)}
+                onClick={() => {
+                  if (link.isPage && link.href === "#sales" && onSalesCorner) {
+                    onSalesCorner();
+                  } else {
+                    scrollTo(link.href);
+                  }
+                }}
                 className="nav-flame-link font-body-bn text-sm cursor-pointer bg-transparent border-none"
                 style={{ color: "var(--ink-navy)" }}
               >
@@ -453,7 +499,14 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                 {NAV_LINKS.map((link) => (
                   <button
                     key={link.href}
-                    onClick={() => scrollTo(link.href)}
+                    onClick={() => {
+                      if (link.isPage && link.href === "#sales" && onSalesCorner) {
+                        setMobileMenuOpen(false);
+                        onSalesCorner();
+                      } else {
+                        scrollTo(link.href);
+                      }
+                    }}
                     className="text-left py-3 px-3 rounded-xl font-body-bn text-sm cursor-pointer bg-transparent border-none hover:bg-[#EAF5FD] transition-colors"
                     style={{ color: "var(--ink-navy)" }}
                   >
@@ -585,7 +638,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="features" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="কেন অক্ষর পাঠাগার" heading="লাইব্রেরি চালানো হোক ঝামেলাহীন" />
+          <SectionHeader eyebrow="" heading="কেন অক্ষর পাঠাগার" />
           <motion.div 
             className="hp-card p-8 md:p-12 text-center max-w-4xl mx-auto relative overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -739,17 +792,26 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               className="flex gap-5 overflow-x-auto pb-4 px-2 md:px-14 snap-x snap-mandatory scrollbar-hide"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {DEMO_BOOKS.map((book, i) => (
+              {displayBooks.map((book, i) => (
                 <motion.div
-                  key={book.id}
-                  className="snap-start shrink-0"
+                  key={book.id || i}
+                  className="snap-start shrink-0 cursor-pointer"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.3, delay: i * 0.05 }}
                   whileHover={{ scale: 1.03 }}
+                  onClick={() => {
+                    if (onBookSelect) onBookSelect(book);
+                  }}
                 >
-                  <BookSpine title={book.title} author={book.author} color={book.color} />
+                  {book.imageUrl ? (
+                    <div className="hp-card overflow-hidden flex flex-col justify-between" style={{ width: 160, height: 220, padding: 0 }}>
+                      <img src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <BookSpine title={book.title || book.name} author={book.author} color={book.color || "#1C8FE0"} />
+                  )}
                 </motion.div>
               ))}
             </div>
@@ -817,7 +879,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               </span>
               <h3 className="font-display-bn text-xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>সদস্য</h3>
               <p className="font-display-lat text-3xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
-                ৩০০ ৳<span className="text-base font-normal">/মাস</span>
+                ১০০ BDT<span className="text-base font-normal">/মাস</span>
               </p>
               <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>পূর্ণাঙ্গ সদস্যপদ</p>
               <ul className="space-y-2.5 mb-8 flex-1">
@@ -924,10 +986,10 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: "প্রতিষ্ঠা", value: "২০২১ [ডেমো]" },
-                  { label: "অবস্থান", value: "বাংলাদেশ [ডেমো]" },
-                  { label: "ইমেইল", value: "demo@akkhor.com" },
-                  { label: "ফোন", value: "+880 XXXX [ডেমো]" },
+                  { label: "প্রতিষ্ঠা", value: "২০২৩" },
+                  { label: "অবস্থান", value: "পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা" },
+                  { label: "ইমেইল", value: "okkhorpathagar@gmail.com" },
+                  { label: "ফোন", value: "01642816737, 01798084404" },
                 ].map((item) => (
                   <div key={item.label}>
                     <dt className="font-ui text-xs font-bold uppercase tracking-wider" style={{ color: "var(--book-blue)" }}>
@@ -956,49 +1018,84 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="বিক্রয় কর্নার" heading="লাইব্রেরির নিজস্ব শপ" />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-            {DEMO_SALES_ITEMS.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.id}
-                  className="hp-card p-5 flex flex-col items-center text-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-10%" }}
-                  transition={{ duration: 0.3, delay: i * 0.06 }}
-                >
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3"
-                    style={{ background: "var(--sky-tint)" }}
+            {hotSalesItems.length > 0 
+              ? hotSalesItems.map((item, i) => (
+                  <motion.div
+                    key={item.id}
+                    className="hp-card p-4 flex flex-col items-center text-center cursor-pointer group"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-10%" }}
+                    transition={{ duration: 0.3, delay: i * 0.06 }}
+                    onClick={() => {
+                      if (onSalesCorner) onSalesCorner();
+                    }}
                   >
-                    <Icon size={28} style={{ color: "var(--book-blue)" }} />
-                  </div>
-                  <h4 className="font-body-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
-                    {item.name}
-                  </h4>
-                  <p className="font-display-lat text-base font-bold mt-1" style={{ color: "var(--flame-orange)" }}>
-                    {item.price}
-                  </p>
-                  <button
-                    className="mt-3 text-xs font-ui px-3 py-1.5 rounded-lg cursor-pointer border-none"
-                    style={{ background: "var(--sky-tint)", color: "var(--book-blue)" }}
-                  >
-                    দেখুন
-                  </button>
-                </motion.div>
-              );
-            })}
+                    <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-100 flex items-center justify-center">
+                      {item.imageUrl ? (
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <Package size={24} className="text-slate-300" />
+                      )}
+                    </div>
+                    <h4 className="font-body-bn text-sm font-bold line-clamp-1" style={{ color: "var(--ink-navy)" }}>
+                      {item.name}
+                    </h4>
+                    <p className="font-display-lat text-base font-bold mt-1" style={{ color: "var(--flame-orange)" }}>
+                      ৳{item.price}
+                    </p>
+                  </motion.div>
+                ))
+              : DEMO_SALES_ITEMS.map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div
+                      key={item.id}
+                      className="hp-card p-5 flex flex-col items-center text-center"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-10%" }}
+                      transition={{ duration: 0.3, delay: i * 0.06 }}
+                    >
+                      <div
+                        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3"
+                        style={{ background: "var(--sky-tint)" }}
+                      >
+                        <Icon size={28} style={{ color: "var(--book-blue)" }} />
+                      </div>
+                      <h4 className="font-body-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
+                        {item.name}
+                      </h4>
+                      <p className="font-display-lat text-base font-bold mt-1" style={{ color: "var(--flame-orange)" }}>
+                        {item.price}
+                      </p>
+                      <button
+                        className="mt-3 text-xs font-ui px-3 py-1.5 rounded-lg cursor-pointer border-none"
+                        style={{ background: "var(--sky-tint)", color: "var(--book-blue)" }}
+                      >
+                        দেখুন
+                      </button>
+                    </motion.div>
+                  );
+                })
+            }
           </div>
-          {/* DEMO banner */}
-          <motion.p
-            className="text-center font-body-bn text-sm mt-8"
-            style={{ color: "#64748b" }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <span className="font-display-lat font-bold" style={{ color: "var(--flame-orange)" }}>১,০০০+</span> সদস্য আমাদের শপ থেকে কিনেছেন <span className="text-xs">[DEMO]</span>
-          </motion.p>
+          
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={() => {
+                if (onSalesCorner) onSalesCorner();
+              }}
+              className="btn-ghost px-6 py-3 text-sm md:text-base font-ui flex items-center gap-2 group cursor-pointer"
+            >
+              সকল পণ্য দেখুন
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1383,11 +1480,12 @@ function StatsSection() {
   );
 }
 
-function StatCard({ stat, index, inView }: { stat: { label: string; value: number; suffix: string }; index: number; inView: boolean }) {
+function StatCard({ stat, index, inView, key }: { stat: { label: string; value: number; suffix: string }; index: number; inView: boolean; key?: React.Key }) {
   const displayValue = useCountUp(stat.value, inView);
 
   return (
     <motion.div
+      key={key}
       className="hp-card p-5 text-center"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}

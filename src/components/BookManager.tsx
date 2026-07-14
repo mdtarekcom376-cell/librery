@@ -32,6 +32,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
   const [bookPublisher, setBookPublisher] = useState("");
   const [bookImageUrl, setBookImageUrl] = useState("");
   const [bookGroup, setBookGroup] = useState("");
+  const [bookDescription, setBookDescription] = useState("");
   const [groups, setGroups] = useState<string[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>("");
 
@@ -100,6 +101,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     setBookPublisher(book.publisher);
     setBookImageUrl(book.imageUrl);
     setBookGroup(book.group || "");
+    setBookDescription(book.description || "");
     setIsEditOpen(true);
     setFormErr("");
   };
@@ -119,6 +121,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
         publisher: bookPublisher.trim(),
         imageUrl: bookImageUrl.trim() || undefined,
         group: bookGroup || undefined,
+        description: bookDescription.trim() || undefined,
       });
       // Reset form
       setBookCode("");
@@ -127,6 +130,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       setBookPublisher("");
       setBookImageUrl("");
       setBookGroup("");
+      setBookDescription("");
       setIsAddOpen(false);
       setFormErr("");
     } catch (err: any) {
@@ -150,10 +154,12 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
         publisher: bookPublisher.trim(),
         imageUrl: bookImageUrl.trim(),
         group: bookGroup || "",
+        description: bookDescription.trim() || undefined,
       });
       setIsEditOpen(false);
       setSelectedBook(null);
       setBookGroup("");
+      setBookDescription("");
       setFormErr("");
     } catch (err: any) {
       setFormErr(err.message || "সংরক্ষণ ব্যর্থ হয়েছে। কুয়েরি চেক করুন।");
@@ -529,6 +535,16 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               </div>
 
               <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের বিবরণ (ঐচ্ছিক)</label>
+                <textarea
+                  value={bookDescription}
+                  onChange={(e) => setBookDescription(e.target.value)}
+                  placeholder="বইয়ের সংক্ষিপ্ত বিবরণ লিখুন..."
+                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 h-20 resize-none"
+                />
+              </div>
+
+              <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">কভার ছবি</label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
@@ -677,6 +693,16 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                     <option key={g} value={g}>{g}</option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের বিবরণ (ঐচ্ছিক)</label>
+                <textarea
+                  value={bookDescription}
+                  onChange={(e) => setBookDescription(e.target.value)}
+                  placeholder="বইয়ের সংক্ষিপ্ত বিবরণ লিখুন..."
+                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 h-20 resize-none"
+                />
               </div>
 
               <div>

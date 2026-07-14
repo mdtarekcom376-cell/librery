@@ -45,9 +45,12 @@ import PublicPortal from "./components/PublicPortal";
 import SalesCorner from "./components/SalesCorner";
 import { RegistrationModal } from "./components/RegistrationModal";
 import HomePage from "./components/HomePage";
+import PublicSalesPage from "./components/PublicSalesPage";
+import PublicBookDetailsPage from "./components/PublicBookDetailsPage";
+import PublicShopItemDetailsPage from "./components/PublicShopItemDetailsPage";
 
 import { apiClient } from "./api";
-import { Book, WishlistItem, Note, AuditLog } from "./types";
+import { Book, WishlistItem, Note, AuditLog, ShopItem } from "./types";
 import akkhorLogo from "./assets/images/akkhor_logo_1781456142605.jpg";
 import { initFirebase, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "./lib/firebase";
 
@@ -720,23 +723,76 @@ export default function App() {
   // Home page vs login form toggle for unauthenticated users
   // When true, shows the marketing landing page. When false, shows the login form.
   const [showHomePage, setShowHomePage] = useState(true);
+  const [showSalesPage, setShowSalesPage] = useState(false);
+  const [selectedPublicBook, setSelectedPublicBook] = useState<Book | null>(null);
+  const [selectedShopItem, setSelectedShopItem] = useState<ShopItem | null>(null);
 
   if (!isAuthenticated) {
+    // Show dedicated Sales Corner page
+    if (showSalesPage) {
+      if (selectedShopItem) {
+        return (
+          <PublicShopItemDetailsPage
+            item={selectedShopItem}
+            onBack={() => setSelectedShopItem(null)}
+            logoBase64={logoBase64}
+          />
+        );
+      }
+
+      return (
+        <PublicSalesPage
+          onBack={() => {
+            setShowSalesPage(false);
+            setShowHomePage(true);
+          }}
+          onItemSelect={(item) => setSelectedShopItem(item)}
+          logoBase64={logoBase64}
+        />
+      );
+    }
+
+    // Show dedicated Book Details page
+    if (selectedPublicBook) {
+      return (
+        <PublicBookDetailsPage
+          book={selectedPublicBook}
+          onBack={() => {
+            setSelectedPublicBook(null);
+            setShowHomePage(true);
+          }}
+          logoBase64={logoBase64}
+        />
+      );
+    }
+
     // Show the landing/home page by default for unauthenticated visitors
     if (showHomePage) {
       return (
-        <HomePage
-          onLogin={() => {
-            setLoginTab("admin");
-            setShowHomePage(false);
-          }}
-          onMemberLogin={() => {
-            setLoginTab("member");
-            setShowHomePage(false);
-          }}
-          onGuestEntry={handleGuestEntry}
-          logoBase64={logoBase64}
-        />
+        <>
+          <HomePage
+            onLogin={() => {
+              setLoginTab("admin");
+              setShowHomePage(false);
+            }}
+            onMemberLogin={() => setIsRegisterOpen(true)}
+            onGuestEntry={handleGuestEntry}
+            logoBase64={logoBase64}
+            onSalesCorner={() => {
+              setShowHomePage(false);
+              setShowSalesPage(true);
+            }}
+            onBookSelect={(book) => {
+              setShowHomePage(false);
+              setSelectedPublicBook(book);
+            }}
+          />
+          <RegistrationModal
+            isOpen={isRegisterOpen}
+            onClose={() => setIsRegisterOpen(false)}
+            onDirectLogin={handleDirectMemberLogin}
+          />
+        </>
       );
     }
 
