@@ -19,8 +19,7 @@ import {
   Lock,
   Menu,
   X,
-  Palette,
-  Check,
+  Search,
   ClipboardList,
   Store,
   UserCheck,
@@ -85,18 +84,7 @@ export default function App() {
     }
   });
 
-  // Dynamic Theme Selection config states
-  const [currentTheme, setCurrentTheme] = useState<string>(() => {
-    return localStorage.getItem("okkhor_pathagar_theme") || "cosmic-dark";
-  });
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
-  // Sync current theme with body class list on update
-  useEffect(() => {
-    document.body.className = "";
-    document.body.classList.add(`theme-${currentTheme}`);
-    localStorage.setItem("okkhor_pathagar_theme", currentTheme);
-  }, [currentTheme]);
 
   // Auth form states
   const [loginUser, setLoginUser] = useState("");
@@ -732,8 +720,8 @@ export default function App() {
   // When true, shows the marketing landing page. When false, shows the login form.
   const [showHomePage, setShowHomePage] = useState(true);
   const [showSalesPage, setShowSalesPage] = useState(false);
-  const [selectedPublicBook, setSelectedPublicBook] = useState<Book | null>(null);
-  const [selectedShopItem, setSelectedShopItem] = useState<ShopItem | null>(null);
+  const [selectedPublicBook, setSelectedPublicBook] = useState<any | null>(null);
+  const [selectedShopItem, setSelectedShopItem] = useState<any | null>(null);
 
   if (!isAuthenticated) {
     // Show dedicated Sales Corner page
@@ -804,19 +792,19 @@ export default function App() {
       );
     }
 
-    // Existing login form UI (unchanged)
+    // Existing login form UI
     return (
-      <div className="flex items-center justify-center min-h-screen p-4 relative overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen p-4 relative overflow-hidden bg-[#F5F3EF]">
         
         {/* Back to home page button */}
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 sm:left-auto sm:translate-x-0 sm:right-32">
           <button
             onClick={() => setShowHomePage(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0e1428]/80 text-[10px] sm:text-xs font-bold text-emerald-400 border border-emerald-500/20 hover:border-emerald-400/40 rounded-lg shadow cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white text-[10px] sm:text-xs font-bold text-[#22242A] border border-[#E5E5EA] hover:border-[#22242A]/30 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.06)] cursor-pointer transition-colors"
             title="হোম পেজে ফিরে যান"
             id="back-to-home-btn"
           >
-            <ArrowLeft size={12} className="text-emerald-400" />
+            <ArrowLeft size={12} className="text-[#22242A]" />
             <span>হোম পেজ</span>
           </button>
         </div>
@@ -829,117 +817,49 @@ export default function App() {
               setLoginErr("");
               setMemberQuestionStep("ask");
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0e1428]/80 text-[10px] sm:text-xs font-bold text-cyan-400 border border-cyan-500/20 hover:border-cyan-400/40 rounded-lg shadow cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white text-[10px] sm:text-xs font-bold text-[#22242A] border border-[#E5E5EA] hover:border-[#22242A]/30 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.06)] cursor-pointer transition-colors"
             title={loginTab === "member" ? "অ্যাডমিন পোর্টালে যান" : "সদস্য পোর্টালে যান"}
             id="login-role-selector-btn"
           >
             {loginTab === "member" ? (
               <>
-                <Lock size={12} className="text-cyan-400" />
+                <Lock size={12} className="text-[#FACC15]" />
                 <span>অ্যাডমিন পোর্টাল</span>
               </>
             ) : (
               <>
-                <Users2 size={12} className="text-cyan-400" />
+                <Users2 size={12} className="text-[#FACC15]" />
                 <span>সদস্য প্রবেশ</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Absolute Theme selector widget at top right for Login page */}
-        <div className="absolute top-4 right-4 z-50">
-          <div className="relative">
-            <button
-              onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#0e1428]/80 text-[10px] sm:text-xs font-bold text-indigo-400 border border-indigo-500/20 hover:border-indigo-400/40 rounded-lg shadow cursor-pointer transition-colors"
-              title="ডিজাইন থিম পরিবর্তন করুন"
-              id="login-theme-selector-btn"
-            >
-              <Palette size={14} className="animate-spin duration-1000" style={{ animationDuration: '6s' }} />
-              <span className="hidden sm:inline">ডিজাইন:</span>
-              <span className="text-white font-medium">
-                {currentTheme === "cosmic-dark" && "কসমিক ডার্ক"}
-                {currentTheme === "royal-ivory" && "অনিন্দ্য শুভ্র (সাদা)"}
-                {currentTheme === "forest-emerald" && "সবুজ অরণ্য"}
-                {currentTheme === "sunset-crimson" && "লাল গোধূলি"}
-                {currentTheme === "deep-ocean" && "নীল সাগর"}
-              </span>
-            </button>
-
-            {themeDropdownOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-60 rounded-xl border shadow-2xl z-50 p-1.5 space-y-1 animate-in fade-in slide-in-from-top-2 duration-120"
-                style={{ backgroundColor: "var(--bg-navy)", borderColor: "var(--glass-border)", color: "var(--text-main)" }}
-                id="login-theme-dropdown-menu"
-              >
-                <div className="px-2 py-1.5 border-b border-white/5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">পছন্দের ডিজাইন থিম বাছুন</p>
-                </div>
-                {[
-                  { id: "cosmic-dark", name: "কসমিক ডার্ক", desc: "ডিফল্ট ডার্ক ডিজাইন", color: "bg-indigo-600" },
-                  { id: "royal-ivory", name: "অনিন্দ্য শুভ্র (সাদা)", desc: "উজ্জ্বল সুন্দর রিডেবেল সাদা", color: "bg-slate-100 border border-slate-300" },
-                  { id: "forest-emerald", name: "সবুজ অরণ্য", desc: "সবুজ অরণ্য ও গোল্ডেন ডাস্ট", color: "bg-emerald-600" },
-                  { id: "sunset-crimson", name: "লাল গোধূলি", desc: "মিষ্টি লাল ও রোজ গোল্ড বেগুনী", color: "bg-rose-600" },
-                  { id: "deep-ocean", name: "নীল সাগর", desc: "মেডিটেরেনিয়ান টেক টিল", color: "bg-cyan-600" },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => {
-                      setCurrentTheme(t.id);
-                      setThemeDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition-all cursor-pointer ${
-                      currentTheme === t.id 
-                        ? 'bg-gradient-to-r from-purple-900/40 to-indigo-950/40 text-purple-300 font-bold border border-purple-500/20' 
-                        : 'text-slate-300 hover:bg-white/5'
-                    }`}
-                    id={`login-theme-option-${t.id}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className={`w-3 h-3 rounded-full shrink-0 ${t.color}`} />
-                      <div className="leading-snug">
-                        <p className="font-semibold">{t.name}</p>
-                        <p className="text-[9px] text-slate-400 font-normal">{t.desc}</p>
-                      </div>
-                    </div>
-                    {currentTheme === t.id && <Check size={12} className="text-purple-400 shrink-0" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Glow ambient backdrops */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-
-        <div className="w-full max-w-md glass-panel p-8 rounded-3xl shadow-2xl relative z-10 text-center space-y-6">
+        <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] relative z-10 text-center space-y-6">
           
           {/* Logo brand */}
           <div className="flex flex-col items-center gap-1.5 pt-2">
             {logoBase64 ? (
-              <div className="w-16 h-16 rounded-2xl bg-white border border-purple-500/30 overflow-hidden shadow-xl flex items-center justify-center p-1">
+              <div className="w-16 h-16 rounded-2xl bg-white border border-[#E5E5EA] overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex items-center justify-center p-1">
                 <img src={logoBase64} alt="Library Logo" className="w-full h-full object-contain" />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 shadow-xl shadow-purple-600/15 flex items-center justify-center text-white text-3xl font-black border border-white/10">
+              <div className="w-16 h-16 rounded-2xl bg-[#22242A] shadow-[0_4px_16px_rgba(34,36,42,0.15)] flex items-center justify-center text-[#FACC15] text-3xl font-black">
                 অ
               </div>
             )}
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent mt-3 font-sans">
+            <h1 className="text-2xl font-bold text-[#22242A] mt-3 font-sans">
               অক্ষর পাঠাগার
             </h1>
-            <p className="text-xs text-slate-400">স্মার্ট লাইব্রেরি সিস্টেম</p>
-            <div className="mt-2 px-3 py-1 bg-purple-950/45 border border-purple-500/20 rounded-full text-[10px] font-bold text-purple-300 inline-block font-sans">
+            <p className="text-xs text-[#8E8E93]">স্মার্ট লাইব্রেরি সিস্টেম</p>
+            <div className="mt-2 px-3 py-1 bg-[#F5F3EF] border border-[#E5E5EA] rounded-full text-[10px] font-bold text-[#22242A] inline-block font-sans">
               {loginTab === "member" ? "👤 সদস্য প্রবেশদ্বার" : "🔑 অ্যাডমিন প্রবেশদ্বার"}
             </div>
           </div>
 
           {/* Validation report alert */}
           {loginErr && (
-            <div className="bg-red-950/45 border border-red-500/25 p-3 rounded-xl text-xs text-red-400 flex items-center justify-center gap-2 animate-pulse">
+            <div className="bg-red-50 border border-red-200 p-3 rounded-xl text-xs text-[#FF6B6B] flex items-center justify-center gap-2">
               <span>{loginErr}</span>
             </div>
           )}
@@ -951,23 +871,23 @@ export default function App() {
                 <>
                   {/* Step 1: Ask "Are you a member?" */}
                   {memberQuestionStep === "ask" && (
-                    <div className="space-y-6 py-4 animate-in fade-in slide-in-from-bottom-4 duration-350">
-                      <p className="text-sm font-semibold text-slate-200">
+                    <div className="space-y-6 py-4">
+                      <p className="text-sm font-semibold text-[#22242A]">
                         আপনি কী আমাদের পাঠাগারের সদস্য?
                       </p>
                       <div className="grid grid-cols-2 gap-4">
                         <button
                           onClick={() => setMemberQuestionStep("member_form")}
-                          className="py-4 bg-[#0a0f1d]/80 hover:bg-[#121a30]/80 border border-white/10 hover:border-cyan-500/40 text-slate-300 hover:text-white font-bold rounded-2xl text-xs sm:text-sm transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
+                          className="py-4 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] hover:border-[#22242A]/20 text-[#22242A] font-bold rounded-2xl text-xs sm:text-sm transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
                         >
-                          <UserCheck size={20} className="text-cyan-400" />
+                          <UserCheck size={20} className="text-[#FACC15]" />
                           <span>হ্যাঁ, আমি সদস্য</span>
                         </button>
                         <button
                           onClick={() => setMemberQuestionStep("non_member_options")}
-                          className="py-4 bg-[#0a0f1d]/80 hover:bg-[#121a30]/80 border border-white/10 hover:border-cyan-500/40 text-slate-300 hover:text-white font-bold rounded-2xl text-xs sm:text-sm transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
+                          className="py-4 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] hover:border-[#22242A]/20 text-[#22242A] font-bold rounded-2xl text-xs sm:text-sm transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
                         >
-                          <HelpCircle size={20} className="text-cyan-400" />
+                          <HelpCircle size={20} className="text-[#8E8E93]" />
                           <span>না, সদস্য নই</span>
                         </button>
                       </div>
@@ -976,38 +896,38 @@ export default function App() {
 
                   {/* Step 2: Member Login Form */}
                   {memberQuestionStep === "member_form" && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-350">
+                    <div className="space-y-4">
                       <form onSubmit={handleMemberLoginSubmit} className="space-y-4 text-left">
                         <div>
-                          <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
+                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
                           <input
                             type="text"
                             value={memberFormNo}
                             onChange={(e) => setMemberFormNo(e.target.value)}
                             placeholder="যেমনঃ MEM-101"
-                            className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                            className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                             required
                           />
                         </div>
 
                         <div>
-                          <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
+                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
                           <input
                             type="date"
                             value={memberDob}
                             onChange={(e) => setMemberDob(e.target.value)}
-                            className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                            className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
+                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
                           <input
                             type="tel"
                             value={memberMobile}
                             onChange={(e) => setMemberMobile(e.target.value)}
                             placeholder="যেমনঃ 01712345678"
-                            className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                            className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                             required
                           />
                         </div>
@@ -1015,7 +935,7 @@ export default function App() {
                         <button
                           type="submit"
                           disabled={loginLoading}
-                          className="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-750 text-white font-bold rounded-xl text-xs sm:text-sm shadow-xl shadow-purple-600/10 hover:shadow-cyan-600/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                          className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white font-bold rounded-xl text-xs sm:text-sm shadow-[0_4px_12px_rgba(34,36,42,0.15)] transition-all cursor-pointer flex items-center justify-center gap-2"
                         >
                           {loginLoading ? <RefreshCw className="animate-spin" size={16} /> : <Lock size={15} />}
                           সদস্য প্যানেলে প্রবেশ করুন
@@ -1024,7 +944,7 @@ export default function App() {
 
                       <button
                         onClick={() => setMemberQuestionStep("ask")}
-                        className="w-full py-2 bg-[#05070f]/20 hover:bg-[#05070f]/45 border border-white/5 rounded-xl text-[11px] font-bold text-slate-400 hover:text-slate-200 transition-all cursor-pointer flex items-center justify-center gap-1"
+                        className="w-full py-2 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] rounded-xl text-[11px] font-bold text-[#8E8E93] hover:text-[#22242A] transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <ArrowLeft size={12} />
                         <span>পিছনে যান</span>
@@ -1034,30 +954,30 @@ export default function App() {
 
                   {/* Step 3: Non-Member Options */}
                   {memberQuestionStep === "non_member_options" && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-350">
+                    <div className="space-y-4">
                       <div className="space-y-3">
                         <button
                           onClick={() => setIsRegisterOpen(true)}
-                          className="w-full py-3 bg-gradient-to-r from-purple-900/50 to-indigo-900/50 hover:from-purple-800 hover:to-indigo-800 border border-purple-500/25 hover:border-purple-400 text-purple-200 font-extrabold rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                          className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white font-extrabold rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(34,36,42,0.15)]"
                         >
                           আমি এখানকার সদস্য নই (অনলাইন রেজিষ্ট্রেশন ফর্ম)
                         </button>
                         
                         <button
                           onClick={handleGuestEntry}
-                          className="w-full py-3 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border border-white/10 hover:border-cyan-500/45 text-white font-black rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                          className="w-full py-3 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] text-[#22242A] font-black rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
                         >
                           লাইব্রেরি পরিদর্শন (সরাসরি সাধারণ প্রবেশ)
                         </button>
                         
-                        <p className="text-[10px] text-slate-500 text-center leading-relaxed">
-                          * আপনি সদস্য না হয়ে প্রবেশ করলেও লাইব্রেরির সকল বইয়ের তালিকা, পরিসংখ্যান ও লিডারবোর্ড দেখতে পারবেন (বই উইশলিস্ট এবং অডিট ট্র্যাকিং ছাড়া)।
+                        <p className="text-[10px] text-[#8E8E93] text-center leading-relaxed">
+                          * আপনি সদস্য না হয়ে প্রবেশ করলেও লাইব্রেরির সকল বইয়ের তালিকা, পরিসংখ্যান ও লিডারবোর্ড দেখতে পারবেন (বই উইশলিস্ট এবং অডিট ট্র্যাকিং ছাড়া)।
                         </p>
                       </div>
 
                       <button
                         onClick={() => setMemberQuestionStep("ask")}
-                        className="w-full py-2 bg-[#05070f]/20 hover:bg-[#05070f]/45 border border-white/5 rounded-xl text-[11px] font-bold text-slate-400 hover:text-slate-200 transition-all cursor-pointer flex items-center justify-center gap-1"
+                        className="w-full py-2 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] rounded-xl text-[11px] font-bold text-[#8E8E93] hover:text-[#22242A] transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <ArrowLeft size={12} />
                         <span>পিছনে যান</span>
@@ -1070,35 +990,35 @@ export default function App() {
                   {/* Standard Flow */}
                   <form onSubmit={handleMemberLoginSubmit} className="space-y-4 text-left">
                     <div>
-                      <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
+                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
                       <input
                         type="text"
                         value={memberFormNo}
                         onChange={(e) => setMemberFormNo(e.target.value)}
                         placeholder="যেমনঃ MEM-101"
-                        className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                        className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
+                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
                       <input
                         type="date"
                         value={memberDob}
                         onChange={(e) => setMemberDob(e.target.value)}
-                        className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                        className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
+                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
                       <input
                         type="tel"
                         value={memberMobile}
                         onChange={(e) => setMemberMobile(e.target.value)}
                         placeholder="যেমনঃ 01712345678"
-                        className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                        className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                         required
                       />
                     </div>
@@ -1106,7 +1026,7 @@ export default function App() {
                     <button
                       type="submit"
                       disabled={loginLoading}
-                      className="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-750 text-white font-bold rounded-xl text-xs sm:text-sm shadow-xl shadow-purple-600/10 hover:shadow-cyan-600/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white font-bold rounded-xl text-xs sm:text-sm shadow-[0_4px_12px_rgba(34,36,42,0.15)] transition-all cursor-pointer flex items-center justify-center gap-2"
                     >
                       {loginLoading ? <RefreshCw className="animate-spin" size={16} /> : <Lock size={15} />}
                       সদস্য প্যানেলে প্রবেশ করুন
@@ -1121,25 +1041,25 @@ export default function App() {
           {loginTab === "admin" && (
             <form onSubmit={handleLoginSubmit} className="space-y-4 text-left">
               <div>
-                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5 ml-1">ইউজারনেম (Username)</label>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">ইউজারনেম (Username)</label>
                 <input
                   type="text"
                   value={loginUser}
                   onChange={(e) => setLoginUser(e.target.value)}
                   placeholder="okkhor"
-                  className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                  className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5 ml-1">পাসওয়ার্ড (Password)</label>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">পাসওয়ার্ড (Password)</label>
                 <input
                   type="password"
                   value={loginPass}
                   onChange={(e) => setLoginPass(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-[#05070f]/45 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-400/80 focus:ring-1 focus:ring-cyan-400/20 text-xs sm:text-sm"
+                  className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] focus:ring-2 focus:ring-[#FACC15]/20 text-xs sm:text-sm"
                   required
                 />
               </div>
@@ -1147,7 +1067,7 @@ export default function App() {
               <button
                 type="submit"
                 disabled={loginLoading}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-750 text-white font-bold rounded-xl text-xs sm:text-sm shadow-xl shadow-purple-600/10 hover:shadow-cyan-600/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white font-bold rounded-xl text-xs sm:text-sm shadow-[0_4px_12px_rgba(34,36,42,0.15)] transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 {loginLoading ? <RefreshCw className="animate-spin" size={16} /> : <Lock size={15} />}
                 লগইন করুন
@@ -1157,23 +1077,23 @@ export default function App() {
 
           {/* Public / Non-Member Guest & Register access block */}
           {loginTab === "member" && !isCustomLoginFlowEnabled && (
-            <div className="pt-4 border-t border-white/5 space-y-3">
+            <div className="pt-4 border-t border-[#E5E5EA] space-y-3">
               <button
                 onClick={() => setIsRegisterOpen(true)}
-                className="w-full py-3 bg-gradient-to-r from-purple-900/50 to-indigo-900/50 hover:from-purple-800 hover:to-indigo-800 border border-purple-500/25 hover:border-purple-400 text-purple-200 font-extrabold rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white font-extrabold rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(34,36,42,0.15)]"
               >
                 আমি এখানকার সদস্য নই (অনলাইন রেজিষ্ট্রেশন ফর্ম)
               </button>
               
               <button
                 onClick={handleGuestEntry}
-                className="w-full py-3 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border border-white/10 hover:border-cyan-500/45 text-white font-black rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                className="w-full py-3 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] text-[#22242A] font-black rounded-xl text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 লাইব্রেরি পরিদর্শন (সরাসরি সাধারণ প্রবেশ)
               </button>
               
-              <p className="text-[10px] text-slate-500 text-center leading-relaxed">
-                * আপনি সদস্য না হয়ে প্রবেশ করলেও লাইব্রেরির সকল বইয়ের তালিকা, পরিসংখ্যান ও লিডারবোর্ড দেখতে পারবেন (বই উইশলিস্ট এবং অডিট ট্র্যাকিং ছাড়া)।
+              <p className="text-[10px] text-[#8E8E93] text-center leading-relaxed">
+                * আপনি সদস্য না হয়ে প্রবেশ করলেও লাইব্রেরির সকল বইয়ের তালিকা, পরিসংখ্যান ও লিডারবোর্ড দেখতে পারবেন (বই উইশলিস্ট এবং অডিট ট্র্যাকিং ছাড়া)।
               </p>
             </div>
           )}
@@ -1191,10 +1111,10 @@ export default function App() {
 
   // MASTER AUTHENTICATED PANEL
   return (
-    <div className="min-h-screen flex flex-col bg-transparent text-white relative">
+    <div className="min-h-screen flex flex-col bg-[#F5F3EF] text-[#22242A] relative">
       
       {/* 1. Header Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-[#080b11]/90 backdrop-blur-md border-b border-white/10 px-3 py-2.5 md:px-6 flex items-center justify-between gap-1.5 sm:gap-4">
+      <header className="sticky top-0 z-40 bg-[#F5F3EF] px-3 py-2.5 md:px-6 flex items-center justify-between gap-1.5 sm:gap-4">
         
         {/* Brand logotypes and logo uploader */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
@@ -1202,7 +1122,7 @@ export default function App() {
           {/* Mobile hamburger menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg cursor-pointer shrink-0 z-50"
+            className="md:hidden p-1.5 text-[#8E8E93] hover:text-[#22242A] hover:bg-white rounded-lg cursor-pointer shrink-0 z-50"
             aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -1214,20 +1134,20 @@ export default function App() {
               <>
                 <label htmlFor="logo-uploader-input" className="cursor-pointer block relative">
                   {isLogoLoading ? (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-900 border border-purple-500/20 flex items-center justify-center">
-                      <RefreshCw size={12} className="animate-spin text-purple-400" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E5E5EA] flex items-center justify-center">
+                      <RefreshCw size={12} className="animate-spin text-[#FACC15]" />
                     </div>
                   ) : logoBase64 ? (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-purple-500/30 overflow-hidden shadow flex items-center justify-center p-0.5">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E5E5EA] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center justify-center p-0.5">
                       <img src={logoBase64} alt="Library Logo" className="w-full h-full object-contain" />
                     </div>
                   ) : (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 shadow flex items-center justify-center text-white text-base sm:text-xl font-bold border border-white/10">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#22242A] shadow flex items-center justify-center text-[#FACC15] text-base sm:text-xl font-bold">
                       অ
                     </div>
                   )}
                   {/* Overlaid edit camera icon */}
-                  <div className="absolute -bottom-1 -right-1 p-0.5 bg-slate-950 text-[8px] text-cyan-400 rounded-full border border-purple-500/30 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute -bottom-1 -right-1 p-0.5 bg-[#22242A] text-[8px] text-[#FACC15] rounded-full font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                     +
                   </div>
                 </label>
@@ -1242,11 +1162,11 @@ export default function App() {
             ) : (
               <div className="block relative">
                 {logoBase64 ? (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-purple-500/10 overflow-hidden flex items-center justify-center p-0.5">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E5E5EA] overflow-hidden flex items-center justify-center p-0.5">
                     <img src={logoBase64} alt="Library Logo" className="w-full h-full object-contain" />
                   </div>
                 ) : (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 shadow flex items-center justify-center text-white text-base sm:text-xl font-bold border border-white/10">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#22242A] shadow flex items-center justify-center text-[#FACC15] text-base sm:text-xl font-bold">
                     অ
                   </div>
                 )}
@@ -1255,103 +1175,48 @@ export default function App() {
           </div>
 
           <div className="min-w-0">
-            <h1 className="text-xs sm:text-sm md:text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent flex items-center gap-1 font-sans truncate">
+            <h1 className="text-xs sm:text-sm md:text-lg font-bold tracking-tight text-[#22242A] flex items-center gap-1 font-sans truncate">
               অক্ষর পাঠাগার
             </h1>
-            <p className="hidden sm:block text-[9px] text-slate-400 font-sans tracking-wide truncate">স্মার্ট লাইব্রেরি সিস্টেম</p>
+            <p className="hidden sm:block text-[9px] text-[#8E8E93] font-sans tracking-wide truncate">স্মার্ট লাইব্রেরি সিস্টেম</p>
           </div>
 
         </div>
         
         {/* User context profile and actions */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          
-          {/* Dynamic Theme selection widget */}
-          <div className="relative shrink-0">
-            <button
-              onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
-              className="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 bg-[#0e1428]/80 text-[10px] sm:text-xs font-bold text-indigo-400 border border-indigo-500/20 hover:border-indigo-400/40 rounded-lg shadow cursor-pointer transition-colors shrink-0"
-              title="ডিজাইন থিম পরিবর্তন করুন"
-              id="theme-selector-btn"
-            >
-              <Palette size={14} className="animate-spin duration-1000 shrink-0" style={{ animationDuration: '6s' }} />
-              <span className="hidden sm:inline text-white font-medium ml-1">
-                {currentTheme === "cosmic-dark" && "কসমিক ডার্ক"}
-                {currentTheme === "royal-ivory" && "অনিন্দ্য শুভ্র"}
-                {currentTheme === "forest-emerald" && "সবুজ অরণ্য"}
-                {currentTheme === "sunset-crimson" && "লাল গোধূলি"}
-                {currentTheme === "deep-ocean" && "নীল সাগর"}
-              </span>
-            </button>
 
-            {themeDropdownOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-60 rounded-xl border shadow-2xl z-50 p-1.5 space-y-1 animate-in fade-in slide-in-from-top-2 duration-120"
-                style={{ backgroundColor: "var(--bg-navy)", borderColor: "var(--glass-border)", color: "var(--text-main)" }}
-                id="theme-dropdown-menu"
-              >
-                <div className="px-2 py-1.5 border-b border-white/5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">পছন্দের ডিজাইন থিম বাছুন</p>
-                </div>
-                {[
-                  { id: "cosmic-dark", name: "কসমিক ডার্ক", desc: "ডিফল্ট ডার্ক ডিজাইন", color: "bg-indigo-600" },
-                  { id: "royal-ivory", name: "অনিন্দ্য শুভ্র (সাদা)", desc: "উজ্জ্বল সুন্দর রিডেবেল সাদা", color: "bg-slate-100 border border-slate-300" },
-                  { id: "forest-emerald", name: "সবুজ অরণ্য", desc: "সবুজ অরণ্য ও গোল্ডেন ডাস্ট", color: "bg-emerald-600" },
-                  { id: "sunset-crimson", name: "লাল গোধূলি", desc: "মিষ্টি লাল ও রোজ গোল্ড বেগুনী", color: "bg-rose-600" },
-                  { id: "deep-ocean", name: "নীল সাগর", desc: "মেডিটেরেনিয়ান টেক টিল", color: "bg-cyan-600" },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => {
-                      setCurrentTheme(t.id);
-                      setThemeDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition-all cursor-pointer ${
-                      currentTheme === t.id 
-                        ? 'bg-gradient-to-r from-purple-900/40 to-indigo-950/40 text-purple-300 font-bold border border-purple-500/20' 
-                        : 'text-slate-300 hover:bg-white/5'
-                    }`}
-                    id={`theme-option-${t.id}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className={`w-3 h-3 rounded-full shrink-0 ${t.color}`} />
-                      <div className="leading-snug">
-                        <p className="font-semibold">{t.name}</p>
-                        <p className="text-[9px] text-slate-400 font-normal">{t.desc}</p>
-                      </div>
-                    </div>
-                    {currentTheme === t.id && <Check size={12} className="text-purple-400 shrink-0" />}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Search bar (decorative) */}
+          <div className="hidden md:flex items-center gap-2 bg-white border border-[#E5E5EA] rounded-full px-4 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] min-w-[200px]">
+            <Search size={14} className="text-[#8E8E93] shrink-0" />
+            <span className="text-xs text-[#8E8E93]">অনুসন্ধান করুন...</span>
           </div>
 
           {/* Unified ZIP backup download indicator */}
           <button
             onClick={handleBulkZipDownload}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#0e1428]/80 text-[10px] sm:text-xs font-bold text-cyan-400 border border-cyan-500/20 hover:border-cyan-400/40 rounded-lg shadow cursor-pointer transition-colors shrink-0"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[#22242A] text-[10px] sm:text-xs font-bold text-white rounded-full shadow-[0_2px_8px_rgba(34,36,42,0.15)] cursor-pointer transition-colors hover:bg-[#2d2f36] shrink-0"
             title="সব ডেটাবেজ এক্সপোর্ট করুন (ZIP ব্যাকআপ)"
             id="bulk-backup-btn"
           >
-            <FileArchive size={14} />
-            ZIP ক্যাটালগ ব্যাকআপ
+            <FileArchive size={14} className="text-[#FACC15]" />
+            ZIP ব্যাকআপ
           </button>
 
           {/* User profile identifier badge */}
-          <div className="hidden md:flex bg-slate-900/60 border border-purple-500/10 p-1 px-3 rounded-lg items-center gap-2 shrink-0">
+          <div className="hidden md:flex bg-white border border-[#E5E5EA] p-1 px-3 rounded-full items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] shrink-0">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-            <span className="text-[10px] sm:text-xs font-bold text-slate-300">
-              {userRole === "admin" && `অ্যাডমিন ডিরেক্টর (${username})`}
+            <span className="text-[10px] sm:text-xs font-bold text-[#22242A]">
+              {userRole === "admin" && `অ্যাডমিন (${username})`}
               {userRole === "member" && `সদস্যঃ ${loggedInMember?.name || "সদস্য"}`}
-              {userRole === "guest" && "অতিথি পাঠক (Guest)"}
+              {userRole === "guest" && "অতিথি পাঠক"}
             </span>
           </div>
 
           {/* Logout button */}
           <button
             onClick={handleLogout}
-            className="p-1.5 hover:bg-red-950/20 text-red-400 hover:text-red-300 border border-red-500/10 hover:border-red-500/20 rounded-lg cursor-pointer transition-colors shrink-0"
+            className="p-1.5 hover:bg-red-50 text-[#8E8E93] hover:text-[#FF6B6B] border border-[#E5E5EA] rounded-full cursor-pointer transition-colors shrink-0"
             title="নিরাপদে একাউন্ট লগআউট করুন"
           >
             <LogOut size={14} />
@@ -1363,9 +1228,9 @@ export default function App() {
       {/* 2. Main Sidebar & Canvas Container Layout */}
       <div className="flex flex-1 relative min-h-[calc(100vh-65px)]">
         
-        {/* Desk Nav Sidebar Drawer */}
-        <aside className="hidden md:block w-64 bg-[#080c16]/55 border-r border-purple-500/10 p-4 shrink-0 space-y-6">
-          <div className="space-y-1 pt-2">
+        {/* Desk Nav Sidebar — Floating Icon-Only Pill */}
+        <aside className="hidden md:flex flex-col items-center justify-between w-16 bg-white rounded-[28px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] m-4 mr-0 p-2 shrink-0 sticky top-[73px] self-start" style={{ maxHeight: 'calc(100vh - 73px - 32px)' }}>
+          <div className="space-y-1 pt-1">
             {navTabs.map((item) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.id;
@@ -1373,31 +1238,39 @@ export default function App() {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-gradient-to-r from-purple-900/40 to-indigo-950/40 text-purple-300 font-bold border border-purple-500/20 shadow-inner" : "text-slate-400 hover:text-white hover:bg-white/5"}`}
+                  title={item.label}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#8E8E93] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
                 >
-                  <Icon size={16} />
-                  <span>{item.label}</span>
+                  <Icon size={18} />
                 </button>
               );
             })}
           </div>
 
-          {/* Bottom credit logs info */}
-          <div className="pt-6 border-t border-purple-500/5 text-[10px] text-slate-500 space-y-2">
-            <p>● হেল্পলাইন: 01333474848</p>
-            <p className="font-mono">সেশন: srv-run-2026</p>
+          {/* Bottom avatar + logout */}
+          <div className="space-y-2 pb-1 border-t border-[#E5E5EA] pt-2">
+            <div className="w-8 h-8 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[10px] font-bold text-[#22242A] mx-auto" title={username || loggedInMember?.name || "User"}>
+              {(username || loggedInMember?.name || "U").charAt(0).toUpperCase()}
+            </div>
+            <button
+              onClick={handleLogout}
+              title="লগআউট"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-[#8E8E93] hover:text-[#FF6B6B] hover:bg-red-50 cursor-pointer transition-colors"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         </aside>
 
         {/* Mobile floating responsive drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-30 bg-black/70 backdrop-blur-sm pr-16 animate-in slide-in-from-left-4 duration-150">
-            <div className="w-full max-w-xs h-full bg-[#080c16] border-r border-purple-500/20 p-5 flex flex-col justify-between">
+          <div className="md:hidden fixed inset-0 z-30 bg-black/30 backdrop-blur-sm pr-16">
+            <div className="w-full max-w-xs h-full bg-white border-r border-[#E5E5EA] p-5 flex flex-col justify-between shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
               
               <div className="space-y-5">
-                <div className="flex justify-between items-center pb-2 border-b border-purple-500/10">
-                  <p className="font-bold text-white text-xs uppercase tracking-wider">মেনু নেভিগেশন</p>
-                  <button onClick={() => setMobileMenuOpen(false)} className="text-slate-400 p-1">
+                <div className="flex justify-between items-center pb-2 border-b border-[#E5E5EA]">
+                  <p className="font-bold text-[#22242A] text-xs uppercase tracking-wider">মেনু নেভিগেশন</p>
+                  <button onClick={() => setMobileMenuOpen(false)} className="text-[#8E8E93] p-1">
                     <X size={18} />
                   </button>
                 </div>
@@ -1412,7 +1285,7 @@ export default function App() {
                           setActiveTab(item.id);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-purple-950/40 text-purple-300 font-bold border border-purple-500/20" : "text-slate-400 hover:text-white hover:bg-white/5"}`}
+                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#8E8E93] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
                       >
                         <Icon size={16} />
                         <span>{item.label}</span>
@@ -1422,11 +1295,11 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="space-y-3.5 pt-4 border-t border-purple-500/5">
+              <div className="space-y-3.5 pt-4 border-t border-[#E5E5EA]">
                 {/* Mobile User Profile Badge */}
-                <div className="bg-slate-900/60 border border-purple-500/10 p-2 px-3 rounded-xl flex items-center gap-2">
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-2 px-3 rounded-xl flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <p className="text-xs font-bold text-slate-300 truncate">
+                  <p className="text-xs font-bold text-[#22242A] truncate">
                     {userRole === "admin" && `অ্যাডমিন: ${username}`}
                     {userRole === "member" && `সদস্যঃ ${loggedInMember?.name || "সদস্য"}`}
                     {userRole === "guest" && "অতিথি পাঠক (Guest)"}
@@ -1439,9 +1312,9 @@ export default function App() {
                     handleBulkZipDownload();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-cyan-950/40 hover:bg-cyan-950 text-cyan-300 text-xs font-bold rounded-lg border border-cyan-500/20"
+                  className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl shadow-[0_2px_8px_rgba(34,36,42,0.15)]"
                 >
-                  <FileArchive size={14} />
+                  <FileArchive size={14} className="text-[#FACC15]" />
                   ZIP ক্যাটালগ ব্যাকআপ
                 </button>
               </div>
@@ -1452,7 +1325,7 @@ export default function App() {
 
         {/* 3. Main Pages Container Canvas */}
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto overflow-y-auto max-h-[calc(100vh-65px)]">
-          <div className="animate-in fade-in slide-in-from-bottom-3 duration-150">
+          <div>
             
             {userRole !== "admin" && userRole && (
               <PublicPortal
@@ -1575,3 +1448,4 @@ export default function App() {
     </div>
   );
 }
+

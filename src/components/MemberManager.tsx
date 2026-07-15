@@ -308,8 +308,8 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
     <div className="space-y-6">
 
       {importStatus && (
-        <div className={`p-4 rounded-xl text-xs flex items-center gap-3 shadow-lg ${importStatus.type === "success" ? "bg-emerald-950/60 border border-emerald-500/35 text-emerald-300 animate-pulse" : "bg-red-950/60 border border-red-500/35 text-red-300"}`}>
-          {importStatus.type === "success" ? <Check size={16} className="text-emerald-400 shrink-0" /> : <AlertCircle size={16} className="text-red-400 shrink-0" />}
+        <div className={`p-4 rounded-xl text-xs flex items-center gap-3 shadow-lg ${importStatus.type === "success" ? "bg-[#E5E5EA]/60 border border-[#E5E5EA] text-[#22242A] animate-pulse" : "bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B]"}`}>
+          {importStatus.type === "success" ? <Check size={16} className="text-[#22242A] shrink-0" /> : <AlertCircle size={16} className="text-[#FF6B6B] shrink-0" />}
           <span className="font-semibold">{importStatus.msg}</span>
         </div>
       )}
@@ -317,21 +317,21 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
       {/* Upper header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">৪. সদস্য ব্যবস্থাপনা (Member Management)</h2>
-          <p className="text-xs text-slate-400">লাইব্রেরিতে পাঠক সদস্য যোগ করুন এবং সদস্য আইডি অনুযায়ী বিস্তারিত ব্যবহারের ইতিহাস অডিট করুন</p>
+          <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">৪. সদস্য ব্যবস্থাপনা (Member Management)</h2>
+          <p className="text-xs text-[#8E8E93]">লাইব্রেরিতে পাঠক সদস্য যোগ করুন এবং সদস্য আইডি অনুযায়ী বিস্তারিত ব্যবহারের ইতিহাস অডিট করুন</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={handleImportFromSheets}
             disabled={isImporting}
-            className="flex-1 sm:flex-none px-4 py-2.5 bg-cyan-950/50 hover:bg-cyan-900/40 text-cyan-200 ring-1 ring-cyan-500/30 text-xs font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] ring-1 ring-[#E5E5EA] text-xs font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
             title="গুগল শিট থেকে সমস্ত বর্তমান সদস্যের ডেটা ইম্পোর্ট/সিঙ্ক করবে।"
           >
             {isImporting ? (
-              <RefreshCw size={14} className="text-cyan-400 animate-spin" />
+              <RefreshCw size={14} className="text-[#22242A] animate-spin" />
             ) : (
-              <Database size={14} className="text-cyan-400" />
+              <Database size={14} className="text-[#22242A]" />
             )}
             গুগল শিট থেকে লোড (Pull)
           </button>
@@ -340,7 +340,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               setFormErr("");
               setIsAddOpen(true);
             }}
-            className="flex-1 sm:flex-none px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-xs font-bold shadow-lg shadow-purple-600/15 flex items-center justify-center gap-1.5 cursor-pointer transition-transform"
+            className="flex-1 sm:flex-none px-5 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white rounded-lg text-xs font-bold shadow-lg shadow-none flex items-center justify-center gap-1.5 cursor-pointer transition-transform"
           >
             <UserPlus size={14} />
             ম্যানুয়াল নতুন সদস্য যোগ
@@ -351,28 +351,28 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left column: Search and Sorted List */}
-        <div className="col-span-1 lg:col-span-5 glass-panel p-4 rounded-2xl border border-purple-500/10 space-y-4 max-h-[80vh] flex flex-col">
+        <div className="col-span-1 lg:col-span-5  p-4 rounded-2xl border border-[#E5E5EA] space-y-4 max-h-[80vh] flex flex-col">
           
           <div className="relative shrink-0">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="নাম বা ফরম আইডি লিখে খুঁজুন..."
-              className="w-full text-xs pl-9 pr-4 py-2 bg-slate-950 border border-purple-500/15 rounded-lg text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400"
+              className="w-full text-xs pl-9 pr-4 py-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] placeholder:text-slate-600 focus:outline-none focus:border-[#22242A]"
             />
           </div>
 
           {/* Status Filter Tabs */}
-          <div className="flex gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/5 shrink-0 text-[9px] sm:text-[10px]">
+          <div className="flex gap-1 bg-white p-1 rounded-xl border border-[#E5E5EA] shrink-0 text-[9px] sm:text-[10px]">
             <button
               type="button"
               onClick={() => setStatusFilter("all")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "all"
-                  ? "bg-purple-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  : "text-[#8E8E93] hover:text-[#22242A]"
               }`}
             >
               সকল ({members.length})
@@ -382,13 +382,13 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Pending")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer relative ${
                 statusFilter === "Pending"
-                  ? "bg-amber-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-amber-400"
+                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  : "text-[#8E8E93] hover:text-[#FACC15]"
               }`}
             >
               যাচাইাধীন ({members.filter(m => m.paymentStatus === "Pending").length})
               {members.some(m => m.paymentStatus === "Pending") && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#F5F3EF] rounded-full animate-ping"></span>
               )}
             </button>
             <button
@@ -396,8 +396,8 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Paid")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Paid"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-emerald-400"
+                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  : "text-[#8E8E93] hover:text-[#22242A]"
               }`}
             >
               সক্রিয় ({members.filter(m => (m.paymentStatus || "Paid") === "Paid").length})
@@ -407,8 +407,8 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Unpaid")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Unpaid"
-                  ? "bg-red-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-red-400"
+                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  : "text-[#8E8E93] hover:text-[#FF6B6B]"
               }`}
             >
               বাতিল ({members.filter(m => m.paymentStatus === "Unpaid").length})
@@ -417,9 +417,9 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
           <div className="overflow-y-auto flex-1 space-y-2 pr-1">
             {loading ? (
-              <p className="text-center text-xs text-slate-500 py-6">তালিকা লোড হচ্ছে...</p>
+              <p className="text-center text-xs text-[#8E8E93] py-6">তালিকা লোড হচ্ছে...</p>
             ) : filteredList.length === 0 ? (
-              <p className="text-center text-xs text-slate-500 py-6">কোনো সদস্য নিবন্ধিত পাওয়া যায়নি।</p>
+              <p className="text-center text-xs text-[#8E8E93] py-6">কোনো সদস্য নিবন্ধিত পাওয়া যায়নি।</p>
             ) : (
               filteredList.map((m) => {
                 const isActive = activeProfile && activeProfile.member.formNumber === m.formNumber;
@@ -427,31 +427,31 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   <div
                     key={m.formNumber}
                     onClick={() => fetchProfile(m.formNumber)}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-150 ${isActive ? "bg-purple-950/30 border-purple-500/50" : "bg-slate-900/40 border-purple-500/5 hover:border-cyan-500/20"}`}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-150 ${isActive ? "bg-[#F5F3EF] border-[#E5E5EA]" : "bg-[#F5F3EF] border-[#E5E5EA] hover:border-[#E5E5EA]"}`}
                   >
                     <div className="flex justify-between items-start gap-1">
-                      <h4 className="font-bold text-white text-xs sm:text-sm">{m.name}</h4>
-                      <span className="font-mono text-[10px] font-bold text-purple-400 bg-purple-950 px-2 py-0.5 rounded shrink-0">
+                      <h4 className="font-bold text-[#22242A] text-xs sm:text-sm">{m.name}</h4>
+                      <span className="font-mono text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded shrink-0">
                         #{m.formNumber}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
+                    <div className="flex justify-between items-center text-[10px] text-[#8E8E93] mt-1">
                       <div className="flex items-center gap-1.5">
                         <span className="font-mono">{m.mobile}</span>
                         {(m.paymentMethod || m.paymentStatus) && (
                           <span className={`w-1.5 h-1.5 rounded-full ${
                             (m.paymentStatus || "Paid") === "Paid" 
-                              ? "bg-emerald-400" 
+                              ? "bg-[#F5F3EF]" 
                               : m.paymentStatus === "Pending" 
-                              ? "bg-amber-400 animate-pulse" 
-                              : "bg-red-500"
+                              ? "bg-[#F5F3EF] animate-pulse" 
+                              : "bg-[#F5F3EF]"
                           }`} title={
                             (m.paymentStatus || "Paid") === "Paid" ? "পরিশোধিত" : m.paymentStatus === "Pending" ? "যাচাইাধীন/পেন্ডিং" : "অপরিশোধিত/বাতিল"
                           } />
                         )}
                       </div>
                       {m.dob && (
-                        <span className="text-purple-300 font-sans flex items-center gap-0.5">
+                        <span className="text-[#22242A] font-sans flex items-center gap-0.5">
                           📅 {m.dob}
                         </span>
                       )}
@@ -464,15 +464,15 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
         </div>
 
         {/* Right column: member active detailed profile summaries */}
-        <div className="col-span-1 lg:col-span-7 glass-panel-cyan p-5 rounded-2xl border border-cyan-500/10 min-h-[40vh] flex flex-col justify-between">
+        <div className="col-span-1 lg:col-span-7  p-5 rounded-2xl border border-[#E5E5EA] min-h-[40vh] flex flex-col justify-between">
           
           {profileLoading ? (
             <div className="py-24 flex flex-col items-center justify-center flex-1">
-              <RefreshCw className="animate-spin text-cyan-400 mb-2" size={24} />
-              <p className="text-xs text-slate-400">প্রোফাইল লোড হচ্ছে...</p>
+              <RefreshCw className="animate-spin text-[#22242A] mb-2" size={24} />
+              <p className="text-xs text-[#8E8E93]">প্রোফাইল লোড হচ্ছে...</p>
             </div>
           ) : !activeProfile ? (
-            <div className="py-24 text-center text-slate-500 text-xs flex-1">
+            <div className="py-24 text-center text-[#8E8E93] text-xs flex-1">
               বিস্তারিত ব্যবহারের রেকর্ড এবং ব্যবহারের চক্রসমূহ দেখতে বামে সদস্য তালিকায় ক্লিক করুন।
             </div>
           ) : (
@@ -480,52 +480,52 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               
               <div className="space-y-4">
                 {/* Member Profile Card Details Header */}
-                <div className="flex justify-between items-start border-b border-cyan-500/10 pb-3 gap-2">
+                <div className="flex justify-between items-start border-b border-[#E5E5EA] pb-3 gap-2">
                   <div className="flex items-start gap-3">
                     {activeProfile.member.photo && (
-                      <div className="w-16 h-16 rounded-xl border border-white/10 overflow-hidden shrink-0 bg-slate-900">
+                      <div className="w-16 h-16 rounded-xl border border-[#E5E5EA] overflow-hidden shrink-0 bg-[#F5F3EF]">
                         <img src={activeProfile.member.photo} alt={activeProfile.member.name} className="w-full h-full object-cover" />
                       </div>
                     )}
                     <div>
-                      <h3 className="text-lg font-bold text-white flex items-center gap-1.5 flex-wrap">
+                      <h3 className="text-lg font-bold text-[#22242A] flex items-center gap-1.5 flex-wrap">
                         {activeProfile.member.name}
-                        {activeProfile.member.nameEnglish && <span className="text-xs font-normal text-slate-400 block font-mono mt-0.5">({activeProfile.member.nameEnglish})</span>}
+                        {activeProfile.member.nameEnglish && <span className="text-xs font-normal text-[#8E8E93] block font-mono mt-0.5">({activeProfile.member.nameEnglish})</span>}
                       </h3>
                       
                       {activeProfile.member.currVillage ? (
-                        <div className="text-[10px] text-slate-400 mt-1 space-y-0.5">
+                        <div className="text-[10px] text-[#8E8E93] mt-1 space-y-0.5">
                           <p className="flex items-center gap-1">
-                            <MapPin size={11} className="text-cyan-400 shrink-0" />
-                            <span className="text-slate-500">বর্তমান:</span> {activeProfile.member.currVillage}, ডাকঘর: {activeProfile.member.currPostOffice}, উপজেলা: {activeProfile.member.currUpazila}, জেলা: {activeProfile.member.currDistrict}
+                            <MapPin size={11} className="text-[#22242A] shrink-0" />
+                            <span className="text-[#8E8E93]">বর্তমান:</span> {activeProfile.member.currVillage}, ডাকঘর: {activeProfile.member.currPostOffice}, উপজেলা: {activeProfile.member.currUpazila}, জেলা: {activeProfile.member.currDistrict}
                           </p>
                           <p className="flex items-center gap-1">
-                            <MapPin size={11} className="text-purple-400 shrink-0" />
-                            <span className="text-slate-500">স্থায়ী:</span> {activeProfile.member.permVillage}, ডাকঘর: {activeProfile.member.permPostOffice}, উপজেলা: {activeProfile.member.permUpazila}, জেলা: {activeProfile.member.permDistrict}
+                            <MapPin size={11} className="text-[#22242A] shrink-0" />
+                            <span className="text-[#8E8E93]">স্থায়ী:</span> {activeProfile.member.permVillage}, ডাকঘর: {activeProfile.member.permPostOffice}, উপজেলা: {activeProfile.member.permUpazila}, জেলা: {activeProfile.member.permDistrict}
                           </p>
                         </div>
                       ) : (
-                        <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                          <MapPin size={11} className="text-purple-400 shrink-0" />
+                        <p className="text-[10px] text-[#8E8E93] mt-0.5 flex items-center gap-1">
+                          <MapPin size={11} className="text-[#22242A] shrink-0" />
                           ঠিকানা: {activeProfile.member.address}
                         </p>
                       )}
 
                       {activeProfile.member.dob && (
-                        <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                        <p className="text-[10px] text-[#8E8E93] mt-1 flex items-center gap-1">
                           📅 জন্ম তারিখ: {activeProfile.member.dob}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-[11px] font-bold font-mono text-cyan-400">ID: #{activeProfile.member.formNumber}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5 flex items-center justify-end gap-1 font-mono">
-                      <Phone size={10} className="text-emerald-400 shrink-0" />
+                    <p className="text-[11px] font-bold font-mono text-[#22242A]">ID: #{activeProfile.member.formNumber}</p>
+                    <p className="text-[10px] text-[#8E8E93] mt-0.5 flex items-center justify-end gap-1 font-mono">
+                      <Phone size={10} className="text-[#22242A] shrink-0" />
                       {activeProfile.member.mobile}
                     </p>
                     {(activeProfile.member.educationInstitution || activeProfile.member.className || activeProfile.member.classRoll) && (
-                      <div className="text-[10px] text-purple-300 mt-1 flex flex-col items-end">
+                      <div className="text-[10px] text-[#22242A] mt-1 flex flex-col items-end">
                         {activeProfile.member.educationInstitution && <span>🏫 {activeProfile.member.educationInstitution}</span>}
                         {(activeProfile.member.className || activeProfile.member.classRoll) && (
                           <span>
@@ -546,43 +546,43 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   activeProfile.member.bloodGroup || 
                   activeProfile.member.profession || 
                   activeProfile.member.educationQualification) && (
-                  <div className="p-3 bg-slate-900/40 border border-purple-500/10 rounded-xl space-y-2">
-                    <span className="text-[10px] font-black text-purple-300 uppercase tracking-wider block">📋 অতিরিক্ত তথ্য (Detailed Profile Info):</span>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[10px] bg-[#070b16]/60 p-2.5 rounded-lg border border-white/5">
+                  <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl space-y-2">
+                    <span className="text-[10px] font-black text-[#22242A] uppercase tracking-wider block">📋 অতিরিক্ত তথ্য (Detailed Profile Info):</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[10px] bg-[#070b16]/60 p-2.5 rounded-lg border border-[#E5E5EA]">
                       {activeProfile.member.fatherName && (
                         <div>
-                          <span className="text-slate-500">পিতার নাম:</span>
-                          <p className="font-bold text-slate-300 mt-0.5">{activeProfile.member.fatherName}</p>
+                          <span className="text-[#8E8E93]">পিতার নাম:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.fatherName}</p>
                         </div>
                       )}
                       {activeProfile.member.motherName && (
                         <div>
-                          <span className="text-slate-500">মাতার নাম:</span>
-                          <p className="font-bold text-slate-300 mt-0.5">{activeProfile.member.motherName}</p>
+                          <span className="text-[#8E8E93]">মাতার নাম:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.motherName}</p>
                         </div>
                       )}
                       {activeProfile.member.nidBirthReg && (
                         <div>
-                          <span className="text-slate-500">NID / জন্ম নিবন্ধন:</span>
-                          <p className="font-bold text-slate-300 mt-0.5 font-mono select-all bg-slate-950 px-1 py-0.5 rounded border border-white/5 inline-block">{activeProfile.member.nidBirthReg}</p>
+                          <span className="text-[#8E8E93]">NID / জন্ম নিবন্ধন:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5 font-mono select-all bg-white px-1 py-0.5 rounded border border-[#E5E5EA] inline-block">{activeProfile.member.nidBirthReg}</p>
                         </div>
                       )}
                       {activeProfile.member.bloodGroup && (
                         <div>
-                          <span className="text-slate-500">রক্তের গ্রুপ:</span>
-                          <p className="font-bold text-rose-400 mt-0.5">{activeProfile.member.bloodGroup}</p>
+                          <span className="text-[#8E8E93]">রক্তের গ্রুপ:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.bloodGroup}</p>
                         </div>
                       )}
                       {activeProfile.member.profession && (
                         <div>
-                          <span className="text-slate-500">পেশা:</span>
-                          <p className="font-bold text-slate-300 mt-0.5">{activeProfile.member.profession}</p>
+                          <span className="text-[#8E8E93]">পেশা:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.profession}</p>
                         </div>
                       )}
                       {activeProfile.member.educationQualification && (
                         <div>
-                          <span className="text-slate-500">শিক্ষাগত যোগ্যতা:</span>
-                          <p className="font-bold text-slate-300 mt-0.5">{activeProfile.member.educationQualification}</p>
+                          <span className="text-[#8E8E93]">শিক্ষাগত যোগ্যতা:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.educationQualification}</p>
                         </div>
                       )}
                     </div>
@@ -591,33 +591,33 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                 {/* Payment & Member Approval Information */}
                 {(activeProfile.member.paymentMethod || activeProfile.member.paymentStatus) && (
-                  <div className="p-3 bg-slate-900/85 border border-cyan-500/10 rounded-xl space-y-2.5">
+                  <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl space-y-2.5">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">💳 মেম্বারশিপ নিবন্ধন ফি ও অনুমোদন বিবরণ:</span>
+                      <span className="text-[10px] font-black text-[#8E8E93] uppercase tracking-wider">💳 মেম্বারশিপ নিবন্ধন ফি ও অনুমোদন বিবরণ:</span>
                       <span className={`text-[9px] font-black px-2 py-0.5 rounded border ${
                         (activeProfile.member.paymentStatus || "Paid") === "Paid"
-                          ? "bg-emerald-950/60 border-emerald-500/30 text-emerald-400"
+                          ? "bg-[#E5E5EA]/60 border-[#E5E5EA] text-[#22242A]"
                           : activeProfile.member.paymentStatus === "Pending"
-                          ? "bg-amber-950/60 border-amber-500/30 text-amber-400 animate-pulse"
-                          : "bg-red-950/60 border-red-500/30 text-red-400"
+                          ? "bg-[#F5F3EF] border-[#E5E5EA] text-[#FACC15] animate-pulse"
+                          : "bg-[#F5F3EF] border-[#E5E5EA] text-[#FF6B6B]"
                       }`}>
                         {(activeProfile.member.paymentStatus || "Paid") === "Paid" ? "● অনুমোদিত ও সক্রিয় (Paid)" : activeProfile.member.paymentStatus === "Pending" ? "● যাচাইাধীন (Pending)" : "● অচল/বাতিল (Unpaid)"}
                       </span>
                     </div>
                     
                     {activeProfile.member.paymentMethod && (
-                      <div className="grid grid-cols-3 gap-2.5 text-[10px] bg-slate-950/50 p-2 rounded-lg border border-white/5">
+                      <div className="grid grid-cols-3 gap-2.5 text-[10px] bg-white p-2 rounded-lg border border-[#E5E5EA]">
                         <div>
-                          <span className="text-slate-500 font-medium">পেমেন্ট মাধ্যম:</span>
-                          <p className="font-bold text-slate-200 mt-0.5">{activeProfile.member.paymentMethod}</p>
+                          <span className="text-[#8E8E93] font-medium">পেমেন্ট মাধ্যম:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.paymentMethod}</p>
                         </div>
                         <div>
-                          <span className="text-slate-500 font-medium">প্রেরক মোবাইল:</span>
-                          <p className="font-bold text-slate-200 mt-0.5 font-mono">{activeProfile.member.senderNumber || "N/A"}</p>
+                          <span className="text-[#8E8E93] font-medium">প্রেরক মোবাইল:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5 font-mono">{activeProfile.member.senderNumber || "N/A"}</p>
                         </div>
                         <div>
-                          <span className="text-slate-500 font-medium">ট্রানজেকশন ID:</span>
-                          <p className="font-bold text-cyan-400 mt-0.5 font-mono select-all bg-slate-900 px-1 py-0.5 rounded border border-white/5 inline-block" title="কপি করতে ডাবল ক্লিক করুন">
+                          <span className="text-[#8E8E93] font-medium">ট্রানজেকশন ID:</span>
+                          <p className="font-bold text-[#22242A] mt-0.5 font-mono select-all bg-[#F5F3EF] px-1 py-0.5 rounded border border-[#E5E5EA] inline-block" title="কপি করতে ডাবল ক্লিক করুন">
                             {activeProfile.member.transactionId || "N/A"}
                           </p>
                         </div>
@@ -625,17 +625,17 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     )}
                     
                     {/* Admin actions to update payment status / approve member */}
-                    <div className="pt-2.5 border-t border-white/5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="text-[9px] text-slate-400 flex flex-col leading-relaxed max-w-[280px]">
-                        <span className="font-extrabold text-purple-400 text-[10px]">অ্যাডমিন অ্যাকশন (সদস্য অনুমোদন):</span>
+                    <div className="pt-2.5 border-t border-[#E5E5EA] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="text-[9px] text-[#8E8E93] flex flex-col leading-relaxed max-w-[280px]">
+                        <span className="font-extrabold text-[#22242A] text-[10px]">অ্যাডমিন অ্যাকশন (সদস্য অনুমোদন):</span>
                         {activeProfile.member.paymentStatus === "Pending" && (
                           <span>অনলাইন সদস্য আবেদনটি যাচাই করে মেম্বারশিপ সক্রিয় করতে ডানপাশের অনুমোদন বাটনে ক্লিক করুন।</span>
                         )}
                         {(activeProfile.member.paymentStatus || "Paid") === "Paid" && (
-                          <span className="text-emerald-400 font-semibold">সদস্যটি বর্তমানে অনুমোদিত এবং সচল রয়েছে। উনাকে সাময়িকভাবে অচল করতে চাইলে ডানপাশের বাটন চাপুন।</span>
+                          <span className="text-[#22242A] font-semibold">সদস্যটি বর্তমানে অনুমোদিত এবং সচল রয়েছে। উনাকে সাময়িকভাবে অচল করতে চাইলে ডানপাশের বাটন চাপুন।</span>
                         )}
                         {activeProfile.member.paymentStatus === "Unpaid" && (
-                          <span className="text-red-400 font-semibold">সদস্যটি অচল বা বাতিল অবস্থায় আছে। সচল করতে ডানপাশের এপ্রুভ বাটনটি চাপুন।</span>
+                          <span className="text-[#FF6B6B] font-semibold">সদস্যটি অচল বা বাতিল অবস্থায় আছে। সচল করতে ডানপাশের এপ্রুভ বাটনটি চাপুন।</span>
                         )}
                       </div>
 
@@ -644,7 +644,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Paid")}
-                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 shadow-md shadow-emerald-950/20"
+                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 bg-[#F5F3EF] hover:from-emerald-700 hover:bg-[#F5F3EF] text-[#22242A] rounded-lg text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 shadow-md shadow-emerald-950/20"
                           >
                             <CheckCircle2 size={12} />
                             সদস্য এপ্রুভ করুন
@@ -653,7 +653,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Unpaid")}
-                            className="px-3 py-1.5 bg-slate-950 border border-red-500/30 hover:border-red-500/50 text-red-400 hover:bg-red-950/20 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                            className="px-3 py-1.5 bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#FF6B6B] hover:bg-[#F5F3EF] rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
                           >
                             স্থগিত/বাতিল করুন
                           </button>
@@ -663,7 +663,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Unpaid")}
-                            className="px-2 py-1.5 bg-slate-950 border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-slate-200 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                            className="px-2 py-1.5 bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#8E8E93] hover:text-[#22242A] rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
                           >
                             আবেদন রিজেক্ট
                           </button>
@@ -675,13 +675,13 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                 {/* Dashboard metric summary counters */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-slate-900/60 rounded-xl border border-purple-500/5 text-center">
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">মোট বই লেনদেন সংখ্যা</p>
-                    <p className="text-2xl font-extrabold text-white mt-1 font-mono">{activeProfile.rentCount} বার</p>
+                  <div className="p-3 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA] text-center">
+                    <p className="text-[10px] text-[#8E8E93] uppercase tracking-widest font-bold">মোট বই লেনদেন সংখ্যা</p>
+                    <p className="text-2xl font-extrabold text-[#22242A] mt-1 font-mono">{activeProfile.rentCount} বার</p>
                   </div>
-                  <div className="p-3 bg-slate-900/60 rounded-xl border border-purple-500/5 text-center">
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">বর্তমানে নেওয়া বই (Issued)</p>
-                    <p className="text-2xl font-extrabold text-cyan-400 mt-1 font-mono">{activeProfile.activeRents.length} টি</p>
+                  <div className="p-3 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA] text-center">
+                    <p className="text-[10px] text-[#8E8E93] uppercase tracking-widest font-bold">বর্তমানে নেওয়া বই (Issued)</p>
+                    <p className="text-2xl font-extrabold text-[#22242A] mt-1 font-mono">{activeProfile.activeRents.length} টি</p>
                   </div>
                 </div>
 
@@ -690,21 +690,21 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   
                   {/* Presently Active borrows */}
                   <div>
-                    <h4 className="text-xs font-bold text-purple-300 flex items-center gap-1.5 mb-1.5 uppercase">
-                      <BookOpen size={13} className="text-purple-400" />
+                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5 mb-1.5 uppercase">
+                      <BookOpen size={13} className="text-[#22242A]" />
                       বর্তমানে ধারকৃত বইসমূহ ({activeProfile.activeRents.length})
                     </h4>
                     {activeProfile.activeRents.length === 0 ? (
-                      <p className="text-[11px] text-slate-500 py-2 bg-[#05070f]/40 p-3 rounded">এই মুহূর্তে কোনো বই ইস্যু করা নাই।</p>
+                      <p className="text-[11px] text-[#8E8E93] py-2 bg-[#F5F3EF] p-3 rounded">এই মুহূর্তে কোনো বই ইস্যু করা নাই।</p>
                     ) : (
                       <div className="space-y-2">
                         {activeProfile.activeRents.map((item: any) => (
-                          <div key={item.id} className="p-2.5 bg-purple-950/15 border border-purple-500/10 rounded-xl flex justify-between items-center text-xs">
+                          <div key={item.id} className="p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center text-xs">
                             <div>
-                              <p className="font-bold text-white mb-0.5">{item.bookName}</p>
-                              <p className="text-[9px] text-purple-300 font-mono italic">কোড: {item.bookCode} | ইস্যু ডেট: {item.issueDate}</p>
+                              <p className="font-bold text-[#22242A] mb-0.5">{item.bookName}</p>
+                              <p className="text-[9px] text-[#22242A] font-mono italic">কোড: {item.bookCode} | ইস্যু ডেট: {item.issueDate}</p>
                             </div>
-                            <span className="text-[10px] text-red-400 font-bold font-mono bg-red-950/60 border border-red-500/20 px-2 py-0.5 rounded">
+                            <span className="text-[10px] text-[#FF6B6B] font-bold font-mono bg-[#F5F3EF] border border-[#E5E5EA] px-2 py-0.5 rounded">
                               ফেরত দিন: {item.returnDate}
                             </span>
                           </div>
@@ -715,22 +715,22 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   {/* Previous books return lists */}
                   <div className="pt-2">
-                    <h4 className="text-xs font-bold text-emerald-300 flex items-center gap-1.5 mb-1.5 uppercase">
-                      <CheckCircle2 size={13} className="text-emerald-400" />
+                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5 mb-1.5 uppercase">
+                      <CheckCircle2 size={13} className="text-[#22242A]" />
                       ফেরত দেওয়া বইয়ের ইতিহাস ({activeProfile.returnedHistory.length})
                     </h4>
                     {activeProfile.returnedHistory.length === 0 ? (
-                      <p className="text-[11px] text-slate-500 py-2 bg-[#05070f]/40 p-3 rounded">ইতিপূর্বে বই ফেরত দেওয়ার কোনো ইতিহাস নেই।</p>
+                      <p className="text-[11px] text-[#8E8E93] py-2 bg-[#F5F3EF] p-3 rounded">ইতিপূর্বে বই ফেরত দেওয়ার কোনো ইতিহাস নেই।</p>
                     ) : (
                       <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
                         {activeProfile.returnedHistory.map((item: any) => (
-                          <div key={item.id} className="p-2.5 bg-slate-900/60 border border-cyan-500/5 rounded-xl flex justify-between items-center text-xs">
+                          <div key={item.id} className="p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center text-xs">
                             <div>
-                              <p className="font-semibold text-slate-200 mb-0.5">{item.bookName}</p>
-                              <p className="text-[9px] text-slate-400 font-mono">কোড: {item.bookCode} | ইস্যু: {item.issueDate}</p>
+                              <p className="font-semibold text-[#22242A] mb-0.5">{item.bookName}</p>
+                              <p className="text-[9px] text-[#8E8E93] font-mono">কোড: {item.bookCode} | ইস্যু: {item.issueDate}</p>
                             </div>
                             <div className="text-right">
-                              <span className="text-[9px] text-emerald-400 font-semibold font-mono bg-emerald-950/60 border border-emerald-500/15 px-1.5 py-0.5 rounded">
+                              <span className="text-[9px] text-[#22242A] font-semibold font-mono bg-[#E5E5EA]/60 border border-[#E5E5EA] px-1.5 py-0.5 rounded">
                                 ফেরত এসেছে: {item.returnedAt || item.returnDate}
                               </span>
                             </div>
@@ -745,17 +745,17 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               </div>
 
               {/* Slips preview triggers */}
-              <div className="pt-4 border-t border-cyan-500/5 flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div className="pt-4 border-t border-[#E5E5EA] flex flex-col sm:flex-row justify-between items-center gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-1.5 text-xs font-bold bg-slate-950 border border-red-500/20 hover:border-red-500/50 hover:text-red-400 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-red-950/20 cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-[#FF6B6B] px-4 py-2.5 rounded-lg text-[#8E8E93] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
                 >
                   <Trash2 size={12} />
                   সদস্য মুছে ফেলুন
                 </button>
                 <button
                   onClick={() => onPreviewMemberSlip(activeProfile)}
-                  className="flex items-center gap-1.5 text-xs font-bold bg-[#0e1629] border border-cyan-500/20 hover:border-cyan-400 px-4 py-2.5 rounded-lg text-cyan-400 hover:bg-slate-900 cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  className="flex items-center gap-1.5 text-xs font-bold bg-[#0e1629] border border-[#E5E5EA] hover:border-[#22242A] px-4 py-2.5 rounded-lg text-[#22242A] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
                 >
                   <Eye size={12} />
                   গ্রাহক স্লিপ চোখের প্রাকদর্শন ও PDF
@@ -772,16 +772,16 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
       {/* MANUAL REGISTER NEW APP MEMBER MODAL */}
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-[#0b0f1a] border border-purple-500/25 rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-120 flex flex-col my-8 max-h-[85vh]">
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-120 flex flex-col my-8 max-h-[85vh]">
             {/* Header */}
-            <div className="p-6 border-b border-purple-500/15 flex justify-between items-center shrink-0">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <UserPlus size={18} className="text-purple-400" />
+            <div className="p-6 border-b border-[#E5E5EA] flex justify-between items-center shrink-0">
+              <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2">
+                <UserPlus size={18} className="text-[#22242A]" />
                 ম্যানুয়াল নতুন সদস্য রেজিস্ট্রি
               </h3>
               <button 
                 onClick={() => setIsAddOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="text-[#8E8E93] hover:text-[#22242A] transition-colors cursor-pointer"
               >
                 ✕
               </button>
@@ -790,7 +790,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
             {/* Scrollable Form Area */}
             <div className="p-6 overflow-y-auto space-y-6">
               {formErr && (
-                <div className="bg-red-950/55 border border-red-500/35 p-3 rounded-lg text-xs text-red-400 flex items-center gap-2">
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#FF6B6B] flex items-center gap-2">
                   <AlertCircle size={14} />
                   <span>{formErr}</span>
                 </div>
@@ -798,24 +798,24 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
               <form onSubmit={handleAddMemberSubmit} className="space-y-6">
                 {/* PHOTO UPLOAD BLOCK */}
-                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-purple-500/10 flex flex-col sm:flex-row items-center gap-4">
-                  <div className="w-20 h-20 rounded-xl bg-slate-900 border border-purple-500/15 overflow-hidden flex items-center justify-center shrink-0 relative">
+                <div className="p-3.5 bg-white rounded-xl border border-[#E5E5EA] flex flex-col sm:flex-row items-center gap-4">
+                  <div className="w-20 h-20 rounded-xl bg-[#F5F3EF] border border-[#E5E5EA] overflow-hidden flex items-center justify-center shrink-0 relative">
                     {addPhoto ? (
                       <img src={addPhoto} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="text-slate-500 flex flex-col items-center gap-1">
+                      <div className="text-[#8E8E93] flex flex-col items-center gap-1">
                         <Camera size={20} />
                         <span className="text-[8px] font-bold">ছবি দিন</span>
                       </div>
                     )}
                   </div>
                   <div className="space-y-2 flex-1 w-full text-center sm:text-left">
-                    <span className="text-[11px] font-bold text-slate-300 block">সদস্যের ছবি আপলোড করুন</span>
-                    <p className="text-[10px] text-slate-500 leading-normal">
+                    <span className="text-[11px] font-bold text-[#22242A] block">সদস্যের ছবি আপলোড করুন</span>
+                    <p className="text-[10px] text-[#8E8E93] leading-normal">
                       লাইব্রেরি কার্ড ও ড্যাশবোর্ডের জন্য পাসপোর্ট সাইজের ছবি আপলোড করুন (ঐচ্ছিক)।
                     </p>
                     <div className="flex justify-center sm:justify-start gap-2">
-                      <label className="px-3 py-1.5 bg-purple-950/50 text-purple-300 border border-purple-500/25 hover:bg-purple-900/40 rounded-lg text-[10px] font-extrabold cursor-pointer transition-colors flex items-center gap-1">
+                      <label className="px-3 py-1.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] hover:bg-[#F5F3EF] rounded-lg text-[10px] font-extrabold cursor-pointer transition-colors flex items-center gap-1">
                         <Upload size={12} />
                         {addPhotoLoading ? "প্রসেস হচ্ছে..." : (addPhoto ? "ছবি পরিবর্তন" : "ছবি বাছাই করুন")}
                         <input
@@ -830,7 +830,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         <button
                           type="button"
                           onClick={() => setAddPhoto("")}
-                          className="px-2 py-1.5 bg-red-950/40 text-red-400 border border-red-500/15 hover:bg-red-900/30 rounded-lg text-[10px] font-extrabold transition-colors"
+                          className="px-2 py-1.5 bg-[#F5F3EF] text-[#FF6B6B] border border-[#E5E5EA] hover:bg-[#F5F3EF] rounded-lg text-[10px] font-extrabold transition-colors"
                         >
                           রিসেট
                         </button>
@@ -841,62 +841,62 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                 {/* 1. Personal Information */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-black text-cyan-400 border-b border-cyan-500/10 pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                  <h4 className="text-xs font-black text-[#22242A] border-b border-[#E5E5EA] pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
                     ব্যক্তিগত তথ্য (Personal Information)
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">সদস্যের নাম (বাংলায়) {addForceRequired && "*"}</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">সদস্যের নাম (বাংলায়) {addForceRequired && "*"}</label>
                       <input
                         type="text"
                         value={addName}
                         onChange={(e) => setAddName(e.target.value)}
                         placeholder="যেমন: আরিফ উদ্দিন আহমেদ"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
                         required={addForceRequired}
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">সদস্যের নাম (ইংরেজিতে)</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">সদস্যের নাম (ইংরেজিতে)</label>
                       <input
                         type="text"
                         value={addNameEnglish}
                         onChange={(e) => setAddNameEnglish(e.target.value)}
                         placeholder="যেমন: Arif Uddin Ahmed"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">ফরম নম্বর (ID)</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">ফরম নম্বর (ID)</label>
                       <input
                         type="text"
                         value={addForm}
                         onChange={(e) => setAddForm(e.target.value)}
                         placeholder="যেমনঃ 1024 (ফাঁকা থাকলে অটো হবে)"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">মোবাইল নম্বর {addForceRequired && "*"}</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">মোবাইল নম্বর {addForceRequired && "*"}</label>
                       <input
                         type="text"
                         value={addMobile}
                         onChange={(e) => setAddMobile(e.target.value)}
                         placeholder="যেমনঃ 017xxxxxxxx"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                         required={addForceRequired}
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">জন্ম তারিখ {addForceRequired && "*"}</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">জন্ম তারিখ {addForceRequired && "*"}</label>
                       <input
                         type="date"
                         value={addDob}
                         onChange={(e) => setAddDob(e.target.value)}
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
                         required={addForceRequired}
                       />
                     </div>
@@ -904,23 +904,23 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">পিতার নাম</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">পিতার নাম</label>
                       <input
                         type="text"
                         value={addFatherName}
                         onChange={(e) => setAddFatherName(e.target.value)}
                         placeholder="পিতার নাম লিখুন"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">মাতার নাম</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">মাতার নাম</label>
                       <input
                         type="text"
                         value={addMotherName}
                         onChange={(e) => setAddMotherName(e.target.value)}
                         placeholder="মাতার নাম লিখুন"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
                       />
                     </div>
                   </div>
@@ -928,50 +928,50 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                 {/* 2. Address Details */}
                 <div className="space-y-4">
-                  <h4 className="text-xs font-black text-purple-400 border-b border-purple-500/10 pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                  <h4 className="text-xs font-black text-[#22242A] border-b border-[#E5E5EA] pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
                     ঠিকানা (Address Details)
                   </h4>
                   
                   {/* Present Address */}
-                  <div className="space-y-3 bg-slate-950/30 p-3 rounded-xl border border-white/5">
-                    <span className="text-[10px] font-black text-cyan-300 block">বর্তমান ঠিকানা</span>
+                  <div className="space-y-3 bg-white p-3 rounded-xl border border-[#E5E5EA]">
+                    <span className="text-[10px] font-black text-[#22242A] block">বর্তমান ঠিকানা</span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-400 mb-1">গ্রাম/মহল্লা</label>
+                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">গ্রাম/মহল্লা</label>
                         <input
                           type="text"
                           value={addCurrVillage}
                           onChange={(e) => setAddCurrVillage(e.target.value)}
                           placeholder="যেমন: বড়লেখা"
-                          className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-400 mb-1">ডাকঘর</label>
+                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">ডাকঘর</label>
                         <input
                           type="text"
                           value={addCurrPostOffice}
                           onChange={(e) => setAddCurrPostOffice(e.target.value)}
                           placeholder="যেমন: বড়লেখা"
-                          className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-400 mb-1">উপজেলা</label>
+                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">উপজেলা</label>
                         <input
                           type="text"
                           value={addCurrUpazila}
                           onChange={(e) => setAddCurrUpazila(e.target.value)}
-                          className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-400 mb-1">জেলা</label>
+                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">জেলা</label>
                         <input
                           type="text"
                           value={addCurrDistrict}
                           onChange={(e) => setAddCurrDistrict(e.target.value)}
-                          className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                         />
                       </div>
                     </div>
@@ -993,54 +993,54 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           setAddPermDistrict(addCurrDistrict);
                         }
                       }}
-                      className="rounded border-white/10 text-cyan-500 focus:ring-cyan-500/30 bg-slate-950 h-3.5 w-3.5 cursor-pointer"
+                      className="rounded border-[#E5E5EA] text-[#22242A] focus:ring-[#E5E5EA] bg-white h-3.5 w-3.5 cursor-pointer"
                     />
-                    <label htmlFor="addIsSameAddress" className="text-[10px] font-bold text-slate-400 cursor-pointer select-none">
+                    <label htmlFor="addIsSameAddress" className="text-[10px] font-bold text-[#8E8E93] cursor-pointer select-none">
                       বর্তমান ঠিকানা ও স্থায়ী ঠিকানা একই
                     </label>
                   </div>
 
                   {/* Permanent Address */}
                   {!addIsSameAddress && (
-                    <div className="space-y-3 bg-slate-950/30 p-3 rounded-xl border border-white/5">
-                      <span className="text-[10px] font-black text-purple-300 block">স্থায়ী ঠিকানা</span>
+                    <div className="space-y-3 bg-white p-3 rounded-xl border border-[#E5E5EA]">
+                      <span className="text-[10px] font-black text-[#22242A] block">স্থায়ী ঠিকানা</span>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div>
-                          <label className="block text-[9px] font-bold text-slate-400 mb-1">গ্রাম/মহল্লা</label>
+                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">গ্রাম/মহল্লা</label>
                           <input
                             type="text"
                             value={addPermVillage}
                             onChange={(e) => setAddPermVillage(e.target.value)}
                             placeholder="গ্রামের নাম"
-                            className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                            className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-bold text-slate-400 mb-1">ডাকঘর</label>
+                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">ডাকঘর</label>
                           <input
                             type="text"
                             value={addPermPostOffice}
                             onChange={(e) => setAddPermPostOffice(e.target.value)}
                             placeholder="ডাকঘরের নাম"
-                            className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                            className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-bold text-slate-400 mb-1">উপজেলা</label>
+                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">উপজেলা</label>
                           <input
                             type="text"
                             value={addPermUpazila}
                             onChange={(e) => setAddPermUpazila(e.target.value)}
-                            className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                            className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-bold text-slate-400 mb-1">জেলা</label>
+                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">জেলা</label>
                           <input
                             type="text"
                             value={addPermDistrict}
                             onChange={(e) => setAddPermDistrict(e.target.value)}
-                            className="w-full text-xs p-2 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                            className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                           />
                         </div>
                       </div>
@@ -1049,29 +1049,29 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   {/* Single string address fallback (optional) */}
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-bold text-slate-400">অতিরিক্ত বিবরণ/ঠিকানা নোট (ঐচ্ছিক)</label>
+                    <label className="block text-[10px] font-bold text-[#8E8E93]">অতিরিক্ত বিবরণ/ঠিকানা নোট (ঐচ্ছিক)</label>
                     <input
                       type="text"
                       value={addAddress}
                       onChange={(e) => setAddAddress(e.target.value)}
                       placeholder="যেমন: বড়লেখা লাইব্রেরির পাশে"
-                      className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                      className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
                 </div>
 
                 {/* 3. Additional Details */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-black text-cyan-400 border-b border-cyan-500/10 pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                  <h4 className="text-xs font-black text-[#22242A] border-b border-[#E5E5EA] pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
                     অন্যান্য তথ্য (Additional Information)
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">রক্তের গ্রুপ</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">রক্তের গ্রুপ</label>
                       <select
                         value={addBloodGroup}
                         onChange={(e) => setAddBloodGroup(e.target.value)}
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
                       >
                         <option value="">বাছাই করুন</option>
                         <option value="A+">A+</option>
@@ -1085,88 +1085,88 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">NID অথবা জন্ম নিবন্ধন নং</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">NID অথবা জন্ম নিবন্ধন নং</label>
                       <input
                         type="text"
                         value={addNidBirthReg}
                         onChange={(e) => setAddNidBirthReg(e.target.value)}
                         placeholder="NID / Birth Certificate"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">জাতীয়তা</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">জাতীয়তা</label>
                       <input
                         type="text"
                         value={addNationality}
                         onChange={(e) => setAddNationality(e.target.value)}
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">সর্বোচ্চ শিক্ষাগত যোগ্যতা</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">সর্বোচ্চ শিক্ষাগত যোগ্যতা</label>
                       <input
                         type="text"
                         value={addEducationQualification}
                         onChange={(e) => setAddEducationQualification(e.target.value)}
                         placeholder="যেমন: এস.এস.সি / এইচ.এস.সি / অনার্স"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">পেশা</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">পেশা</label>
                       <input
                         type="text"
                         value={addProfession}
                         onChange={(e) => setAddProfession(e.target.value)}
                         placeholder="যেমন: ছাত্র / শিক্ষক / ব্যবসায়ী"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="sm:col-span-1">
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">শিক্ষা প্রতিষ্ঠান</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">শিক্ষা প্রতিষ্ঠান</label>
                       <input
                         type="text"
                         value={addInstitution}
                         onChange={(e) => setAddInstitution(e.target.value)}
                         placeholder="যেমন: বড়লেখা কলেজ"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">শ্রেণী</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">শ্রেণী</label>
                       <input
                         type="text"
                         value={addClassName}
                         onChange={(e) => setAddClassName(e.target.value)}
                         placeholder="শ্রেণী লিখুন"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 mb-1">শ্রেণী রোল</label>
+                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">শ্রেণী রোল</label>
                       <input
                         type="text"
                         value={addClassRoll}
                         onChange={(e) => setAddClassRoll(e.target.value)}
                         placeholder="রোল লিখুন"
-                        className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* BOTTOM MANDATORY TOGGLE OPTION */}
-                <div className="pt-4 border-t border-purple-500/15 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-950/40 p-4 rounded-xl border border-white/5">
+                <div className="pt-4 border-t border-[#E5E5EA] flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl border border-[#E5E5EA]">
                   <div className="space-y-1 text-center sm:text-left">
-                    <span className="text-[11px] font-bold text-slate-200 block">তথ্যাদি দেওয়া বাধ্যতামূলক করুন</span>
-                    <p className="text-[10px] text-slate-500 leading-tight">
+                    <span className="text-[11px] font-bold text-[#22242A] block">তথ্যাদি দেওয়া বাধ্যতামূলক করুন</span>
+                    <p className="text-[10px] text-[#8E8E93] leading-tight">
                       এটি অন করলে সদস্যের নাম, মোবাইল এবং জন্ম তারিখ দেওয়া বাধ্যতামূলক হবে। অফ থাকলে কোন টাই বাধ্যতামূলক না।
                     </p>
                   </div>
@@ -1175,7 +1175,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       type="button"
                       onClick={() => setAddForceRequired(!addForceRequired)}
                       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                        addForceRequired ? "bg-purple-600" : "bg-slate-800"
+                        addForceRequired ? "bg-[#F5F3EF]" : "bg-white"
                       }`}
                     >
                       <span
@@ -1188,17 +1188,17 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                 </div>
 
                 {/* Modal Actions */}
-                <div className="flex justify-end gap-2 pt-2 border-t border-purple-500/15">
+                <div className="flex justify-end gap-2 pt-2 border-t border-[#E5E5EA]">
                   <button
                     type="button"
                     onClick={() => setIsAddOpen(false)}
-                    className="px-4 py-2 bg-slate-900 border border-white/5 text-slate-400 rounded-lg hover:bg-slate-800 text-xs font-semibold cursor-pointer"
+                    className="px-4 py-2 bg-[#F5F3EF] border border-[#E5E5EA] text-[#8E8E93] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg text-xs font-bold hover:from-purple-700 hover:to-indigo-700 cursor-pointer"
+                    className="px-5 py-2 bg-[#22242A] text-white rounded-lg text-xs font-bold hover:bg-[#2d2f36] cursor-pointer"
                   >
                     সদস্য যুক্ত করুন
                   </button>
@@ -1212,19 +1212,19 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
       {/* MEMBER DELETE CONFIRMATION MODAL */}
       {showDeleteConfirm && activeProfile && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-[#0b0f1a] border border-red-500/25 p-6 rounded-2xl w-full max-w-sm shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <AlertTriangle className="text-red-400" size={18} />
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-6 rounded-2xl w-full max-w-sm shadow-2xl space-y-4">
+            <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2">
+              <AlertTriangle className="text-[#FF6B6B]" size={18} />
               সদস্য মুছে ফেলার সতর্কতা
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              আপনি কি নিশ্চিতভাবে <span className="font-bold text-white">'{activeProfile.member.name}'</span> (ID: #{activeProfile.member.formNumber}) সদস্যকে মুছে ফেলতে চান? উনার ব্যবহারের সব লেনদেন রেকর্ড ড্যাশবোর্ড থেকে মুছে যাবে।
+            <p className="text-xs text-[#22242A] leading-relaxed">
+              আপনি কি নিশ্চিতভাবে <span className="font-bold text-[#22242A]">'{activeProfile.member.name}'</span> (ID: #{activeProfile.member.formNumber}) সদস্যকে মুছে ফেলতে চান? উনার ব্যবহারের সব লেনদেন রেকর্ড ড্যাশবোর্ড থেকে মুছে যাবে।
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 bg-slate-900 border border-slate-705 text-slate-300 rounded-lg hover:bg-slate-800 text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 bg-[#F5F3EF] border border-slate-705 text-[#22242A] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
               >
                 বাতিল
               </button>
@@ -1242,7 +1242,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     setShowDeleteConfirm(false);
                   }
                 }}
-                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer"
+                className="px-5 py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] rounded-lg text-xs font-bold cursor-pointer"
               >
                 হ্যাঁ, মুছে ফেলুন
               </button>

@@ -258,8 +258,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     <div className="space-y-6">
 
       {importStatus && (
-        <div className={`p-4 rounded-xl text-xs flex items-center gap-3 shadow-lg ${importStatus.type === "success" ? "bg-emerald-950/60 border border-emerald-500/35 text-emerald-300 animate-pulse" : "bg-red-950/60 border border-red-500/35 text-red-300"}`}>
-          {importStatus.type === "success" ? <Check size={16} className="text-emerald-400 shrink-0" /> : <AlertCircle size={16} className="text-red-400 shrink-0" />}
+        <div className={`p-4 rounded-xl text-xs flex items-center gap-3 shadow-sm ${importStatus.type === "success" ? "bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] animate-pulse" : "bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B]"}`}>
+          {importStatus.type === "success" ? <Check size={16} className="text-[#22242A] shrink-0" /> : <AlertCircle size={16} className="text-[#FF6B6B] shrink-0" />}
           <span className="font-semibold">{importStatus.msg}</span>
         </div>
       )}
@@ -267,8 +267,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       {/* Title block */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">বইয়ের রেজিস্ট্রি ও ব্যবস্থাপনা</h2>
-          <p className="text-xs text-slate-400">লাইব্রেরির বই যুক্ত করুন, তথ্য সংশোধন করুন এবং স্ট্যাটাস পরিবর্তন পরিচালনা করুন</p>
+          <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">বইয়ের রেজিস্ট্রি ও ব্যবস্থাপনা</h2>
+          <p className="text-xs text-[#8E8E93]">লাইব্রেরির বই যুক্ত করুন, তথ্য সংশোধন করুন এবং স্ট্যাটাস পরিবর্তন পরিচালনা করুন</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button
@@ -278,22 +278,22 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               setBulkSuccessMsg("");
               setIsBulkOpen(true);
             }}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-indigo-900/40 text-indigo-300 ring-1 ring-indigo-500/20 text-xs font-semibold rounded-lg hover:bg-indigo-950/40 transition-colors cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] text-xs font-semibold rounded-lg hover:border-[#22242A]/30 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-colors cursor-pointer"
           >
-            <FilePlus2 size={14} />
+            <FilePlus2 size={14} className="text-[#FACC15]" />
             বাল্ক ইম্পোর্ট
           </button>
           <button
             type="button"
             onClick={handleImportFromSheets}
             disabled={isImporting}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-cyan-950/50 hover:bg-cyan-900/40 text-cyan-200 ring-1 ring-cyan-500/30 text-xs font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-[#E5E5EA] hover:border-[#22242A]/30 text-[#22242A] text-xs font-bold rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-colors cursor-pointer disabled:opacity-50"
             title="গুগল শিট থেকে সমস্ত বর্তমান বই এবং সদস্যদের ডেটা ইম্পোর্ট/সিঙ্ক করবে।"
           >
             {isImporting ? (
-              <RefreshCw size={14} className="text-cyan-400 animate-spin" />
+              <RefreshCw size={14} className="text-[#FACC15] animate-spin" />
             ) : (
-              <Database size={14} className="text-cyan-400" />
+              <Database size={14} className="text-[#FACC15]" />
             )}
             গুগল শিট থেকে লোড (Pull)
           </button>
@@ -307,31 +307,31 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               setFormErr("");
               setIsAddOpen(true);
             }}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all cursor-pointer shadow-md shadow-purple-600/10"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-4 py-2 bg-[#22242A] text-white text-xs font-bold rounded-lg hover:bg-[#2d2f36] transition-all cursor-pointer shadow-[0_2px_8px_rgba(34,36,42,0.15)]"
           >
-            <Plus size={14} />
+            <Plus size={14} className="text-[#FACC15]" />
             নতুন বই যোগ
           </button>
         </div>
       </div>
 
       {/* Filter Options bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900/50 p-4 rounded-xl border border-purple-500/10">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E5EA]">
         <div className="relative col-span-2">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
           <input
             type="text"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             placeholder="কোড, নাম, লেখক বা প্রকাশক দিয়ে খুঁজুন..."
-            className="w-full text-xs pl-9 pr-4 py-2 bg-slate-950 rounded-lg border border-purple-500/15 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400/60"
+            className="w-full text-xs pl-9 pr-4 py-2 bg-[#F5F3EF] rounded-lg border border-[#E5E5EA] text-[#22242A] placeholder:text-[#8E8E93] focus:outline-none focus:border-[#22242A]/40"
           />
         </div>
         <div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full text-xs px-3 py-2 bg-slate-950 rounded-lg border border-purple-500/15 text-white focus:outline-none focus:border-cyan-400/60"
+            className="w-full text-xs px-3 py-2 bg-[#F5F3EF] rounded-lg border border-[#E5E5EA] text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
           >
             <option value="">সকল স্ট্যাটাস (Available & Issued)</option>
             <option value="Available">Available (তাত্ক্ষণিক লেনদেন যোগ্য)</option>
@@ -341,10 +341,10 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       </div>
 
       {/* Group selection pills right below search bar */}
-      <div className="flex flex-col gap-2 bg-slate-900/30 p-4 rounded-xl border border-purple-500/10">
-        <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-purple-400">বইয়ের গ্রুপ / কর্নার ভিত্তিক ফিল্টার:</div>
+      <div className="flex flex-col gap-2 bg-white p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E5EA]">
+        <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#8E8E93]">বইয়ের গ্রুপ / কর্নার ভিত্তিক ফিল্টার:</div>
         {uniqueBookGroups.length === 0 ? (
-          <p className="text-xs text-slate-500 italic">কোনো গ্রুপ বা কর্নার পাওয়া যায়নি।</p>
+          <p className="text-xs text-[#8E8E93] italic">কোনো গ্রুপ বা কর্নার পাওয়া যায়নি।</p>
         ) : (
           <div className="flex flex-wrap gap-1.5">
             <button
@@ -352,8 +352,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               onClick={() => setSelectedGroup("")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 selectedGroup === ""
-                  ? "bg-purple-600 text-white shadow-md shadow-purple-600/20 font-bold"
-                  : "bg-slate-950 text-slate-400 hover:text-white hover:bg-slate-900 border border-purple-500/5"
+                  ? "bg-[#22242A] text-[#FACC15] shadow-md font-bold"
+                  : "bg-[#F5F3EF] text-[#8E8E93] hover:text-[#22242A] hover:bg-[#E5E5EA] border border-transparent"
               }`}
             >
               সকল বই ({books.length})
@@ -367,8 +367,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   onClick={() => setSelectedGroup(g)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     selectedGroup === g
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/20 font-bold"
-                      : "bg-slate-950 text-slate-400 hover:text-white hover:bg-slate-900 border border-purple-500/5"
+                      ? "bg-[#22242A] text-[#FACC15] shadow-md font-bold"
+                      : "bg-[#F5F3EF] text-[#8E8E93] hover:text-[#22242A] hover:bg-[#E5E5EA] border border-transparent"
                   }`}
                 >
                   {g} ({count})
@@ -382,16 +382,16 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       {/* Books Table Cards Layout */}
       {filteredBooks.length === 0 ? (
         <div className="glass-panel p-10 text-center rounded-2xl">
-          <p className="text-slate-400 text-sm">কোনো বই খুঁজে পাওয়া যায়নি। উপরের ইনপুট চেক করুন বা নতুন বই যোগ করুন।</p>
+          <p className="text-[#8E8E93] text-sm">কোনো বই খুঁজে পাওয়া যায়নি। উপরের ইনপুট চেক করুন বা নতুন বই যোগ করুন।</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredBooks.map((book) => (
             <div
               key={book.id}
-              className="glass-panel-cyan p-4 rounded-2xl border border-cyan-500/10 flex gap-4 hover:border-purple-500/30 duration-200 hover:-translate-y-0.5"
+              className="glass-panel p-4 flex gap-4 hover:border-[#22242A]/30 duration-200 hover:-translate-y-0.5 shadow-[0_4px_24px_rgba(0,0,0,0.04)]"
             >
-              <div className="w-20 h-28 rounded bg-slate-950 overflow-hidden border border-slate-800 flex items-center justify-center shrink-0">
+              <div className="w-20 h-28 rounded bg-[#F5F3EF] overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0">
                 <img 
                   src={book.imageUrl && book.imageUrl.trim() ? book.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                   alt={book.name} 
@@ -403,36 +403,36 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                 <div className="space-y-1">
                   <div className="flex justify-between items-start gap-1">
                     <div className="flex items-center gap-1 min-w-0 flex-wrap">
-                      <span className="px-2 py-0.5 rounded font-mono text-[9px] font-bold bg-purple-900/40 text-purple-300 ring-1 ring-purple-500/20 uppercase tracking-wider truncate mb-1">
+                      <span className="px-2 py-0.5 rounded font-mono text-[9px] font-bold bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] uppercase tracking-wider truncate mb-1">
                         {book.code}
                       </span>
                       {book.group && (
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-950 text-indigo-300 ring-1 ring-indigo-500/20 truncate mb-1" title={book.group}>
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#F5F3EF] text-[#8E8E93] border border-[#E5E5EA] truncate mb-1" title={book.group}>
                           {book.group}
                         </span>
                       )}
                     </div>
-                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${book.status === "Available" ? "bg-emerald-950 text-emerald-300 ring-1 ring-emerald-500/20" : "bg-red-950 text-red-300 ring-1 ring-red-500/20"}`}>
+                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${book.status === "Available" ? "bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA]" : "bg-[#F5F3EF] text-[#FF6B6B] border border-[#E5E5EA]"}`}>
                       {book.status}
                     </span>
                   </div>
-                  <h3 className="font-bold text-white text-xs sm:text-sm truncate" title={book.name}>{book.name}</h3>
-                  <p className="text-slate-400 text-xs truncate">{book.author}</p>
-                  <p className="text-slate-500 text-[10px] truncate">প্রকাশক: {book.publisher}</p>
+                  <h3 className="font-bold text-[#22242A] text-xs sm:text-sm truncate" title={book.name}>{book.name}</h3>
+                  <p className="text-[#8E8E93] text-xs truncate">{book.author}</p>
+                  <p className="text-[#8E8E93] text-[10px] truncate">প্রকাশক: {book.publisher}</p>
                 </div>
 
                 {/* Operations links and buttons */}
-                <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-purple-500/5 mt-2">
+                <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-[#E5E5EA] mt-2">
                   <button
                     onClick={() => onPreview(book)}
-                    className="p-1.5 hover:bg-white/10 rounded text-cyan-400 hover:text-cyan-300 cursor-pointer transition-colors"
+                    className="p-1.5 hover:bg-[#F5F3EF] rounded text-[#8E8E93] hover:text-[#22242A] cursor-pointer transition-colors"
                     title="রিসিট স্লিপ এবং চোখের প্রাকদর্শন"
                   >
                     <Eye size={14} />
                   </button>
                   <button
                     onClick={() => openEdit(book)}
-                    className="p-1.5 hover:bg-white/10 rounded text-purple-400 hover:text-purple-300 cursor-pointer transition-colors"
+                    className="p-1.5 hover:bg-[#F5F3EF] rounded text-[#8E8E93] hover:text-[#FACC15] cursor-pointer transition-colors"
                     title="সংশোধন করুন"
                   >
                     <Edit3 size={14} />
@@ -442,7 +442,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                       setDeleteConfirmError("");
                       setBookToDelete(book);
                     }}
-                    className="p-1.5 hover:bg-red-950/20 rounded text-red-400 hover:text-red-300 cursor-pointer transition-colors"
+                    className="p-1.5 hover:bg-[#F5F3EF] rounded text-[#8E8E93] hover:text-[#FF6B6B] cursor-pointer transition-colors"
                     title="মুছে ফেলুন"
                   >
                     <Trash2 size={14} />
@@ -457,14 +457,14 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       {/* MODAL 1: ADD BOOK */}
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-[#0b0f1a] border border-purple-500/25 p-6 rounded-2xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-150">
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <Plus size={18} className="text-purple-400" />
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-6 rounded-2xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-150">
+            <h3 className="text-lg font-bold text-[#22242A] mb-4 flex items-center gap-2">
+              <Plus size={18} className="text-[#FACC15]" />
               লাইব্রেরিতে নতুন বই এন্ট্রি
             </h3>
             
             {formErr && (
-              <div className="bg-red-950/55 border border-red-500/35 p-3 rounded-lg text-xs text-red-400 mb-3 flex items-center gap-2">
+              <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#FF6B6B] mb-3 flex items-center gap-2">
                 <AlertCircle size={14} />
                 <span>{formErr}</span>
               </div>
@@ -472,60 +472,60 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
 
             <form onSubmit={handleAddSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বই কোড / বারকোড *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বই কোড / বারকোড *</label>
                 <input
                   type="text"
                   value={bookCode}
                   onChange={(e) => setBookCode(e.target.value)}
                   placeholder="যেমন: BOK-106"
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 uppercase"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 uppercase"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের নাম (বাংলা ইউনিকোড) *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বইয়ের নাম (বাংলা ইউনিকোড) *</label>
                 <input
                   type="text"
                   value={bookName}
                   onChange={(e) => setBookName(e.target.value)}
                   placeholder="বইয়ের আকর্ষণীয় নাম লিখুন"
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">লেখকের নাম *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">লেখকের নাম *</label>
                   <input
                     type="text"
                     value={bookAuthor}
                     onChange={(e) => setBookAuthor(e.target.value)}
                     placeholder="হুমায়ূন আহমেদ"
-                    className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">প্রকাশনী প্রেস *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">প্রকাশনী প্রেস *</label>
                   <input
                     type="text"
                     value={bookPublisher}
                     onChange={(e) => setBookPublisher(e.target.value)}
                     placeholder="যেমনঃ অন্যপ্রকাশ"
-                    className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের গ্রুপ বা কর্নার (ঐচ্ছিক)</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বইয়ের গ্রুপ বা কর্নার (ঐচ্ছিক)</label>
                 <select
                   value={bookGroup}
                   onChange={(e) => setBookGroup(e.target.value)}
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                 >
                   <option value="">কোনো গ্রুপ নেই (সাধারণ বই)</option>
                   {groups.map(g => (
@@ -535,33 +535,33 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের বিবরণ (ঐচ্ছিক)</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বইয়ের বিবরণ (ঐচ্ছিক)</label>
                 <textarea
                   value={bookDescription}
                   onChange={(e) => setBookDescription(e.target.value)}
                   placeholder="বইয়ের সংক্ষিপ্ত বিবরণ লিখুন..."
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 h-20 resize-none"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 h-20 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">কভার ছবি</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-2">কভার ছবি</label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
-                  <div className="sm:col-span-1 h-28 bg-slate-950 rounded-xl overflow-hidden border border-purple-500/15 flex items-center justify-center relative group">
+                  <div className="sm:col-span-1 h-28 bg-[#E5E5EA] rounded-xl overflow-hidden border border-transparent flex items-center justify-center relative group">
                     {bookImageUrl ? (
                       <>
                         <img src={bookImageUrl} alt="Preview" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => setBookImageUrl("")}
-                          className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex items-center justify-center text-red-400 text-xs font-bold transition-opacity cursor-pointer text-center"
+                          className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[#FF6B6B] text-xs font-bold transition-opacity cursor-pointer text-center"
                         >
                           মুছে ফেলুন
                         </button>
                       </>
                     ) : (
-                      <div className="text-center p-2 text-slate-600">
+                      <div className="text-center p-2 text-[#8E8E93]">
                         <Image className="mx-auto mb-1 opacity-40" size={20} />
                         <span className="text-[9px]">ছবি নেই</span>
                       </div>
@@ -569,7 +569,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   </div>
                   
                   <div className="sm:col-span-3 space-y-2">
-                    <div className="relative border border-dashed border-purple-500/25 rounded-xl p-4 bg-slate-950/40 hover:bg-slate-950/70 transition-all text-center group cursor-pointer">
+                    <div className="relative border border-dashed border-[#E5E5EA] rounded-xl p-4 bg-white hover:bg-[#F5F3EF] transition-all text-center group cursor-pointer">
                       <input
                         type="file"
                         accept="image/*"
@@ -577,15 +577,15 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
                       <div className="space-y-0.5">
-                        <p className="text-xs text-purple-400 font-bold group-hover:text-purple-300">
+                        <p className="text-xs text-[#22242A] font-bold">
                           গ্যালারি থেকে ছবি আপলোড করুন
                         </p>
-                        <p className="text-[10px] text-slate-500">মোবাইল ক্যামেরা বা গ্যালারি থেকে ছবি সিলেক্ট করুন</p>
+                        <p className="text-[10px] text-[#8E8E93]">মোবাইল ক্যামেরা বা গ্যালারি থেকে ছবি সিলেক্ট করুন</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] text-slate-500 uppercase font-mono tracking-wider">অথবা কভার ছবির URL পেস্ট করুন:</span>
+                      <span className="text-[9px] text-[#8E8E93] uppercase font-mono tracking-wider">অথবা কভার ছবির URL পেস্ট করুন:</span>
                     </div>
                     
                     <input
@@ -593,7 +593,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                       value={bookImageUrl.startsWith("data:") ? "" : bookImageUrl}
                       onChange={(e) => setBookImageUrl(e.target.value)}
                       placeholder="https://images.unsplash.com/photo-..."
-                      className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/15 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                      className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 font-mono"
                     />
                   </div>
                 </div>
@@ -603,13 +603,13 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 bg-slate-900 border text-slate-400 rounded-lg hover:bg-slate-800 text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 bg-[#F5F3EF] text-[#8E8E93] rounded-lg hover:text-[#22242A] hover:bg-[#E5E5EA] border border-transparent text-xs font-semibold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg text-xs font-bold hover:from-purple-700 hover:to-indigo-700 cursor-pointer"
+                  className="px-5 py-2 bg-[#22242A] text-[#FACC15] rounded-lg text-xs font-bold hover:bg-[#2d2f36] cursor-pointer shadow-[0_2px_8px_rgba(34,36,42,0.15)]"
                 >
                   সংরক্ষণ করুন
                 </button>
@@ -622,14 +622,14 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       {/* MODAL 2: EDIT BOOK */}
       {isEditOpen && selectedBook && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-[#0b0f1a] border border-cyan-500/25 p-6 rounded-2xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-150">
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <Edit3 size={18} className="text-cyan-400" />
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-6 rounded-2xl w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-150">
+            <h3 className="text-lg font-bold text-[#22242A] mb-4 flex items-center gap-2">
+              <Edit3 size={18} className="text-[#FACC15]" />
               বইয়ের তথ্য সম্পাদন / সংশোধন
             </h3>
             
             {formErr && (
-              <div className="bg-red-950/55 border border-red-500/35 p-3 rounded-lg text-xs text-red-400 mb-3 flex items-center gap-2">
+              <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#FF6B6B] mb-3 flex items-center gap-2">
                 <AlertCircle size={14} />
                 <span>{formErr}</span>
               </div>
@@ -637,56 +637,56 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
 
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বই কোড (সংশোধন সম্ভব) *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বই কোড (সংশোধন সম্ভব) *</label>
                 <input
                   type="text"
                   value={bookCode}
                   onChange={(e) => setBookCode(e.target.value)}
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 uppercase"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 uppercase"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের নাম *</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বইয়ের নাম *</label>
                 <input
                   type="text"
                   value={bookName}
                   onChange={(e) => setBookName(e.target.value)}
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">লেখক *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">লেখক *</label>
                   <input
                     type="text"
                     value={bookAuthor}
                     onChange={(e) => setBookAuthor(e.target.value)}
-                    className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">প্রকাশনী *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">প্রকাশনী *</label>
                   <input
                     type="text"
                     value={bookPublisher}
                     onChange={(e) => setBookPublisher(e.target.value)}
-                    className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের গ্রুপ বা কর্নার (ঐচ্ছিক)</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বইয়ের গ্রুপ বা কর্নার (ঐচ্ছিক)</label>
                 <select
                   value={bookGroup}
                   onChange={(e) => setBookGroup(e.target.value)}
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
                 >
                   <option value="">কোনো গ্রুপ নেই (সাধারণ বই)</option>
                   {groups.map(g => (
@@ -696,33 +696,33 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">বইয়ের বিবরণ (ঐচ্ছিক)</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-1">বইয়ের বিবরণ (ঐচ্ছিক)</label>
                 <textarea
                   value={bookDescription}
                   onChange={(e) => setBookDescription(e.target.value)}
                   placeholder="বইয়ের সংক্ষিপ্ত বিবরণ লিখুন..."
-                  className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 h-20 resize-none"
+                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 h-20 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">কভার ছবি</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] mb-2">কভার ছবি</label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
-                  <div className="sm:col-span-1 h-28 bg-slate-950 rounded-xl overflow-hidden border border-cyan-500/15 flex items-center justify-center relative group">
+                  <div className="sm:col-span-1 h-28 bg-[#E5E5EA] rounded-xl overflow-hidden border border-transparent flex items-center justify-center relative group">
                     {bookImageUrl ? (
                       <>
                         <img src={bookImageUrl} alt="Preview" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => setBookImageUrl("")}
-                          className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex items-center justify-center text-red-400 text-xs font-bold transition-opacity cursor-pointer text-center"
+                          className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[#FF6B6B] text-xs font-bold transition-opacity cursor-pointer text-center"
                         >
                           মুছে ফেলুন
                         </button>
                       </>
                     ) : (
-                      <div className="text-center p-2 text-slate-600">
+                      <div className="text-center p-2 text-[#8E8E93]">
                         <Image className="mx-auto mb-1 opacity-40" size={20} />
                         <span className="text-[9px]">ছবি নেই</span>
                       </div>
@@ -730,7 +730,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   </div>
                   
                   <div className="sm:col-span-3 space-y-2">
-                    <div className="relative border border-dashed border-cyan-500/25 rounded-xl p-4 bg-slate-950/40 hover:bg-slate-950/70 transition-all text-center group cursor-pointer">
+                    <div className="relative border border-dashed border-[#E5E5EA] rounded-xl p-4 bg-white hover:bg-[#F5F3EF] transition-all text-center group cursor-pointer">
                       <input
                         type="file"
                         accept="image/*"
@@ -738,15 +738,15 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
                       <div className="space-y-0.5">
-                        <p className="text-xs text-cyan-400 font-bold group-hover:text-cyan-300">
+                        <p className="text-xs text-[#22242A] font-bold">
                           গ্যালারি থেকে নতুন ছবি আপলোড করুন
                         </p>
-                        <p className="text-[10px] text-slate-500">মোবাইল ক্যামেরা বা গ্যালারি থেকে নতুন ছবি সিলেক্ট করুন</p>
+                        <p className="text-[10px] text-[#8E8E93]">মোবাইল ক্যামেরা বা গ্যালারি থেকে নতুন ছবি সিলেক্ট করুন</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] text-slate-500 uppercase font-mono tracking-wider">অথবা কভার ছবির URL পেস্ট করুন:</span>
+                      <span className="text-[9px] text-[#8E8E93] uppercase font-mono tracking-wider">অথবা কভার ছবির URL পেস্ট করুন:</span>
                     </div>
                     
                     <input
@@ -754,7 +754,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                       value={bookImageUrl.startsWith("data:") ? "" : bookImageUrl}
                       onChange={(e) => setBookImageUrl(e.target.value)}
                       placeholder="https://images.unsplash.com/photo-..."
-                      className="w-full text-xs p-2.5 bg-slate-950 border border-purple-500/15 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                      className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 font-mono"
                     />
                   </div>
                 </div>
@@ -764,13 +764,13 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 bg-slate-900 border text-slate-400 rounded-lg hover:bg-slate-800 text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 bg-[#F5F3EF] text-[#8E8E93] rounded-lg hover:text-[#22242A] hover:bg-[#E5E5EA] border border-transparent text-xs font-semibold cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg text-xs font-bold hover:from-cyan-700 hover:to-teal-700 cursor-pointer"
+                  className="px-5 py-2 bg-[#22242A] text-[#FACC15] rounded-lg text-xs font-bold hover:bg-[#2d2f36] cursor-pointer shadow-[0_2px_8px_rgba(34,36,42,0.15)]"
                 >
                   সংশোধন করুন
                 </button>
@@ -783,26 +783,26 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       {/* MODAL 3: BULK IMPORT */}
       {isBulkOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-[#0b0f1a] border border-indigo-500/25 p-6 rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2 shrink-0">
-              <FilePlus2 className="text-indigo-400" />
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-6 rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]">
+            <h3 className="text-lg font-bold text-[#22242A] mb-2 flex items-center gap-2 shrink-0">
+              <FilePlus2 className="text-[#22242A]" />
               বইয়ের ক্যাটালগ বাল্ক ইম্পোর্ট
             </h3>
             
-            <p className="text-[11px] text-slate-400 mb-4 shrink-0">
-              নিচে বক্সে নতুন বইয়ের তালিকা পেস্ট করুন। ফরম্যাট হতে হবে: <code className="text-cyan-400 font-mono text-[10px]">বই_কোড [Tab বা কমা] বই_নাম [Tab বা কমা] লেখকের_নাম [Tab বা কমা] প্রকাশনী_নাম</code>
+            <p className="text-[11px] text-[#8E8E93] mb-4 shrink-0">
+              নিচে বক্সে নতুন বইয়ের তালিকা পেস্ট করুন। ফরম্যাট হতে হবে: <code className="text-[#22242A] font-mono text-[10px] bg-white px-1 py-0.5 rounded border border-[#E5E5EA]">বই_কোড [Tab বা কমা] বই_নাম [Tab বা কমা] লেখকের_নাম [Tab বা কমা] প্রকাশনী_নাম</code>
               <br/>লাইন গ্যাপ দিয়ে একাধিক সারি পেস্ট করতে পারবেন (যেমন এক্সেল/সপ্রেডশিট থেকে কপি করে পেস্ট করুন)।
             </p>
 
             {bulkError && (
-              <div className="bg-red-950/55 border border-red-500/35 p-3 rounded-lg text-xs text-red-400 mb-3 flex items-center gap-2 shrink-0">
+              <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#FF6B6B] mb-3 flex items-center gap-2 shrink-0">
                 <AlertCircle size={14} />
                 <span>{bulkError}</span>
               </div>
             )}
 
             {bulkSuccessMsg && (
-              <div className="bg-emerald-950/55 border border-emerald-500/35 p-3 rounded-lg text-xs text-emerald-300 mb-3 flex items-center gap-2 shrink-0 animate-pulse">
+              <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#22242A] mb-3 flex items-center gap-2 shrink-0 animate-pulse">
                 <Check size={14} />
                 <span>{bulkSuccessMsg}</span>
               </div>
@@ -813,22 +813,22 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                 value={bulkInput}
                 onChange={(e) => setBulkInput(e.target.value)}
                 placeholder="BOK-201, দেবদাস, শরৎচন্দ্র চট্টোপাধ্যায়, দেব সাহিত্য কুটির&#10;BOK-202, নৌকাডুবি, রবীন্দ্রনাথ ঠাকুর, বেঙ্গল পাবলিশার্স"
-                className="w-full h-64 p-3 bg-slate-950 border border-purple-500/20 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-cyan-400 resize-none"
+                className="w-full h-64 p-3 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] font-mono text-xs focus:outline-none focus:border-[#22242A]/40 resize-none"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-purple-500/10 shrink-0">
+            <div className="flex justify-end gap-2 pt-4 border-t border-[#E5E5EA] shrink-0">
               <button
                 type="button"
                 onClick={() => setIsBulkOpen(false)}
-                className="px-4 py-2 bg-slate-900 border text-slate-400 rounded-lg hover:bg-slate-800 text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 bg-[#F5F3EF] text-[#8E8E93] rounded-lg hover:text-[#22242A] hover:bg-[#E5E5EA] border border-transparent text-xs font-semibold cursor-pointer"
               >
                 বন্ধ করুন
               </button>
               <button
                 type="button"
                 onClick={handleBulkSubmit}
-                className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg text-xs font-bold hover:from-purple-700 hover:to-indigo-700 cursor-pointer"
+                className="px-5 py-2 bg-[#22242A] text-[#FACC15] rounded-lg text-xs font-bold hover:bg-[#2d2f36] cursor-pointer shadow-[0_2px_8px_rgba(34,36,42,0.15)]"
               >
                 ডাটা ইম্পোর্ট প্রসেস করুন
               </button>
@@ -840,40 +840,40 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       {/* MODAL 4: DELETE CONFIRMATION */}
       {bookToDelete && (
         <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-[#0b0f1a] border border-red-500/30 p-6 rounded-2xl w-full max-w-md shadow-2xl shadow-red-950/20 animate-in zoom-in-95 duration-150">
-            <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <Trash2 className="text-red-400 shrink-0" size={20} />
+          <div className="bg-white border border-[#E5E5EA] p-6 rounded-2xl w-full max-w-md shadow-2xl shadow-red-900/10 animate-in zoom-in-95 duration-150">
+            <h3 className="text-lg font-bold text-[#22242A] mb-3 flex items-center gap-2">
+              <Trash2 className="text-[#FF6B6B] shrink-0" size={20} />
               বই মুছে ফেলার সতর্কতা!
             </h3>
             
-            <div className="mt-2 text-slate-300 text-xs space-y-2">
+            <div className="mt-2 text-[#8E8E93] text-xs space-y-2">
               <p>আপনি কি নিশ্চিতভাবেই নিচের বইটি সিস্টেম থেকে মুছে ফেলতে চান?</p>
-              <div className="p-3 bg-red-950/20 border border-red-500/15 rounded-lg space-y-1">
-                <p><span className="text-slate-400">বইয়ের নাম:</span> <strong className="text-white text-sm">{bookToDelete.name}</strong></p>
-                <p><span className="text-slate-400">বই কোড:</span> <span className="font-mono text-cyan-400 font-semibold">{bookToDelete.code}</span></p>
-                <p><span className="text-slate-400">লেখক:</span> <span className="text-slate-200">{bookToDelete.author}</span></p>
+              <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-lg space-y-1">
+                <p><span className="text-[#8E8E93]">বইয়ের নাম:</span> <strong className="text-[#22242A] text-sm">{bookToDelete.name}</strong></p>
+                <p><span className="text-[#8E8E93]">বই কোড:</span> <span className="font-mono text-[#FF6B6B] font-semibold">{bookToDelete.code}</span></p>
+                <p><span className="text-[#8E8E93]">লেখক:</span> <span className="text-[#22242A]">{bookToDelete.author}</span></p>
               </div>
-              <p className="text-[10px] text-amber-400 flex items-start gap-1.5 pt-1">
+              <p className="text-[10px] text-[#FF6B6B] flex items-start gap-1.5 pt-1">
                 <AlertCircle size={12} className="shrink-0 mt-0.5" />
                 সতর্কতা: এই অপারেশনটি সম্পাদন করার ফলে ডাটা চিরতরে হারিয়ে যেতে পারে এবং এটি আর ডিলিট বাতিল/পুনরুদ্ধার করা সম্ভব নয়।
               </p>
             </div>
 
             {deleteConfirmError && (
-              <div className="bg-red-950/55 border border-red-500/35 p-3 rounded-lg text-xs text-red-400 mt-4 flex items-center gap-2 animate-pulse">
+              <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#FF6B6B] mt-4 flex items-center gap-2 animate-pulse">
                 <AlertCircle size={14} className="shrink-0" />
                 <span>{deleteConfirmError}</span>
               </div>
             )}
 
-            <div className="flex justify-end gap-2.5 pt-5 mt-2 border-t border-purple-500/5">
+            <div className="flex justify-end gap-2.5 pt-5 mt-2 border-t border-[#E5E5EA]">
               <button
                 type="button"
                 onClick={() => {
                   setBookToDelete(null);
                   setDeleteConfirmError("");
                 }}
-                className="px-4 py-2 bg-slate-900 border text-slate-400 rounded-lg hover:bg-slate-800 text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 bg-[#F5F3EF] text-[#8E8E93] rounded-lg hover:text-[#22242A] hover:bg-[#E5E5EA] border border-transparent text-xs font-semibold cursor-pointer"
               >
                 বাতিল করুন
               </button>
@@ -888,7 +888,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                     setDeleteConfirmError(err.message || "বইটি ডিলিট করা সম্ভব হয়নি।");
                   }
                 }}
-                className="px-5 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg text-xs font-bold hover:from-red-700 hover:to-rose-700 cursor-pointer shadow-md shadow-red-900/10 flex items-center gap-1.5"
+                className="px-5 py-2 bg-[#FF6B6B] text-[#22242A] rounded-lg text-xs font-bold hover:bg-[#F5F3EF] cursor-pointer shadow-md shadow-red-900/10 flex items-center gap-1.5"
               >
                 <Trash2 size={13} />
                 হ্যাঁ, ডিলিট করুন

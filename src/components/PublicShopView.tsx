@@ -73,7 +73,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4">
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-[#E5E5EA]">
         
         {/* Search */}
         <div className="relative w-full md:w-96">
@@ -83,7 +83,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
             placeholder="পণ্য খুঁজুন..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full text-sm p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:border-[#F25A29] focus:ring-2 focus:ring-[#F25A29]/20 transition-all font-body-bn"
+            className="w-full text-sm p-3 pl-10 bg-slate-50 border border-[#E5E5EA] rounded-xl text-slate-700 focus:outline-none focus:border-[#F25A29] focus:ring-2 focus:ring-[#F25A29]/20 transition-all font-body-bn"
           />
         </div>
 
@@ -100,7 +100,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold font-body-bn cursor-pointer transition-all ${
                   selectedCategory === cat
                     ? "bg-[#F25A29] text-white shadow-md shadow-[#F25A29]/20"
-                    : "bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200"
+                    : "bg-slate-50 hover:bg-slate-100 text-slate-600 border border-[#E5E5EA]"
                 }`}
               >
                 {cat}
@@ -117,11 +117,11 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
           <span className="font-body-bn font-bold">লোড হচ্ছে...</span>
         </div>
       ) : errorMsg ? (
-        <div className="text-center py-20 bg-red-50 text-red-500 rounded-2xl border border-red-100 font-body-bn font-bold">
+        <div className="text-center py-20 bg-[#F5F3EF] text-[#FF6B6B] rounded-2xl border border-[#E5E5EA] font-body-bn font-bold">
           {errorMsg}
         </div>
       ) : filteredItems.length === 0 ? (
-        <div className="text-center py-20 bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
+        <div className="text-center py-20 bg-slate-50 border border-dashed border-[#E5E5EA] rounded-2xl">
           <ShoppingBag className="mx-auto text-slate-300 mb-3" size={40} />
           <p className="text-slate-500 font-body-bn font-bold">কোনো পণ্য পাওয়া যায়নি</p>
         </div>
@@ -130,7 +130,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
           {filteredItems.map((item, i) => (
             <motion.div
               key={item.id}
-              className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-slate-100 hover:border-slate-200 transition-all flex flex-col group ${onItemSelect ? 'cursor-pointer' : ''}`}
+              className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-[#E5E5EA] hover:border-[#E5E5EA] transition-all flex flex-col group ${onItemSelect ? 'cursor-pointer' : ''}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
@@ -139,7 +139,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
               }}
             >
               {/* Product Image */}
-              <div className="aspect-[4/3] bg-slate-50 relative overflow-hidden flex items-center justify-center border-b border-slate-100">
+              <div className="aspect-[4/3] bg-slate-50 relative overflow-hidden flex items-center justify-center border-b border-[#E5E5EA]">
                 {item.imageUrl ? (
                   <img
                     src={item.imageUrl}
@@ -154,14 +154,14 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
                 )}
                 
                 {/* Category Badge */}
-                <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur text-xs font-bold rounded shadow-sm text-slate-700 font-body-bn">
+                <div className="absolute top-3 left-3 px-2 py-1 bg-white backdrop-blur text-xs font-bold rounded shadow-sm text-slate-700 font-body-bn">
                   {item.category}
                 </div>
               </div>
 
               {/* Product Details */}
               <div className="p-4 flex flex-col flex-1">
-                <h3 className="font-display-bn text-lg font-bold text-slate-800 line-clamp-2 leading-snug group-hover:text-[#F25A29] transition-colors">
+                <h3 className="font-display-bn text-lg font-bold text-[#22242A] line-clamp-2 leading-snug group-hover:text-[#F25A29] transition-colors">
                   {item.name}
                 </h3>
                 
@@ -178,7 +178,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
                       e.stopPropagation();
                       handleOrder(item);
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-[#22242A] rounded-lg text-xs font-bold transition-colors cursor-pointer"
                   >
                     <MessageCircle size={14} />
                     অর্ডার করুন

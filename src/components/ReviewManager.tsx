@@ -69,9 +69,9 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
   const rejectedCount = reviews.filter(r => r.status === "rejected").length;
 
   const statusColors: Record<string, string> = {
-    pending: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-    approved: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-    rejected: "text-red-400 bg-red-400/10 border-red-400/20",
+    pending: "text-[#FACC15] bg-[#F5F3EF] border-[#E5E5EA]",
+    approved: "text-[#22242A] bg-[#F5F3EF] border-[#E5E5EA]",
+    rejected: "text-[#FF6B6B] bg-[#F5F3EF] border-[#E5E5EA]",
   };
   const statusLabels: Record<string, string> = {
     pending: "অপেক্ষমাণ",
@@ -85,11 +85,11 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold">📝 রিভিউ ম্যানেজমেন্ট</h2>
-          <p className="text-xs text-slate-400 mt-1">সদস্যদের জমাদানকৃত রিভিউ অনুমোদন বা প্রত্যাখ্যান করুন</p>
+          <p className="text-xs text-[#8E8E93] mt-1">সদস্যদের জমাদানকৃত রিভিউ অনুমোদন বা প্রত্যাখ্যান করুন</p>
         </div>
         <button
           onClick={loadReviews}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold bg-cyan-950/40 text-cyan-300 border border-cyan-500/20 rounded-lg hover:bg-cyan-950 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] transition-colors cursor-pointer"
         >
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           রিফ্রেশ
@@ -99,9 +99,9 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "অপেক্ষমাণ", count: pendingCount, color: "text-amber-400 bg-amber-950/30 border-amber-500/20" },
-          { label: "অনুমোদিত", count: approvedCount, color: "text-emerald-400 bg-emerald-950/30 border-emerald-500/20" },
-          { label: "প্রত্যাখ্যাত", count: rejectedCount, color: "text-red-400 bg-red-950/30 border-red-500/20" },
+          { label: "অপেক্ষমাণ", count: pendingCount, color: "text-[#FACC15] bg-[#F5F3EF] border-[#E5E5EA]" },
+          { label: "অনুমোদিত", count: approvedCount, color: "text-[#22242A] bg-[#E5E5EA]/30 border-[#E5E5EA]" },
+          { label: "প্রত্যাখ্যাত", count: rejectedCount, color: "text-[#FF6B6B] bg-[#F5F3EF] border-[#E5E5EA]" },
         ].map(s => (
           <div key={s.label} className={`p-3 rounded-xl border text-center ${s.color}`}>
             <p className="text-2xl font-bold">{s.count}</p>
@@ -118,8 +118,8 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all border ${
               filter === f
-                ? "bg-purple-950/50 text-purple-300 border-purple-500/30"
-                : "bg-transparent text-slate-400 border-white/5 hover:border-white/10 hover:text-white"
+                ? "bg-[#F5F3EF] text-[#22242A] border-[#E5E5EA]"
+                : "bg-transparent text-[#8E8E93] border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-white"
             }`}
           >
             <Filter size={11} className="inline mr-1" />
@@ -131,25 +131,25 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
       {/* Review Cards */}
       {loading ? (
         <div className="text-center py-12">
-          <RefreshCw size={24} className="animate-spin text-slate-500 mx-auto" />
-          <p className="text-xs text-slate-500 mt-2">লোড হচ্ছে...</p>
+          <RefreshCw size={24} className="animate-spin text-[#8E8E93] mx-auto" />
+          <p className="text-xs text-[#8E8E93] mt-2">লোড হচ্ছে...</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-12 bg-white/[0.02] border border-white/5 rounded-2xl">
-          <p className="text-sm text-slate-500">কোনো রিভিউ নেই</p>
+        <div className="text-center py-12 bg-white/[0.02] border border-[#E5E5EA] rounded-2xl">
+          <p className="text-sm text-[#8E8E93]">কোনো রিভিউ নেই</p>
         </div>
       ) : (
         <div className="space-y-4">
           {filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(review => (
             <div
               key={review.id}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 hover:border-white/10 transition-colors"
+              className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 hover:border-[#E5E5EA] transition-colors"
             >
               {/* Top row */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-sm truncate">{review.subject}</h3>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-[#8E8E93] mt-0.5">
                     {review.memberName} (ফরম: {review.memberFormNumber}) • {review.createdAt}
                   </p>
                 </div>
@@ -166,7 +166,7 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
               </div>
 
               {/* Content */}
-              <p className="text-sm text-slate-300 leading-relaxed mb-4 whitespace-pre-wrap">
+              <p className="text-sm text-[#22242A] leading-relaxed mb-4 whitespace-pre-wrap">
                 {review.content}
               </p>
 
@@ -177,14 +177,14 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
                     <button
                       onClick={() => handleApprove(review.id)}
                       disabled={actionLoading === review.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-500/20 rounded-lg hover:bg-emerald-950 transition-colors cursor-pointer disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#E5E5EA]/40 text-[#22242A] border border-[#E5E5EA] rounded-lg hover:bg-[#E5E5EA] transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <CheckCircle2 size={13} /> অনুমোদন
                     </button>
                     <button
                       onClick={() => handleReject(review.id)}
                       disabled={actionLoading === review.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-red-950/40 text-red-300 border border-red-500/20 rounded-lg hover:bg-red-950 transition-colors cursor-pointer disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#F5F3EF] text-[#FF6B6B] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <XCircle size={13} /> প্রত্যাখ্যান
                     </button>
@@ -193,7 +193,7 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
                 <button
                   onClick={() => handleDelete(review.id)}
                   disabled={actionLoading === review.id}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-slate-800/40 text-slate-400 border border-white/5 rounded-lg hover:bg-red-950/50 hover:text-red-300 hover:border-red-500/20 transition-colors cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white text-[#8E8E93] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] hover:text-[#FF6B6B] hover:border-[#E5E5EA] transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <Trash2 size={13} /> মুছুন
                 </button>

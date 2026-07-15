@@ -4,259 +4,73 @@
 @theme {
   --font-sans: "Hind Siliguri", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-beige: #F5F3EF;
+  --color-card: #FFFFFF;
+  --color-dark-slate: #22242A;
+  --color-yellow: #FACC15;
+  --color-coral: #FF6B6B;
+  --color-muted: #8E8E93;
+  --color-border: #E5E5EA;
+  --color-bg-muted: #EEECEA;
 }
 
-/* --- THEME ENGINE CONSTANTS --- */
+/* --- SINGLE FIXED PALETTE --- */
 :root {
-  --bg-navy: #0a0e17;
-  --bg-stars: radial-gradient(circle at 10% 10%, rgba(168, 85, 247, 0.15), transparent 45%),
-              radial-gradient(circle at 90% 90%, rgba(34, 211, 238, 0.15), transparent 45%);
-  --glass: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --accent-cyan: #22d3ee;
-  --accent-purple: #a855f7;
-  --text-dim: #94a3b8;
-  --text-main: #ffffff;
-  --text-title: #ffffff;
-  --bg-sidebar: rgba(8, 12, 22, 0.55);
-  --bg-header: rgba(255, 255, 255, 0.02);
-  --input-bg: rgba(255, 255, 255, 0.05);
+  --bg-page: #F5F3EF;
+  --bg-card: #FFFFFF;
+  --bg-dark-card: #22242A;
+  --accent-yellow: #FACC15;
+  --accent-coral: #FF6B6B;
+  --text-primary: #22242A;
+  --text-muted: #8E8E93;
+  --text-subtle: #B0B0B4;
+  --border-light: #E5E5EA;
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --radius-card: 20px;
+  --radius-pill: 28px;
 }
 
-/* Theme 1: Cosmic Dark (ডিফল্ট) */
-.theme-cosmic-dark {
-  --bg-navy: #0a0e17;
-  --bg-stars: radial-gradient(circle at 10% 10%, rgba(168, 85, 247, 0.15), transparent 45%),
-              radial-gradient(circle at 90% 90%, rgba(34, 211, 238, 0.15), transparent 45%);
-  --glass: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --accent-cyan: #22d3ee;
-  --accent-purple: #a855f7;
-  --text-dim: #94a3b8;
-  --text-main: #ffffff;
-  --text-title: #ffffff;
-  --bg-sidebar: rgba(8, 12, 22, 0.55);
-  --bg-header: rgba(255, 255, 255, 0.02);
-  --input-bg: rgba(255, 255, 255, 0.05);
-}
-
-/* Theme 2: Royal Ivory (অনিন্দ্য শুভ্র - সাদা কালার) */
-.theme-royal-ivory {
-  --bg-navy: #f1f5f9;
-  --bg-stars: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08), transparent 45%),
-              radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.08), transparent 45%);
-  --glass: #ffffff;
-  --glass-border: #cbd5e1;
-  --accent-cyan: #4f46e5;
-  --accent-purple: #7c3aed;
-  --text-dim: #475569;
-  --text-main: #1e293b;
-  --text-title: #0f172a;
-  --bg-sidebar: #f8fafc;
-  --bg-header: #ffffff;
-  --input-bg: #ffffff;
-}
-
-/* Theme 3: Forest Emerald (সবুজ অরণ্য) */
-.theme-forest-emerald {
-  --bg-navy: #040d06;
-  --bg-stars: radial-gradient(circle at 12% 12%, rgba(16, 185, 129, 0.18), transparent 45%),
-              radial-gradient(circle at 88% 88%, rgba(234, 179, 8, 0.15), transparent 45%);
-  --glass: rgba(16, 185, 129, 0.03);
-  --glass-border: rgba(16, 185, 129, 0.15);
-  --accent-cyan: #10b981;
-  --accent-purple: #fbbf24;
-  --text-dim: #a7f3d0;
-  --text-main: #f0fdf4;
-  --text-title: #ffffff;
-  --bg-sidebar: rgba(5, 18, 8, 0.7);
-  --bg-header: rgba(5, 18, 8, 0.4);
-  --input-bg: rgba(3, 10, 5, 0.5);
-}
-
-/* Theme 4: Sunset Crimson (লাল গোধূলি) */
-.theme-sunset-crimson {
-  --bg-navy: #0f0307;
-  --bg-stars: radial-gradient(circle at 10% 10%, rgba(225, 29, 72, 0.18), transparent 45%),
-              radial-gradient(circle at 90% 90%, rgba(217, 119, 6, 0.14), transparent 45%);
-  --glass: rgba(225, 29, 72, 0.03);
-  --glass-border: rgba(225, 29, 72, 0.14);
-  --accent-cyan: #f43f5e;
-  --accent-purple: #f59e0b;
-  --text-dim: #fecdd3;
-  --text-main: #fff5f5;
-  --text-title: #ffffff;
-  --bg-sidebar: rgba(20, 4, 10, 0.65);
-  --bg-header: rgba(20, 4, 10, 0.3);
-  --input-bg: rgba(10, 2, 5, 0.5);
-}
-
-/* Theme 5: Deep Ocean (নীল সাগর) */
-.theme-deep-ocean {
-  --bg-navy: #03081e;
-  --bg-stars: radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.22), transparent 45%),
-              radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.18), transparent 45%);
-  --glass: rgba(15, 23, 42, 0.4);
-  --glass-border: rgba(30, 41, 59, 0.5);
-  --accent-cyan: #06b6d4;
-  --accent-purple: #2563eb;
-  --text-dim: #94a3b8;
-  --text-main: #e2e8f0;
-  --text-title: #ffffff;
-  --bg-sidebar: rgba(15, 23, 42, 0.75);
-  --bg-header: rgba(30, 41, 59, 0.35);
-  --input-bg: rgba(2, 6, 23, 0.6);
-}
-
-/* --- LIGHT THEME INHERENT OVERRIDES --- */
-.theme-royal-ivory {
-  color: #1e293b !important;
-}
-
-.theme-royal-ivory .text-white,
-.theme-royal-ivory h1,
-.theme-royal-ivory h2,
-.theme-royal-ivory h3,
-.theme-royal-ivory h4,
-.theme-royal-ivory h5,
-.theme-royal-ivory h6 {
-  color: #0f172a !important;
-}
-
-.theme-royal-ivory p,
-.theme-royal-ivory span,
-.theme-royal-ivory li,
-.theme-royal-ivory label,
-.theme-royal-ivory table,
-.theme-royal-ivory th,
-.theme-royal-ivory td,
-.theme-royal-ivory select,
-.theme-royal-ivory option {
-  color: #334155 !important;
-}
-
-.theme-royal-ivory .text-slate-50,
-.theme-royal-ivory .text-slate-100,
-.theme-royal-ivory .text-slate-200,
-.theme-royal-ivory .text-slate-300,
-.theme-royal-ivory .text-slate-400 {
-  color: #475569 !important;
-}
-
-.theme-royal-ivory .glass-panel,
-.theme-royal-ivory .glass-panel-cyan,
-.theme-royal-ivory div[class*="glass-panel"] {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #1e293b !important;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05) !important;
-}
-
-.theme-royal-ivory input,
-.theme-royal-ivory select,
-.theme-royal-ivory textarea,
-.theme-royal-ivory .glass-input {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-.theme-royal-ivory input:focus,
-.theme-royal-ivory select:focus,
-.theme-royal-ivory textarea:focus {
-  border-color: #4f46e5 !important;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1) !important;
-}
-
-.theme-royal-ivory input::placeholder,
-.theme-royal-ivory select::placeholder {
-  color: #94a3b8 !important;
-}
-
-.theme-royal-ivory header {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
-}
-
-.theme-royal-ivory aside {
-  background: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-}
-
-.theme-royal-ivory footer {
-  background: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-}
-
-.theme-royal-ivory .text-slate-300 {
-  color: #475569 !important;
-}
-.theme-royal-ivory .text-slate-400 {
-  color: #64748b !important;
-}
-.theme-royal-ivory .bg-slate-900 {
-  background-color: #f1f5f9 !important;
-}
-.theme-royal-ivory .bg-[#05070f] {
-  background-color: #f1f5f9 !important;
-}
-.theme-royal-ivory .bg-[#080c16] {
-  background-color: #f8fafc !important;
-}
-.theme-royal-ivory .bg-purple-900\/20 {
-  background-color: #e0e7ff !important;
-  color: #4338ca !important;
-}
-.theme-royal-ivory .bg-[#0e1428]\/80 {
-  background-color: #f1f5f9 !important;
-}
-.theme-royal-ivory span.bg-gradient-to-r {
-  background-image: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  color: #4f46e5 !important;
-}
-
-/* Background gradient shifts and glows */
+/* Background and base body styles */
 body {
   font-family: "Hind Siliguri", "Inter", sans-serif;
-  background-color: var(--bg-navy);
-  background-image: var(--bg-stars);
-  background-attachment: fixed;
-  color: var(--text-main);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 
-/* Glassmorphism utility cards */
+/* Card utility classes */
 .glass-panel {
-  background: var(--glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .glass-panel-cyan {
-  background: var(--glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(34, 211, 238, 0.15);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.glass-panel:hover, .glass-panel-cyan:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  color: #ffffff;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  border-radius: 12px;
   transition: all 0.2s ease-in-out;
 }
 
 .glass-input:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
+  border-color: var(--bg-dark-card);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15);
   outline: none;
 }
 
@@ -267,16 +81,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-navy);
+  background: var(--bg-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.25);
+  background: rgba(34, 36, 42, 0.15);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 36, 42, 0.3);
 }
 
 /* Print configuration styled beautifully for Bengali unicode downloads */

@@ -895,19 +895,19 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
 
   if (!isSettingsUnlocked) {
     return (
-      <div className="max-w-md mx-auto mt-12 glass-panel p-8 rounded-2xl border border-purple-500/20 text-center space-y-6">
-        <div className="mx-auto w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
+      <div className="max-w-md mx-auto mt-12  p-8 rounded-2xl border border-[#E5E5EA] text-center space-y-6">
+        <div className="mx-auto w-16 h-16 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
           <Lock size={32} />
         </div>
         <div className="space-y-2">
           <h2 className="text-base font-bold text-slate-100 flex items-center justify-center gap-2">🔒 সংরক্ষিত এলাকা (Protected Settings)</h2>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-[#8E8E93] leading-relaxed">
             নিরাপত্তার স্বার্থে সেটিংস প্যানেলে প্রবেশের জন্য পাসওয়ার্ড প্রদান করুন।
           </p>
         </div>
 
         {unlockError && (
-          <div className="bg-red-950/45 border border-red-500/25 p-3 rounded-xl text-xs text-red-300">
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#FF6B6B]">
             {unlockError}
           </div>
         )}
@@ -918,22 +918,22 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
             value={settingsUnlockPassword}
             onChange={(e) => setSettingsUnlockPassword(e.target.value)}
             placeholder="পাসওয়ার্ড লিখুন"
-            className="w-full text-center text-xs p-3.5 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400"
+            className="w-full text-center text-xs p-3.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
             required
             autoFocus
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-purple-600/10 flex items-center justify-center gap-1.5 transition-all"
+            className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-none flex items-center justify-center gap-1.5 transition-all"
           >
             {loading && <RefreshCw className="animate-spin" size={14} />}
             প্রবেশ করুন
           </button>
         </form>
 
-        <p className="text-[10px] text-slate-500 leading-normal">
-          ডিফল্ট সেটিংস পাসওয়ার্ড: <span className="font-mono text-purple-400 font-bold">PASSWORD</span> অথবা আপনার <span className="font-semibold text-slate-300">অ্যাডমিন পাসওয়ার্ড</span> ব্যবহার করুন।
+        <p className="text-[10px] text-[#8E8E93] leading-normal">
+          ডিফল্ট সেটিংস পাসওয়ার্ড: <span className="font-mono text-[#22242A] font-bold">PASSWORD</span> অথবা আপনার <span className="font-semibold text-[#22242A]">অ্যাডমিন পাসওয়ার্ড</span> ব্যবহার করুন।
         </p>
       </div>
     );
@@ -943,29 +943,29 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
     <div className="space-y-6 max-w-4xl mx-auto">
       
       {/* Upper header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-purple-500/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E5E5EA] pb-4">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">⚙️ সেটিংস ও কনফিগারেশন প্যানেল</h2>
-          <p className="text-[11px] text-slate-400 mt-0.5">আপনার পাঠাগারের মূল ব্র্যান্ডিং, সিকিউরিটি কী, এসএমএস গেটওয়ে এবং গুগল ড্রাইভে সিঙ্ক সেট করুন</p>
+          <h2 className="text-lg font-bold text-[#22242A] flex items-center gap-2">⚙️ সেটিংস ও কনফিগারেশন প্যানেল</h2>
+          <p className="text-[11px] text-[#8E8E93] mt-0.5">আপনার পাঠাগারের মূল ব্র্যান্ডিং, সিকিউরিটি কী, এসএমএস গেটওয়ে এবং গুগল ড্রাইভে সিঙ্ক সেট করুন</p>
         </div>
         <button
           onClick={() => {
             setIsSettingsUnlocked(false);
           }}
-          className="self-start sm:self-center px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-white/10 hover:border-red-500/20 text-slate-400 hover:text-red-400 text-[10px] font-bold rounded-lg cursor-pointer transition-colors"
+          className="self-start sm:self-center px-3 py-1.5 bg-[#F5F3EF] hover:bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#8E8E93] hover:text-[#FF6B6B] text-[10px] font-bold rounded-lg cursor-pointer transition-colors"
         >
           🔒 সেটিংস লক করুন
         </button>
       </div>
 
       {/* Modern Horizontal Tabs for Segmented View */}
-      <div className="flex flex-wrap gap-2 p-1 bg-slate-950/60 border border-purple-500/10 rounded-xl">
+      <div className="flex flex-wrap gap-2 p-1 bg-white border border-[#E5E5EA] rounded-xl">
         <button
           onClick={() => setActiveSection("branding")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "branding"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           🎨 ব্র্যান্ডিং ও গ্রুপ
@@ -974,8 +974,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           onClick={() => setActiveSection("security")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "security"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           🔒 সিকিউরিটি ও পাসওয়ার্ড
@@ -984,8 +984,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           onClick={() => setActiveSection("googlesheets")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "googlesheets"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           📊 গুগল সিট সিঙ্ক
@@ -994,8 +994,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           onClick={() => setActiveSection("sms")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "sms"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           💬 SMS গেটওয়ে
@@ -1004,8 +1004,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           onClick={() => setActiveSection("pdf_reports")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "pdf_reports"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           📄 PDF রিপোর্টস
@@ -1014,8 +1014,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           onClick={() => setActiveSection("payment_methods")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "payment_methods"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           💳 পেমেন্ট মাধ্যম
@@ -1024,8 +1024,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           onClick={() => setActiveSection("firebase")}
           className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeSection === "firebase"
-              ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/10"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#8E8E93] hover:bg-[#F5F3EF] hover:text-[#22242A]"
           }`}
         >
           🔥 ফায়ারবেস সেটিংস
@@ -1039,24 +1039,24 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
         {activeSection === "branding" && (
           <div className="space-y-6">
             {/* Logo & Branding Card */}
-            <div className="glass-panel p-6 rounded-2xl border border-cyan-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-cyan-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-cyan-500/10 pb-3 mb-6">
-                <ImageIcon size={15} className="text-cyan-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <ImageIcon size={15} className="text-[#22242A]" />
                 পাঠাগারের মূল লোগো ও ব্র্যান্ডিং কাস্টমাইজেশন
               </h3>
 
               {logoErrorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{logoErrorMsg}</span>
                 </div>
               )}
 
               {logoSuccessMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 mb-4">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{logoSuccessMsg}</span>
                 </div>
               )}
@@ -1064,24 +1064,24 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
               <div className="flex flex-col sm:flex-row items-center gap-6 relative">
                 {/* Logo Preview */}
                 <div className="flex flex-col items-center gap-2">
-                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">বর্তমান লোগো</span>
-                  <div className="w-24 h-24 rounded-2xl bg-white border border-purple-500/20 shadow-lg flex items-center justify-center p-2 overflow-hidden">
+                  <span className="text-[9px] text-[#8E8E93] font-bold uppercase tracking-wider">বর্তমান লোগো</span>
+                  <div className="w-24 h-24 rounded-2xl bg-white border border-[#E5E5EA] shadow-lg flex items-center justify-center p-2 overflow-hidden">
                     {logoBase64 ? (
                       <img src={logoBase64} alt="Library Logo" className="w-full h-full object-contain" />
                     ) : (
-                      <div className="text-xs text-slate-400 font-semibold text-center leading-normal">ডিফল্ট লোগো<br/>(অক্ষর)</div>
+                      <div className="text-xs text-[#8E8E93] font-semibold text-center leading-normal">ডিফল্ট লোগো<br/>(অক্ষর)</div>
                     )}
                   </div>
                 </div>
 
                 {/* Logo Action Options */}
                 <div className="flex-1 space-y-3">
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-[#22242A] leading-relaxed">
                     আপনার পাঠাগারের জন্য একটি কাস্টম লোগো আপলোড করুন। ছবির চারপাশের অতিরিক্ত সাদা অংশ থাকলে সিস্টেম তা স্বয়ংক্রিয়ভাবে <strong>অটো-ক্রপ</strong> করে ডেটাবেজে সংরক্ষণ করবে।
                   </p>
                   
                   <div className="flex flex-wrap gap-3">
-                    <label className="px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-md flex items-center gap-1.5 transition-all">
+                    <label className="px-5 py-2.5 bg-gradient-to-r bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-md flex items-center gap-1.5 transition-all">
                       {logoLoading ? (
                         <RefreshCw className="animate-spin" size={13} />
                       ) : (
@@ -1104,15 +1104,15 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                         disabled={logoLoading}
                         className={`px-4 py-2.5 border text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
                           activeConfirmLogoReset 
-                            ? "bg-red-950/70 border-red-500 text-red-300 animate-pulse" 
-                            : "bg-slate-900 hover:bg-slate-800 border border-red-500/20 hover:border-red-500/45 text-red-400 hover:text-red-300"
+                            ? "bg-[#F5F3EF] border-[#E5E5EA] text-[#FF6B6B] animate-pulse" 
+                            : "bg-[#F5F3EF] hover:bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#FF6B6B] hover:text-[#FF6B6B]"
                         }`}
                       >
                         {activeConfirmLogoReset ? "⚠️ নিশ্চিতভাবে রিসেট করবেন?" : "ডিফল্ট লোগোতে ফিরুন"}
                       </button>
                     )}
                   </div>
-                  <p className="text-[9px] text-slate-500">
+                  <p className="text-[9px] text-[#8E8E93]">
                     * প্রস্তাবিত সাইজ: ৫০০ x ৫০০ পিক্সেল। লোগো পরিবর্তন করলে তা লগইন স্ক্রিন ও অ্যাপ হেডার উভয় জায়গায় সাথে সাথে আপডেট হবে।
                   </p>
                 </div>
@@ -1120,32 +1120,32 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
             </div>
 
             {/* Custom Login Flow Card */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-4">
-                <UserCheck size={15} className="text-purple-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <UserCheck size={15} className="text-[#22242A]" />
                 মেম্বারশিপ যাচাই ও লগইন ফ্লো কনফিগারেশন
               </h3>
 
               {loginFlowErrorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-3 rounded-xl text-xs text-red-300 flex items-center gap-2 mb-3">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-2 mb-3">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{loginFlowErrorMsg}</span>
                 </div>
               )}
 
               {loginFlowSuccessMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-3 rounded-xl text-xs text-emerald-300 flex items-center gap-2 mb-3">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#22242A] flex items-center gap-2 mb-3">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{loginFlowSuccessMsg}</span>
                 </div>
               )}
 
               <div className="space-y-4 relative">
-                <div className="flex items-center justify-between p-3.5 bg-[#070b16]/60 rounded-xl border border-white/5">
+                <div className="flex items-center justify-between p-3.5 bg-[#070b16]/60 rounded-xl border border-[#E5E5EA]">
                   <div className="space-y-0.5">
-                    <span className="text-xs font-bold text-slate-200 block font-sans">কাস্টম সদস্যতা যাচাইকরণ স্ক্রিন</span>
+                    <span className="text-xs font-bold text-[#22242A] block font-sans">কাস্টম সদস্যতা যাচাইকরণ স্ক্রিন</span>
                   </div>
 
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -1156,37 +1156,37 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                       disabled={loginFlowLoading}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 peer-checked:after:bg-white peer-checked:after:border-white"></div>
+                    <div className="w-11 h-6 bg-white peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-[#E5E5EA] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F5F3EF] peer-checked:after:bg-white peer-checked:after:border-white"></div>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* Book Group Management Card */}
-            <div className="glass-panel p-6 rounded-2xl border border-indigo-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-indigo-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-indigo-500/10 pb-3 mb-4">
-                <Palette size={15} className="text-indigo-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <Palette size={15} className="text-[#22242A]" />
                 বইয়ের গ্রুপ বা কর্নার কাস্টমাইজেশন
               </h3>
 
               {groupError && (
-                <div className="bg-red-950/45 border border-red-500/25 p-3 rounded-xl text-xs text-red-300 flex items-center gap-2 mb-3">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-2 mb-3">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{groupError}</span>
                 </div>
               )}
 
               {groupSuccess && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-3 rounded-xl text-xs text-emerald-300 flex items-center gap-2 mb-3">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#22242A] flex items-center gap-2 mb-3">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{groupSuccess}</span>
                 </div>
               )}
 
               <div className="space-y-4">
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-[#22242A] leading-relaxed">
                   লাইব্রেরির বইগুলোকে বিভিন্ন ক্যাটাগরি বা গ্রুপে (যেমন: উপন্যাস, গল্প, নজরুল কর্নার ইত্যাদি) বিভক্ত করুন। সদস্যরা সার্চ বারের নিচে এই গ্রুপগুলো দেখতে পাবে এবং ক্লিক করে ফিল্টার করতে পারবে।
                 </p>
 
@@ -1196,27 +1196,27 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                     value={newGroupName}
                     onChange={(e) => setNewGroupName(e.target.value)}
                     placeholder="নতুন গ্রুপের নাম (যেমন: কল্পবিজ্ঞান)"
-                    className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-400"
+                    className="flex-1 px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A]"
                   />
                   <button
                     type="submit"
                     disabled={groupLoading}
-                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+                    className="px-4 py-2.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] disabled:opacity-50 text-[#22242A] text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
                   >
                     {groupLoading ? <RefreshCw className="animate-spin" size={13} /> : "+"} গ্রুপ যোগ করুন
                   </button>
                 </form>
 
                 <div>
-                  <h4 className="text-[10px] font-bold text-slate-400 mb-2.5 uppercase tracking-wide">বিদ্যমান গ্রুপসমূহ:</h4>
+                  <h4 className="text-[10px] font-bold text-[#8E8E93] mb-2.5 uppercase tracking-wide">বিদ্যমান গ্রুপসমূহ:</h4>
                   {groups.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic">কোনো কাস্টম গ্রুপ নেই।</p>
+                    <p className="text-xs text-[#8E8E93] italic">কোনো কাস্টম গ্রুপ নেই।</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {groups.map((grp) => (
                         <div
                           key={grp}
-                          className="px-3 py-1.5 bg-slate-950 border border-white/10 rounded-xl text-xs text-slate-300 flex items-center gap-2 hover:border-red-500/30 transition-all group"
+                          className="px-3 py-1.5 bg-white border border-[#E5E5EA] rounded-xl text-xs text-[#22242A] flex items-center gap-2 hover:border-[#E5E5EA] transition-all group"
                         >
                           <span>{grp}</span>
                           <button
@@ -1224,8 +1224,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                             onClick={() => handleDeleteGroup(grp)}
                             className={`transition-colors focus:outline-none cursor-pointer text-[10px] font-bold ${
                               activeConfirmGroup === grp 
-                                ? "text-red-400 hover:text-red-300 bg-red-950/50 px-1.5 py-0.5 rounded animate-pulse" 
-                                : "text-slate-500 hover:text-red-400"
+                                ? "text-[#FF6B6B] hover:text-[#FF6B6B] bg-[#F5F3EF] px-1.5 py-0.5 rounded animate-pulse" 
+                                : "text-[#8E8E93] hover:text-[#FF6B6B]"
                             }`}
                           >
                             {activeConfirmGroup === grp ? "✕ নিশ্চিত?" : "✕"}
@@ -1239,30 +1239,30 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
             </div>
 
             {/* Sales Corner Category Management Card */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-4">
-                <Store size={15} className="text-purple-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <Store size={15} className="text-[#22242A]" />
                 বিক্রয় কর্নার ক্যাটাগরি বা গ্রুপ কাস্টমাইজেশন
               </h3>
 
               {shopCategoryError && (
-                <div className="bg-red-950/45 border border-red-500/25 p-3 rounded-xl text-xs text-red-300 flex items-center gap-2 mb-3">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-2 mb-3">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{shopCategoryError}</span>
                 </div>
               )}
 
               {shopCategorySuccess && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-3 rounded-xl text-xs text-emerald-300 flex items-center gap-2 mb-3">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#22242A] flex items-center gap-2 mb-3">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{shopCategorySuccess}</span>
                 </div>
               )}
 
               <div className="space-y-4">
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-[#22242A] leading-relaxed">
                   বিক্রয় কর্নারের উপহার সামগ্রী ও প্রোডাক্টসমূহকে বিভিন্ন ক্যাটাগরি বা গ্রুপে (যেমন: টি-শার্ট, ডায়েরি, মগ, প্যাড ইত্যাদি) বিভক্ত করুন। ব্যবহারকারীরা বিক্রয় কর্নারে এই গ্রুপগুলো দিয়ে ফিল্টার করতে পারবেন।
                 </p>
 
@@ -1272,27 +1272,27 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                     value={newShopCategoryName}
                     onChange={(e) => setNewShopCategoryName(e.target.value)}
                     placeholder="নতুন বিক্রয় ক্যাটাগরি বা গ্রুপ (যেমন: চাবির রিং)"
-                    className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-purple-400"
+                    className="flex-1 px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A]"
                   />
                   <button
                     type="submit"
                     disabled={shopCategoryLoading}
-                    className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+                    className="px-4 py-2.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] disabled:opacity-50 text-[#22242A] text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
                   >
                     {shopCategoryLoading ? <RefreshCw className="animate-spin" size={13} /> : "+"} গ্রুপ যোগ করুন
                   </button>
                 </form>
 
                 <div>
-                  <h4 className="text-[10px] font-bold text-slate-400 mb-2.5 uppercase tracking-wide">বিদ্যমান গ্রুপসমূহ:</h4>
+                  <h4 className="text-[10px] font-bold text-[#8E8E93] mb-2.5 uppercase tracking-wide">বিদ্যমান গ্রুপসমূহ:</h4>
                   {shopCategories.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic">কোনো কাস্টম বিক্রয় ক্যাটাগরি নেই।</p>
+                    <p className="text-xs text-[#8E8E93] italic">কোনো কাস্টম বিক্রয় ক্যাটাগরি নেই।</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {shopCategories.map((cat) => (
                         <div
                           key={cat}
-                          className="px-3 py-1.5 bg-slate-950 border border-white/10 rounded-xl text-xs text-slate-300 flex items-center gap-2 hover:border-red-500/30 transition-all group"
+                          className="px-3 py-1.5 bg-white border border-[#E5E5EA] rounded-xl text-xs text-[#22242A] flex items-center gap-2 hover:border-[#E5E5EA] transition-all group"
                         >
                           <span>{cat}</span>
                           <button
@@ -1300,8 +1300,8 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                             onClick={() => handleDeleteShopCategory(cat)}
                             className={`transition-colors focus:outline-none cursor-pointer text-[10px] font-bold ${
                               activeConfirmCategory === cat 
-                                ? "text-red-400 hover:text-red-300 bg-red-950/50 px-1.5 py-0.5 rounded animate-pulse" 
-                                : "text-slate-500 hover:text-red-400"
+                                ? "text-[#FF6B6B] hover:text-[#FF6B6B] bg-[#F5F3EF] px-1.5 py-0.5 rounded animate-pulse" 
+                                : "text-[#8E8E93] hover:text-[#FF6B6B]"
                             }`}
                           >
                             {activeConfirmCategory === cat ? "✕ নিশ্চিত?" : "✕"}
@@ -1315,53 +1315,53 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
             </div>
 
             {/* Sales Corner Helpline & Purchase Guidelines Settings Card */}
-            <div className="glass-panel p-6 rounded-2xl border border-cyan-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-cyan-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-cyan-500/10 pb-3 mb-4">
-                <PhoneCall size={15} className="text-cyan-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <PhoneCall size={15} className="text-[#22242A]" />
                 বিক্রয় কর্নার হেল্পলাইন ও ক্রয় নির্দেশিকা কাস্টমাইজেশন
               </h3>
 
               {shopHelplineError && (
-                <div className="bg-red-950/45 border border-red-500/25 p-3 rounded-xl text-xs text-red-300 flex items-center gap-2 mb-3">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-2 mb-3">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{shopHelplineError}</span>
                 </div>
               )}
 
               {shopHelplineSuccess && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-3 rounded-xl text-xs text-emerald-300 flex items-center gap-2 mb-3">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-3 rounded-xl text-xs text-[#22242A] flex items-center gap-2 mb-3">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{shopHelplineSuccess}</span>
                 </div>
               )}
 
               <form onSubmit={handleUpdateShopHelpline} className="space-y-4">
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-[#22242A] leading-relaxed">
                   বিক্রয় কর্নারের ক্রয় করার নির্দেশিকা এবং পণ্য ক্রয় করতে যোগাযোগের হেল্পলাইন নাম্বারটি আপনার ইচ্ছেমতো পরিবর্তন বা এডিট করুন।
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1.5 md:col-span-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">হেল্পলাইন নাম্বার:</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-wide">হেল্পলাইন নাম্বার:</label>
                     <input
                       type="text"
                       value={shopHelplineNumber}
                       onChange={(e) => setShopHelplineNumber(e.target.value)}
                       placeholder="যেমন: ০১৩৩৩৪৭৮৪৪৮"
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
 
                   <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">ক্রয় করার নির্দেশিকা বার্তা:</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-wide">ক্রয় করার নির্দেশিকা বার্তা:</label>
                     <textarea
                       value={shopHelplineText}
                       onChange={(e) => setShopHelplineText(e.target.value)}
                       rows={2}
                       placeholder="ক্রয় করার বিবরণ বা নির্দেশিকা এখানে লিখুন..."
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-400 resize-none"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] resize-none"
                     />
                   </div>
                 </div>
@@ -1370,7 +1370,7 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                   <button
                     type="submit"
                     disabled={shopHelplineLoading}
-                    className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
+                    className="px-4 py-2.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] disabled:opacity-50 text-[#22242A] text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
                   >
                     {shopHelplineLoading ? <RefreshCw className="animate-spin" size={13} /> : <CheckCircle2 size={13} />}
                     তথ্য পরিবর্তন করুন
@@ -1386,95 +1386,95 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Change Admin Credentials */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-6">
-                <ShieldCheck size={15} className="text-cyan-400 animate-pulse" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <ShieldCheck size={15} className="text-[#22242A] animate-pulse" />
                 অ্যাডমিন ক্রেডেনশিয়াল সংশোধন (Username/Password)
               </h3>
 
               {errorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 mb-4">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{successMsg}</span>
                 </div>
               )}
 
               <form onSubmit={handleUpdateCredentials} className="space-y-4 relative">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">বর্তমান ইউজারনেম *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বর্তমান ইউজারনেম *</label>
                   <input
                     type="text"
                     value={currentUsername}
                     onChange={(e) => setCurrentUsername(e.target.value)}
                     placeholder="বর্তমান ইউজারনেম"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">বর্তমান পাসওয়ার্ড *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বর্তমান পাসওয়ার্ড *</label>
                   <input
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="বর্তমান পাসওয়ার্ড"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     required
                   />
                 </div>
 
-                <div className="pt-2 border-t border-purple-500/5">
-                  <label className="block text-[10px] uppercase font-bold text-cyan-400 mb-1">নিরাপত্তা কী (Security Key) *</label>
+                <div className="pt-2 border-t border-[#E5E5EA]">
+                  <label className="block text-[10px] uppercase font-bold text-[#22242A] mb-1">নিরাপত্তা কী (Security Key) *</label>
                   <input
                     type="password"
                     value={securityPassword}
                     onChange={(e) => setSecurityPassword(e.target.value)}
                     placeholder="PASSWD"
-                    className="w-full text-xs p-3 bg-slate-950 border border-cyan-500/20 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-mono"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                     required
                   />
-                  <p className="text-[9px] text-slate-500 mt-1">সিস্টেমের ডিফল্ট সিকিউরিটি কী: PASSWD</p>
+                  <p className="text-[9px] text-[#8E8E93] mt-1">সিস্টেমের ডিফল্ট সিকিউরিটি কী: PASSWD</p>
                 </div>
 
-                <div className="pt-2 border-t border-purple-500/5">
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">নতুন ইউজারনেম *</label>
+                <div className="pt-2 border-t border-[#E5E5EA]">
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">নতুন ইউজারনেম *</label>
                   <input
                     type="text"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
                     placeholder="নতুন ইউজারনেম দিন"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">নতুন পাসওয়ার্ড *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">নতুন পাসওয়ার্ড *</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="কমপক্ষে ৬ ডিজিটের নতুন পাসওয়ার্ড"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     required
                   />
                 </div>
 
-                <div className="pt-4 border-t border-purple-500/5">
+                <div className="pt-4 border-t border-[#E5E5EA]">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-purple-600/10 flex items-center justify-center gap-1.5"
+                    className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-none flex items-center justify-center gap-1.5"
                   >
                     {loading ? <RefreshCw className="animate-spin" size={14} /> : <UserCheck size={14} />}
                     অ্যাডমিন পরিবর্তন নিশ্চিত করুন
@@ -1484,58 +1484,58 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
             </div>
 
             {/* Change Settings Access Password */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden h-fit">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden h-fit">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-6">
-                <KeyRound size={15} className="text-purple-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <KeyRound size={15} className="text-[#22242A]" />
                 সেটিংস অ্যাক্সেস পাসওয়ার্ড পরিবর্তন
               </h3>
 
               {settingsPwdErrorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{settingsPwdErrorMsg}</span>
                 </div>
               )}
 
               {settingsPwdSuccessMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 mb-4">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{settingsPwdSuccessMsg}</span>
                 </div>
               )}
 
               <form onSubmit={handleChangeSettingsPassword} className="space-y-4 relative">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">বর্তমান সেটিংস পাসওয়ার্ড *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বর্তমান সেটিংস পাসওয়ার্ড *</label>
                   <input
                     type="password"
                     value={currentSettingsPwd}
                     onChange={(e) => setCurrentSettingsPwd(e.target.value)}
                     placeholder="বর্তমান সেটিংস পাসওয়ার্ড বা অ্যাডমিন পাসওয়ার্ড দিন (ডিফল্ট: PASSWORD)"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">নতুন সেটিংস পাসওয়ার্ড *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">নতুন সেটিংস পাসওয়ার্ড *</label>
                   <input
                     type="password"
                     value={newSettingsPwd}
                     onChange={(e) => setNewSettingsPwd(e.target.value)}
                     placeholder="নতুন পাসওয়ার্ড দিন"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                     required
                   />
                 </div>
 
-                <div className="pt-4 border-t border-purple-500/5">
+                <div className="pt-4 border-t border-[#E5E5EA]">
                   <button
                     type="submit"
                     disabled={settingsPwdLoading}
-                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-purple-600/10 flex items-center justify-center gap-1.5"
+                    className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-none flex items-center justify-center gap-1.5"
                   >
                     {settingsPwdLoading ? <RefreshCw className="animate-spin" size={14} /> : <Lock size={14} />}
                     সেটিংস পাসওয়ার্ড আপডেট করুন
@@ -1550,66 +1550,66 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
         {/* TAB 3: GOOGLE SHEETS */}
         {activeSection === "googlesheets" && (
           <div className="space-y-6">
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-6">
-                <Database size={15} className="text-purple-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <Database size={15} className="text-[#22242A]" />
                 গুগল সিট (Google Sheets) অটো-সিঙ্ক ও ডেটা ইন্টিগ্রেশন
               </h3>
 
               {sheetErrorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{sheetErrorMsg}</span>
                 </div>
               )}
 
               {sheetSuccessMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 mb-4 animate-pulse">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4 animate-pulse">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{sheetSuccessMsg}</span>
                 </div>
               )}
 
               <form onSubmit={handleSaveGoogleSheets} className="space-y-4 relative">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">গুগল স্ক্রিপ্ট Web App URL *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">গুগল স্ক্রিপ্ট Web App URL *</label>
                   <input
                     type="url"
                     value={sheetUrl}
                     onChange={(e) => setSheetUrl(e.target.value)}
                     placeholder="https://script.google.com/macros/s/.../exec"
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-mono"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                     required
                   />
-                  <p className="text-[9px] text-slate-500 mt-1 font-sans">আপনার গুগল ড্রাইভে ক্রিয়েট করা Apps script ওয়েব লিংকটি এখানে পেস্ট করুন।</p>
+                  <p className="text-[9px] text-[#8E8E93] mt-1 font-sans">আপনার গুগল ড্রাইভে ক্রিয়েট করা Apps script ওয়েব লিংকটি এখানে পেস্ট করুন।</p>
                   
                   {sheetUrl.includes("docs.google.com/spreadsheets") && (
-                    <div className="mt-2.5 p-3 bg-red-950/70 border border-red-500/40 text-red-200 text-[10px] rounded-xl leading-relaxed font-sans">
-                      ⚠️ <strong className="text-red-400 font-bold">ভুল লিংক দিয়েছেন!</strong> এটি একটি সাধারণ গুগল স্প্রেডশিট লিংক। এই লিংকটি এখানে সরাসরি কাজ করবে না। নিচে দেওয়া <strong className="text-white">🚀 গুগল শিট সিঙ্ক করার গাইড (ধাপ ২ ও ৩)</strong> অনুসরণ করে গুগল অ্যাপস স্ক্রিপ্ট ডেপ্লয় করুন এবং সেখান থেকে প্রাপ্ত <strong className="text-white">Web App URL</strong> (যা <code>https://script.google.com/macros/s/.../exec</code> দিয়ে শুরু হয়) কপি করে এখানে পেস্ট করুন।
+                    <div className="mt-2.5 p-3 bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B] text-[10px] rounded-xl leading-relaxed font-sans">
+                      ⚠️ <strong className="text-[#FF6B6B] font-bold">ভুল লিংক দিয়েছেন!</strong> এটি একটি সাধারণ গুগল স্প্রেডশিট লিংক। এই লিংকটি এখানে সরাসরি কাজ করবে না। নিচে দেওয়া <strong className="text-[#22242A]">🚀 গুগল শিট সিঙ্ক করার গাইড (ধাপ ২ ও ৩)</strong> অনুসরণ করে গুগল অ্যাপস স্ক্রিপ্ট ডেপ্লয় করুন এবং সেখান থেকে প্রাপ্ত <strong className="text-[#22242A]">Web App URL</strong> (যা <code>https://script.google.com/macros/s/.../exec</code> দিয়ে শুরু হয়) কপি করে এখানে পেস্ট করুন।
                     </div>
                   )}
 
                   {sheetUrl.trim() !== "" && !sheetUrl.includes("script.google.com") && !sheetUrl.includes("docs.google.com/spreadsheets") && (
-                    <div className="mt-2.5 p-3 bg-amber-950/50 border border-amber-500/30 text-amber-200 text-[10px] rounded-xl leading-relaxed font-sans">
-                      ⚠️ <strong className="text-amber-400 font-bold">লিংক সতর্কতা:</strong> আপনার দেওয়া লিংকটি গুগল অ্যাপস স্ক্রিপ্টের Web App URL (<code>script.google.com</code>) বলে মনে হচ্ছে না। অনুগ্রহ করে নিশ্চিত করুন যে এটি সঠিক ওয়েব অ্যাপ লিংক।
+                    <div className="mt-2.5 p-3 bg-[#F5F3EF] border border-[#E5E5EA] text-[#FACC15] text-[10px] rounded-xl leading-relaxed font-sans">
+                      ⚠️ <strong className="text-[#FACC15] font-bold">লিংক সতর্কতা:</strong> আপনার দেওয়া লিংকটি গুগল অ্যাপস স্ক্রিপ্টের Web App URL (<code>script.google.com</code>) বলে মনে হচ্ছে না। অনুগ্রহ করে নিশ্চিত করুন যে এটি সঠিক ওয়েব অ্যাপ লিংক।
                     </div>
                   )}
                 </div>
 
                 {originalSheetUrlSet && sheetUrl.trim() !== originalSheetUrl && (
-                  <div className="p-3.5 bg-slate-950/90 border border-cyan-500/35 rounded-xl space-y-2">
-                    <label className="block text-[10px] uppercase font-bold text-cyan-400">সিকিউরিটি কী (Security Key) *</label>
+                  <div className="p-3.5 bg-white border border-[#E5E5EA] rounded-xl space-y-2">
+                    <label className="block text-[10px] uppercase font-bold text-[#22242A]">সিকিউরিটি কী (Security Key) *</label>
                     <input
                       type="password"
                       value={sheetSecurityKey}
                       onChange={(e) => setSheetSecurityKey(e.target.value)}
                       placeholder="সিকিউরিটি কী দিন (ডিফল্ট: PASSWD)"
-                      className="w-full text-xs p-2.5 bg-slate-900 border border-cyan-500/30 rounded-lg text-white focus:outline-none focus:border-cyan-400 font-mono"
+                      className="w-full text-xs p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                       required
                     />
-                    <p className="text-[9px] text-slate-400">
+                    <p className="text-[9px] text-[#8E8E93]">
                       <strong>হিন্ট: সিকিউরিটি কী</strong> - পূর্বে সেভ করা গুগল সিট লিংক পরিবর্তন করার জন্য সিকিউরিটি কী প্রদান আবশ্যক।
                     </p>
                   </div>
@@ -1621,25 +1621,25 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                     type="checkbox"
                     checked={autoSync}
                     onChange={(e) => setAutoSync(e.target.checked)}
-                    className="w-4 h-4 rounded border-purple-500/20 bg-slate-950 text-purple-600 focus:ring-purple-500 focus:ring-offset-slate-900 cursor-pointer"
+                    className="w-4 h-4 rounded border-[#E5E5EA] bg-white text-[#22242A] focus:ring-[#FACC15] focus:ring-offset-white cursor-pointer"
                   />
-                  <label htmlFor="autoSyncCheck" className="text-xs text-slate-300 font-bold select-none cursor-pointer">
+                  <label htmlFor="autoSyncCheck" className="text-xs text-[#22242A] font-bold select-none cursor-pointer">
                     রিয়েল-টাইম অটো-সিঙ্ক সক্রিয় রাখুন (Auto-sync new Books & Members)
                   </label>
                 </div>
 
-                <div className="border-t border-purple-500/10 pt-4 flex flex-wrap gap-3 justify-between items-center">
+                <div className="border-t border-[#E5E5EA] pt-4 flex flex-wrap gap-3 justify-between items-center">
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={handleTestGoogleSheets}
                       disabled={testSyncLoading || !sheetUrl}
-                      className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 border border-purple-500/20 hover:border-purple-500/40 text-slate-300 text-[10px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                      className="px-4 py-2.5 bg-[#F5F3EF] hover:bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#22242A] text-[10px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
                     >
                       {testSyncLoading ? (
                         <RefreshCw className="animate-spin" size={12} />
                       ) : (
-                        <Network size={12} className="text-cyan-400" />
+                        <Network size={12} className="text-[#22242A]" />
                       )}
                       কানেকশন টেস্ট করুন
                     </button>
@@ -1648,13 +1648,13 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                       type="button"
                       onClick={handleSyncAllGoogleSheets}
                       disabled={fullSyncLoading || !sheetUrl}
-                      className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 border border-purple-500/20 hover:border-purple-500/40 text-slate-300 text-[10px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                      className="px-4 py-2.5 bg-[#F5F3EF] hover:bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#22242A] text-[10px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
                       title="সিস্টেমের সমস্ত বই, মেম্বার এবং উইশলিস্টের ডাটা এক ক্লিকে সরাসরি গুগল শিটে ফোর্স আপলোড করবে।"
                     >
                       {fullSyncLoading ? (
                         <RefreshCw className="animate-spin" size={12} />
                       ) : (
-                        <Database size={12} className="text-purple-400" />
+                        <Database size={12} className="text-[#22242A]" />
                       )}
                       সকল ডাটা সিঙ্ক (Bulk Sync)
                     </button>
@@ -1663,13 +1663,13 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                       type="button"
                       onClick={handleImportFromGoogleSheets}
                       disabled={importLoading || !sheetUrl}
-                      className="px-4 py-2.5 bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-500/20 hover:border-cyan-500/45 text-cyan-300 text-[10px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                      className="px-4 py-2.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#22242A] text-[10px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
                       title="গুগল শিট থেকে লোকাল ডাটাবেজে তথ্য ইম্পোর্ট করুন।"
                     >
                       {importLoading ? (
                         <RefreshCw className="animate-spin" size={12} />
                       ) : (
-                        <Download size={12} className="text-cyan-400" />
+                        <Download size={12} className="text-[#22242A]" />
                       )}
                       শিট থেকে ডাটা ইম্পোর্ট (Pull)
                     </button>
@@ -1678,7 +1678,7 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
                   <button
                     type="submit"
                     disabled={sheetLoading}
-                    className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-[11px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors"
+                    className="px-6 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white text-[11px] font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors"
                   >
                     {sheetLoading ? (
                       <RefreshCw className="animate-spin" size={12} />
@@ -1691,26 +1691,26 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
               </form>
 
               {/* Step-by-Step setup guide */}
-              <div className="mt-6 p-4 bg-slate-950/40 border border-purple-500/10 rounded-2xl space-y-4">
-                <h4 className="text-xs font-bold text-slate-200">🚀 গুগল শিট সিঙ্ক করার গাইড (Step-by-Step Guide)</h4>
+              <div className="mt-6 p-4 bg-white border border-[#E5E5EA] rounded-2xl space-y-4">
+                <h4 className="text-xs font-bold text-[#22242A]">🚀 গুগল শিট সিঙ্ক করার গাইড (Step-by-Step Guide)</h4>
                 
-                <div className="space-y-3 text-[10px] text-slate-400 leading-relaxed font-sans">
+                <div className="space-y-3 text-[10px] text-[#8E8E93] leading-relaxed font-sans">
                   <div>
-                    <p className="font-bold text-purple-300 mb-0.5">ধাপ ১: গুগল স্প্রেডশিটে কলামগুলোর নাম সেট করুন</p>
+                    <p className="font-bold text-[#22242A] mb-0.5">ধাপ ১: গুগল স্প্রেডশিটে কলামগুলোর নাম সেট করুন</p>
                     <p>আপনার জিমেইল একাউন্ট থেকে একটি নতুন **Google Sheet** খুলুন। প্রথম সারির কলামগুলোতে নিচের যেকোনো একটি ফরম্যাটে হেডারগুলো লিখে নিন (সিস্টেম যেকোনোটিই স্বয়ংক্রিয়ভাবে সনাক্ত করতে পারবে):</p>
-                    <div className="bg-slate-950 p-2 rounded-lg border border-purple-500/5 font-mono text-[9px] mt-1 space-y-1">
-                      <span className="text-slate-500">// বাংলা কলাম হেডারসমূহ:</span>
-                      <p className="text-cyan-400">সময়কাল, ধরন, পদক্ষেপ, আইডি, বইকোড, নাম, লেখক, প্রকাশনী, ফরমনম্বর, মোবাইল, ঠিকানা, অবস্থা</p>
+                    <div className="bg-white p-2 rounded-lg border border-[#E5E5EA] font-mono text-[9px] mt-1 space-y-1">
+                      <span className="text-[#8E8E93]">// বাংলা কলাম হেডারসমূহ:</span>
+                      <p className="text-[#22242A]">সময়কাল, ধরন, পদক্ষেপ, আইডি, বইকোড, নাম, লেখক, প্রকাশনী, ফরমনম্বর, মোবাইল, ঠিকানা, অবস্থা</p>
                       <div className="border-t border-slate-950 my-1"></div>
-                      <span className="text-slate-500">// ইংরেজি কলাম হেডারসমূহ:</span>
-                      <p className="text-purple-400">timestamp, type, action, id, code, name, author, publisher, formNumber, mobile, address, status</p>
+                      <span className="text-[#8E8E93]">// ইংরেজি কলাম হেডারসমূহ:</span>
+                      <p className="text-[#22242A]">timestamp, type, action, id, code, name, author, publisher, formNumber, mobile, address, status</p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-bold text-purple-300 mb-0.5">ধাপ ২: গুগল অ্যাপস স্ক্রিপ্ট কোড বসান</p>
+                    <p className="font-bold text-[#22242A] mb-0.5">ধাপ ২: গুগল অ্যাপস স্ক্রিপ্ট কোড বসান</p>
                     <p>স্প্রেডশিটের উপরের মেনুবার থেকে **Extensions &gt; Apps Script** অপশনে ক্লিক করুন। সেখানে পূর্বের সব কোড মুছে দিয়ে নিচের কোডটি হুবহু কপি করে পেস্ট করুন:</p>
-                    <pre className="bg-slate-950 p-2.5 rounded-lg border border-purple-500/5 font-mono text-[8px] text-slate-300 overflow-x-auto leading-normal whitespace-pre">
+                    <pre className="bg-white p-2.5 rounded-lg border border-[#E5E5EA] font-mono text-[8px] text-[#22242A] overflow-x-auto leading-normal whitespace-pre">
 {`function doGet(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -1967,7 +1967,7 @@ function doPost(e) {
                   </div>
 
                   <div>
-                    <p className="font-bold text-purple-300 mb-0.5">ধাপ ৩: ওয়েব অ্যাপ ডেপ্লয়মেন্ট (Deploy as Web App)</p>
+                    <p className="font-bold text-[#22242A] mb-0.5">ধাপ ৩: ওয়েব অ্যাপ ডেপ্লয়মেন্ট (Deploy as Web App)</p>
                     <p>১. স্ক্রিপ্ট এডিটরের উপরে ডানদিকের কোণায় **Deploy &gt; New Deployment** এ ক্লিক করুন।</p>
                     <p>২. সেটিংস আইকনে ক্লিক করে **Web App** টাইপ সিলেক্ট করুন।</p>
                     <p>৩. **Execute as:** অপশনে **"Me (tawhid22000...)"** রাখুন।</p>
@@ -1985,38 +1985,38 @@ function doPost(e) {
           <div className="space-y-6">
             
             {/* Custom SMS Template configurations */}
-            <div className="glass-panel p-6 rounded-2xl border border-cyan-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-cyan-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-cyan-500/10 pb-3 mb-6">
-                <Sparkles size={15} className="text-cyan-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <Sparkles size={15} className="text-[#22242A]" />
                 বকেয়া বই ফেরতের শিডিউল রিমাইন্ডার SMS কাস্টমাইজেশন
               </h3>
 
               {smsErrorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{smsErrorMsg}</span>
                 </div>
               )}
 
               {smsSuccessMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 mb-4 animate-pulse">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4 animate-pulse">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{smsSuccessMsg}</span>
                 </div>
               )}
 
               <form onSubmit={handleUpdateSmsTemplate} className="space-y-4 relative">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1.5 flex justify-between">
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1.5 flex justify-between">
                     <span>মেসেজ টেক্সট কাস্টমাইজ করুন *</span>
-                    <span className="text-cyan-400 font-mono text-[9px]">ডাইনামিক প্লেসহোল্ডার সমর্থন করে</span>
+                    <span className="text-[#22242A] font-mono text-[9px]">ডাইনামিক প্লেসহোল্ডার সমর্থন করে</span>
                   </label>
 
                   {smsTemplateLoading && !smsTemplate ? (
-                    <div className="h-28 bg-slate-950/50 rounded-xl flex items-center justify-center border border-cyan-500/10">
-                      <RefreshCw className="animate-spin text-cyan-400" size={20} />
+                    <div className="h-28 bg-white rounded-xl flex items-center justify-center border border-[#E5E5EA]">
+                      <RefreshCw className="animate-spin text-[#22242A]" size={20} />
                     </div>
                   ) : (
                     <textarea
@@ -2024,45 +2024,45 @@ function doPost(e) {
                       onChange={(e) => setSmsTemplate(e.target.value)}
                       placeholder="আসসালামু আলাইকুম, আপনার ({bookName}) বইটি..."
                       rows={5}
-                      className="w-full text-xs p-3.5 bg-slate-950 border border-cyan-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400 leading-relaxed font-sans"
+                      className="w-full text-xs p-3.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] leading-relaxed font-sans"
                       required
                     />
                   )}
                 </div>
 
                 {/* Quick Insert Placeholders Chips */}
-                <div className="p-3 bg-slate-950/45 border border-cyan-500/5 rounded-xl space-y-2">
-                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">দ্রুত সংযোগ ট্যাগ (পছন্দ অনুযায়ী ক্লিক করে শেষে যুক্ত করুন):</p>
+                <div className="p-3 bg-white border border-[#E5E5EA] rounded-xl space-y-2">
+                  <p className="text-[10px] text-[#8E8E93] font-semibold uppercase tracking-wider">দ্রুত সংযোগ ট্যাগ (পছন্দ অনুযায়ী ক্লিক করে শেষে যুক্ত করুন):</p>
                   <div className="flex flex-wrap gap-2 pt-1">
                     <button
                       type="button"
                       onClick={() => setSmsTemplate(prev => prev + " {bookName}")}
-                      className="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/20 text-cyan-300 text-[10px] rounded-lg font-mono font-bold transition-all cursor-pointer"
+                      className="px-2.5 py-1 bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] text-[10px] rounded-lg font-mono font-bold transition-all cursor-pointer"
                     >
                       + {'{bookName}'} (বইয়ের নাম)
                     </button>
                     <button
                       type="button"
                       onClick={() => setSmsTemplate(prev => prev + " {memberName}")}
-                      className="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/20 text-cyan-300 text-[10px] rounded-lg font-mono font-bold transition-all cursor-pointer"
+                      className="px-2.5 py-1 bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] text-[10px] rounded-lg font-mono font-bold transition-all cursor-pointer"
                     >
                       + {'{memberName}'} (সদস্যের নাম)
                     </button>
                     <button
                       type="button"
                       onClick={() => setSmsTemplate(prev => prev + " {returnDate}")}
-                      className="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/20 text-cyan-300 text-[10px] rounded-lg font-mono font-bold transition-all cursor-pointer"
+                      className="px-2.5 py-1 bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] text-[10px] rounded-lg font-mono font-bold transition-all cursor-pointer"
                     >
                       + {'{returnDate}'} (ফেরতের শেষ তারিখ)
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-cyan-500/5 flex justify-end">
+                <div className="pt-4 border-t border-[#E5E5EA] flex justify-end">
                   <button
                     type="submit"
                     disabled={smsTemplateLoading}
-                    className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-cyan-600/10 flex items-center justify-center gap-1.5"
+                    className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-none flex items-center justify-center gap-1.5"
                   >
                     {smsTemplateLoading ? (
                       <RefreshCw className="animate-spin" size={14} />
@@ -2076,33 +2076,33 @@ function doPost(e) {
             </div>
 
             {/* Live SMS Gateway Setup Panel */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-6">
-                <Smartphone size={15} className="text-purple-400" />
-                রিয়েল SMS গেটওয়ে API কনফিগারেশন <span className="text-[10px] px-2 py-0.5 bg-purple-500/10 text-purple-300 rounded border border-purple-500/20">ভবিষ্যতের জন্য</span>
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <Smartphone size={15} className="text-[#22242A]" />
+                রিয়েল SMS গেটওয়ে API কনফিগারেশন <span className="text-[10px] px-2 py-0.5 bg-[#F5F3EF] text-[#22242A] rounded border border-[#E5E5EA]">ভবিষ্যতের জন্য</span>
               </h3>
 
               {gatewayErrorMsg && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{gatewayErrorMsg}</span>
                 </div>
               )}
 
               {gatewaySuccessMsg && (
-                <div className="bg-emerald-950/45 border border-emerald-500/25 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 mb-4 animate-pulse">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4 animate-pulse">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
                   <span>{gatewaySuccessMsg}</span>
                 </div>
               )}
 
               <form onSubmit={handleUpdateSmsGateway} className="space-y-4 relative">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1.5 flex justify-between">
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1.5 flex justify-between">
                     <span>SMS সার্ভিস প্রোভাইডার সিলেক্ট করুন</span>
-                    <span className="text-purple-400 font-semibold text-[9px]">বর্তমানে অফলাইন/ফ্রি মোডে সক্রিয়</span>
+                    <span className="text-[#22242A] font-semibold text-[9px]">বর্তমানে অফলাইন/ফ্রি মোডে সক্রিয়</span>
                   </label>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -2127,76 +2127,76 @@ function doPost(e) {
                         }}
                         className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                           smsProvider === prov.id
-                            ? "border-purple-500 bg-purple-500/10 text-white font-bold"
-                            : "border-purple-500/10 bg-slate-950/40 text-slate-400 hover:border-purple-500/20"
+                            ? "border-[#E5E5EA] bg-[#F5F3EF] text-white font-bold"
+                            : "border-[#E5E5EA] bg-white text-[#8E8E93] hover:border-[#E5E5EA]"
                         }`}
                       >
                         <p className="text-xs font-bold">{prov.label}</p>
-                        <p className="text-[9px] text-slate-500 mt-0.5 leading-normal">{prov.desc}</p>
+                        <p className="text-[9px] text-[#8E8E93] mt-0.5 leading-normal">{prov.desc}</p>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {smsProvider !== "simulated" && (
-                  <div className="p-4 bg-slate-950/60 rounded-xl border border-purple-500/10 space-y-4">
+                  <div className="p-4 bg-white rounded-xl border border-[#E5E5EA] space-y-4">
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">API Key / Token *</label>
+                        <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">API Key / Token *</label>
                         <input
                           type="password"
                           value={smsApiKey}
                           onChange={(e) => setSmsApiKey(e.target.value)}
                           placeholder="প্রোভাইদারের দেওয়া API Key দিন"
-                          className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                          className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                           required={smsProvider !== "simulated"}
                           autoComplete="off"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Sender ID (ঐচ্ছিক)</label>
+                        <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">Sender ID (ঐচ্ছিক)</label>
                         <input
                           type="text"
                           value={smsSenderId}
                           onChange={(e) => setSmsSenderId(e.target.value)}
                           placeholder="ম্যাস্কিং আইডি /অনুমোদিত Sender ID"
-                          className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                          className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">API গেটওয়ে URL লিঙ্ক</label>
+                      <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">API গেটওয়ে URL লিঙ্ক</label>
                       <input
                         type="text"
                         value={smsCustomUrl}
                         onChange={(e) => setSmsCustomUrl(e.target.value)}
                         placeholder="https://api.sms-service.com/send?to={to}&msg={message}"
-                        className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-mono"
+                        className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
                       />
                       
-                      <p className="text-[9px] text-slate-500 mt-1.5 leading-relaxed">
-                        * ডাইনামিক ট্যাগসমূহ: <code className="text-cyan-400 font-bold">{'{apiKey}'}</code>, <code className="text-cyan-400 font-bold">{'{to}'}</code>, <code className="text-cyan-400 font-bold">{'{message}'}</code>, <code className="text-cyan-400 font-bold">{'{senderId}'}</code>। URL লোড করার সময়ে স্বয়ংক্রিয়ভাবে এগুলো প্রতিস্থাপিত হবে।
+                      <p className="text-[9px] text-[#8E8E93] mt-1.5 leading-relaxed">
+                        * ডাইনামিক ট্যাগসমূহ: <code className="text-[#22242A] font-bold">{'{apiKey}'}</code>, <code className="text-[#22242A] font-bold">{'{to}'}</code>, <code className="text-[#22242A] font-bold">{'{message}'}</code>, <code className="text-[#22242A] font-bold">{'{senderId}'}</code>। URL লোড করার সময়ে স্বয়ংক্রিয়ভাবে এগুলো প্রতিস্থাপিত হবে।
                       </p>
                     </div>
                   </div>
                 )}
 
                 {/* Static Info for reference */}
-                <div className="p-3 bg-slate-950/25 border border-purple-500/5 rounded-xl space-y-1 text-slate-400">
-                  <p className="text-[10px] font-semibold text-purple-300">💡 ফ্রি সিমুলেশন মোড কিভাবে কাজ করে?</p>
+                <div className="p-3 bg-white border border-[#E5E5EA] rounded-xl space-y-1 text-[#8E8E93]">
+                  <p className="text-[10px] font-semibold text-[#22242A]">💡 ফ্রি সিমুলেশন মোড কিভাবে কাজ করে?</p>
                   <p className="text-[9px] leading-relaxed">
                     কোনো এপিআই কী ছাড়াই ডিফল্ট অবস্থায় "সিমুলেশন মোড (Free)" সচল থাকবে। এর মাধ্যমে ব্রাউজার প্যানেলে সরাসরি সব মেম্বারের বকেয়া লিস্ট এবং ট্রাইগার শিডিউলে পূর্ণ মেসেজ দেখা যাবে ও ট্র্যাক করা যাবে কিন্তু কোনো রিয়াল মেসেজ ফি/টাকা কাটা যাবে না। পরে রিয়াল SMS পাঠাতে চাইলে শুধু উপর থেকে আপনার প্রোভাইডার সিলেক্ট করে এপিআই কি দিন।
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-purple-500/5 flex justify-end">
+                <div className="pt-4 border-t border-[#E5E5EA] flex justify-end">
                   <button
                     type="submit"
                     disabled={gatewayLoading}
-                    className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-purple-600/10 flex items-center justify-center gap-1.5"
+                    className="w-full sm:w-auto px-8 py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-none flex items-center justify-center gap-1.5"
                   >
                     {gatewayLoading ? (
                       <RefreshCw className="animate-spin" size={14} />
@@ -2215,41 +2215,41 @@ function doPost(e) {
         {/* TAB 5: PDF REPORTS */}
         {activeSection === "pdf_reports" && (
           <div className="space-y-6">
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-xs font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-4">
-                <FileText size={15} className="text-purple-400" />
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <FileText size={15} className="text-[#22242A]" />
                 সিস্টেমের সর্বমোট PDF প্রিন্ট ও রিপোর্ট জেনারেটর
               </h3>
               
-              <p className="text-xs text-slate-300 leading-relaxed mb-6">
+              <p className="text-xs text-[#22242A] leading-relaxed mb-6">
                 পাঠাগারের মূল ডাটাবেজ থেকে রিয়েল-টাইমে সমস্ত ক্যাটালগ এবং নিবন্ধিত সদস্যদের তালিকা সমৃদ্ধ PDF ফাইল জেনারেট করুন। যেকোনো রিপোর্ট দেখতে, প্রিন্ট স্লিপ পেতে বা সংরক্ষণ করতে নিচে থেকে কাঙ্ক্ষিত অপশনটি নির্বাচন করুন।
               </p>
 
               {pdfError && (
-                <div className="bg-red-950/45 border border-red-500/25 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 mb-4">
-                  <AlertTriangle size={14} className="text-red-400 shrink-0" />
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
                   <span>{pdfError}</span>
                 </div>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Card 1: Books */}
-                <div className="bg-slate-950/50 hover:bg-slate-900/60 p-5 rounded-xl border border-purple-500/10 flex flex-col justify-between space-y-4 transition-all">
+                <div className="bg-white hover:bg-[#F5F3EF] p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between space-y-4 transition-all">
                   <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                    <div className="w-10 h-10 rounded-lg bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
                       <BookOpen size={20} />
                     </div>
-                    <h4 className="text-xs font-bold text-white">বইয়ের ক্যাটালগ রিপোর্ট</h4>
-                    <p className="text-[11px] text-slate-400 leading-normal">
+                    <h4 className="text-xs font-bold text-[#22242A]">বইয়ের ক্যাটালগ রিপোর্ট</h4>
+                    <p className="text-[11px] text-[#8E8E93] leading-normal">
                       লাইব্রেরির সর্বমোট নিবন্ধিত বইয়ের তালিকা, বইয়ের কোড, লেখক, প্রকাশনা ও বর্তমান স্ট্যাটাস সহ সম্পূর্ণ তালিকা সম্বলিত PDF।
                     </p>
                   </div>
                   <button
                     onClick={handleGenerateBooksPdf}
                     disabled={pdfLoading !== ""}
-                    className="w-full py-2 bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-200 hover:text-white border border-indigo-500/20 text-[11px] font-bold rounded-lg cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-45"
+                    className="w-full py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] hover:text-[#22242A] border border-[#E5E5EA] text-[11px] font-bold rounded-lg cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-45"
                   >
                     {pdfLoading === "books" ? (
                       <RefreshCw className="animate-spin" size={12} />
@@ -2261,20 +2261,20 @@ function doPost(e) {
                 </div>
 
                 {/* Card 2: Members */}
-                <div className="bg-slate-950/50 hover:bg-slate-900/60 p-5 rounded-xl border border-purple-500/10 flex flex-col justify-between space-y-4 transition-all">
+                <div className="bg-white hover:bg-[#F5F3EF] p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between space-y-4 transition-all">
                   <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                    <div className="w-10 h-10 rounded-lg bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
                       <Users size={20} />
                     </div>
-                    <h4 className="text-xs font-bold text-white">সদস্য তালিকা রিপোর্ট</h4>
-                    <p className="text-[11px] text-slate-400 leading-normal">
+                    <h4 className="text-xs font-bold text-[#22242A]">সদস্য তালিকা রিপোর্ট</h4>
+                    <p className="text-[11px] text-[#8E8E93] leading-normal">
                       লাইব্রেরির সকল নিবন্ধিত সদস্যদের ফরম নাম্বার, নাম, মোবাইল নাম্বার এবং আইডি কভার ইনফরমেশন সমৃদ্ধ PDF প্রিন্ট রিপোর্ট।
                     </p>
                   </div>
                   <button
                     onClick={handleGenerateMembersPdf}
                     disabled={pdfLoading !== ""}
-                    className="w-full py-2 bg-cyan-600/25 hover:bg-cyan-600/40 text-cyan-200 hover:text-white border border-cyan-500/20 text-[11px] font-bold rounded-lg cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-45"
+                    className="w-full py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] hover:text-[#22242A] border border-[#E5E5EA] text-[11px] font-bold rounded-lg cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-45"
                   >
                     {pdfLoading === "members" ? (
                       <RefreshCw className="animate-spin" size={12} />
@@ -2286,20 +2286,20 @@ function doPost(e) {
                 </div>
 
                 {/* Card 3: Audit Trails */}
-                <div className="bg-slate-950/50 hover:bg-slate-900/60 p-5 rounded-xl border border-purple-500/10 flex flex-col justify-between space-y-4 transition-all">
+                <div className="bg-white hover:bg-[#F5F3EF] p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between space-y-4 transition-all">
                   <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                    <div className="w-10 h-10 rounded-lg bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
                       <History size={20} />
                     </div>
-                    <h4 className="text-xs font-bold text-white">অডিট লগ ও হিস্ট্রি</h4>
-                    <p className="text-[11px] text-slate-400 leading-normal">
+                    <h4 className="text-xs font-bold text-[#22242A]">অডিট লগ ও হিস্ট্রি</h4>
+                    <p className="text-[11px] text-[#8E8E93] leading-normal">
                       লাইব্রেরির বই ইস্যু, ফেরত, ইউজার লগইন এবং অ্যাকটিভিটি হিস্ট্রি সহ প্রতিটি ঘটনার পুঙ্খানুপুঙ্খ বিবরণী সম্বলিত নিরাপত্তা অডিট PDF।
                     </p>
                   </div>
                   <button
                     onClick={handleGenerateLogsPdf}
                     disabled={pdfLoading !== ""}
-                    className="w-full py-2 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-200 hover:text-white border border-emerald-500/20 text-[11px] font-bold rounded-lg cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-45"
+                    className="w-full py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] hover:text-[#22242A] border border-[#E5E5EA] text-[11px] font-bold rounded-lg cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-45"
                   >
                     {pdfLoading === "logs" ? (
                       <RefreshCw className="animate-spin" size={12} />
@@ -2319,27 +2319,27 @@ function doPost(e) {
           <div className="space-y-6">
             
             {/* Main edit settings card */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-4">
-                <Smartphone size={16} className="text-purple-400" />
+              <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <Smartphone size={16} className="text-[#22242A]" />
                 মেম্বারশিপ ফি পেমেন্ট গেটওয়ে এবং মোবাইল নম্বরসমূহ কনফিগারেশন
               </h3>
 
-              <p className="text-xs text-slate-300 leading-relaxed mb-6">
+              <p className="text-xs text-[#22242A] leading-relaxed mb-6">
                 অনলাইন সদস্য নিবন্ধন ফরমে পেমেন্ট এর জন্য প্রদর্শিত মোবাইল ব্যাংকিং নম্বর, মেথডের নাম এবং অ্যাকাউন্ট টাইপ পরিবর্তন, ডিলিট বা নতুন মেথড যুক্ত করুন। এখানে করা যেকোনো পরিবর্তন সরাসরি পাবলিক রেজিষ্ট্রেশন ফর্মে আপডেট হয়ে যাবে।
               </p>
 
               {paymentSuccess && (
-                <div className="p-3.5 mb-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
                   <CheckCircle2 size={15} />
                   {paymentSuccess}
                 </div>
               )}
 
               {paymentError && (
-                <div className="p-3.5 mb-5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
                   <AlertTriangle size={15} />
                   {paymentError}
                 </div>
@@ -2347,43 +2347,43 @@ function doPost(e) {
 
               {/* Editable Methods List */}
               <div className="space-y-4">
-                <h4 className="text-xs font-extrabold text-purple-400 tracking-wider uppercase">বিদ্যমান পেমেন্ট মেথড ও নম্বরসমূহ:</h4>
+                <h4 className="text-xs font-extrabold text-[#22242A] tracking-wider uppercase">বিদ্যমান পেমেন্ট মেথড ও নম্বরসমূহ:</h4>
                 
                 {paymentMethods.length === 0 ? (
-                  <div className="p-8 text-center bg-slate-900/40 rounded-xl border border-dashed border-white/5 text-slate-500 text-xs">
+                  <div className="p-8 text-center bg-[#F5F3EF] rounded-xl border border-dashed border-[#E5E5EA] text-[#8E8E93] text-xs">
                     কোনো পেমেন্ট মেথড তৈরি করা নেই। নিচে থেকে নতুন মেথড যুক্ত করুন।
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {paymentMethods.map((pm, idx) => (
-                      <div key={pm.id} className="p-4 bg-slate-950/60 rounded-xl border border-white/5 flex flex-col md:flex-row items-stretch md:items-center gap-3 transition-all hover:border-purple-500/20">
+                      <div key={pm.id} className="p-4 bg-white rounded-xl border border-[#E5E5EA] flex flex-col md:flex-row items-stretch md:items-center gap-3 transition-all hover:border-[#E5E5EA]">
                         {/* Index */}
                         <div className="flex items-center gap-2 md:justify-center shrink-0">
-                          <span className="text-[10px] font-bold text-slate-500 bg-slate-900 border border-white/5 w-6 h-6 rounded-full flex items-center justify-center font-mono">
+                          <span className="text-[10px] font-bold text-[#8E8E93] bg-[#F5F3EF] border border-[#E5E5EA] w-6 h-6 rounded-full flex items-center justify-center font-mono">
                             {idx + 1}
                           </span>
-                          <span className="md:hidden text-xs font-extrabold text-slate-400">মেথড {idx + 1}</span>
+                          <span className="md:hidden text-xs font-extrabold text-[#8E8E93]">মেথড {idx + 1}</span>
                         </div>
 
                         {/* Name (e.g. bKash / বিকাশ) */}
                         <div className="flex-1 space-y-1">
-                          <span className="text-[10px] font-bold text-slate-400 block">১. পেমেন্ট নাম (বাংলা/ইংরেজি) *</span>
+                          <span className="text-[10px] font-bold text-[#8E8E93] block">১. পেমেন্ট নাম (বাংলা/ইংরেজি) *</span>
                           <input
                             type="text"
                             value={pm.name}
                             onChange={(e) => handleUpdatePaymentMethodField(pm.id, "name", e.target.value)}
                             placeholder="যেমন: বিকাশ"
-                            className="w-full px-3 py-2 bg-slate-900 border border-white/5 rounded-xl text-white text-xs font-bold focus:outline-none focus:border-purple-400"
+                            className="w-full px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-bold focus:outline-none focus:border-[#22242A]"
                           />
                         </div>
 
                         {/* Type (e.g. Personal / Merchant) */}
                         <div className="w-full md:w-36 shrink-0 space-y-1">
-                          <span className="text-[10px] font-bold text-slate-400 block">২. টাইপ/মেসেজ *</span>
+                          <span className="text-[10px] font-bold text-[#8E8E93] block">২. টাইপ/মেসেজ *</span>
                           <select
                             value={pm.type}
                             onChange={(e) => handleUpdatePaymentMethodField(pm.id, "type", e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-900 border border-white/5 rounded-xl text-white text-xs font-bold focus:outline-none focus:border-purple-400 cursor-pointer"
+                            className="w-full px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-bold focus:outline-none focus:border-[#22242A] cursor-pointer"
                           >
                             <option value="Personal">Personal</option>
                             <option value="Merchant">Merchant</option>
@@ -2395,13 +2395,13 @@ function doPost(e) {
 
                         {/* Number */}
                         <div className="flex-1 space-y-1">
-                          <span className="text-[10px] font-bold text-slate-400 block">৩. মোবাইল নম্বর *</span>
+                          <span className="text-[10px] font-bold text-[#8E8E93] block">৩. মোবাইল নম্বর *</span>
                           <input
                             type="text"
                             value={pm.number}
                             onChange={(e) => handleUpdatePaymentMethodField(pm.id, "number", e.target.value)}
                             placeholder="যেমন: ০১৩৩৩৪৭৮৪৪৮"
-                            className="w-full px-3 py-2 bg-slate-900 border border-white/5 rounded-xl text-white text-xs font-mono font-bold focus:outline-none focus:border-purple-400"
+                            className="w-full px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono font-bold focus:outline-none focus:border-[#22242A]"
                           />
                         </div>
 
@@ -2412,8 +2412,8 @@ function doPost(e) {
                             onClick={() => handleDeletePaymentMethod(pm.id)}
                             className={`px-3.5 py-2.5 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                               activeConfirmPaymentDelete === pm.id
-                                ? "bg-red-600 hover:bg-red-700 text-white animate-pulse"
-                                : "bg-slate-900 hover:bg-red-950/40 border border-white/5 text-slate-400 hover:text-red-400 hover:border-red-500/20"
+                                ? "bg-[#F5F3EF] hover:bg-[#F5F3EF] text-white animate-pulse"
+                                : "bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] text-[#8E8E93] hover:text-[#FF6B6B] hover:border-[#E5E5EA]"
                             }`}
                           >
                             <Trash2 size={13} />
@@ -2429,7 +2429,7 @@ function doPost(e) {
                         type="button"
                         onClick={handleSaveAllPaymentMethods}
                         disabled={paymentLoading}
-                        className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-extrabold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/10 disabled:opacity-50"
+                        className="w-full sm:w-auto px-6 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-extrabold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-none disabled:opacity-50"
                       >
                         {paymentLoading ? (
                           <RefreshCw className="animate-spin" size={13} />
@@ -2444,31 +2444,31 @@ function doPost(e) {
               </div>
 
               {/* Add New Method Sub-section */}
-              <div className="mt-8 pt-6 border-t border-purple-500/10 space-y-4">
-                <h4 className="text-xs font-black text-slate-200 flex items-center gap-1.5">
-                  <Plus size={14} className="text-purple-400" />
+              <div className="mt-8 pt-6 border-t border-[#E5E5EA] space-y-4">
+                <h4 className="text-xs font-black text-[#22242A] flex items-center gap-1.5">
+                  <Plus size={14} className="text-[#22242A]" />
                   নতুন পেমেন্ট মাধ্যম যুক্ত করুন
                 </h4>
                 
-                <form onSubmit={handleAddPaymentMethod} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end p-4 bg-purple-950/10 rounded-xl border border-purple-500/5">
+                <form onSubmit={handleAddPaymentMethod} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end p-4 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA]">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">পেমেন্ট নাম (বাংলা/ইংরেজি) *</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">পেমেন্ট নাম (বাংলা/ইংরেজি) *</label>
                     <input
                       type="text"
                       required
                       value={newPaymentName}
                       onChange={(e) => setNewPaymentName(e.target.value)}
                       placeholder="যেমন: রকেট (Rocket)"
-                      className="w-full px-3 py-2 bg-slate-900 border border-white/5 rounded-xl text-white text-xs font-bold focus:outline-none focus:border-purple-400"
+                      className="w-full px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-bold focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">অ্যাকাউন্ট টাইপ *</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">অ্যাকাউন্ট টাইপ *</label>
                     <select
                       value={newPaymentType}
                       onChange={(e) => setNewPaymentType(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-white/5 rounded-xl text-white text-xs font-bold focus:outline-none focus:border-purple-400 cursor-pointer"
+                      className="w-full px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-bold focus:outline-none focus:border-[#22242A] cursor-pointer"
                     >
                       <option value="Personal">Personal</option>
                       <option value="Merchant">Merchant</option>
@@ -2479,14 +2479,14 @@ function doPost(e) {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">মোবাইল নম্বর *</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">মোবাইল নম্বর *</label>
                     <input
                       type="text"
                       required
                       value={newPaymentNumber}
                       onChange={(e) => setNewPaymentNumber(e.target.value)}
                       placeholder="যেমন: ০১৩৩৩৪৭৮৪৪৮"
-                      className="w-full px-3 py-2 bg-slate-900 border border-white/5 rounded-xl text-white text-xs font-mono font-bold focus:outline-none focus:border-purple-400"
+                      className="w-full px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono font-bold focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
 
@@ -2494,7 +2494,7 @@ function doPost(e) {
                     <button
                       type="submit"
                       disabled={paymentLoading}
-                      className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-purple-600/15 disabled:opacity-50 transition-colors"
+                      className="w-full py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] text-xs font-bold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-none disabled:opacity-50 transition-colors"
                     >
                       {paymentLoading ? (
                         <RefreshCw className="animate-spin" size={13} />
@@ -2517,27 +2517,27 @@ function doPost(e) {
           <div className="space-y-6">
             
             {/* Main edit settings card */}
-            <div className="glass-panel p-6 rounded-2xl border border-purple-500/15 relative overflow-hidden">
-              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-purple-500/5 rotate-45 rounded-full pointer-events-none"></div>
+            <div className=" p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
 
-              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2 border-b border-purple-500/10 pb-3 mb-4">
-                <Database size={16} className="text-purple-400" />
+              <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <Database size={16} className="text-[#22242A]" />
                 ফায়ারবেস অথেনটিকেশন ও ডাটাবেস সেটিংস কনফিগারেশন
               </h3>
 
-              <p className="text-xs text-slate-300 leading-relaxed mb-6">
+              <p className="text-xs text-[#22242A] leading-relaxed mb-6">
                 আপনার লাইব্রেরি অ্যাপের জন্য ব্যক্তিগত ফায়ারবেস (Firebase Project) সংযুক্ত করুন। ফায়ারবেস সংযুক্ত করার ফলে সিস্টেমের ইউজার লগইন এবং ক্রেডেনশিয়াল ফায়ারবেস ক্লাউডে সম্পূর্ণ সুরক্ষিতভাবে পরিচালিত হবে।
               </p>
 
               {firebaseSuccessMsg && (
-                <div className="p-3.5 mb-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
                   <CheckCircle2 size={15} />
                   {firebaseSuccessMsg}
                 </div>
               )}
 
               {firebaseErrorMsg && (
-                <div className="p-3.5 mb-5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
                   <AlertTriangle size={15} />
                   {firebaseErrorMsg}
                 </div>
@@ -2546,74 +2546,74 @@ function doPost(e) {
               <form onSubmit={handleSaveFirebaseConfig} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">১. API Key *</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">১. API Key *</label>
                     <input
                       type="text"
                       required
                       value={firebaseApiKey}
                       onChange={(e) => setFirebaseApiKey(e.target.value)}
                       placeholder="AIzaSy..."
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">২. Project ID *</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">২. Project ID *</label>
                     <input
                       type="text"
                       required
                       value={firebaseProjectId}
                       onChange={(e) => setFirebaseProjectId(e.target.value)}
                       placeholder="akkhor-pathagar-xxxxx"
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">৩. Auth Domain</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">৩. Auth Domain</label>
                     <input
                       type="text"
                       value={firebaseAuthDomain}
                       onChange={(e) => setFirebaseAuthDomain(e.target.value)}
                       placeholder="akkhor-pathagar-xxxxx.firebaseapp.com"
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">৪. Storage Bucket</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">৪. Storage Bucket</label>
                     <input
                       type="text"
                       value={firebaseStorageBucket}
                       onChange={(e) => setFirebaseStorageBucket(e.target.value)}
                       placeholder="akkhor-pathagar-xxxxx.appspot.com"
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">৫. Messaging Sender ID</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">৫. Messaging Sender ID</label>
                     <input
                       type="text"
                       value={firebaseMessagingSenderId}
                       onChange={(e) => setFirebaseMessagingSenderId(e.target.value)}
                       placeholder="847509xxxx"
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400">৬. App ID</label>
+                    <label className="text-[10px] font-bold text-[#8E8E93]">৬. App ID</label>
                     <input
                       type="text"
                       value={firebaseAppId}
                       onChange={(e) => setFirebaseAppId(e.target.value)}
                       placeholder="1:847509xxxx:web:xxxxxx"
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-purple-400"
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs font-mono focus:outline-none focus:border-[#22242A]"
                     />
                   </div>
                 </div>
@@ -2623,7 +2623,7 @@ function doPost(e) {
                   <button
                     type="submit"
                     disabled={firebaseLoading}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-extrabold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/10 disabled:opacity-50"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-extrabold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-none disabled:opacity-50"
                   >
                     {firebaseLoading ? (
                       <RefreshCw className="animate-spin" size={13} />
@@ -2636,22 +2636,22 @@ function doPost(e) {
               </form>
 
               {/* Step-by-Step setup guide */}
-              <div className="mt-8 p-4 bg-slate-950/40 border border-purple-500/10 rounded-2xl space-y-4">
-                <h4 className="text-xs font-bold text-slate-200">🚀 ফায়ারবেস সংযোগ করার গাইড (Setup Guide)</h4>
+              <div className="mt-8 p-4 bg-white border border-[#E5E5EA] rounded-2xl space-y-4">
+                <h4 className="text-xs font-bold text-[#22242A]">🚀 ফায়ারবেস সংযোগ করার গাইড (Setup Guide)</h4>
                 
-                <div className="space-y-3 text-[10px] text-slate-400 leading-relaxed font-sans">
+                <div className="space-y-3 text-[10px] text-[#8E8E93] leading-relaxed font-sans">
                   <div>
-                    <p className="font-bold text-purple-300 mb-0.5">ধাপ ১: ফায়ারবেস প্রজেক্ট তৈরি করুন</p>
-                    <p>আপনার গুগল অ্যাকাউন্ট থেকে <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-cyan-400 underline">Firebase Console</a>-এ যান। একটি নতুন প্রজেক্ট তৈরি করুন এবং **Authentication** অপশনে গিয়ে **Email/Password** সাইন-ইন মেথডটি সক্রিয় (Enable) করুন।</p>
+                    <p className="font-bold text-[#22242A] mb-0.5">ধাপ ১: ফায়ারবেস প্রজেক্ট তৈরি করুন</p>
+                    <p>আপনার গুগল অ্যাকাউন্ট থেকে <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-[#22242A] underline">Firebase Console</a>-এ যান। একটি নতুন প্রজেক্ট তৈরি করুন এবং **Authentication** অপশনে গিয়ে **Email/Password** সাইন-ইন মেথডটি সক্রিয় (Enable) করুন।</p>
                   </div>
 
                   <div>
-                    <p className="font-bold text-purple-300 mb-0.5">ধাপ ২: প্রজেক্টের ওয়েব অ্যাপ (Web App) রেজিস্টার করুন</p>
+                    <p className="font-bold text-[#22242A] mb-0.5">ধাপ ২: প্রজেক্টের ওয়েব অ্যাপ (Web App) রেজিস্টার করুন</p>
                     <p>প্রজেক্টের হোমপেজ থেকে **Web (&lt;/&gt;)** আইকনে ক্লিক করে আপনার লাইব্রেরি প্রজেক্টের জন্য একটি অ্যাপ নাম দিয়ে রেজিস্টার করুন।</p>
                   </div>
 
                   <div>
-                    <p className="font-bold text-purple-300 mb-0.5">ধাপ ৩: ফায়ারবেস কনফিগারেশন কোড কপি করুন</p>
+                    <p className="font-bold text-[#22242A] mb-0.5">ধাপ ৩: ফায়ারবেস কনফিগারেশন কোড কপি করুন</p>
                     <p>রেজিস্ট্রেশন সম্পূর্ণ হলে স্ক্রিনে একটি `firebaseConfig` অবজেক্ট দেখতে পাবেন। সেখান থেকে যথাক্রমে `apiKey`, `authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, এবং `appId` কপি করে উপরের ইনপুট ফিল্ডগুলোতে বসিয়ে সেভ করুন।</p>
                   </div>
                 </div>

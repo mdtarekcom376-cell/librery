@@ -18,14 +18,14 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
     <div className="min-h-screen bg-white">
       {/* Sticky Header */}
       <header
-        className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm"
+        className="sticky top-0 z-50 bg-white backdrop-blur-md border-b border-[#E5E5EA] shadow-sm"
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-3">
           {/* Left: Back + Logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-slate-200 text-slate-600 hover:bg-slate-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
               title="হোম পেজে ফিরে যান"
             >
               <ArrowLeft size={14} />
@@ -37,7 +37,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
                 <img
                   src={logoSrc}
                   alt="অক্ষর পাঠাগার লোগো"
-                  className="w-8 h-8 md:w-9 md:h-9 rounded-xl object-contain bg-white border border-purple-500/20 p-0.5"
+                  className="w-8 h-8 md:w-9 md:h-9 rounded-xl object-contain bg-white border border-[#E5E5EA] p-0.5"
                 />
               )}
               <div>
@@ -54,7 +54,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
 
           {/* Right: Badge */}
           <span
-            className="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full hidden sm:inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 border border-orange-200"
+            className="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full hidden sm:inline-flex items-center gap-1.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA]"
           >
             <Store size={10} />
             বই ও উপহার
@@ -64,7 +64,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
 
       {/* Hero Banner */}
       <motion.section
-        className="relative overflow-hidden py-12 md:py-16 px-4 bg-slate-50 border-b border-slate-100"
+        className="relative overflow-hidden py-12 md:py-16 px-4 bg-slate-50 border-b border-[#E5E5EA]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -128,9 +128,9 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
 
       {/* Footer */}
       <footer
-        className="border-t py-6 px-4 text-center bg-slate-50 border-slate-200"
+        className="border-t py-6 px-4 text-center bg-slate-50 border-[#E5E5EA]"
       >
-        <p className="text-xs text-slate-500 font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
+        <p className="text-xs text-[#8E8E93] font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
           © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
         </p>
         <button

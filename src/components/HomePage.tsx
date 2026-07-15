@@ -950,7 +950,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               transition={{ duration: 0.4, delay: 0.1 }}
             >
               <span
-                className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-ui font-bold px-3 py-1 rounded-full text-white"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-ui font-bold px-3 py-1 rounded-full text-[#22242A]"
                 style={{ background: "var(--flame-gradient)" }}
               >
                 সবচেয়ে জনপ্রিয়
@@ -1116,7 +1116,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                       if (onSalesCorner) onSalesCorner();
                     }}
                   >
-                    <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-100 flex items-center justify-center">
+                    <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-3 bg-slate-50 border border-[#E5E5EA] flex items-center justify-center">
                       {item.imageUrl ? (
                         <img 
                           src={item.imageUrl} 
@@ -1214,7 +1214,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
                     ))}
                   </div>
                   {member.subject && (
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full line-clamp-1 max-w-[120px]" title={member.subject}>
+                    <span className="text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded-full line-clamp-1 max-w-[120px]" title={member.subject}>
                       {member.subject}
                     </span>
                   )}
@@ -1536,7 +1536,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           {/* Bottom bar */}
           <div className="border-t pt-6" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
             <p className="text-center font-body-bn text-xs" style={{ color: "#64748b" }}>
-              © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩 | Developed by <a href="https://artx.techvrs.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ textDecoration: 'none', color: 'inherit', borderBottom: '1px solid rgba(255,255,255,0.3)' }}>ARTX</a>
+              © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩 | Developed by <a href="https://artx.techvrs.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#22242A] transition-colors" style={{ textDecoration: 'none', color: 'inherit', borderBottom: '1px solid rgba(255,255,255,0.3)' }}>ARTX</a>
             </p>
           </div>
         </div>

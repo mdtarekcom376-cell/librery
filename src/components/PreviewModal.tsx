@@ -197,7 +197,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
       const clone = element.cloneNode(true) as HTMLElement;
       
       // Clean up potential dark badges/shadows inside the clone
-      const allTextWhite = clone.querySelectorAll(".text-white, .text-slate-100, .text-slate-200, .text-slate-300");
+      const allTextWhite = clone.querySelectorAll(".text-white, .text-slate-100, .text-[#22242A], .text-[#22242A]");
       allTextWhite.forEach((el) => {
         (el as HTMLElement).style.color = "#1e293b";
       });
@@ -273,10 +273,10 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
     switch (dataType) {
       case "book":
         return (
-          <div className="text-slate-800">
-            <h2 className="text-xl font-bold border-b border-purple-200 pb-2 mb-4">বইয়ের বিবরণ স্লিপ</h2>
+          <div className="text-[#22242A]">
+            <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2 mb-4">বইয়ের বিবরণ স্লিপ</h2>
             <div className="flex flex-col md:flex-row gap-6">
-              <div className="w-full md:w-36 h-48 rounded bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+              <div className="w-full md:w-36 h-48 rounded bg-slate-100 flex items-center justify-center overflow-hidden border border-[#E5E5EA] shrink-0">
                 <img 
                   src={data.imageUrl && data.imageUrl.trim() ? data.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                   alt={data.name} 
@@ -285,25 +285,25 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
               </div>
               <div className="flex-1 space-y-3">
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-slate-500 text-sm">বই কোড</span>
-                  <span className="col-span-2 font-mono font-semibold text-purple-700 text-base">{data.code}</span>
+                  <span className="font-semibold text-[#8E8E93] text-sm">বই কোড</span>
+                  <span className="col-span-2 font-mono font-semibold text-[#22242A] text-base">{data.code}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-slate-500 text-sm">বইয়ের নাম</span>
-                  <span className="col-span-2 font-bold text-slate-900">{data.name}</span>
+                  <span className="font-semibold text-[#8E8E93] text-sm">বইয়ের নাম</span>
+                  <span className="col-span-2 font-bold text-[#22242A]">{data.name}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-slate-500 text-sm">লেখক</span>
-                  <span className="col-span-2 text-slate-800">{data.author}</span>
+                  <span className="font-semibold text-[#8E8E93] text-sm">লেখক</span>
+                  <span className="col-span-2 text-[#22242A]">{data.author}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-slate-500 text-sm">প্রকাশনা</span>
-                  <span className="col-span-2 text-slate-800">{data.publisher}</span>
+                  <span className="font-semibold text-[#8E8E93] text-sm">প্রকাশনা</span>
+                  <span className="col-span-2 text-[#22242A]">{data.publisher}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-slate-500 text-sm">বর্তমান স্ট্যাটাস</span>
+                  <span className="font-semibold text-[#8E8E93] text-sm">বর্তমান স্ট্যাটাস</span>
                   <span className="col-span-2">
-                    <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Available" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                    <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Available" ? "bg-[#F5F3EF] text-[#22242A]" : "bg-[#F5F3EF] text-[#FF6B6B]"}`}>
                       {data.status === "Available" ? "Available" : "Issued"}
                     </span>
                   </span>
@@ -315,39 +315,39 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "member":
         return (
-          <div className="text-slate-800 space-y-4">
-            <h2 className="text-xl font-bold border-b border-purple-200 pb-2">গ্রাহক সদস্য কার্ড</h2>
+          <div className="text-[#22242A] space-y-4">
+            <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2">গ্রাহক সদস্য কার্ড</h2>
             <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg">
               <div>
-                <p className="text-xs text-slate-400 font-semibold">সদস্যের নাম</p>
-                <p className="text-base font-bold text-slate-900">{data.member.name}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">সদস্যের নাম</p>
+                <p className="text-base font-bold text-[#22242A]">{data.member.name}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400 font-semibold">ফরম নম্বর (ID)</p>
-                <p className="text-base font-bold text-purple-700 font-mono">#{data.member.formNumber}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">ফরম নম্বর (ID)</p>
+                <p className="text-base font-bold text-[#22242A] font-mono">#{data.member.formNumber}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400 font-semibold">মোবাইল নম্বর</p>
-                <p className="text-sm text-slate-800 font-mono">{data.member.mobile}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">মোবাইল নম্বর</p>
+                <p className="text-sm text-[#22242A] font-mono">{data.member.mobile}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400 font-semibold">জন্ম তারিখ</p>
-                <p className="text-sm text-slate-800 font-mono">{data.member.dob || "—"}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">জন্ম তারিখ</p>
+                <p className="text-sm text-[#22242A] font-mono">{data.member.dob || "—"}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-xs text-slate-400 font-semibold">ঠিকানা</p>
-                <p className="text-sm text-slate-800">{data.member.address || "—"}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">ঠিকানা</p>
+                <p className="text-sm text-[#22242A]">{data.member.address || "—"}</p>
               </div>
               {data.member.educationInstitution && (
                 <div>
-                  <p className="text-xs text-slate-400 font-semibold">শিক্ষা প্রতিষ্ঠান</p>
-                  <p className="text-sm text-slate-800">{data.member.educationInstitution}</p>
+                  <p className="text-xs text-[#8E8E93] font-semibold">শিক্ষা প্রতিষ্ঠান</p>
+                  <p className="text-sm text-[#22242A]">{data.member.educationInstitution}</p>
                 </div>
               )}
               {(data.member.className || data.member.classRoll) && (
                 <div>
-                  <p className="text-xs text-slate-400 font-semibold">শ্রেণী ও রোল</p>
-                  <p className="text-sm text-slate-800">
+                  <p className="text-xs text-[#8E8E93] font-semibold">শ্রেণী ও রোল</p>
+                  <p className="text-sm text-[#22242A]">
                     {data.member.className ? `শ্রেণী: ${data.member.className}` : ""}
                     {data.member.className && data.member.classRoll ? " | " : ""}
                     {data.member.classRoll ? `রোল: ${data.member.classRoll}` : ""}
@@ -361,9 +361,9 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
               <div className="max-h-48 overflow-y-auto space-y-2 border rounded-lg p-2 bg-white">
                 {data.activeRents?.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-bold text-red-600 mb-1">বর্তমানে নেওয়া বই (Issued)</h4>
+                    <h4 className="text-xs font-bold text-[#FF6B6B] mb-1">বর্তমানে নেওয়া বই (Issued)</h4>
                     {data.activeRents.map((r: any) => (
-                      <div key={r.id} className="text-xs bg-red-50 text-red-800 p-2 rounded mb-1 border border-red-100">
+                      <div key={r.id} className="text-xs bg-[#F5F3EF] text-[#FF6B6B] p-2 rounded mb-1 border border-[#E5E5EA]">
                         <p className="font-bold">{r.bookName} ({r.bookCode})</p>
                         <p>ইস্যু: {r.issueDate} / ফেরত দেওয়ার শেষ তারিখ: {r.returnDate}</p>
                       </div>
@@ -371,9 +371,9 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
                   </div>
                 )}
                 <div>
-                  <h4 className="text-xs font-bold text-green-700 mb-1">ফেরত নেওয়া বইয়ের ইতিহাস ({data.returnedHistory?.length})</h4>
+                  <h4 className="text-xs font-bold text-[#22242A] mb-1">ফেরত নেওয়া বইয়ের ইতিহাস ({data.returnedHistory?.length})</h4>
                   {data.returnedHistory?.length === 0 ? (
-                    <p className="text-xs text-slate-400">ইতিপূর্বে কোনো বই ফেরত দেওয়ার হিস্ট্রি নেই।</p>
+                    <p className="text-xs text-[#8E8E93]">ইতিপূর্বে কোনো বই ফেরত দেওয়ার হিস্ট্রি নেই।</p>
                   ) : (
                     data.returnedHistory.map((r: any) => (
                       <div key={r.id} className="text-xs bg-slate-50 text-slate-700 p-2 rounded mb-1 border">
@@ -390,43 +390,43 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "transaction":
         return (
-          <div className="text-slate-800 space-y-4">
-            <h2 className="text-xl font-bold border-b border-purple-200 pb-2 text-center text-purple-800">বই ইস্যু ও রিটার্ন স্লিপ</h2>
+          <div className="text-[#22242A] space-y-4">
+            <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2 text-center text-[#22242A]">বই ইস্যু ও রিটার্ন স্লিপ</h2>
             
-            <div className="border border-dashed border-slate-300 p-4 space-y-3 bg-indigo-50/20 rounded-lg">
+            <div className="border border-dashed border-[#E5E5EA] p-4 space-y-3 bg-[#F5F3EF] rounded-lg">
               <div className="grid grid-cols-2 gap-y-2 text-sm">
-                <div><span className="font-semibold text-slate-500">লেনদেন আইডি:</span> <span className="font-mono text-xs">{data.id}</span></div>
-                <div className="text-right"><span className="font-semibold text-slate-500">অবস্থা:</span> <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Issued" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}>{data.status === "Issued" ? "Issued (চলমান)" : "Returned (ফেরত)"}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">লেনদেন আইডি:</span> <span className="font-mono text-xs">{data.id}</span></div>
+                <div className="text-right"><span className="font-semibold text-[#8E8E93]">অবস্থা:</span> <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Issued" ? "bg-[#F5F3EF] text-[#FF6B6B]" : "bg-[#F5F3EF] text-[#22242A]"}`}>{data.status === "Issued" ? "Issued (চলমান)" : "Returned (ফেরত)"}</span></div>
                 
-                <div className="col-span-2 border-t border-slate-200 my-2"></div>
+                <div className="col-span-2 border-t border-[#E5E5EA] my-2"></div>
                 
-                <div className="col-span-2 font-bold text-indigo-900 border-b pb-1">বইয়ের তথ্য</div>
-                <div><span className="font-semibold text-slate-500">বই কোড:</span> <span className="font-mono text-purple-700">{data.bookCode}</span></div>
-                <div><span className="font-semibold text-slate-500">বইয়ের নাম:</span> <span className="font-bold">{data.bookName}</span></div>
-                <div><span className="font-semibold text-slate-500">লেখক:</span> <span>{data.author || "-"}</span></div>
-                <div><span className="font-semibold text-slate-500">প্রকাশক:</span> <span>{data.publisher || "-"}</span></div>
+                <div className="col-span-2 font-bold text-[#22242A] border-b pb-1">বইয়ের তথ্য</div>
+                <div><span className="font-semibold text-[#8E8E93]">বই কোড:</span> <span className="font-mono text-[#22242A]">{data.bookCode}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">বইয়ের নাম:</span> <span className="font-bold">{data.bookName}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">লেখক:</span> <span>{data.author || "-"}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">প্রকাশক:</span> <span>{data.publisher || "-"}</span></div>
 
-                <div className="col-span-2 border-t border-slate-200 my-2"></div>
+                <div className="col-span-2 border-t border-[#E5E5EA] my-2"></div>
                 
-                <div className="col-span-2 font-bold text-indigo-900 border-b pb-1">সদস্যের তথ্য</div>
-                <div><span className="font-semibold text-slate-500">সদস্যের নাম:</span> <span className="font-bold">{data.memberName}</span></div>
-                <div><span className="font-semibold text-slate-500">ফরম নম্বর (ID):</span> <span className="font-mono text-purple-700">#{data.formNumber}</span></div>
-                <div><span className="font-semibold text-slate-500">মোবাইল:</span> <span className="font-mono">{data.mobile}</span></div>
-                <div><span className="font-semibold text-slate-500">ঠিকানা:</span> <span>{data.address || "-"}</span></div>
+                <div className="col-span-2 font-bold text-[#22242A] border-b pb-1">সদস্যের তথ্য</div>
+                <div><span className="font-semibold text-[#8E8E93]">সদস্যের নাম:</span> <span className="font-bold">{data.memberName}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">ফরম নম্বর (ID):</span> <span className="font-mono text-[#22242A]">#{data.formNumber}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">মোবাইল:</span> <span className="font-mono">{data.mobile}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">ঠিকানা:</span> <span>{data.address || "-"}</span></div>
 
-                <div className="col-span-2 border-t border-slate-200 my-2"></div>
+                <div className="col-span-2 border-t border-[#E5E5EA] my-2"></div>
                 
-                <div className="col-span-2 font-bold text-indigo-900 border-b pb-1 font-mono">সময়সীমা</div>
-                <div><span className="font-semibold text-slate-500">ইস্যু ডেট:</span> <span className="font-bold font-mono text-green-700">{data.issueDate}</span></div>
-                <div><span className="font-semibold text-slate-500">ফেরত শেষ দিন:</span> <span className="font-bold font-mono text-red-700">{data.returnDate}</span></div>
+                <div className="col-span-2 font-bold text-[#22242A] border-b pb-1 font-mono">সময়সীমা</div>
+                <div><span className="font-semibold text-[#8E8E93]">ইস্যু ডেট:</span> <span className="font-bold font-mono text-[#22242A]">{data.issueDate}</span></div>
+                <div><span className="font-semibold text-[#8E8E93]">ফেরত শেষ দিন:</span> <span className="font-bold font-mono text-[#FF6B6B]">{data.returnDate}</span></div>
                 {data.returnedAt && (
-                  <div><span className="font-semibold text-slate-500">আসল ফেরত দিন:</span> <span className="font-bold font-mono text-purple-700">{data.returnedAt}</span></div>
+                  <div><span className="font-semibold text-[#8E8E93]">আসল ফেরত দিন:</span> <span className="font-bold font-mono text-[#22242A]">{data.returnedAt}</span></div>
                 )}
               </div>
 
               {data.extensionHistory?.length > 0 && (
                 <div className="top-dotted-border pt-2">
-                  <p className="text-xs font-bold text-indigo-800">সময় এক্সটেনশন হিস্ট্রি:</p>
+                  <p className="text-xs font-bold text-[#22242A]">সময় এক্সটেনশন হিস্ট্রি:</p>
                   {data.extensionHistory.map((h: any, i: number) => (
                     <p key={i} className="text-xs text-slate-600">● {h.date}: {h.payload}</p>
                   ))}
@@ -435,7 +435,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
               {data.comments?.length > 0 && (
                 <div className="top-dotted-border pt-2">
-                  <p className="text-xs font-bold text-indigo-800">অ্যাডমিন নোট / মন্তব্য:</p>
+                  <p className="text-xs font-bold text-[#22242A]">অ্যাডমিন নোট / মন্তব্য:</p>
                   {data.comments.map((c: string, i: number) => (
                     <p key={i} className="text-xs text-slate-600">● {c}</p>
                   ))}
@@ -447,28 +447,28 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "wishlist":
         return (
-          <div className="text-slate-800 space-y-4">
-            <h2 className="text-xl font-bold border-b border-purple-200 pb-2">উইশলিস্ট বই স্লিপ</h2>
-            <div className="border p-4 bg-purple-50 rounded-lg space-y-3">
+          <div className="text-[#22242A] space-y-4">
+            <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2">উইশলিস্ট বই স্লিপ</h2>
+            <div className="border p-4 bg-[#F5F3EF] rounded-lg space-y-3">
               <div>
-                <p className="text-xs text-slate-400 font-semibold">বইয়ের নাম (ইচ্ছাতালিকা)</p>
-                <p className="text-lg font-bold text-purple-900">{data.name}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">বইয়ের নাম (ইচ্ছাতালিকা)</p>
+                <p className="text-lg font-bold text-[#22242A]">{data.name}</p>
               </div>
               {data.author && (
                 <div>
-                  <p className="text-xs text-slate-400 font-semibold">লেখক</p>
+                  <p className="text-xs text-[#8E8E93] font-semibold">লেখক</p>
                   <p className="text-sm font-semibold">{data.author}</p>
                 </div>
               )}
               {data.publisher && (
                 <div>
-                  <p className="text-xs text-slate-400 font-semibold">প্রকাশনা</p>
+                  <p className="text-xs text-[#8E8E93] font-semibold">প্রকাশনা</p>
                   <p className="text-sm">{data.publisher}</p>
                 </div>
               )}
               <div>
-                <p className="text-xs text-slate-400 font-semibold">সংরক্ষণের তারিখ</p>
-                <p className="text-xs font-mono text-slate-500">{data.createdAt}</p>
+                <p className="text-xs text-[#8E8E93] font-semibold">সংরক্ষণের তারিখ</p>
+                <p className="text-xs font-mono text-[#8E8E93]">{data.createdAt}</p>
               </div>
             </div>
           </div>
@@ -476,12 +476,12 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "note":
         return (
-          <div className="text-slate-800 space-y-4">
-            <h2 className="text-xl font-bold border-b border-purple-200 pb-2">{data.title}</h2>
-            <div className="border p-4 bg-amber-50/50 rounded-lg whitespace-pre-wrap text-sm leading-relaxed text-slate-800 font-sans border-amber-200">
+          <div className="text-[#22242A] space-y-4">
+            <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2">{data.title}</h2>
+            <div className="border p-4 bg-[#F5F3EF]/50 rounded-lg whitespace-pre-wrap text-sm leading-relaxed text-[#22242A] font-sans border-[#E5E5EA]">
               {data.content}
             </div>
-            <div className="text-right text-xs text-slate-400">
+            <div className="text-right text-xs text-[#8E8E93]">
               নতুন সংস্করণ: {data.updatedAt || data.createdAt}
             </div>
           </div>
@@ -489,8 +489,8 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "history_list":
         return (
-          <div className="text-slate-800">
-            <h2 className="text-xl font-bold border-b border-purple-200 pb-2 mb-4">অডিট ট্রেইল ইতিহাস তালিকা</h2>
+          <div className="text-[#22242A]">
+            <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2 mb-4">অডিট ট্রেইল ইতিহাস তালিকা</h2>
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="bg-slate-100">
@@ -503,7 +503,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
                 {data.map((item: any) => (
                   <tr key={item.id}>
                     <td className="border p-2 font-mono">{item.timestamp}</td>
-                    <td className="border p-2 font-bold text-purple-800">{item.action}</td>
+                    <td className="border p-2 font-bold text-[#22242A]">{item.action}</td>
                     <td className="border p-2">{item.details}</td>
                   </tr>
                 ))}
@@ -514,34 +514,34 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "books_list":
         return (
-          <div className="text-slate-800">
-            <div className="flex justify-between items-center bg-gradient-to-r from-purple-800 to-indigo-800 text-white p-4 rounded-xl mb-6 shadow">
+          <div className="text-[#22242A]">
+            <div className="flex justify-between items-center bg-[#22242A] text-white p-4 rounded-xl mb-6 shadow">
               <div>
                 <h2 className="text-lg sm:text-xl font-bold font-sans">লাইব্রেরির সর্বমোট বই ক্যাটালগ (All Books Catalogue)</h2>
-                <p className="text-xs text-purple-100 mt-1">অক্ষর পাঠাগার নিবন্ধিত বইয়ের তালিকা ও মজুদ চিত্র</p>
+                <p className="text-xs text-[#22242A] mt-1">অক্ষর পাঠাগার নিবন্ধিত বইয়ের তালিকা ও মজুদ চিত্র</p>
               </div>
-              <div className="bg-white/15 text-white text-xs font-bold px-3 py-1.5 rounded-full font-mono shrink-0">
+              <div className="bg-white text-[#22242A] text-xs font-bold px-3 py-1.5 rounded-full font-mono shrink-0">
                 মোট বই: {data.length} টি
               </div>
             </div>
             <table className="table table-striped w-full text-xs border-collapse">
               <thead>
                 <tr className="bg-gradient-header">
-                  <th className="border border-purple-200/50 p-2.5 text-left font-bold">বই কোড</th>
-                  <th className="border border-purple-200/50 p-2.5 text-left font-bold">বইয়ের নাম</th>
-                  <th className="border border-purple-200/50 p-2.5 text-left font-bold">লেখক</th>
-                  <th className="border border-purple-200/50 p-2.5 text-left font-bold">প্রকাশনা</th>
-                  <th className="border border-purple-200/50 p-2.5 text-center font-bold">অবস্থা</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">বই কোড</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">বইয়ের নাম</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">লেখক</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">প্রকাশনা</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-center font-bold">অবস্থা</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((item: any, idx: number) => (
                   <tr key={item.id || idx}>
-                    <td className="border border-purple-100 p-2.5 font-mono font-bold text-purple-800">{item.code}</td>
-                    <td className="border border-purple-100 p-2.5 font-bold text-slate-900">{item.name}</td>
-                    <td className="border border-purple-100 p-2.5 text-slate-700">{item.author}</td>
-                    <td className="border border-purple-100 p-2.5 text-slate-500">{item.publisher || "অজ্ঞাত"}</td>
-                    <td className="border border-purple-100 p-2.5 text-center">
+                    <td className="border border-[#E5E5EA] p-2.5 font-mono font-bold text-[#22242A]">{item.code}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 font-bold text-[#22242A]">{item.name}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 text-slate-700">{item.author}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 text-[#8E8E93]">{item.publisher || "অজ্ঞাত"}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 text-center">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold inline-block ${item.status === "Available" ? "badge-success" : "badge-danger"}`}>
                         {item.status === "Available" ? "মজুদ আছে" : "ধারকৃত (Issued)"}
                       </span>
@@ -555,34 +555,34 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       case "members_list":
         return (
-          <div className="text-slate-800">
-            <div className="flex justify-between items-center bg-gradient-to-r from-cyan-800 to-blue-800 text-white p-4 rounded-xl mb-6 shadow">
+          <div className="text-[#22242A]">
+            <div className="flex justify-between items-center bg-gradient-to-r bg-[#F5F3EF] to-blue-800 text-[#22242A] p-4 rounded-xl mb-6 shadow">
               <div>
                 <h2 className="text-lg sm:text-xl font-bold font-sans">নিবন্ধিত লাইব্রেরি সদস্য তালিকা (Library Members Directory)</h2>
-                <p className="text-xs text-cyan-500 mt-1">অক্ষর পাঠাগার নিবন্ধিত সদস্যবৃন্দ ও যোগাযোগের বিবরণী</p>
+                <p className="text-xs text-[#22242A] mt-1">অক্ষর পাঠাগার নিবন্ধিত সদস্যবৃন্দ ও যোগাযোগের বিবরণী</p>
               </div>
-              <div className="bg-white/15 text-white text-xs font-bold px-3 py-1.5 rounded-full font-mono shrink-0">
+              <div className="bg-white text-[#22242A] text-xs font-bold px-3 py-1.5 rounded-full font-mono shrink-0">
                 মোট মেম্বার: {data.length} জন
               </div>
             </div>
             <table className="table table-striped w-full text-xs border-collapse">
               <thead>
                 <tr className="bg-gradient-header-cyan">
-                  <th className="border border-cyan-200/50 p-2.5 text-left font-bold">ফরম আইডি (ID)</th>
-                  <th className="border border-cyan-200/50 p-2.5 text-left font-bold">সদস্যের নাম</th>
-                  <th className="border border-cyan-200/50 p-2.5 text-left font-bold">জন্ম তারিখ</th>
-                  <th className="border border-cyan-200/50 p-2.5 text-left font-bold font-mono">মোবাইল নম্বর</th>
-                  <th className="border border-cyan-200/50 p-2.5 text-left font-bold">ঠিকানা</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">ফরম আইডি (ID)</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">সদস্যের নাম</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">জন্ম তারিখ</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold font-mono">মোবাইল নম্বর</th>
+                  <th className="border border-[#E5E5EA] p-2.5 text-left font-bold">ঠিকানা</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((item: any, idx: number) => (
                   <tr key={item.id || idx}>
-                    <td className="border border-cyan-100 p-2.5 font-mono font-bold text-cyan-800">#{item.formNumber}</td>
-                    <td className="border border-cyan-100 p-2.5 font-bold text-slate-900">{item.name}</td>
-                    <td className="border border-cyan-100 p-2.5 font-mono text-slate-700">{item.dob || "—"}</td>
-                    <td className="border border-cyan-100 p-2.5 font-mono text-slate-700">{item.mobile}</td>
-                    <td className="border border-cyan-100 p-2.5 text-slate-500">{item.address || "অজ্ঞাত ঠিকানা"}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 font-mono font-bold text-[#22242A]">#{item.formNumber}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 font-bold text-[#22242A]">{item.name}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 font-mono text-slate-700">{item.dob || "—"}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 font-mono text-slate-700">{item.mobile}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 text-[#8E8E93]">{item.address || "অজ্ঞাত ঠিকানা"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -592,7 +592,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       default:
         return (
-          <div className="text-slate-800">
+          <div className="text-[#22242A]">
             <pre className="text-xs">{JSON.stringify(data, null, 2)}</pre>
           </div>
         );
@@ -601,12 +601,12 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
   return (
     <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl border border-purple-500/30 flex flex-col animate-in fade-in zoom-in duration-200">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl border border-[#E5E5EA] flex flex-col animate-in fade-in zoom-in duration-200">
         
         {/* Modal Header */}
-        <div className="px-6 py-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex justify-between items-center border-b border-slate-800 shrink-0">
+        <div className="px-6 py-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-[#22242A] flex justify-between items-center border-b border-[#E5E5EA] shrink-0">
           <h3 className="font-bold text-lg">{title}</h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-full transition-colors cursor-pointer">
+          <button onClick={onClose} className="p-1.5 hover:bg-white rounded-full transition-colors cursor-pointer">
             <X size={18} />
           </button>
         </div>
@@ -623,7 +623,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
         <div className="px-6 py-4 bg-slate-50 border-t flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-4 py-2 border border-slate-300 text-slate-700 bg-white rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-sm font-bold shadow-sm"
+            className="w-full sm:w-auto px-4 py-2 border border-[#E5E5EA] text-slate-700 bg-white rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-sm font-bold shadow-sm"
             id="preview-close-btn"
           >
             বন্ধ করুন
@@ -632,7 +632,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
           <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2.5">
             <button
               onClick={handlePrint}
-              className="px-4.5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition-colors border border-slate-700 cursor-pointer flex items-center justify-center gap-2 text-sm font-bold shadow-md"
+              className="px-4.5 py-2.5 bg-white hover:bg-[#F5F3EF] text-[#22242A] rounded-lg transition-colors border border-[#E5E5EA] cursor-pointer flex items-center justify-center gap-2 text-sm font-bold shadow-md"
               id="preview-print-btn"
               disabled={isDownloading}
             >
@@ -642,7 +642,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
             <button
               onClick={handleDownloadPDF}
-              className="px-4.5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 text-sm font-bold shadow-purple-600/20 disabled:opacity-70 disabled:pointer-events-none"
+              className="px-4.5 py-2.5 bg-[#22242A] text-white rounded-lg hover:bg-[#2d2f36] transition-all shadow-md active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 text-sm font-bold shadow-none disabled:opacity-70 disabled:pointer-events-none"
               id="preview-download-pdf-btn"
               disabled={isDownloading}
             >

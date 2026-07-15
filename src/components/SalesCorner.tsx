@@ -45,18 +45,18 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
   const getCategoryIcon = (category: string) => {
     const cat = category.toLowerCase();
     if (cat.includes("টি-শার্ট") || cat.includes("t-shirt") || cat.includes("সার্ট")) {
-      return <Tag size={26} className="text-purple-400 group-hover:scale-110 transition-transform" />;
+      return <Tag size={26} className="text-[#22242A] group-hover:scale-110 transition-transform" />;
     }
     if (cat.includes("প্যাড") || cat.includes("ডায়েরি") || cat.includes("খাতা") || cat.includes("notebook") || cat.includes("প্যাড")) {
-      return <FileText size={26} className="text-blue-400 group-hover:scale-110 transition-transform" />;
+      return <FileText size={26} className="text-[#22242A] group-hover:scale-110 transition-transform" />;
     }
     if (cat.includes("বই") || cat.includes("book") || cat.includes("উপন্যাস")) {
-      return <BookOpen size={26} className="text-emerald-400 group-hover:scale-110 transition-transform" />;
+      return <BookOpen size={26} className="text-[#22242A] group-hover:scale-110 transition-transform" />;
     }
     if (cat.includes("মগ") || cat.includes("mug") || cat.includes("কাপ") || cat.includes("coffee") || cat.includes("চা")) {
-      return <Coffee size={26} className="text-orange-400 group-hover:scale-110 transition-transform" />;
+      return <Coffee size={26} className="text-[#22242A] group-hover:scale-110 transition-transform" />;
     }
-    return <Sparkles size={26} className="text-pink-400 group-hover:scale-110 transition-transform" />;
+    return <Sparkles size={26} className="text-[#22242A] group-hover:scale-110 transition-transform" />;
   };
 
   // Admin Form state
@@ -266,23 +266,23 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
   return (
     <div className="space-y-6">
       {/* Title section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900/40 p-5 rounded-2xl border border-purple-500/10 backdrop-blur-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#F5F3EF] p-5 rounded-2xl border border-[#E5E5EA] backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-purple-400">
+          <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A]">
             <Store size={22} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              অক্ষর বিক্রয় কর্নার <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full">বই ও উপহার</span>
+            <h1 className="text-xl font-bold text-[#22242A] tracking-tight flex items-center gap-2">
+              অক্ষর বিক্রয় কর্নার <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-full">বই ও উপহার</span>
             </h1>
-            <p className="text-xs text-slate-400">পাঠাগারের অফিশিয়াল টি-শার্ট, রাইটিং প্যাড, ডায়েরি এবং কাস্টমাইজড উপহার সামগ্রীর নির্ভরযোগ্য সংগ্রহশালা।</p>
+            <p className="text-xs text-[#8E8E93]">পাঠাগারের অফিশিয়াল টি-শার্ট, রাইটিং প্যাড, ডায়েরি এবং কাস্টমাইজড উপহার সামগ্রীর নির্ভরযোগ্য সংগ্রহশালা।</p>
           </div>
         </div>
 
         {isAdmin && (
           <button
             onClick={openAddForm}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl cursor-pointer shadow-lg shadow-purple-500/10 transition-all border border-purple-400/20"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white font-bold text-xs rounded-xl cursor-pointer shadow-lg shadow-none transition-all border border-[#22242A]"
           >
             <Plus size={14} />
             নতুন পণ্য যোগ করুন
@@ -292,15 +292,15 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
 
       {/* Success and General Errors */}
       {successMsg && (
-        <div className="bg-emerald-950/45 border border-emerald-500/20 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3 animate-in fade-in duration-200">
-          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+        <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 animate-in fade-in duration-200">
+          <CheckCircle2 size={16} className="text-[#22242A] shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="bg-red-950/45 border border-red-500/20 p-4 rounded-xl text-xs text-red-300 flex items-center gap-3 animate-in fade-in duration-200">
-          <AlertCircle size={16} className="text-red-400 shrink-0" />
+        <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 animate-in fade-in duration-200">
+          <AlertCircle size={16} className="text-[#FF6B6B] shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -308,30 +308,30 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       {/* Filter and Search Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
         <div className="lg:col-span-5 relative">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
           <input
             type="text"
             placeholder="পণ্যের নাম বা বিবরণ লিখে খুঁজুন..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full text-xs p-3 pl-10 bg-[#080c16]/55 border border-purple-500/10 rounded-xl text-white focus:outline-none focus:border-purple-400/50 transition-colors"
+            className="w-full text-xs p-3 pl-10 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] transition-colors"
           />
         </div>
 
         {/* Back to Overview or active navigation breadcrumb */}
         {selectedCategory !== "overview" && (
-          <div className="lg:col-span-7 flex items-center justify-between gap-3 bg-purple-950/20 px-4 py-2 border border-purple-500/10 rounded-xl">
+          <div className="lg:col-span-7 flex items-center justify-between gap-3 bg-[#F5F3EF] px-4 py-2 border border-[#E5E5EA] rounded-xl">
             <button
               onClick={() => {
                 setSelectedCategory("overview");
                 setSearchTerm("");
               }}
-              className="flex items-center gap-1.5 text-purple-300 hover:text-purple-200 text-xs font-bold transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-[#22242A] hover:text-[#22242A] text-xs font-bold transition-colors cursor-pointer"
             >
               <ArrowLeft size={14} /> সকল গ্রুপে ফিরে যান
             </button>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-              বর্তমান বিভাগঃ <span className="text-purple-300">{selectedCategory}</span>
+            <span className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-wide">
+              বর্তমান বিভাগঃ <span className="text-[#22242A]">{selectedCategory}</span>
             </span>
           </div>
         )}
@@ -341,22 +341,22 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       {selectedCategory === "overview" && !searchTerm ? (
         /* LEVEL 1: Category/Groups Dashboard Overview */
         <div className="space-y-4">
-          <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+          <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#22242A] flex items-center gap-1.5">
             <Filter size={12} /> গ্রুপ ভিত্তিক প্রোডাক্ট ক্যাটালগ:
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4.5">
             {/* 1. All Items group card */}
             <div
               onClick={() => setSelectedCategory("সব")}
-              className="group relative p-5 bg-gradient-to-br from-indigo-950/45 to-slate-900/40 border border-indigo-500/10 hover:border-indigo-400/35 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-4.5 shadow-xl"
+              className="group relative p-5 bg-white border border-[#E5E5EA] hover:border-[#22242A] rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-4.5 shadow-xl"
             >
-              <div className="p-4 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-colors shrink-0">
+              <div className="p-4 bg-[#F5F3EF] rounded-xl text-[#22242A] border border-[#E5E5EA] group-hover:bg-[#F5F3EF] transition-colors shrink-0">
                 <ShoppingBag size={28} className="group-hover:scale-110 transition-transform" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-extrabold text-white group-hover:text-indigo-300 transition-colors">সকল উপহার ও পণ্য</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">সব ক্যাটাগরির সামগ্রী একসাথে দেখুন</p>
-                <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 rounded-full">
+                <h3 className="text-sm font-extrabold text-[#22242A] group-hover:text-[#22242A] transition-colors">সকল উপহার ও পণ্য</h3>
+                <p className="text-[11px] text-[#8E8E93] mt-0.5">সব ক্যাটাগরির সামগ্রী একসাথে দেখুন</p>
+                <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-full">
                   মোট {items.length} টি সামগ্রী
                 </span>
               </div>
@@ -369,15 +369,15 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 <div
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className="group relative p-5 bg-gradient-to-br from-purple-950/30 to-slate-900/40 border border-purple-500/10 hover:border-purple-400/35 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-4.5 shadow-xl"
+                  className="group relative p-5 bg-white border border-[#E5E5EA] hover:border-[#22242A] rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-4.5 shadow-xl"
                 >
-                  <div className="p-4 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20 group-hover:bg-purple-500/20 transition-colors shrink-0">
+                  <div className="p-4 bg-[#F5F3EF] rounded-xl text-[#22242A] border border-[#E5E5EA] group-hover:bg-[#F5F3EF] transition-colors shrink-0">
                     {getCategoryIcon(cat)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-extrabold text-white group-hover:text-purple-300 transition-colors">{cat}</h3>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{cat} সম্পর্কিত উপহার সামগ্রী</p>
-                    <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/20 rounded-full">
+                    <h3 className="text-sm font-extrabold text-[#22242A] group-hover:text-[#22242A] transition-colors">{cat}</h3>
+                    <p className="text-[11px] text-[#8E8E93] mt-0.5">{cat} সম্পর্কিত উপহার সামগ্রী</p>
+                    <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-full">
                       {count} টি সামগ্রী
                     </span>
                   </div>
@@ -390,8 +390,8 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
         /* LEVEL 2: Compact Product Catalog List (like Book Catalog) */
         <div className="space-y-4">
           {/* Internal sub-category switching chips inside level 2 */}
-          <div className="flex flex-wrap gap-1.5 items-center bg-slate-950/30 p-3 rounded-xl border border-purple-500/10">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mr-2 flex items-center gap-1 shrink-0">
+          <div className="flex flex-wrap gap-1.5 items-center bg-white p-3 rounded-xl border border-[#E5E5EA]">
+            <span className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-wider mr-2 flex items-center gap-1 shrink-0">
               <Filter size={10} /> বিভাগঃ
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -400,7 +400,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                   setSelectedCategory("overview");
                   setSearchTerm("");
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all bg-slate-950/50 hover:bg-slate-900 border border-white/5 hover:border-white/10 text-purple-400 hover:text-purple-300`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all bg-white hover:bg-[#F5F3EF] border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#22242A] hover:text-[#22242A]`}
               >
                 ◀ সকল গ্রুপসমূহ
               </button>
@@ -412,8 +412,8 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
                       isActive 
-                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold shadow-md shadow-purple-500/5" 
-                        : "bg-slate-950/50 hover:bg-slate-900 border border-white/5 hover:border-white/10 text-slate-400 hover:text-slate-300"
+                        ? "bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] font-bold shadow-md shadow-none" 
+                        : "bg-white hover:bg-[#F5F3EF] border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#8E8E93] hover:text-[#22242A]"
                     }`}
                   >
                     {cat}
@@ -424,14 +424,14 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-16 text-slate-500 gap-3">
-              <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex flex-col items-center justify-center py-16 text-[#8E8E93] gap-3">
+              <div className="w-6 h-6 border-2 border-[#E5E5EA] border-t-transparent rounded-full animate-spin"></div>
               <p className="text-xs">পণ্য তালিকা লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center py-16 bg-[#080c16]/30 border border-dashed border-purple-500/5 rounded-2xl">
+            <div className="text-center py-16 bg-[#F5F3EF] border border-dashed border-[#E5E5EA] rounded-2xl">
               <ShoppingBag className="mx-auto text-slate-600 mb-3" size={32} />
-              <p className="text-xs text-slate-500">কোন সামগ্রী খুঁজে পাওয়া যায়নি।</p>
+              <p className="text-xs text-[#8E8E93]">কোন সামগ্রী খুঁজে পাওয়া যায়নি।</p>
             </div>
           ) : (
             /* COMPACT CARDS GRID (Matching the book catalog layout style precisely) */
@@ -440,10 +440,10 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 <div
                   key={item.id}
                   onClick={() => setSelectedItem(item)}
-                  className="glass-panel p-3.5 rounded-2xl border border-white/5 flex gap-4 hover:border-purple-500/35 duration-200 hover:-translate-y-0.5 relative group cursor-pointer"
+                  className=" p-3.5 rounded-2xl border border-[#E5E5EA] flex gap-4 hover:border-[#E5E5EA] duration-200 hover:-translate-y-0.5 relative group cursor-pointer"
                 >
                   {/* Compact Product Image panel */}
-                  <div className="w-20 h-28 rounded-xl bg-slate-950 overflow-hidden border border-slate-800 flex items-center justify-center shrink-0 relative">
+                  <div className="w-20 h-28 rounded-xl bg-white overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0 relative">
                     {item.imageUrl ? (
                       <img
                         src={item.imageUrl}
@@ -463,23 +463,23 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                   <div className="flex-1 flex flex-col justify-between min-w-0">
                     <div className="space-y-1">
                       <div className="flex justify-between items-start gap-1">
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-950 text-purple-300 ring-1 ring-purple-500/10 truncate">
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#F5F3EF] text-[#22242A] ring-1 ring-[#E5E5EA] truncate">
                           {item.category}
                         </span>
-                        <span className="text-xs font-black text-amber-300 shrink-0">৳{item.price}</span>
+                        <span className="text-xs font-black text-[#FACC15] shrink-0">৳{item.price}</span>
                       </div>
 
-                      <h3 className="font-bold text-white text-xs sm:text-sm truncate pt-1 group-hover:text-purple-300 transition-colors font-sans" title={item.name}>
+                      <h3 className="font-bold text-[#22242A] text-xs sm:text-sm truncate pt-1 group-hover:text-[#22242A] transition-colors font-sans" title={item.name}>
                         {item.name}
                       </h3>
-                      <p className="text-slate-400 text-[11px] line-clamp-2 leading-relaxed" title={item.description}>
+                      <p className="text-[#8E8E93] text-[11px] line-clamp-2 leading-relaxed" title={item.description}>
                         {item.description || "কোনো বিবরণ প্রদান করা হয়নি।"}
                       </p>
                     </div>
 
                     {/* Price and actions line */}
-                    <div className="flex items-center justify-between pt-2.5 border-t border-white/5 mt-1">
-                      <span className="text-[10px] font-bold text-purple-400 group-hover:underline flex items-center gap-1">
+                    <div className="flex items-center justify-between pt-2.5 border-t border-[#E5E5EA] mt-1">
+                      <span className="text-[10px] font-bold text-[#22242A] group-hover:underline flex items-center gap-1">
                         বিস্তারিত <Info size={10} />
                       </span>
 
@@ -487,14 +487,14 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                         <div className="flex items-center gap-1">
                           <button
                             onClick={(e) => openEditForm(item, e)}
-                            className="p-1.5 bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/5 rounded-lg cursor-pointer transition-colors"
+                            className="p-1.5 bg-[#F5F3EF] hover:bg-white text-[#8E8E93] hover:text-[#22242A] border border-[#E5E5EA] rounded-lg cursor-pointer transition-colors"
                             title="সম্পাদনা করুন"
                           >
                             <Edit2 size={10} />
                           </button>
                           <button
                             onClick={(e) => handleDeleteClick(item, e)}
-                            className="p-1.5 bg-slate-900/80 hover:bg-red-950/20 text-slate-400 hover:text-red-400 border border-white/5 hover:border-red-500/20 rounded-lg cursor-pointer transition-colors"
+                            className="p-1.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#8E8E93] hover:text-[#FF6B6B] border border-[#E5E5EA] hover:border-[#E5E5EA] rounded-lg cursor-pointer transition-colors"
                             title="মুছে ফেলুন"
                           >
                             <Trash2 size={10} />
@@ -511,20 +511,20 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       )}
 
       {/* Info Guideline Card */}
-      <div className="bg-[#0c1626]/40 border border-cyan-500/10 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="p-3 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20 shrink-0">
+      <div className="bg-[#0c1626]/40 border border-[#E5E5EA] p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="p-3 bg-[#F5F3EF] rounded-xl text-[#22242A] border border-[#E5E5EA] shrink-0">
           <HelpCircle size={18} />
         </div>
         <div className="space-y-1">
-          <p className="text-xs font-bold text-slate-200">ক্রয় করার নির্দেশিকা (How to buy?)</p>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs font-bold text-[#22242A]">ক্রয় করার নির্দেশিকা (How to buy?)</p>
+          <p className="text-xs text-[#8E8E93] leading-relaxed">
             {helplineText}
           </p>
         </div>
         <div className="sm:ml-auto w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
           <a
             href={`tel:${helplineNumber.split('').map(char => ({'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'}[char] || char)).join('').replace(/\D/g, '')}`}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 text-xs font-bold rounded-xl border border-cyan-500/20 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] text-xs font-bold rounded-xl border border-[#E5E5EA] transition-colors"
           >
             <PhoneCall size={12} />
             {helplineNumber}
@@ -535,19 +535,19 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       {/* ADD/EDIT ITEM MODAL */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-[#080c16] border border-purple-500/20 rounded-2xl shadow-2xl p-6 relative overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="w-full max-w-lg bg-[#F5F3EF] border border-[#E5E5EA] rounded-2xl shadow-2xl p-6 relative overflow-hidden flex flex-col max-h-[90vh]">
             
             {/* Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-purple-500/10">
+            <div className="flex items-center justify-between pb-3.5 border-b border-[#E5E5EA]">
               <div className="flex items-center gap-2">
-                <Store size={16} className="text-purple-400" />
-                <h3 className="text-sm font-bold text-white">
+                <Store size={16} className="text-[#22242A]" />
+                <h3 className="text-sm font-bold text-[#22242A]">
                   {formMode === "add" ? "নতুন পণ্য যোগ করুন" : "পণ্যের তথ্য পরিবর্তন করুন"}
                 </h3>
               </div>
               <button 
                 onClick={() => setIsFormOpen(false)}
-                className="text-slate-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                className="text-[#8E8E93] hover:text-[#22242A] p-1 hover:bg-white rounded-lg transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -555,8 +555,8 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
 
             {/* Error alerts inside form */}
             {formError && (
-              <div className="my-3.5 bg-red-950/45 border border-red-500/20 p-3.5 rounded-xl text-[11px] text-red-300 flex items-center gap-2.5">
-                <AlertCircle size={14} className="text-red-400 shrink-0" />
+              <div className="my-3.5 bg-[#F5F3EF] border border-[#E5E5EA] p-3.5 rounded-xl text-[11px] text-[#FF6B6B] flex items-center gap-2.5">
+                <AlertCircle size={14} className="text-[#FF6B6B] shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
@@ -564,27 +564,27 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
             {/* Form Fields */}
             <form onSubmit={handleFormSubmit} className="space-y-4 py-4 overflow-y-auto flex-1 text-left">
               <div>
-                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">পণ্যের নাম *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">পণ্যের নাম *</label>
                 <input
                   type="text"
                   required
                   placeholder="যেমনঃ অক্ষর লোগো টি-শার্ট"
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
-                  className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                  className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">ক্যাটাগরি *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">ক্যাটাগরি *</label>
                   <select
                     value={itemCategory}
                     onChange={(e) => setItemCategory(e.target.value)}
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                   >
                     {formCategories.map((cat) => (
-                      <option key={cat} value={cat} className="bg-slate-950 text-white">
+                      <option key={cat} value={cat} className="bg-white text-[#22242A]">
                         {cat}
                       </option>
                     ))}
@@ -592,7 +592,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">মূল্য (টাকা) *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">মূল্য (টাকা) *</label>
                   <input
                     type="number"
                     required
@@ -600,31 +600,31 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                     placeholder="যেমনঃ ৩৫০"
                     value={itemPrice}
                     onChange={(e) => setItemPrice(e.target.value)}
-                    className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                    className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">সংক্ষিপ্ত বিবরণ</label>
+                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">সংক্ষিপ্ত বিবরণ</label>
                 <textarea
                   placeholder="পণ্যের সংক্ষিপ্ত বর্ণনা দিন..."
                   rows={3}
                   value={itemDescription}
                   onChange={(e) => setItemDescription(e.target.value)}
-                  className="w-full text-xs p-3 bg-slate-950 border border-purple-500/15 rounded-xl text-white focus:outline-none focus:border-purple-400 resize-none"
+                  className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] focus:outline-none focus:border-[#22242A] resize-none"
                 />
               </div>
 
               {/* Photo Upload Area */}
               <div>
-                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">পণ্যের ছবি (Gallery থেকে আপলোড)</label>
+                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">পণ্যের ছবি (Gallery থেকে আপলোড)</label>
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                   <div className="sm:col-span-8">
-                    <label className="flex flex-col items-center justify-center p-4 border border-dashed border-purple-500/20 hover:border-purple-400/40 rounded-xl bg-slate-950 hover:bg-slate-900 cursor-pointer transition-all gap-1.5 text-center">
-                      <Upload size={16} className="text-purple-400 animate-pulse" />
-                      <span className="text-[11px] text-slate-300 font-semibold">ছবি আপলোড করুন</span>
-                      <span className="text-[9px] text-slate-500">JPG, PNG (Max 2MB)</span>
+                    <label className="flex flex-col items-center justify-center p-4 border border-dashed border-[#E5E5EA] hover:border-[#22242A] rounded-xl bg-white hover:bg-[#F5F3EF] cursor-pointer transition-all gap-1.5 text-center">
+                      <Upload size={16} className="text-[#22242A] animate-pulse" />
+                      <span className="text-[11px] text-[#22242A] font-semibold">ছবি আপলোড করুন</span>
+                      <span className="text-[9px] text-[#8E8E93]">JPG, PNG (Max 2MB)</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -634,7 +634,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                     </label>
                   </div>
 
-                  <div className="sm:col-span-4 h-24 bg-slate-950/80 rounded-xl border border-purple-500/10 flex items-center justify-center overflow-hidden relative">
+                  <div className="sm:col-span-4 h-24 bg-white rounded-xl border border-[#E5E5EA] flex items-center justify-center overflow-hidden relative">
                     {imagePreview ? (
                       <>
                         <img 
@@ -649,7 +649,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                             setItemImageUrl("");
                             setImagePreview("");
                           }}
-                          className="absolute top-1 right-1 p-1 bg-red-950 text-red-400 rounded-lg border border-red-500/20"
+                          className="absolute top-1 right-1 p-1 bg-[#F5F3EF] text-[#FF6B6B] rounded-lg border border-[#E5E5EA]"
                           title="ছবি সরান"
                         >
                           <X size={10} />
@@ -663,18 +663,18 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-3 border-t border-purple-500/10 flex items-center justify-end gap-2.5">
+              <div className="pt-3 border-t border-[#E5E5EA] flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="px-4 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg border border-white/5 transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-white text-[#8E8E93] hover:text-[#22242A] rounded-lg border border-[#E5E5EA] transition-colors cursor-pointer"
                 >
                   বাতিল করুন
                 </button>
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="px-4 py-2 text-xs bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-lg cursor-pointer transition-all disabled:opacity-50"
+                  className="px-4 py-2 text-xs bg-[#22242A] hover:bg-[#2d2f36] text-white font-bold rounded-lg cursor-pointer transition-all disabled:opacity-50"
                 >
                   {formLoading ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
                 </button>
@@ -687,18 +687,18 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       {/* DETAIL MODAL */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-[#080c16] border border-purple-500/20 rounded-2xl shadow-2xl p-6 relative overflow-hidden flex flex-col">
+          <div className="w-full max-w-lg bg-[#F5F3EF] border border-[#E5E5EA] rounded-2xl shadow-2xl p-6 relative overflow-hidden flex flex-col">
             
             <button 
               onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors cursor-pointer z-10"
+              className="absolute top-4 right-4 text-[#8E8E93] hover:text-[#22242A] p-1 hover:bg-white rounded-lg transition-colors cursor-pointer z-10"
             >
               <X size={16} />
             </button>
 
             <div className="space-y-4 text-left">
               {/* Image Preview */}
-              <div className="h-64 w-full bg-slate-950 rounded-xl overflow-hidden relative border border-white/5 flex items-center justify-center">
+              <div className="h-64 w-full bg-white rounded-xl overflow-hidden relative border border-[#E5E5EA] flex items-center justify-center">
                 {selectedItem.imageUrl ? (
                   <img
                     src={selectedItem.imageUrl}
@@ -714,26 +714,26 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 )}
                 
                 {/* Category overlay */}
-                <span className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 bg-slate-950/90 text-purple-300 border border-purple-500/25 rounded-lg backdrop-blur-sm">
+                <span className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 bg-white text-[#22242A] border border-[#E5E5EA] rounded-lg backdrop-blur-sm">
                   {selectedItem.category}
                 </span>
               </div>
 
               {/* Text content */}
               <div>
-                <h3 className="text-base font-extrabold text-white mb-1">{selectedItem.name}</h3>
-                <p className="text-[10px] font-mono text-slate-500">ID: {selectedItem.id} | যোগ করা হয়েছে: {selectedItem.createdAt}</p>
+                <h3 className="text-base font-extrabold text-[#22242A] mb-1">{selectedItem.name}</h3>
+                <p className="text-[10px] font-mono text-[#8E8E93]">ID: {selectedItem.id} | যোগ করা হয়েছে: {selectedItem.createdAt}</p>
                 
-                <div className="mt-3 text-xs text-slate-300 leading-relaxed max-h-32 overflow-y-auto pr-1">
+                <div className="mt-3 text-xs text-[#22242A] leading-relaxed max-h-32 overflow-y-auto pr-1">
                   {selectedItem.description || "পণ্যটির কোন বিস্তারিত বিবরণ দেওয়া হয়নি।"}
                 </div>
               </div>
 
               {/* Price Tag Box */}
-              <div className="p-4 bg-purple-950/15 border border-purple-500/10 rounded-xl flex justify-between items-center">
+              <div className="p-4 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">মূল্য (Total Price)</span>
-                  <span className="text-lg font-extrabold text-white">৳{selectedItem.price} টাকা</span>
+                  <span className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-wider block">মূল্য (Total Price)</span>
+                  <span className="text-lg font-extrabold text-[#22242A]">৳{selectedItem.price} টাকা</span>
                 </div>
                 
                 {isAdmin && (
@@ -742,7 +742,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                       setSelectedItem(null);
                       openEditForm(selectedItem, e);
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-950 hover:bg-purple-900 border border-purple-500/25 text-purple-300 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] text-xs font-bold rounded-lg transition-colors cursor-pointer"
                   >
                     <Edit2 size={11} />
                     তথ্য পরিবর্তন
@@ -751,17 +751,17 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               </div>
 
               {/* Order Box instructions */}
-              <div className="bg-cyan-950/20 border border-cyan-500/15 p-4 rounded-xl text-xs space-y-2.5">
-                <p className="font-bold text-cyan-300 flex items-center gap-1.5">
+              <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs space-y-2.5">
+                <p className="font-bold text-[#22242A] flex items-center gap-1.5">
                   <Info size={13} /> অর্ডার করতে চান?
                 </p>
-                <p className="text-slate-400 leading-relaxed">
+                <p className="text-[#8E8E93] leading-relaxed">
                   {helplineText}
                 </p>
                 <div className="flex items-center gap-2 pt-1">
                   <a
                     href={`tel:${helplineNumber.split('').map(char => ({'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'}[char] || char)).join('').replace(/\D/g, '')}`}
-                    className="flex items-center gap-1.5 text-xs font-bold text-cyan-300 hover:underline"
+                    className="flex items-center gap-1.5 text-xs font-bold text-[#22242A] hover:underline"
                   >
                     <PhoneCall size={12} /> হেল্পলাইন: {helplineNumber}
                   </a>
@@ -775,26 +775,26 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       {/* DELETE CONFIRMATION MODAL */}
       {itemToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-sm bg-[#080c16] border border-red-500/20 rounded-2xl p-5 shadow-2xl relative text-center">
-            <div className="p-3 bg-red-500/10 rounded-full w-fit mx-auto text-red-500 border border-red-500/25 mb-4">
+          <div className="w-full max-w-sm bg-[#F5F3EF] border border-[#E5E5EA] rounded-2xl p-5 shadow-2xl relative text-center">
+            <div className="p-3 bg-[#F5F3EF] rounded-full w-fit mx-auto text-[#FF6B6B] border border-[#E5E5EA] mb-4">
               <Trash2 size={22} />
             </div>
             
-            <h3 className="text-sm font-bold text-white mb-2">আপনি কি নিশ্চিত?</h3>
-            <p className="text-xs text-slate-400 mb-5 leading-relaxed">
-              আপনি কি সত্যিই <span className="font-semibold text-slate-300">'{itemToDelete.name}'</span> পণ্যটি বিক্রয় তালিকা থেকে মুছে ফেলতে চান? এই কাজটি আর ফিরিয়ে আনা সম্ভব নয়।
+            <h3 className="text-sm font-bold text-[#22242A] mb-2">আপনি কি নিশ্চিত?</h3>
+            <p className="text-xs text-[#8E8E93] mb-5 leading-relaxed">
+              আপনি কি সত্যিই <span className="font-semibold text-[#22242A]">'{itemToDelete.name}'</span> পণ্যটি বিক্রয় তালিকা থেকে মুছে ফেলতে চান? এই কাজটি আর ফিরিয়ে আনা সম্ভব নয়।
             </p>
 
             <div className="flex items-center justify-center gap-2.5">
               <button
                 onClick={() => setItemToDelete(null)}
-                className="px-4 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg border border-white/5 cursor-pointer transition-colors"
+                className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-white text-[#8E8E93] hover:text-[#22242A] rounded-lg border border-[#E5E5EA] cursor-pointer transition-colors"
               >
                 বাতিল করুন
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 text-xs bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg cursor-pointer transition-all"
+                className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] font-bold rounded-lg cursor-pointer transition-all"
               >
                 হ্যাঁ, মুছে ফেলুন
               </button>

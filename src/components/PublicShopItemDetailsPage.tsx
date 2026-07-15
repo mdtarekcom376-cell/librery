@@ -43,14 +43,14 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
     <div className="min-h-screen bg-white">
       {/* Sticky Header */}
       <header
-        className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm"
+        className="sticky top-0 z-50 bg-white backdrop-blur-md border-b border-[#E5E5EA] shadow-sm"
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-3">
           {/* Left: Back + Logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-slate-200 text-slate-600 hover:bg-slate-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
               title="বিক্রয় কর্নারে ফিরে যান"
             >
               <ArrowLeft size={14} />
@@ -62,7 +62,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
                 <img
                   src={logoSrc}
                   alt="অক্ষর পাঠাগার লোগো"
-                  className="w-8 h-8 md:w-9 md:h-9 rounded-xl object-contain bg-white border border-purple-500/20 p-0.5"
+                  className="w-8 h-8 md:w-9 md:h-9 rounded-xl object-contain bg-white border border-[#E5E5EA] p-0.5"
                 />
               )}
               <div>
@@ -79,7 +79,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
 
           {/* Right: Badge */}
           <span
-            className="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full hidden sm:inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 border border-orange-200"
+            className="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full hidden sm:inline-flex items-center gap-1.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA]"
           >
             <ShoppingBag size={10} />
             {item.category || "সাধারণ পণ্য"}
@@ -94,11 +94,11 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm flex flex-col md:flex-row">
+        <div className="bg-white rounded-3xl overflow-hidden border border-[#E5E5EA] shadow-sm flex flex-col md:flex-row">
           
           {/* Left side: Product Image */}
-          <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative">
-            <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white flex items-center justify-center relative">
+          <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
+            <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
               {item.imageUrl ? (
                 <img 
                   src={item.imageUrl} 
@@ -106,7 +106,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="text-slate-300 flex flex-col items-center gap-3 p-6 text-center">
+                <div className="text-[#22242A] flex flex-col items-center gap-3 p-6 text-center">
                   <Package size={48} />
                   <span className="text-xs font-bold font-body-bn">ছবি নেই</span>
                 </div>
@@ -120,14 +120,14 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
             {/* Meta tags */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {item.category && (
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1">
+                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-[#E5E5EA] flex items-center gap-1">
                   <ShoppingBag size={12} /> {item.category}
                 </span>
               )}
             </div>
 
             {/* Title */}
-            <h2 className="text-2xl md:text-4xl font-bold text-slate-800 mb-4 leading-tight font-display-bn">
+            <h2 className="text-2xl md:text-4xl font-bold text-[#22242A] mb-4 leading-tight font-display-bn">
               {item.name}
             </h2>
             
@@ -138,17 +138,17 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
 
             {/* Description */}
             <div className="mb-8 flex-1">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">পণ্যের বিবরণ</h3>
-              <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap bg-slate-50 p-5 rounded-xl border border-slate-100">
+              <h3 className="text-sm font-bold text-[#8E8E93] uppercase tracking-wider mb-3">পণ্যের বিবরণ</h3>
+              <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap bg-slate-50 p-5 rounded-xl border border-[#E5E5EA]">
                 {item.description || "এই পণ্যের কোনো বিবরণ যুক্ত করা হয়নি।"}
               </p>
             </div>
 
             {/* Action */}
-            <div className="mt-auto border-t border-slate-100 pt-6">
+            <div className="mt-auto border-t border-[#E5E5EA] pt-6">
               <button
                 onClick={handleOrder}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-xl font-bold transition-all cursor-pointer text-lg font-body-bn shadow-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-[#22242A] rounded-xl font-bold transition-all cursor-pointer text-lg font-body-bn shadow-sm"
               >
                 <MessageCircle size={20} />
                 হোয়াটসঅ্যাপে অর্ডার করুন
@@ -160,8 +160,8 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
       </motion.main>
 
       {/* Footer */}
-      <footer className="border-t py-6 px-4 text-center bg-slate-50 border-slate-200 mt-auto">
-        <p className="text-xs text-slate-500 font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
+      <footer className="border-t py-6 px-4 text-center bg-slate-50 border-[#E5E5EA] mt-auto">
+        <p className="text-xs text-[#8E8E93] font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
           © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
         </p>
         <button
