@@ -2,8 +2,7 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
-
-const DB_FILE = path.join(process.cwd(), "db.json");
+import pool from "./src/db";
 
 // Password Hasher Helper
 function hashPassword(password: string): string {
@@ -203,323 +202,18 @@ interface DatabaseSchema {
   notices?: Notice[];
 }
 
-// Initialize active database store
-function getInitialDb(): DatabaseSchema {
-  return {
-    admin: {
-      username: DEFAULT_USERNAME,
-      passwordHash: DEFAULT_PASSWORD_HASH,
-    },
-    groups: ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"],
-    shopCategories: ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"],
-    shopHelpline: {
-      number: "০১৩৩৩৪৭৮৪৪৮",
-      text: "বিক্রয় কর্নারের যেকোনো পণ্য সংগ্রহ করতে আমাদের হেল্পলাইন নাম্বারে যোগাযোগ করুন অথবা সরাসরি অক্ষর লাইব্রেরির কাউন্টারে ভিজিট করে সংগ্রহ করতে পারবেন।"
-    },
-    books: [
-      {
-        id: "b-1",
-        code: "BOK-101",
-        name: "পথের পাঁচালী",
-        author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়",
-        publisher: "signet press",
-        imageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400",
-        status: "Available",
-      },
-      {
-        id: "b-2",
-        code: "BOK-102",
-        name: "লালসালু",
-        author: "সৈয়দ ওয়ালীউল্লাহ",
-        publisher: "রেনেসাঁ পাবলিশার্স",
-        imageUrl: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
-        status: "Available",
-      },
-      {
-        id: "b-3",
-        code: "BOK-103",
-        name: "হিমুর হাতে কয়েকটি নীল পদ্ম",
-        author: "হুমায়ূন আহমেদ",
-        publisher: "অন্যপ্রকাশ",
-        imageUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400",
-        status: "Issued",
-      },
-      {
-        id: "b-4",
-        code: "BOK-104",
-        name: "গীতাঞ্জলি",
-        author: "রবীন্দ্রনাথ ঠাকুর",
-        publisher: "ইন্ডিয়ান পাবলিশিং হাউস",
-        imageUrl: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=400",
-        status: "Available",
-      },
-      {
-        id: "b-5",
-        code: "BOK-105",
-        name: "শঙ্খনীল কারাগার",
-        author: "হুমায়ূন আহমেদ",
-        publisher: "অন্যপ্রকাশ",
-        imageUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400",
-        status: "Available",
-      },
-    ],
-    members: [
-      {
-        formNumber: "1001",
-        name: "আরিফ রহমান",
-        mobile: "01712345678",
-        address: "মিরপুর-১১, ঢাকা",
-      },
-      {
-        formNumber: "1002",
-        name: "ফাতেমা ইয়াসমিন",
-        mobile: "01987654321",
-        address: "ধানমন্ডি-৩২, ঢাকা",
-      },
-      {
-        formNumber: "1003",
-        name: "মামুনুল ইসলাম",
-        mobile: "01555443322",
-        address: "উত্তরা-সেক্টর ৫, ঢাকা",
-      },
-    ],
-    issues: [
-      {
-        id: "i-1",
-        bookCode: "BOK-103",
-        bookName: "হিমুর হাতে কয়েকটি নীল পদ্ম",
-        author: "হুমায়ূন আহমেদ",
-        publisher: "অন্যপ্রকাশ",
-        memberName: "আরিফ রহমান",
-        formNumber: "1001",
-        mobile: "01712345678",
-        address: "মিরপুর-১১, ঢাকা",
-        issueDate: "2026-06-10",
-        returnDate: "2026-06-17",
-        status: "Issued",
-        extensionHistory: [],
-        comments: ["প্রচ্ছদ একটু ছেঁড়া রয়েছে"],
-      },
-      {
-        id: "i-2",
-        bookCode: "BOK-101",
-        bookName: "পথের পাঁচালী",
-        author: "বিভূতিভূষণ বন্দ্যোপাধ্যায়",
-        publisher: "signet press",
-        memberName: "ফাতেমা ইয়াসমিন",
-        formNumber: "1002",
-        mobile: "01987654321",
-        address: "ধানমন্ডি-৩২, ঢাকা",
-        issueDate: "2026-06-01",
-        returnDate: "2026-06-08",
-        status: "Returned",
-        extensionHistory: [{ date: "2026-06-08", action: "Extended", payload: "3" }],
-        comments: ["সময় মতো ফেরত এসেছে"],
-        returnedAt: "2026-06-11",
-      },
-    ],
-    wishlist: [
-      {
-        id: "w-1",
-        name: "কড়ি ও কোমল",
-        author: "রবীন্দ্রনাথ ঠাকুর",
-        publisher: "বিশ্বভারতী",
-        createdAt: "2026-06-12 11:30:00",
-      },
-    ],
-    notes: [
-      {
-        id: "n-1",
-        title: "পাঠক সমাবেশের তালিকা",
-        content: "১. আগামী সপ্তাহে নতুন কিছু রবীন্দ্রনাথের উপন্যাস কিনতে হবে।\n২. ১৯ শে জুন একটি বিশেষ গুণীজন পর্যালোচনা সভা অনুষ্ঠিত হবে।",
-        createdAt: "2026-06-12 11:15:00",
-        updatedAt: "2026-06-12 11:15:00",
-      }
-    ],
-    auditLogs: [
-      {
-        id: "log-1",
-        timestamp: "2026-06-10 10:15:00",
-        action: "বই যোগ",
-        details: "বই কোড BOK-103 যোগ করা হয়েছে (হিমুর হাতে কয়েকটি নীল পদ্ম)",
-      },
-      {
-        id: "log-2",
-        timestamp: "2026-06-10 10:20:00",
-        action: "বই ইস্যু",
-        details: "আরিফ রহমান (M: 1001) কে BOK-103 বই ইস্যু করা হয়েছে। রিটার্ন ডেট: ১৭ জুন ২০২৬",
-      },
-      {
-        id: "log-3",
-        timestamp: "2026-06-12 11:30:00",
-        action: "বই যোগ",
-        details: "উইশলিস্টে 'কড়ি ও কোমল' যোগ করা হয়েছে",
-      },
-    ],
-    shopItems: [
-      {
-        id: "shop-1",
-        name: "অক্ষর পাঠাগার প্রিমিয়াম টি-শার্ট",
-        description: "অক্ষর পাঠাগারের অফিশিয়াল লোগো সম্বলিত আকর্ষণীয় সুতি টি-শার্ট। চমৎকার প্রিন্ট এবং আরামদায়ক কাপড়।",
-        price: 350,
-        category: "টি-শার্ট",
-        imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=400",
-        createdAt: "2026-07-09 10:00:00",
-      },
-      {
-        id: "shop-2",
-        name: "অফিশিয়াল নোটপ্যাড ও রাইটিং ডায়েরি",
-        description: "অক্ষর পাঠাগার ব্রান্ডিং এর ১০০ পাতার উন্নত মানের স্পাইরাল ডায়েরি বা রাইটিং প্যাড। আপনার চিন্তাভাবনা লিখে রাখার জন্য উপযোগী।",
-        price: 120,
-        category: "প্যাড",
-        imageUrl: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?auto=format&fit=crop&q=80&w=400",
-        createdAt: "2026-07-09 10:05:00",
-      },
-      {
-        id: "shop-3",
-        name: "অক্ষর লোগো সিরামিক কফি মগ",
-        description: "সকালে চা বা কফি খাওয়ার জন্য অনন্য অক্ষর পাঠাগারের আকর্ষণীয় লোগো প্রিন্ট করা সিরামিক মগ। উপহার দেওয়ার জন্য চমৎকার।",
-        price: 180,
-        category: "মগ",
-        imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=400",
-        createdAt: "2026-07-09 10:10:00",
-      }
-    ],
-    paymentMethods: [
-      { id: "bkash", name: "বিকাশ", type: "Personal", number: "০১৩৩৩৪৭৮৪৪৮" },
-      { id: "nagad", name: "নগদ", type: "Personal", number: "০১৩৩৩৪৭৮৪৪৮" },
-      { id: "rocket", name: "রকেট", type: "Personal", number: "০১৩৩৩৪৭৮৪৪৮" }
-    ],
-  };
-}
-
-// In-memory cache to support read-only filesystems (like Vercel serverless) and maximize efficiency
-let MEMORY_DB_CACHE: DatabaseSchema | null = null;
-
-// Overlay environment variables dynamically for serverless cloud environments (like Vercel)
-function applyEnvOverrides(db: DatabaseSchema): DatabaseSchema {
-  const merged = { ...db };
-
-  // Ensure config structures exist
-  merged.admin = merged.admin ? { ...merged.admin } : { username: DEFAULT_USERNAME, passwordHash: DEFAULT_PASSWORD_HASH };
-  merged.firebaseConfig = merged.firebaseConfig ? { ...merged.firebaseConfig } : {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: "",
-  };
-  merged.googleSheetsConfig = merged.googleSheetsConfig ? { ...merged.googleSheetsConfig } : {
-    webAppUrl: "",
-    isAutoSyncEnabled: false,
-  };
-  merged.smsGateway = merged.smsGateway ? { ...merged.smsGateway } : {
-    provider: "simulated",
-    apiKey: "",
-    senderId: "",
-    customUrl: "",
-  };
-
-  // 1. Admin Overrides
-  if (process.env.ADMIN_USERNAME) {
-    merged.admin.username = process.env.ADMIN_USERNAME;
-  }
-  if (process.env.ADMIN_PASSWORD) {
-    merged.admin.passwordHash = hashPassword(process.env.ADMIN_PASSWORD);
-  } else if (process.env.ADMIN_PASSWORD_HASH) {
-    merged.admin.passwordHash = process.env.ADMIN_PASSWORD_HASH;
-  }
-
-  // 2. Firebase Configuration Overrides
-  const fbApiKey = process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY;
-  const fbAuthDomain = process.env.FIREBASE_AUTH_DOMAIN || process.env.VITE_FIREBASE_AUTH_DOMAIN;
-  const fbProjectId = process.env.FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID;
-  const fbStorageBucket = process.env.FIREBASE_STORAGE_BUCKET || process.env.VITE_FIREBASE_STORAGE_BUCKET;
-  const fbMessagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID || process.env.VITE_FIREBASE_MESSAGING_SENDER_ID;
-  const fbAppId = process.env.FIREBASE_APP_ID || process.env.VITE_FIREBASE_APP_ID;
-
-  if (fbApiKey) merged.firebaseConfig.apiKey = fbApiKey;
-  if (fbAuthDomain) merged.firebaseConfig.authDomain = fbAuthDomain;
-  if (fbProjectId) merged.firebaseConfig.projectId = fbProjectId;
-  if (fbStorageBucket) merged.firebaseConfig.storageBucket = fbStorageBucket;
-  if (fbMessagingSenderId) merged.firebaseConfig.messagingSenderId = fbMessagingSenderId;
-  if (fbAppId) merged.firebaseConfig.appId = fbAppId;
-
-  // 3. Google Sheets Configuration Overrides
-  const gsUrl = process.env.GOOGLE_SHEETS_WEB_APP_URL || process.env.VITE_GOOGLE_SHEETS_WEB_APP_URL;
-  if (gsUrl) merged.googleSheetsConfig.webAppUrl = gsUrl;
-
-  if (process.env.GOOGLE_SHEETS_AUTO_SYNC !== undefined) {
-    merged.googleSheetsConfig.isAutoSyncEnabled = process.env.GOOGLE_SHEETS_AUTO_SYNC === "true";
-  }
-
-  // 4. SMS Gateway Overrides
-  const smsProvider = process.env.SMS_PROVIDER;
-  const smsApiKey = process.env.SMS_API_KEY;
-  const smsSenderId = process.env.SMS_SENDER_ID;
-  const smsCustomUrl = process.env.SMS_CUSTOM_URL;
-
-  if (smsProvider) merged.smsGateway.provider = smsProvider;
-  if (smsApiKey) merged.smsGateway.apiKey = smsApiKey;
-  if (smsSenderId) merged.smsGateway.senderId = smsSenderId;
-  if (smsCustomUrl) merged.smsGateway.customUrl = smsCustomUrl;
-
-  return merged;
-}
-
-// Read database
-function readDb(): DatabaseSchema {
-  let dbToUse: DatabaseSchema;
-  if (MEMORY_DB_CACHE) {
-    dbToUse = MEMORY_DB_CACHE;
-  } else {
-    try {
-      if (fs.existsSync(DB_FILE)) {
-        const content = fs.readFileSync(DB_FILE, "utf-8");
-        MEMORY_DB_CACHE = JSON.parse(content);
-        
-        // Ensure paymentMethods is initialized
-        if (MEMORY_DB_CACHE && !MEMORY_DB_CACHE.paymentMethods) {
-          MEMORY_DB_CACHE.paymentMethods = [
-            { id: "bkash", name: "বিকাশ", type: "Personal", number: "০১৩৩৩৪৭৮৪৪৮" },
-            { id: "nagad", name: "নগদ", type: "Personal", number: "০১৩৩৩৪৭৮৪৪৮" },
-            { id: "rocket", name: "রকেট", type: "Personal", number: "০১৩৩৩৪৭৮৪৪৮" }
-          ];
-          writeDb(MEMORY_DB_CACHE);
-        }
-        dbToUse = MEMORY_DB_CACHE!;
-      } else {
-        const initial = getInitialDb();
-        writeDb(initial);
-        dbToUse = initial;
-      }
-    } catch (err) {
-      console.error("Error reading database file", err);
-      const initial = getInitialDb();
-      writeDb(initial);
-      dbToUse = initial;
-    }
-  }
-
-  return applyEnvOverrides(dbToUse);
-}
-
-// Write database
-function writeDb(data: DatabaseSchema) {
-  MEMORY_DB_CACHE = data;
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Error writing database file (expected on read-only environments like Vercel serverless):", err);
-  }
-}
+// Database logic migrated to MySQL using pool from src/db.ts
 
 // Google Sheets Auto-Import Helper for logging in and initial verification auto-loading
 async function importGoogleSheetsData(timeoutMs: number = 25000): Promise<any> {
   try {
-    const db = readDb();
-    const config = db.googleSheetsConfig;
+    const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
+    let config = { webAppUrl: "", isAutoSyncEnabled: false };
+    if (settingsRows.length > 0) {
+      const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      config = settings.googleSheetsConfig || config;
+    }
+
     if (!config || !config.webAppUrl) {
       console.log("[Google Sheets Auto-Import] Skipped: Web App URL not configured.");
       return null;
@@ -560,91 +254,51 @@ async function importGoogleSheetsData(timeoutMs: number = 25000): Promise<any> {
     let importedMembers = 0;
     let importedWishlist = 0;
 
-    // Refresh db state AFTER the await to ensure we merge on the latest state
-    const currentDb = readDb();
-
     // Import books safely
     if (Array.isArray(data.books)) {
-      data.books.forEach((b: any) => {
-        if (!b.code || !b.name) return;
-        const exists = currentDb.books.some(existing => existing.code === b.code);
-        if (!exists) {
-          currentDb.books.unshift({
-            id: b.id || `book-${Math.random().toString(36).substr(2, 9)}`,
-            code: b.code,
-            name: b.name,
-            author: b.author || "অজ্ঞাত",
-            publisher: b.publisher || "অজ্ঞাত প্রকাশনী",
-            imageUrl: b.imageUrl?.trim() || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
-            status: b.status || "Available",
-            group: b.group || ""
-          });
+      for (const b of data.books) {
+        if (!b.code || !b.name) continue;
+        const [existing]: any = await pool.query("SELECT id FROM books WHERE code = ?", [b.code]);
+        if (existing.length === 0) {
+          await pool.query(
+            "INSERT INTO books (code, name, author, publisher, image_url, status, book_group) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [b.code, b.name, b.author || "অজ্ঞাত", b.publisher || "অজ্ঞাত প্রকাশনী", b.imageUrl?.trim() || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400", b.status || "Available", b.group || ""]
+          );
           importedBooks++;
         }
-      });
+      }
     }
 
     // Import members safely
     if (Array.isArray(data.members)) {
-      data.members.forEach((m: any) => {
-        if (!m.formNumber || !m.name) return;
-        const exists = currentDb.members.some(existing => existing.formNumber === m.formNumber);
-        if (!exists) {
-          currentDb.members.push({
-            formNumber: m.formNumber,
-            name: m.name,
-            nameEnglish: m.nameEnglish || "",
-            mobile: m.mobile || "",
-            address: m.address || "",
-            dob: m.dob || "",
-            educationInstitution: m.educationInstitution || "",
-            className: m.className || "",
-            classRoll: m.classRoll || "",
-            fatherName: m.fatherName || "",
-            motherName: m.motherName || "",
-            currVillage: m.currVillage || "",
-            currPostOffice: m.currPostOffice || "",
-            currUpazila: m.currUpazila || "",
-            currDistrict: m.currDistrict || "",
-            permVillage: m.permVillage || "",
-            permPostOffice: m.permPostOffice || "",
-            permUpazila: m.permUpazila || "",
-            permDistrict: m.permDistrict || "",
-            bloodGroup: m.bloodGroup || "",
-            nidBirthReg: m.nidBirthReg || "",
-            educationQualification: m.educationQualification || "",
-            profession: m.profession || "",
-            nationality: m.nationality || "বাংলাদেশী",
-            paymentMethod: m.paymentMethod || "অফলাইন কাউন্টার",
-            senderNumber: m.senderNumber || "",
-            transactionId: m.transactionId || "",
-            paymentStatus: m.paymentStatus || "Paid",
-            photo: m.photo || ""
-          });
+      for (const m of data.members) {
+        if (!m.formNumber || !m.name) continue;
+        const [existing]: any = await pool.query("SELECT id FROM members WHERE form_number = ?", [m.formNumber]);
+        if (existing.length === 0) {
+          await pool.query(
+            "INSERT INTO members (form_number, name, name_english, mobile, address, dob, education_institution, class_name, class_roll, father_name, mother_name, curr_village, curr_post_office, curr_upazila, curr_district, perm_village, perm_post_office, perm_upazila, perm_district, blood_group, nid_birth_reg, education_qualification, profession, nationality, payment_method, sender_number, transaction_id, payment_status, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [m.formNumber, m.name, m.nameEnglish || "", m.mobile || "", m.address || "", m.dob || "", m.educationInstitution || "", m.className || "", m.classRoll || "", m.fatherName || "", m.motherName || "", m.currVillage || "", m.currPostOffice || "", m.currUpazila || "", m.currDistrict || "", m.permVillage || "", m.permPostOffice || "", m.permUpazila || "", m.permDistrict || "", m.bloodGroup || "", m.nidBirthReg || "", m.educationQualification || "", m.profession || "", m.nationality || "বাংলাদেশী", m.paymentMethod || "অফলাইন কাউন্টার", m.senderNumber || "", m.transactionId || "", m.paymentStatus || "Paid", m.photo || ""]
+          );
           importedMembers++;
         }
-      });
+      }
     }
 
     // Import wishlist safely
     if (Array.isArray(data.wishlist)) {
-      data.wishlist.forEach((w: any) => {
-        if (!w.name) return;
-        const exists = currentDb.wishlist.some(existing => existing.name === w.name);
-        if (!exists) {
-          currentDb.wishlist.unshift({
-            id: w.id || `wish-${Math.random().toString(36).substr(2, 9)}`,
-            name: w.name,
-            author: w.author || "",
-            publisher: w.publisher || "",
-            createdAt: new Date().toISOString().split("T")[0]
-          });
+      for (const w of data.wishlist) {
+        if (!w.name) continue;
+        const [existing]: any = await pool.query("SELECT id FROM wishlist WHERE name = ?", [w.name]);
+        if (existing.length === 0) {
+          await pool.query(
+            "INSERT INTO wishlist (name, author, publisher, created_at) VALUES (?, ?, ?, ?)",
+            [w.name, w.author || "", w.publisher || "", new Date().toISOString().split("T")[0] + " 00:00:00"]
+          );
           importedWishlist++;
         }
-      });
+      }
     }
 
-    writeDb(currentDb);
     addLog("গুগল শিট স্বয়ংক্রিয় ডাউনলোড (লগইন)", `লগইন সফল হওয়ায় গুগল শিট থেকে ডাটা অটো-ইম্পোর্ট করা হয়েছে। নতুন বই: ${importedBooks}টি, নতুন সদস্য: ${importedMembers}টি, নতুন উইশলিস্ট: ${importedWishlist}টি।`);
     console.log(`[Google Sheets Auto-Import] Successfully imported. Books: ${importedBooks}, Members: ${importedMembers}, Wishlist: ${importedWishlist}`);
     return { importedBooks, importedMembers, importedWishlist };
@@ -809,8 +463,13 @@ function buildGoogleSheetsParams(type: string, action: string, data: any): URLSe
 // Google Sheets Sync Helper (Sends URL-encoded requests to support Google Apps Script with POST and retry-GET Fallback)
 async function postToGoogleSheets(type: string, action: string, data: any) {
   try {
-    const db = readDb();
-    const config = db.googleSheetsConfig;
+    const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
+    let config = { webAppUrl: "", isAutoSyncEnabled: false };
+    if (settingsRows.length > 0) {
+      const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      config = settings.googleSheetsConfig || config;
+    }
+    
     if (!config || !config.webAppUrl) {
       console.log(`[Google Sheets Sync skipped] Auto-sync skipped: Web App URL is missing.`);
       return;
@@ -930,24 +589,23 @@ async function forcePostToGoogleSheets(webAppUrl: string, type: string, action: 
 
 // Write Audit Log Helper
 function addLog(action: string, details: string) {
-  const db = readDb();
-  const log: AuditLog = {
-    id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-    timestamp: formatCurrentDateTime(),
-    action,
-    details,
-  };
-  db.auditLogs.unshift(log);
-  writeDb(db);
+  pool.query("INSERT INTO audit_logs (timestamp, action, details) VALUES (?, ?, ?)", [formatCurrentDateTime(), action, details])
+    .catch((err: any) => console.error("Audit log error:", err));
 }
 
 // Simple token storage in memory for authentication checks (local caching)
 const ACTIVE_SESSIONS = new Set<string>();
 
 // Stateless signed token helpers for Vercel/serverless environments
-function generateSignedToken(username: string): string {
-  const db = readDb();
-  const secret = db.admin.passwordHash || "okkhor-fallback-secret";
+async function generateSignedToken(username: string): Promise<string> {
+  const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+  let secret = "okkhor-fallback-secret";
+  if (rows.length > 0) {
+    let admin = rows[0].setting_value;
+    if (typeof admin === "string") admin = JSON.parse(admin);
+    if (admin.passwordHash) secret = admin.passwordHash;
+  }
+  
   const payload = {
     username,
     expiry: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days expiry
@@ -957,13 +615,20 @@ function generateSignedToken(username: string): string {
   return `${payloadStr}.${signature}`;
 }
 
-function verifySignedToken(token: string): string | null {
+async function verifySignedToken(token: string): Promise<string | null> {
   try {
     const parts = token.split(".");
     if (parts.length !== 2) return null;
     const [payloadStr, signature] = parts;
-    const db = readDb();
-    const secret = db.admin.passwordHash || "okkhor-fallback-secret";
+    
+    const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+    let secret = "okkhor-fallback-secret";
+    if (rows.length > 0) {
+      let admin = rows[0].setting_value;
+      if (typeof admin === "string") admin = JSON.parse(admin);
+      if (admin.passwordHash) secret = admin.passwordHash;
+    }
+
     const expectedSignature = crypto.createHmac("sha256", secret).update(payloadStr).digest("hex");
     if (signature !== expectedSignature) return null;
 
@@ -1002,7 +667,7 @@ if (process.env.VERCEL) {
   });
 
   // Auth Middleware
-  const authenticateAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const authenticateAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ error: "অননুমোদিত! অনুগ্রহ করে লগইন করুন।" });
@@ -1010,7 +675,7 @@ if (process.env.VERCEL) {
     const token = authHeader.substring(7);
     if (!ACTIVE_SESSIONS.has(token)) {
       // Stateless signed token fallback (essential for serverless Vercel multi-instances)
-      const verifiedUser = verifySignedToken(token);
+      const verifiedUser = await verifySignedToken(token);
       if (verifiedUser) {
         ACTIVE_SESSIONS.add(token); // Cache locally on this container instance
       } else {
@@ -1030,11 +695,16 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "ইউজারনেম ও পাসওয়ার্ড আবশ্যক!" });
       }
 
-      const db = readDb();
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+      if (rows.length === 0) {
+        return res.status(401).json({ error: "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" });
+      }
+      let admin = rows[0].setting_value;
+      if (typeof admin === "string") admin = JSON.parse(admin);
       const inputHash = hashPassword(password);
 
-      if (db.admin.username === username && db.admin.passwordHash === inputHash) {
-        const token = generateSignedToken(username);
+      if (admin.username === username && admin.passwordHash === inputHash) {
+        const token = await generateSignedToken(username);
         ACTIVE_SESSIONS.add(token);
 
         console.log("[Google Sheets] Successful admin login! Triggering background auto-sync...");
@@ -1043,7 +713,7 @@ if (process.env.VERCEL) {
           console.log("[Google Sheets Auto-Import Login Background Note]:", err.message || err);
         });
 
-        return res.json({ token, username: db.admin.username });
+        return res.json({ token, username: admin.username });
       } else {
         return res.status(401).json({ error: "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" });
       }
@@ -1065,7 +735,7 @@ if (process.env.VERCEL) {
     let username = "";
 
     if (!isAuthenticated) {
-      const verifiedUser = verifySignedToken(token);
+      const verifiedUser = await verifySignedToken(token);
       if (verifiedUser) {
         ACTIVE_SESSIONS.add(token);
         isAuthenticated = true;
@@ -1073,12 +743,14 @@ if (process.env.VERCEL) {
       }
     } else {
       // Parse username from token directly
-      username = verifySignedToken(token) || "";
+      username = await verifySignedToken(token) || "";
     }
 
     if (isAuthenticated) {
-      const db = readDb();
-      if (!username) username = db.admin.username;
+      if (!username) {
+        const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+        if (rows.length > 0) username = rows[0].setting_value.username;
+      }
 
       // Trigger automatic background sheet import (highly responsive, no races or aborts)
       importGoogleSheetsData(60000).catch(err => {
@@ -1101,7 +773,7 @@ if (process.env.VERCEL) {
   });
 
   // Change Admin Credentials
-  app.post("/api/auth/change-credentials", authenticateAdmin, (req, res) => {
+  app.post("/api/auth/change-credentials", authenticateAdmin, async (req, res) => {
     const { currentUsername, currentPassword, securityPassword, newUsername, newPassword } = req.body;
 
     if (!currentUsername || !currentPassword || !securityPassword || !newUsername || !newPassword) {
@@ -1112,17 +784,17 @@ if (process.env.VERCEL) {
       return res.status(400).json({ error: "ভুল সিকিউরিটি পাসওয়ার্ড!" });
     }
 
-    const db = readDb();
+    const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+    const admin = rows.length > 0 ? rows[0].setting_value : { username: "", passwordHash: "" };
     const currentHash = hashPassword(currentPassword);
 
-    if (db.admin.username !== currentUsername || db.admin.passwordHash !== currentHash) {
+    if (admin.username !== currentUsername || admin.passwordHash !== currentHash) {
       return res.status(400).json({ error: "বর্তমান ইউজারনেম বা পাসওয়ার্ড সঠিক নয়!" });
     }
 
     // Apply changes
-    db.admin.username = newUsername;
-    db.admin.passwordHash = hashPassword(newPassword);
-    writeDb(db);
+    const newAdmin = { username: newUsername, passwordHash: hashPassword(newPassword) };
+    await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('admin', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(newAdmin)]);
 
     addLog("অ্যাডমিন পরিবর্তন", `ইউজারনেম বা পাসওয়ার্ড পরিবর্তন করা হয়েছে। নতুন ইউজারনেম: ${newUsername}`);
 
@@ -1130,11 +802,11 @@ if (process.env.VERCEL) {
   });
 
   // GET Firebase Config (Public - so frontend can initialize Firebase)
-  app.get("/api/public/firebase-config", (req, res) => {
+  app.get("/api/public/firebase-config", async (req, res) => {
     try {
-      const db = readDb();
-      if (db.firebaseConfig && db.firebaseConfig.apiKey) {
-        return res.json(db.firebaseConfig);
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'firebaseConfig'");
+      if (rows.length > 0 && rows[0].setting_value.apiKey) {
+        return res.json(rows[0].setting_value);
       }
       
       // Fallback to firebase-applet-config.json
@@ -1161,7 +833,7 @@ if (process.env.VERCEL) {
   });
 
   // POST Firebase Config (Protected - to update custom Firebase configuration)
-  app.post("/api/settings/firebase-config", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/firebase-config", authenticateAdmin, async (req, res) => {
     try {
       const { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId } = req.body;
       
@@ -1169,8 +841,7 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "API Key এবং Project ID পূরণ করা আবশ্যক।" });
       }
 
-      const db = readDb();
-      db.firebaseConfig = {
+      const firebaseConfig = {
         apiKey: (apiKey || "").trim(),
         authDomain: (authDomain || "").trim(),
         projectId: (projectId || "").trim(),
@@ -1178,7 +849,8 @@ if (process.env.VERCEL) {
         messagingSenderId: (messagingSenderId || "").trim(),
         appId: (appId || "").trim()
       };
-      writeDb(db);
+      
+      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('firebaseConfig', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(firebaseConfig)]);
 
       addLog("ফায়ারবেস সেটিংস আপডেট", `ফায়ারবেস কনফিগারেশন সফলভাবে আপডেট করা হয়েছে (Project ID: ${projectId})।`);
       res.json({ success: true, message: "ফায়ারবেস কনফিগারেশন সফলভাবে সেভ করা হয়েছে।" });
@@ -1189,14 +861,14 @@ if (process.env.VERCEL) {
   });
 
   // POST Firebase Login (Saves Firebase user session locally on the server)
-  app.post("/api/auth/firebase-login", (req, res) => {
+  app.post("/api/auth/firebase-login", async (req, res) => {
     const { uid, email, username } = req.body;
     if (!uid || !email) {
       return res.status(400).json({ error: "ফায়ারবেস ইউজার ডাটা পাওয়া যায়নি!" });
     }
 
     const usernameClean = username || email.split("@")[0];
-    const token = generateSignedToken(usernameClean);
+    const token = await generateSignedToken(usernameClean);
     ACTIVE_SESSIONS.add(token);
 
     console.log("[Firebase Auth] Successful login for", email);
@@ -1206,17 +878,22 @@ if (process.env.VERCEL) {
 
 
   // Verify settings access password
-  app.post("/api/settings/verify-password", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/verify-password", authenticateAdmin, async (req, res) => {
     try {
       const { password } = req.body;
       if (!password) {
         return res.status(400).json({ error: "পাসওয়ার্ড প্রদান করুন!" });
       }
-      const db = readDb();
-      const storedPassword = db.settingsPassword || "PASSWORD";
+      
+      const [pwdRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'settingsPassword'");
+      const storedPassword = pwdRows.length > 0 ? pwdRows[0].setting_value : "PASSWORD";
+      
+      const [adminRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+      const adminHash = adminRows.length > 0 ? adminRows[0].setting_value.passwordHash : "";
+      
       const hashedEnteredPassword = hashPassword(password);
       
-      if (password === storedPassword || hashedEnteredPassword === db.admin.passwordHash) {
+      if (password === storedPassword || hashedEnteredPassword === adminHash) {
         return res.json({ success: true });
       }
       return res.status(400).json({ error: "ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।" });
@@ -1227,21 +904,27 @@ if (process.env.VERCEL) {
   });
 
   // Change settings access password
-  app.post("/api/settings/change-password", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/change-password", authenticateAdmin, async (req, res) => {
     try {
       const { currentPassword, newPassword } = req.body;
       if (!currentPassword || !newPassword) {
         return res.status(400).json({ error: "সব তথ্য পূরণ করা বাধ্যতামূলক!" });
       }
-      const db = readDb();
-      const storedPassword = db.settingsPassword || "PASSWORD";
+      
+      const [pwdRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'settingsPassword'");
+      const storedPassword = pwdRows.length > 0 ? pwdRows[0].setting_value : "PASSWORD";
+      
+      const [adminRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+      const adminHash = adminRows.length > 0 ? adminRows[0].setting_value.passwordHash : "";
+      
       const hashedCurrentPassword = hashPassword(currentPassword);
       
-      if (currentPassword !== storedPassword && hashedCurrentPassword !== db.admin.passwordHash) {
+      if (currentPassword !== storedPassword && hashedCurrentPassword !== adminHash) {
         return res.status(400).json({ error: "বর্তমান পাসওয়ার্ড সঠিক নয়!" });
       }
-      db.settingsPassword = newPassword;
-      writeDb(db);
+      
+      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('settingsPassword', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(newPassword)]);
+      
       addLog("নিরাপত্তা সেটিংস", "সেটিংস প্রবেশের পাসওয়ার্ড পরিবর্তন করা হয়েছে।");
       res.json({ success: true, message: "সেটিংস পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে।" });
     } catch (err: any) {
@@ -1251,10 +934,11 @@ if (process.env.VERCEL) {
   });
 
   // GET logoBase64 (Public - for login page & header)
-  app.get("/api/public/logo", (req, res) => {
+  app.get("/api/public/logo", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({ logoBase64: db.logoBase64 || "" });
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'logoBase64'");
+      const logoBase64 = rows.length > 0 ? rows[0].setting_value : "";
+      res.json({ logoBase64 });
     } catch (err: any) {
       console.error("GET /api/public/logo failed:", err);
       res.status(500).json({ error: "সার্ভার এরর। লোগো লোড করা যায়নি।" });
@@ -1262,16 +946,14 @@ if (process.env.VERCEL) {
   });
 
   // POST logoBase64 (Protected - for saving the custom logo)
-  app.post("/api/settings/logo", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/logo", authenticateAdmin, async (req, res) => {
     try {
       const { logoBase64 } = req.body;
       if (logoBase64 === undefined) {
         return res.status(400).json({ error: "লোগো ডাটা প্রদান করা বাধ্যতামূলক।" });
       }
 
-      const db = readDb();
-      db.logoBase64 = logoBase64;
-      writeDb(db);
+      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('logoBase64', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(logoBase64)]);
 
       addLog("লোগো পরিবর্তন", "পাঠাগারের মূল লোগো সফলভাবে পরিবর্তন করা হয়েছে।");
       res.json({ success: true, message: "লোগো সফলভাবে পরিবর্তন করা হয়েছে।" });
@@ -1282,12 +964,11 @@ if (process.env.VERCEL) {
   });
 
   // GET SMS template
-  app.get("/api/sms/template", authenticateAdmin, (req, res) => {
+  app.get("/api/sms/template", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      const defaultTemplate = "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
-      const currentTemplate = db.smsTemplate || defaultTemplate;
-      console.log("GET /api/sms/template: sending template");
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsTemplate'");
+      const defaultTemplate = "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ পণ্ডিত না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
+      const currentTemplate = rows.length > 0 ? rows[0].setting_value : defaultTemplate;
       res.json({ template: currentTemplate });
     } catch (err: any) {
       console.error("GET /api/sms/template failed:", err);
@@ -1296,22 +977,16 @@ if (process.env.VERCEL) {
   });
 
   // POST SMS template
-  app.post("/api/sms/template", authenticateAdmin, (req, res) => {
+  app.post("/api/sms/template", authenticateAdmin, async (req, res) => {
     try {
-      console.log("POST /api/sms/template: body received", req.body);
       const template = req.body.template !== undefined ? req.body.template : req.body.smsTemplate;
-      
       if (template === undefined || typeof template !== "string") {
-        console.error("POST /api/sms/template: validation failed. Received template:", template);
         return res.status(400).json({ error: "সঠিক মেসেজ টেমপ্লেট টেক্সট প্রদান করুন।" });
       }
       
-      const db = readDb();
-      db.smsTemplate = template;
-      writeDb(db);
+      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('smsTemplate', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(template)]);
       
       addLog("টেমপ্লেট আপডেট", "SMS রিমাইন্ডার পাঠানোর টেক্সট টেমপ্লেট পরিবর্তন করা হয়েছে।");
-      console.log("POST /api/sms/template: successfully written to db.json");
       res.json({ success: true, message: "মেসেজ টেমপ্লেট সফলভাবে আপডেট করা হয়েছে।" });
     } catch (err: any) {
       console.error("POST /api/sms/template failed:", err);
@@ -1320,16 +995,16 @@ if (process.env.VERCEL) {
   });
 
   // GET SMS Gateway Settings
-  app.get("/api/sms/gateway", authenticateAdmin, (req, res) => {
+  app.get("/api/sms/gateway", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsGateway'");
       const defaultGateway = {
         provider: "simulated",
         apiKey: "",
         senderId: "",
         customUrl: "https://api.example.com/sms/send?apiKey={apiKey}&to={to}&message={message}"
       };
-      res.json(db.smsGateway || defaultGateway);
+      res.json(rows.length > 0 ? rows[0].setting_value : defaultGateway);
     } catch (err: any) {
       console.error("GET /api/sms/gateway failed:", err);
       res.status(500).json({ error: "সার্ভার এরর। গেটওয়ে সেটিংস লোড করা যায়নি।" });
@@ -1337,21 +1012,20 @@ if (process.env.VERCEL) {
   });
 
   // POST SMS Gateway Settings
-  app.post("/api/sms/gateway", authenticateAdmin, (req, res) => {
+  app.post("/api/sms/gateway", authenticateAdmin, async (req, res) => {
     try {
       const { provider, apiKey, senderId, customUrl } = req.body;
       if (!provider) {
         return res.status(400).json({ error: "প্রোভাইডার সিলেক্ট করা আবশ্যক।" });
       }
 
-      const db = readDb();
-      db.smsGateway = {
+      const gateway = {
         provider: provider || "simulated",
         apiKey: apiKey || "",
         senderId: senderId || "",
         customUrl: customUrl || ""
       };
-      writeDb(db);
+      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('smsGateway', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(gateway)]);
 
       addLog("গেটওয়ে সেটিংস আপডেট", `SMS গেটওয়ে প্রোভাইডার হিসেবে '${provider}' সেট করা হয়েছে।`);
       res.json({ success: true, message: "SMS গেটওয়ে সেটিংস সফলভাবে আপডেট করা হয়েছে।" });
@@ -1362,13 +1036,10 @@ if (process.env.VERCEL) {
   });
 
   // GET Google Sheets Settings
-  app.get("/api/settings/googlesheets", authenticateAdmin, (req, res) => {
+  app.get("/api/settings/googlesheets", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      const config = db.googleSheetsConfig || {
-        webAppUrl: "",
-        isAutoSyncEnabled: false
-      };
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'googleSheetsConfig'");
+      const config = rows.length > 0 ? rows[0].setting_value : { webAppUrl: "", isAutoSyncEnabled: false };
       res.json(config);
     } catch (err: any) {
       console.error("GET /api/settings/googlesheets failed:", err);
@@ -1377,15 +1048,14 @@ if (process.env.VERCEL) {
   });
 
   // POST Google Sheets Settings
-  app.post("/api/settings/googlesheets", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/googlesheets", authenticateAdmin, async (req, res) => {
     try {
       const { webAppUrl, isAutoSyncEnabled, securityPassword } = req.body;
-      const db = readDb();
-      
-      const existingUrl = db.googleSheetsConfig?.webAppUrl || "";
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'googleSheetsConfig'");
+      const existingConfig = rows.length > 0 ? rows[0].setting_value : {};
+      const existingUrl = existingConfig.webAppUrl || "";
       const newUrl = (webAppUrl || "").trim();
 
-      // If existing URL is set and is being changed to a different, non-empty URL
       if (existingUrl && newUrl && existingUrl !== newUrl) {
         if (!securityPassword) {
           return res.status(400).json({ error: "গুগল শিট লিংক পরিবর্তন করার জন্য সিকিউরিটি কী প্রদান করুন!" });
@@ -1395,11 +1065,8 @@ if (process.env.VERCEL) {
         }
       }
 
-      db.googleSheetsConfig = {
-        webAppUrl: newUrl,
-        isAutoSyncEnabled: !!isAutoSyncEnabled
-      };
-      writeDb(db);
+      const newConfig = { webAppUrl: newUrl, isAutoSyncEnabled: !!isAutoSyncEnabled };
+      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('googleSheetsConfig', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(newConfig)]);
 
       addLog("গুগল শিট সেটিংস আপডেট", `গুগল শিট Web App URL এবং অটো-সিঙ্ক সেটিংস আপডেট করা হয়েছে।`);
       res.json({ success: true, message: "গুগল শিট কানেকশন সেটিংস সফলভাবে সেভ করা হয়েছে।" });
@@ -1455,16 +1122,21 @@ if (process.env.VERCEL) {
   // POST Google Sheets Manual Full Synchronization
   app.post("/api/settings/googlesheets/sync-all", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      const config = db.googleSheetsConfig;
+      const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
+      let config = { webAppUrl: "" };
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        if (settings.googleSheetsConfig) config = settings.googleSheetsConfig;
+      }
+
       if (!config || !config.webAppUrl) {
         return res.status(400).json({ error: "কোনো গুগল শিট Web App URL সেট করা নেই। দয়া করে সেটিংস প্রথমে সেট করে সেভ করুন।" });
       }
 
       const webAppUrl = config.webAppUrl;
-      const booksList = db.books || [];
-      const membersList = db.members || [];
-      const wishlistList = db.wishlist || [];
+      const [booksList]: any = await pool.query("SELECT * FROM books");
+      const [membersList]: any = await pool.query("SELECT * FROM members");
+      const [wishlistList]: any = await pool.query("SELECT * FROM wishlist");
 
       const totalItems = booksList.length + membersList.length + wishlistList.length;
 
@@ -1503,148 +1175,164 @@ if (process.env.VERCEL) {
 
   // ---------------- DASHBOARD DATA API ----------------
 
-  app.get("/api/dashboard", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    const todayStr = new Date().toISOString().split("T")[0];
+  app.get("/api/dashboard", authenticateAdmin, async (req, res) => {
+    try {
+      const todayStr = new Date().toISOString().split("T")[0];
 
-    // Total books
-    const totalBooks = db.books.length;
-    // Available books
-    const availableBooks = db.books.filter(b => b.status === "Available").length;
-    // Issued books
-    const issuedBooks = db.books.filter(b => b.status === "Issued").length;
-    // Total members
-    const totalMembers = db.members.length;
+      // Execute basic count queries concurrently
+      const [booksTotal]: any = await pool.query("SELECT COUNT(*) AS count FROM books");
+      const [booksAvail]: any = await pool.query("SELECT COUNT(*) AS count FROM books WHERE status = 'Available'");
+      const [booksIssued]: any = await pool.query("SELECT COUNT(*) AS count FROM books WHERE status = 'Issued'");
+      const [membersTotal]: any = await pool.query("SELECT COUNT(*) AS count FROM members");
+      
+      const [lateBooksRows]: any = await pool.query("SELECT COUNT(*) AS count FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]);
+      
+      const [todaysTxRows]: any = await pool.query("SELECT COUNT(*) AS count FROM issues WHERE issue_date = ? OR DATE(returned_at) = ?", [todayStr, todayStr]);
 
-    // Late Issued books: returnDate is past, and status is "Issued"
-    const lateBooks = db.issues.filter(issue => {
-      if (issue.status !== "Issued") return false;
-      const today = new Date(todayStr);
-      const retDate = new Date(issue.returnDate);
-      return retDate < today;
-    }).length;
+      const totalBooks = booksTotal[0].count;
+      const availableBooks = booksAvail[0].count;
+      const issuedBooks = booksIssued[0].count;
+      const totalMembers = membersTotal[0].count;
+      const lateBooks = lateBooksRows[0].count;
+      const todaysTransactions = todaysTxRows[0].count;
 
-    // Today's transactions
-    const todaysTransactions = db.issues.filter(issue => {
-      const isTodayIssue = issue.issueDate === todayStr;
-      const isTodayReturn = issue.returnedAt && issue.returnedAt.startsWith(todayStr);
-      return isTodayIssue || isTodayReturn;
-    }).length;
+      // 1. Monthly Issue Data (last 6 months)
+      const bnMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+      const issuesByMonthMap: Record<string, number> = {};
+      const returnsByMonthMap: Record<string, number> = {};
 
-    // 1. Monthly Issue Data (last 6 months placeholder & calculated from db)
-    // We can map issues by month names in Bengali
-    const bnMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
-    const issuesByMonthMap: Record<string, number> = {};
-    const returnsByMonthMap: Record<string, number> = {};
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const mName = bnMonths[d.getMonth()];
+        issuesByMonthMap[mName] = 0;
+        returnsByMonthMap[mName] = 0;
+      }
 
-    // Preset last 6 months
-    const now = new Date();
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const mName = bnMonths[d.getMonth()];
-      issuesByMonthMap[mName] = 0;
-      returnsByMonthMap[mName] = 0;
-    }
-
-    // Populate actual issue numbers
-    db.issues.forEach(issue => {
-      try {
-        const issueD = new Date(issue.issueDate);
-        const mIndex = issueD.getMonth();
-        const mName = bnMonths[mIndex];
-        if (mName in issuesByMonthMap) {
-          issuesByMonthMap[mName]++;
-        }
-
-        if (issue.returnedAt) {
-          const retD = new Date(issue.returnedAt);
-          const retMName = bnMonths[retD.getMonth()];
-          if (retMName in returnsByMonthMap) {
-            returnsByMonthMap[retMName]++;
+      // We fetch only the issue_date and returned_at for the last 6 months to minimize data transfer
+      const [recentIssues]: any = await pool.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) OR returned_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)");
+      
+      recentIssues.forEach((issue: any) => {
+        try {
+          if (issue.issue_date) {
+            const issueD = new Date(issue.issue_date);
+            const mName = bnMonths[issueD.getMonth()];
+            if (mName in issuesByMonthMap) issuesByMonthMap[mName]++;
           }
-        }
-      } catch (err) {}
-    });
+          if (issue.returned_at) {
+            const retD = new Date(issue.returned_at);
+            const retMName = bnMonths[retD.getMonth()];
+            if (retMName in returnsByMonthMap) returnsByMonthMap[retMName]++;
+          }
+        } catch (err) {}
+      });
 
-    const monthlyReport = Object.keys(issuesByMonthMap).map(mName => ({
-      month: mName,
-      issues: issuesByMonthMap[mName],
-      returns: returnsByMonthMap[mName] || 0,
-    }));
+      const monthlyReport = Object.keys(issuesByMonthMap).map(mName => ({
+        month: mName,
+        issues: issuesByMonthMap[mName],
+        returns: returnsByMonthMap[mName] || 0,
+      }));
 
-    // 2. Most Popular Books
-    const bookRentCounts: Record<string, { code: string; name: string; count: number }> = {};
-    db.issues.forEach(issue => {
-      const key = issue.bookCode;
-      if (!bookRentCounts[key]) {
-        bookRentCounts[key] = { code: issue.bookCode, name: issue.bookName, count: 0 };
-      }
-      bookRentCounts[key].count++;
-    });
+      // 2. Most Popular Books
+      const [popularBooksRows]: any = await pool.query(`
+        SELECT book_code AS code, book_name AS name, COUNT(*) AS count 
+        FROM issues 
+        GROUP BY book_code, book_name 
+        ORDER BY count DESC 
+        LIMIT 5
+      `);
+      const popularBooks = popularBooksRows.map((r: any) => ({ code: r.code, name: r.name, count: Number(r.count) }));
 
-    const popularBooks = Object.values(bookRentCounts)
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      // 3. Most Active Members
+      const [activeMembersRows]: any = await pool.query(`
+        SELECT form_number AS formNumber, member_name AS name, COUNT(*) AS count 
+        FROM issues 
+        GROUP BY form_number, member_name 
+        ORDER BY count DESC 
+        LIMIT 5
+      `);
+      const activeMembers = activeMembersRows.map((r: any) => ({ formNumber: r.formNumber, name: r.name, count: Number(r.count) }));
 
-    // 3. Most Active Members
-    const memberIssueCounts: Record<string, { formNumber: string; name: string; count: number }> = {};
-    db.issues.forEach(issue => {
-      const key = issue.formNumber;
-      if (!memberIssueCounts[key]) {
-        memberIssueCounts[key] = { formNumber: issue.formNumber, name: issue.memberName, count: 0 };
-      }
-      memberIssueCounts[key].count++;
-    });
+      // Late return reports list
+      const [lateReportLoansRows]: any = await pool.query("SELECT * FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]);
+      const lateReportLoans = lateReportLoansRows.map((r: any) => ({
+        id: String(r.id),
+        bookCode: r.book_code,
+        bookName: r.book_name,
+        author: r.author,
+        publisher: r.publisher,
+        memberName: r.member_name,
+        formNumber: r.form_number,
+        mobile: r.mobile,
+        address: r.address,
+        issueDate: r.issue_date,
+        returnDate: r.return_date,
+        status: r.status,
+        extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || []),
+        comments: typeof r.comments === "string" ? JSON.parse(r.comments) : (r.comments || []),
+        returnedAt: r.returned_at
+      }));
 
-    const activeMembers = Object.values(memberIssueCounts)
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-
-    // Late return reports list
-    const lateReportLoans = db.issues.filter(issue => {
-      if (issue.status !== "Issued") return false;
-      return new Date(issue.returnDate) < new Date(todayStr);
-    });
-
-    res.json({
-      stats: {
-        totalBooks,
-        availableBooks,
-        issuedBooks,
-        lateBooks,
-        todaysTransactions,
-        totalMembers,
-      },
-      charts: {
-        monthlyReport,
-        popularBooks,
-        activeMembers,
-        lateReportLoans,
-      },
-    });
+      res.json({
+        stats: {
+          totalBooks,
+          availableBooks,
+          issuedBooks,
+          lateBooks,
+          todaysTransactions,
+          totalMembers,
+        },
+        charts: {
+          monthlyReport,
+          popularBooks,
+          activeMembers,
+          lateReportLoans,
+        },
+      });
+    } catch (err: any) {
+      console.error(err);
+      res.status(500).json({ error: "ড্যাশবোর্ড ডেটা লোড করতে ব্যর্থ।" });
+    }
   });
 
   // ---------------- BOOK MANAGEMENT API ----------------
 
   // Search and Suggest
-  app.get("/api/books/suggest", authenticateAdmin, (req, res) => {
+  app.get("/api/books/suggest", authenticateAdmin, async (req, res) => {
     const q = (req.query.q || "").toString().toLowerCase();
-    const db = readDb();
 
-    const bengaliToEnglish: Record<string, string> = {
-      '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
-      '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
-    };
-    const parseNumberFromCode = (code: string): number => {
-      let engCode = code.replace(/[০-৯]/g, (m) => bengaliToEnglish[m] || m);
-      const match = engCode.match(/\d+/);
-      if (match) {
-        return parseInt(match[0], 10);
-      }
-      return Infinity;
-    };
-    const sortBooks = (arr: any[]) => {
-      return [...arr].sort((a, b) => {
+    let query = "SELECT * FROM books";
+    let params: any[] = [];
+    if (q) {
+      query += " WHERE LOWER(code) LIKE ? OR LOWER(name) LIKE ? OR LOWER(author) LIKE ? OR LOWER(publisher) LIKE ?";
+      const likeQ = `%${q}%`;
+      params = [likeQ, likeQ, likeQ, likeQ];
+    }
+    
+    try {
+      const [rows]: any = await pool.query(query, params);
+      
+      const mapBookRow = (r: any) => ({
+        id: String(r.id),
+        code: r.code, name: r.name, author: r.author, publisher: r.publisher,
+        imageUrl: r.image_url, status: r.status, group: r.book_group
+      });
+      const mapped = rows.map(mapBookRow);
+
+      const bengaliToEnglish: Record<string, string> = {
+        '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+        '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
+      };
+      const parseNumberFromCode = (code: string): number => {
+        let engCode = code.replace(/[০-৯]/g, (m) => bengaliToEnglish[m] || m);
+        const match = engCode.match(/\d+/);
+        if (match) {
+          return parseInt(match[0], 10);
+        }
+        return Infinity;
+      };
+      
+      const sorted = [...mapped].sort((a, b) => {
         const numA = parseNumberFromCode(a.code);
         const numB = parseNumberFromCode(b.code);
         if (numA !== numB) {
@@ -1652,105 +1340,111 @@ if (process.env.VERCEL) {
         }
         return a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' });
       });
-    };
 
-    if (!q) {
-      return res.json(sortBooks(db.books).slice(0, 5));
+      res.json(q ? sorted : sorted.slice(0, 5));
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    const matches = db.books.filter(
-      b =>
-        b.code.toLowerCase().includes(q) ||
-        b.name.toLowerCase().includes(q) ||
-        b.author.toLowerCase().includes(q) ||
-        b.publisher.toLowerCase().includes(q)
-    );
-
-    res.json(sortBooks(matches));
   });
 
   // Get books with query matching
-  app.get("/api/books", authenticateAdmin, (req, res) => {
+  app.get("/api/books", authenticateAdmin, async (req, res) => {
     const q = (req.query.q || "").toString().toLowerCase();
     const status = (req.query.status || "").toString();
-    const db = readDb();
 
-    let list = db.books;
+    let query = "SELECT * FROM books WHERE 1=1";
+    let params: any[] = [];
 
     if (q) {
-      list = list.filter(
-        b =>
-          b.code.toLowerCase().includes(q) ||
-          b.name.toLowerCase().includes(q) ||
-          b.author.toLowerCase().includes(q) ||
-          b.publisher.toLowerCase().includes(q)
-      );
+      query += " AND (LOWER(code) LIKE ? OR LOWER(name) LIKE ? OR LOWER(author) LIKE ? OR LOWER(publisher) LIKE ?)";
+      const likeQ = `%${q}%`;
+      params.push(likeQ, likeQ, likeQ, likeQ);
     }
 
     if (status) {
-      list = list.filter(b => b.status === status);
+      query += " AND status = ?";
+      params.push(status);
     }
 
-    const bengaliToEnglish: Record<string, string> = {
-      '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
-      '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
-    };
-    const parseNumberFromCode = (code: string): number => {
-      let engCode = code.replace(/[০-৯]/g, (m) => bengaliToEnglish[m] || m);
-      const match = engCode.match(/\d+/);
-      if (match) {
-        return parseInt(match[0], 10);
-      }
-      return Infinity;
-    };
+    try {
+      const [rows]: any = await pool.query(query, params);
+      
+      const mapBookRow = (r: any) => ({
+        id: String(r.id),
+        code: r.code, name: r.name, author: r.author, publisher: r.publisher,
+        imageUrl: r.image_url, status: r.status, group: r.book_group
+      });
+      const mapped = rows.map(mapBookRow);
 
-    list = [...list].sort((a, b) => {
-      const numA = parseNumberFromCode(a.code);
-      const numB = parseNumberFromCode(b.code);
-      if (numA !== numB) {
-        return numA - numB;
-      }
-      return a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' });
-    });
+      const bengaliToEnglish: Record<string, string> = {
+        '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+        '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
+      };
+      const parseNumberFromCode = (code: string): number => {
+        let engCode = code.replace(/[০-৯]/g, (m) => bengaliToEnglish[m] || m);
+        const match = engCode.match(/\d+/);
+        if (match) {
+          return parseInt(match[0], 10);
+        }
+        return Infinity;
+      };
 
-    res.json(list);
+      const sorted = [...mapped].sort((a, b) => {
+        const numA = parseNumberFromCode(a.code);
+        const numB = parseNumberFromCode(b.code);
+        if (numA !== numB) {
+          return numA - numB;
+        }
+        return a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+      res.json(sorted);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   // Add individual book
   app.post("/api/books", authenticateAdmin, async (req, res) => {
-    const { code, name, author, publisher, imageUrl, group } = req.body;
+    const { code, name, author, publisher, imageUrl, group, description } = req.body;
 
     if (!code || !name || !author || !publisher) {
       return res.status(400).json({ error: "বই কোড, নাম, লেখক এবং প্রকাশনা আবশ্যক।" });
     }
 
-    const db = readDb();
+    try {
+      const uCode = code.toUpperCase();
+      const [existing]: any = await pool.query("SELECT id FROM books WHERE code = ?", [uCode]);
+      if (existing.length > 0) {
+        return res.status(400).json({ error: "এই বই কোডটি ইতিমধ্যেই ব্যবহৃত হয়েছে।" });
+      }
 
-    // Check unique code
-    if (db.books.find(b => b.code.toUpperCase() === code.toUpperCase())) {
-      return res.status(400).json({ error: "এই বই কোডটি ইতিমধ্যেই ব্যবহৃত হয়েছে।" });
+      const img = imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
+      const grp = group || "";
+      const desc = description || "";
+      const status = "Available";
+      
+      const [result]: any = await pool.query(
+        "INSERT INTO books (code, name, author, publisher, image_url, status, group_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [uCode, name, author, publisher, img, status, grp, desc]
+      );
+      
+      const [newBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [result.insertId]);
+      const r = newBookRow[0];
+      const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description };
+
+      // Sync to Google Sheets asynchronously in the background so save is instant
+      postToGoogleSheets("বই", "যোগ করা হয়েছে", newBook).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
+      addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${grp ? `, গ্রুপ: ${grp}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
+
+      res.status(201).json(newBook);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    const newBook: Book = {
-      id: `b-${Date.now()}`,
-      code: code.toUpperCase(),
-      name,
-      author,
-      publisher,
-      imageUrl: imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
-      status: "Available",
-      group: group || "",
-    };
-
-    db.books.unshift(newBook);
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("বই", "যোগ করা হয়েছে", newBook).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${group ? `, গ্রুপ: ${group}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
-
-    res.status(201).json(newBook);
   });
 
   // Edit book
@@ -1762,544 +1456,691 @@ if (process.env.VERCEL) {
       return res.status(400).json({ error: "বই কোড, নাম, লেখক এবং প্রকাশনা আবশ্যক।" });
     }
 
-    const db = readDb();
-    const bookIdx = db.books.findIndex(b => b.id === id);
+    try {
+      const [bookRows]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
+      if (bookRows.length === 0) {
+        return res.status(404).json({ error: "বইটি পাওয়া যায়নি।" });
+      }
 
-    if (bookIdx === -1) {
-      return res.status(404).json({ error: "বইটি পাওয়া যায়নি।" });
+      const uCode = code.toUpperCase();
+      const [existing]: any = await pool.query("SELECT id FROM books WHERE code = ? AND id != ?", [uCode, id]);
+      if (existing.length > 0) {
+        return res.status(400).json({ error: "এই বই কোডটি অন্য বইয়ের জন্য ব্যবহৃত হয়েছে।" });
+      }
+
+      const oldBook = bookRows[0];
+      const img = imageUrl || oldBook.image_url;
+      const stat = status || oldBook.status;
+      const grp = group !== undefined ? group : oldBook.book_group;
+
+      await pool.query(
+        "UPDATE books SET code = ?, name = ?, author = ?, publisher = ?, image_url = ?, status = ?, book_group = ? WHERE id = ?",
+        [uCode, name, author, publisher, img, stat, grp, id]
+      );
+
+      const [updatedBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
+      const r = updatedBookRow[0];
+      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.book_group };
+
+      // Sync to Google Sheets asynchronously in the background so save is instant
+      postToGoogleSheets("বই", "আপডেট করা হয়েছে", updatedBook).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
+      addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
+
+      res.json(updatedBook);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    // Check duplicate code in other books
-    const codeDuplicate = db.books.find(b => b.code.toUpperCase() === code.toUpperCase() && b.id !== id);
-    if (codeDuplicate) {
-      return res.status(400).json({ error: "এই বই কোডটি অন্য বইয়ের জন্য ব্যবহৃত হয়েছে।" });
-    }
-
-    const oldBook = db.books[bookIdx];
-    const updatedBook: Book = {
-      ...oldBook,
-      code: code.toUpperCase(),
-      name,
-      author,
-      publisher,
-      imageUrl: imageUrl || oldBook.imageUrl,
-      status: status || oldBook.status,
-      group: group !== undefined ? group : oldBook.group,
-    };
-
-    db.books[bookIdx] = updatedBook;
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("বই", "আপডেট করা হয়েছে", updatedBook).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
-
-    res.json(updatedBook);
   });
 
   // Delete book
   app.delete("/api/books/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const db = readDb();
 
-    const book = db.books.find(b => b.id === id);
-    if (!book) {
-      return res.status(404).json({ error: "বইটি পাওয়া যায়নি।" });
+    try {
+      const [bookRows]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
+      if (bookRows.length === 0) {
+        return res.status(404).json({ error: "বইটি পাওয়া যায়নি।" });
+      }
+
+      const r = bookRows[0];
+      if (r.status === "Issued") {
+        return res.status(400).json({ error: "বইটি বর্তমানে সমর্পিত/ইস্যু অবস্থায় রয়েছে। রিটার্ন না করা পর্যন্ত ডিলিট সম্ভব নয়।" });
+      }
+
+      await pool.query("DELETE FROM books WHERE id = ?", [id]);
+
+      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.book_group };
+      postToGoogleSheets("বই", "মুছে ফেলা হয়েছে", book).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      addLog("বই মুছে ফেলা", `বই '${book.name}' (কোড: ${book.code}) সিস্টেম থেকে মুছে ফেলা হয়েছে।`);
+
+      res.json({ message: "বইটি সফলভাবে সিস্টেম থেকে মুছে ফেলা হয়েছে।" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    // Check if book is currently issued
-    if (book.status === "Issued") {
-      return res.status(400).json({ error: "বইটি বর্তমানে সমর্পিত/ইস্যু অবস্থায় রয়েছে। রিটার্ন না করা পর্যন্ত ডিলিট সম্ভব নয়।" });
-    }
-
-    db.books = db.books.filter(b => b.id !== id);
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("বই", "মুছে ফেলা হয়েছে", book).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("বই মুছে ফেলা", `বই '${book.name}' (কোড: ${book.code}) সিস্টেম থেকে মুছে ফেলা হয়েছে।`);
-
-    res.json({ message: "বইটি সফলভাবে সিস্টেম থেকে মুছে ফেলা হয়েছে।" });
   });
 
   // Bulk Import
-  app.post("/api/books/bulk-import", authenticateAdmin, (req, res) => {
+  app.post("/api/books/bulk-import", authenticateAdmin, async (req, res) => {
     const { booksList } = req.body;
 
     if (!Array.isArray(booksList) || booksList.length === 0) {
       return res.status(400).json({ error: "বই তালিকা ত্রুটিযুক্ত।" });
     }
 
-    const db = readDb();
     let importedCount = 0;
     let duplicatesCount = 0;
 
-    booksList.forEach((bookItem: any) => {
-      const { code, name, author, publisher, imageUrl } = bookItem;
-      if (code && name && author) {
-        const uCode = code.toUpperCase();
-        if (!db.books.find(b => b.code === uCode)) {
-          db.books.unshift({
-            id: `b-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-            code: uCode,
-            name,
-            author,
-            publisher: publisher || "অজ্ঞাত প্রকাশনা",
-            imageUrl: imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
-            status: "Available",
-          });
-          importedCount++;
-        } else {
-          duplicatesCount++;
+    try {
+      for (const bookItem of booksList) {
+        const { code, name, author, publisher, imageUrl } = bookItem;
+        if (code && name && author) {
+          const uCode = code.toUpperCase();
+          const [existing]: any = await pool.query("SELECT id FROM books WHERE code = ?", [uCode]);
+          if (existing.length === 0) {
+            const img = imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
+            const pub = publisher || "অজ্ঞাত প্রকাশনা";
+            await pool.query(
+              "INSERT INTO books (code, name, author, publisher, image_url, status, book_group) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              [uCode, name, author, pub, img, "Available", ""]
+            );
+            importedCount++;
+          } else {
+            duplicatesCount++;
+          }
         }
       }
-    });
 
-    writeDb(db);
-    addLog("বই বাল্ক ইম্পোর্ট", `${importedCount} টি বই বাল্ক ইম্পোর্ট করা হয়েছে। ডুপ্লিকেট বাদ পড়েছে: ${duplicatesCount} টি।`);
-
-    res.json({ success: true, importedCount, duplicatesCount });
+      addLog("বই বাল্ক ইম্পোর্ট", `${importedCount} টি বই বাল্ক ইম্পোর্ট করা হয়েছে। ডুপ্লিকেট বাদ পড়েছে: ${duplicatesCount} টি।`);
+      res.json({ success: true, importedCount, duplicatesCount });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   // ---------------- BOOK SEARCH & DETAILS ----------------
 
-  app.get("/api/books/search-smart", authenticateAdmin, (req, res) => {
+  app.get("/api/books/search-smart", authenticateAdmin, async (req, res) => {
     const q = (req.query.q || "").toString().toLowerCase();
-    const db = readDb();
 
     if (!q) {
       return res.json([]);
     }
 
-    // Smart query search in books
-    const matchingBooks = db.books.filter(
-      b =>
-        b.code.toLowerCase().includes(q) ||
-        b.name.toLowerCase().includes(q) ||
-        b.author.toLowerCase().includes(q) ||
-        b.publisher.toLowerCase().includes(q)
-    );
+    try {
+      const likeQ = `%${q}%`;
+      const [booksRows]: any = await pool.query(
+        "SELECT * FROM books WHERE LOWER(code) LIKE ? OR LOWER(name) LIKE ? OR LOWER(author) LIKE ? OR LOWER(publisher) LIKE ?",
+        [likeQ, likeQ, likeQ, likeQ]
+      );
 
-    const result = matchingBooks.map(book => {
-      // Find the latest active issue record for this book code
-      const issueRecords = db.issues.filter(issue => issue.bookCode === book.code).sort((a, b) => b.id.localeCompare(a.id));
-      const activeIssue = issueRecords.find(i => i.status === "Issued");
-      const lastReturned = issueRecords.find(i => i.status === "Returned");
-
-      return {
-        book,
-        activeIssue: activeIssue || null,
-        history: issueRecords,
-      };
-    });
-
-    res.json(result);
+      const result = [];
+      for (const bRow of booksRows) {
+        const book = { id: String(bRow.id), code: bRow.code, name: bRow.name, author: bRow.author, publisher: bRow.publisher, imageUrl: bRow.image_url, status: bRow.status, group: bRow.book_group };
+        
+        // Find issue records
+        const [issueRows]: any = await pool.query(
+          "SELECT i.*, b.name as book_name, b.code as book_code, m.name as member_name, m.mobile as member_mobile, m.form_number as member_form_number FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE b.code = ? ORDER BY i.id DESC",
+          [book.code]
+        );
+        
+        const mapIssue = (r: any) => ({
+          id: String(r.id), bookId: String(r.book_id), bookCode: r.book_code, bookName: r.book_name,
+          memberId: String(r.member_id), formNumber: r.member_form_number, memberName: r.member_name, memberMobile: r.member_mobile,
+          issueDate: r.issue_date, returnDate: r.return_date, actualReturnDate: r.actual_return_date || undefined,
+          status: r.status, fineAmount: r.fine_amount || 0,
+          extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
+        });
+        
+        const history = issueRows.map(mapIssue);
+        const activeIssue = history.find((i: any) => i.status === "Issued") || null;
+        
+        result.push({ book, activeIssue, history });
+      }
+      
+      res.json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   // ---------------- MEMBER MANAGEMENT API ----------------
 
-  app.get("/api/members/suggest", authenticateAdmin, (req, res) => {
+  app.get("/api/members/suggest", authenticateAdmin, async (req, res) => {
     const q = (req.query.q || "").toString().toLowerCase();
-    const db = readDb();
 
-    if (!q) {
-      return res.json(db.members.slice(0, 5));
+    try {
+      const mapMemberRow = (r: any) => ({
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      });
+
+      if (!q) {
+        const [rows]: any = await pool.query("SELECT * FROM members ORDER BY CAST(form_number AS UNSIGNED) ASC LIMIT 5");
+        return res.json(rows.map(mapMemberRow));
+      }
+
+      const likeQ = `%${q}%`;
+      const [rows]: any = await pool.query("SELECT * FROM members WHERE LOWER(form_number) LIKE ? OR LOWER(name) LIKE ? OR LOWER(mobile) LIKE ? ORDER BY CAST(form_number AS UNSIGNED) ASC", [likeQ, likeQ, likeQ]);
+      res.json(rows.map(mapMemberRow));
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    const matches = db.members.filter(
-      m => m.formNumber.toLowerCase().includes(q) || m.name.toLowerCase().includes(q) || m.mobile.toLowerCase().includes(q)
-    );
-
-    res.json(matches);
   });
 
-  app.get("/api/members", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    // Sort members by Form Number ascending
-    const list = [...db.members].sort((a, b) => {
-      return a.formNumber.localeCompare(b.formNumber, undefined, { numeric: true, sensitivity: 'base' });
-    });
-    res.json(list);
+  app.get("/api/members", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM members ORDER BY CAST(form_number AS UNSIGNED) ASC");
+      const mapMemberRow = (r: any) => ({
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      });
+      res.json(rows.map(mapMemberRow));
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   // Get single member profile reports
-  app.get("/api/members/:formNumber/profile", authenticateAdmin, (req, res) => {
+  app.get("/api/members/:formNumber/profile", authenticateAdmin, async (req, res) => {
     const { formNumber } = req.params;
-    const db = readDb();
 
-    const member = db.members.find(m => m.formNumber === formNumber);
-    if (!member) {
-      return res.status(404).json({ error: "সদস্য পাওয়া যায়নি।" });
+    try {
+      const [memberRows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      if (memberRows.length === 0) {
+        return res.status(404).json({ error: "সদস্য পাওয়া যায়নি।" });
+      }
+
+      const r = memberRows[0];
+      const member = {
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      };
+
+      const [issueRows]: any = await pool.query("SELECT i.*, b.name as book_name, b.code as book_code, m.name as member_name, m.mobile as member_mobile, m.form_number as member_form_number FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE m.form_number = ?", [formNumber]);
+      
+      const mapIssue = (r: any) => ({
+        id: String(r.id), bookId: String(r.book_id), bookCode: r.book_code, bookName: r.book_name,
+        memberId: String(r.member_id), formNumber: r.member_form_number, memberName: r.member_name, memberMobile: r.member_mobile,
+        issueDate: r.issue_date, returnDate: r.return_date, actualReturnDate: r.actual_return_date || undefined,
+        status: r.status, fineAmount: r.fine_amount || 0,
+        extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
+      });
+
+      const allRents = issueRows.map(mapIssue);
+      const activeRents = allRents.filter((i: any) => i.status === "Issued");
+      const returnedHistory = allRents.filter((i: any) => i.status === "Returned");
+
+      res.json({
+        member,
+        activeRents,
+        returnedHistory,
+        rentCount: allRents.length,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    // Get active rents
-    const activeRents = db.issues.filter(i => i.formNumber === formNumber && i.status === "Issued");
-    // Get returned history
-    const returnedHistory = db.issues.filter(i => i.formNumber === formNumber && i.status === "Returned");
-    // All logs
-    const allRents = db.issues.filter(i => i.formNumber === formNumber);
-
-    res.json({
-      member,
-      activeRents,
-      returnedHistory,
-      rentCount: allRents.length,
-    });
   });
 
   app.post("/api/members", authenticateAdmin, async (req, res) => {
     const { 
-      name, 
-      formNumber, 
-      mobile, 
-      address, 
-      dob, 
-      educationInstitution, 
-      className, 
-      classRoll,
-      nameEnglish,
-      fatherName,
-      motherName,
-      currVillage,
-      currPostOffice,
-      currUpazila,
-      currDistrict,
-      permVillage,
-      permPostOffice,
-      permUpazila,
-      permDistrict,
-      bloodGroup,
-      nidBirthReg,
-      educationQualification,
-      profession,
-      nationality,
-      photo,
-      paymentStatus
+      name, formNumber, mobile, address, dob, educationInstitution, className, classRoll,
+      nameEnglish, fatherName, motherName, currVillage, currPostOffice, currUpazila, currDistrict,
+      permVillage, permPostOffice, permUpazila, permDistrict, bloodGroup, nidBirthReg,
+      educationQualification, profession, nationality, photo, paymentStatus
     } = req.body;
 
-    const db = readDb();
-
-    // Generate formNumber if not provided
-    let finalFormNumber = formNumber ? formNumber.trim() : "";
-    if (!finalFormNumber) {
-      let maxForm = 999;
-      db.members.forEach(m => {
-        const num = parseInt(m.formNumber, 10);
-        if (!isNaN(num) && num > maxForm) {
-          maxForm = num;
+    try {
+      let finalFormNumber = formNumber ? formNumber.trim() : "";
+      if (!finalFormNumber) {
+        const [maxRow]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as maxForm FROM members");
+        let maxForm = maxRow.length > 0 && maxRow[0].maxForm ? parseInt(maxRow[0].maxForm, 10) : 999;
+        finalFormNumber = (maxForm + 1).toString();
+      } else {
+        const [existing]: any = await pool.query("SELECT id FROM members WHERE form_number = ?", [finalFormNumber]);
+        if (existing.length > 0) {
+          return res.status(400).json({ error: "এই ফরম নম্বরটি দিয়ে ইতিমধ্যেই মেম্বার রেজিস্টার্ড রয়েছে।" });
         }
-      });
-      finalFormNumber = (maxForm + 1).toString();
-    } else {
-      if (db.members.find(m => m.formNumber === finalFormNumber)) {
-        return res.status(400).json({ error: "এই ফরম নম্বরটি দিয়ে ইতিমধ্যেই মেম্বার রেজিস্টার্ড রয়েছে।" });
       }
+
+      let finalAddress = address || "";
+      if (!finalAddress && (currVillage || currPostOffice || permVillage || permPostOffice)) {
+        finalAddress = `বর্তমান: ${currVillage || ""}, ডাকঘর: ${currPostOffice || ""}, উপজেলা: ${currUpazila || ""}, জেলা: ${currDistrict || ""}. স্থায়ী: ${permVillage || ""}, ডাকঘর: ${permPostOffice || ""}, উপজেলা: ${permUpazila || ""}, জেলা: ${permDistrict || ""}`;
+      }
+      if (!finalAddress) {
+        finalAddress = "অজানা ঠিকানা";
+      }
+
+      const p_name = name ? name.trim() : "নামহীন সদস্য";
+      const p_nameEng = (nameEnglish || "").trim();
+      const p_mobile = (mobile || "").trim();
+      const p_dob = (dob || "").trim();
+      const p_edu = (educationInstitution || "").trim();
+      const p_className = (className || "").trim();
+      const p_classRoll = (classRoll || "").trim();
+      const p_father = (fatherName || "").trim();
+      const p_mother = (motherName || "").trim();
+      const p_cV = (currVillage || "").trim();
+      const p_cPO = (currPostOffice || "").trim();
+      const p_cU = (currUpazila || "").trim();
+      const p_cD = (currDistrict || "").trim();
+      const p_pV = (permVillage || "").trim();
+      const p_pPO = (permPostOffice || "").trim();
+      const p_pU = (permUpazila || "").trim();
+      const p_pD = (permDistrict || "").trim();
+      const p_blood = (bloodGroup || "").trim();
+      const p_nid = (nidBirthReg || "").trim();
+      const p_eduQ = (educationQualification || "").trim();
+      const p_prof = (profession || "").trim();
+      const p_nat = (nationality || "বাংলাদেশী").trim();
+      const p_photo = photo || "";
+      const p_pay = paymentStatus || "Paid";
+
+      const [result]: any = await pool.query(
+        `INSERT INTO members (
+          form_number, name, name_english, mobile, address, dob, education_institution,
+          class_name, class_roll, father_name, mother_name, curr_village, curr_post_office,
+          curr_upazila, curr_district, perm_village, perm_post_office, perm_upazila,
+          perm_district, blood_group, nid_birth_reg, education_qualification, profession,
+          nationality, photo, payment_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          finalFormNumber, p_name, p_nameEng, p_mobile, finalAddress, p_dob, p_edu,
+          p_className, p_classRoll, p_father, p_mother, p_cV, p_cPO, p_cU, p_cD,
+          p_pV, p_pPO, p_pU, p_pD, p_blood, p_nid, p_eduQ, p_prof, p_nat, p_photo, p_pay
+        ]
+      );
+
+      const [newRow]: any = await pool.query("SELECT * FROM members WHERE id = ?", [result.insertId]);
+      const r = newRow[0];
+      const newMember = {
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      };
+
+      postToGoogleSheets("সদস্য", "যোগ করা হয়েছে", newMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      addLog("সদস্য যোগ", `নতুন সদস্য ${newMember.name} (ফরম নম্বর: ${finalFormNumber}) যোগ করা হয়েছে।`);
+
+      res.status(201).json(newMember);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    // Format address if individual fields are provided, otherwise use the address string directly
-    let finalAddress = address || "";
-    if (!finalAddress && (currVillage || currPostOffice || permVillage || permPostOffice)) {
-      finalAddress = `বর্তমান: ${currVillage || ""}, ডাকঘর: ${currPostOffice || ""}, উপজেলা: ${currUpazila || ""}, জেলা: ${currDistrict || ""}. স্থায়ী: ${permVillage || ""}, ডাকঘর: ${permPostOffice || ""}, উপজেলা: ${permUpazila || ""}, জেলা: ${permDistrict || ""}`;
-    }
-    if (!finalAddress) {
-      finalAddress = "অজানা ঠিকানা";
-    }
-
-    const newMember: Member = {
-      formNumber: finalFormNumber,
-      name: name ? name.trim() : "নামহীন সদস্য",
-      nameEnglish: (nameEnglish || "").trim(),
-      mobile: (mobile || "").trim(),
-      address: finalAddress,
-      dob: (dob || "").trim(),
-      educationInstitution: (educationInstitution || "").trim(),
-      className: (className || "").trim(),
-      classRoll: (classRoll || "").trim(),
-      fatherName: (fatherName || "").trim(),
-      motherName: (motherName || "").trim(),
-      currVillage: (currVillage || "").trim(),
-      currPostOffice: (currPostOffice || "").trim(),
-      currUpazila: (currUpazila || "").trim(),
-      currDistrict: (currDistrict || "").trim(),
-      permVillage: (permVillage || "").trim(),
-      permPostOffice: (permPostOffice || "").trim(),
-      permUpazila: (permUpazila || "").trim(),
-      permDistrict: (permDistrict || "").trim(),
-      bloodGroup: (bloodGroup || "").trim(),
-      nidBirthReg: (nidBirthReg || "").trim(),
-      educationQualification: (educationQualification || "").trim(),
-      profession: (profession || "").trim(),
-      nationality: (nationality || "বাংলাদেশী").trim(),
-      photo: photo || "",
-      paymentStatus: paymentStatus || "Paid"
-    };
-
-    db.members.push(newMember);
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("সদস্য", "যোগ করা হয়েছে", newMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("সদস্য যোগ", `নতুন সদস্য ${newMember.name} (ফরম নম্বর: ${finalFormNumber}) যোগ করা হয়েছে।`);
-
-    res.status(201).json(newMember);
   });
 
   // PUT Edit member
   app.put("/api/members/:formNumber", authenticateAdmin, async (req, res) => {
     const { formNumber } = req.params;
     const {
-      name,
-      mobile,
-      address,
-      dob,
-      educationInstitution,
-      className,
-      classRoll,
-      nameEnglish,
-      fatherName,
-      motherName,
-      currVillage,
-      currPostOffice,
-      currUpazila,
-      currDistrict,
-      permVillage,
-      permPostOffice,
-      permUpazila,
-      permDistrict,
-      bloodGroup,
-      nidBirthReg,
-      educationQualification,
-      profession,
-      nationality,
-      photo,
-      paymentStatus,
-      paymentMethod,
-      senderNumber,
-      transactionId
+      name, mobile, address, dob, educationInstitution, className, classRoll,
+      nameEnglish, fatherName, motherName, currVillage, currPostOffice, currUpazila, currDistrict,
+      permVillage, permPostOffice, permUpazila, permDistrict, bloodGroup, nidBirthReg,
+      educationQualification, profession, nationality, photo, paymentStatus, paymentMethod, senderNumber, transactionId
     } = req.body;
 
     if (!name || !mobile) {
       return res.status(400).json({ error: "সদস্যর নাম এবং মোবাইল নাম্বার আবশ্যক।" });
     }
 
-    const db = readDb();
-    const index = db.members.findIndex(m => m.formNumber === formNumber);
-
-    if (index === -1) {
-      return res.status(404).json({ error: "সদস্য খুঁজে পাওয়া যায়নি।" });
-    }
-
-    const oldMember = db.members[index];
-    
-    // Auto calculate finalAddress if not explicitly passed but address-parts are updated
-    let finalAddress = address || oldMember.address;
-    const activeVillage = currVillage !== undefined ? currVillage : oldMember.currVillage;
-    const activePostOffice = currPostOffice !== undefined ? currPostOffice : oldMember.currPostOffice;
-    const activeUpazila = currUpazila !== undefined ? currUpazila : oldMember.currUpazila;
-    const activeDistrict = currDistrict !== undefined ? currDistrict : oldMember.currDistrict;
-    const activePermVillage = permVillage !== undefined ? permVillage : oldMember.permVillage;
-    const activePermPostOffice = permPostOffice !== undefined ? permPostOffice : oldMember.permPostOffice;
-    const activePermUpazila = permUpazila !== undefined ? permUpazila : oldMember.permUpazila;
-    const activePermDistrict = permDistrict !== undefined ? permDistrict : oldMember.permDistrict;
-
-    if (!address && (activeVillage || activePostOffice || activePermVillage || activePermPostOffice)) {
-      finalAddress = `বর্তমান: ${activeVillage || ""}, ডাকঘর: ${activePostOffice || ""}, উপজেলা: ${activeUpazila || ""}, জেলা: ${activeDistrict || ""}. স্থায়ী: ${activePermVillage || ""}, ডাকঘর: ${activePermPostOffice || ""}, উপজেলা: ${activePermUpazila || ""}, জেলা: ${activePermDistrict || ""}`;
-    }
-
-    const updatedMember: Member = {
-      ...oldMember,
-      name: name.trim(),
-      mobile: mobile.trim(),
-      address: finalAddress,
-      dob: dob !== undefined ? dob : oldMember.dob,
-      educationInstitution: educationInstitution !== undefined ? educationInstitution : oldMember.educationInstitution,
-      className: className !== undefined ? className : oldMember.className,
-      classRoll: classRoll !== undefined ? classRoll : oldMember.classRoll,
-      nameEnglish: nameEnglish !== undefined ? nameEnglish : oldMember.nameEnglish,
-      fatherName: fatherName !== undefined ? fatherName : oldMember.fatherName,
-      motherName: motherName !== undefined ? motherName : oldMember.motherName,
-      currVillage: currVillage !== undefined ? currVillage : oldMember.currVillage,
-      currPostOffice: currPostOffice !== undefined ? currPostOffice : oldMember.currPostOffice,
-      currUpazila: currUpazila !== undefined ? currUpazila : oldMember.currUpazila,
-      currDistrict: currDistrict !== undefined ? currDistrict : oldMember.currDistrict,
-      permVillage: permVillage !== undefined ? permVillage : oldMember.permVillage,
-      permPostOffice: permPostOffice !== undefined ? permPostOffice : oldMember.permPostOffice,
-      permUpazila: permUpazila !== undefined ? permUpazila : oldMember.permUpazila,
-      permDistrict: permDistrict !== undefined ? permDistrict : oldMember.permDistrict,
-      bloodGroup: bloodGroup !== undefined ? bloodGroup : oldMember.bloodGroup,
-      nidBirthReg: nidBirthReg !== undefined ? nidBirthReg : oldMember.nidBirthReg,
-      educationQualification: educationQualification !== undefined ? educationQualification : oldMember.educationQualification,
-      profession: profession !== undefined ? profession : oldMember.profession,
-      nationality: nationality !== undefined ? nationality : oldMember.nationality,
-      photo: photo !== undefined ? photo : oldMember.photo,
-      paymentStatus: paymentStatus !== undefined ? paymentStatus : oldMember.paymentStatus,
-      paymentMethod: paymentMethod !== undefined ? paymentMethod : oldMember.paymentMethod,
-      senderNumber: senderNumber !== undefined ? senderNumber : oldMember.senderNumber,
-      transactionId: transactionId !== undefined ? transactionId : oldMember.transactionId,
-    };
-
-    db.members[index] = updatedMember;
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("সদস্য", "আপডেট করা হয়েছে", updatedMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("সদস্য সম্পাদনা", `সদস্য '${name}' (ফরম নম্বর: ${formNumber}) এর তথ্য আপডেট করা হয়েছে।`);
-
-    res.json(updatedMember);
-  });
-
-  // Update member payment status (Admin only)
-  app.put("/api/members/:formNumber/payment", authenticateAdmin, (req, res) => {
     try {
-      const { formNumber } = req.params;
-      const { paymentStatus } = req.body;
-
-      if (!["Pending", "Paid", "Unpaid"].includes(paymentStatus)) {
-        return res.status(400).json({ error: "ভ্যালিড পেমেন্ট স্ট্যাটাস প্রয়োজন।" });
-      }
-
-      const db = readDb();
-      const index = db.members.findIndex(m => m.formNumber.trim().toLowerCase() === formNumber.trim().toLowerCase());
-
-      if (index === -1) {
+      const [rows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      if (rows.length === 0) {
         return res.status(404).json({ error: "সদস্য খুঁজে পাওয়া যায়নি।" });
       }
 
-      const member = db.members[index];
-      member.paymentStatus = paymentStatus;
-      db.members[index] = member;
-      writeDb(db);
+      const oldMember = rows[0];
+      
+      let finalAddress = address || oldMember.address;
+      const activeVillage = currVillage !== undefined ? currVillage : oldMember.curr_village;
+      const activePostOffice = currPostOffice !== undefined ? currPostOffice : oldMember.curr_post_office;
+      const activeUpazila = currUpazila !== undefined ? currUpazila : oldMember.curr_upazila;
+      const activeDistrict = currDistrict !== undefined ? currDistrict : oldMember.curr_district;
+      const activePermVillage = permVillage !== undefined ? permVillage : oldMember.perm_village;
+      const activePermPostOffice = permPostOffice !== undefined ? permPostOffice : oldMember.perm_post_office;
+      const activePermUpazila = permUpazila !== undefined ? permUpazila : oldMember.perm_upazila;
+      const activePermDistrict = permDistrict !== undefined ? permDistrict : oldMember.perm_district;
+
+      if (!address && (activeVillage || activePostOffice || activePermVillage || activePermPostOffice)) {
+        finalAddress = `বর্তমান: ${activeVillage || ""}, ডাকঘর: ${activePostOffice || ""}, উপজেলা: ${activeUpazila || ""}, জেলা: ${activeDistrict || ""}. স্থায়ী: ${activePermVillage || ""}, ডাকঘর: ${activePermPostOffice || ""}, উপজেলা: ${activePermUpazila || ""}, জেলা: ${activePermDistrict || ""}`;
+      }
+
+      const p_name = name.trim();
+      const p_mobile = mobile.trim();
+      const p_dob = dob !== undefined ? dob : oldMember.dob;
+      const p_edu = educationInstitution !== undefined ? educationInstitution : oldMember.education_institution;
+      const p_className = className !== undefined ? className : oldMember.class_name;
+      const p_classRoll = classRoll !== undefined ? classRoll : oldMember.class_roll;
+      const p_nameEng = nameEnglish !== undefined ? nameEnglish : oldMember.name_english;
+      const p_father = fatherName !== undefined ? fatherName : oldMember.father_name;
+      const p_mother = motherName !== undefined ? motherName : oldMember.mother_name;
+      const p_blood = bloodGroup !== undefined ? bloodGroup : oldMember.blood_group;
+      const p_nid = nidBirthReg !== undefined ? nidBirthReg : oldMember.nid_birth_reg;
+      const p_eduQ = educationQualification !== undefined ? educationQualification : oldMember.education_qualification;
+      const p_prof = profession !== undefined ? profession : oldMember.profession;
+      const p_nat = nationality !== undefined ? nationality : oldMember.nationality;
+      const p_photo = photo !== undefined ? photo : oldMember.photo;
+      const p_payStatus = paymentStatus !== undefined ? paymentStatus : oldMember.payment_status;
+
+      await pool.query(
+        `UPDATE members SET 
+          name = ?, name_english = ?, mobile = ?, address = ?, dob = ?, education_institution = ?,
+          class_name = ?, class_roll = ?, father_name = ?, mother_name = ?, curr_village = ?, curr_post_office = ?,
+          curr_upazila = ?, curr_district = ?, perm_village = ?, perm_post_office = ?, perm_upazila = ?,
+          perm_district = ?, blood_group = ?, nid_birth_reg = ?, education_qualification = ?, profession = ?,
+          nationality = ?, photo = ?, payment_status = ?
+        WHERE form_number = ?`,
+        [
+          p_name, p_nameEng, p_mobile, finalAddress, p_dob, p_edu,
+          p_className, p_classRoll, p_father, p_mother, activeVillage, activePostOffice,
+          activeUpazila, activeDistrict, activePermVillage, activePermPostOffice, activePermUpazila,
+          activePermDistrict, p_blood, p_nid, p_eduQ, p_prof,
+          p_nat, p_photo, p_payStatus, formNumber
+        ]
+      );
+
+      const [updatedRows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      const r = updatedRows[0];
+      const updatedMember = {
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      };
+
+      postToGoogleSheets("সদস্য", "আপডেট করা হয়েছে", updatedMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      addLog("সদস্য সম্পাদনা", `সদস্য '${name}' (ফরম নম্বর: ${formNumber}) এর তথ্য আপডেট করা হয়েছে।`);
+
+      res.json(updatedMember);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
+  });
+
+  // Update member payment status (Admin only)
+  app.put("/api/members/:formNumber/payment", authenticateAdmin, async (req, res) => {
+    const { formNumber } = req.params;
+    const { paymentStatus } = req.body;
+
+    if (!["Pending", "Paid", "Unpaid"].includes(paymentStatus)) {
+      return res.status(400).json({ error: "ভ্যালিড পেমেন্ট স্ট্যাটাস প্রয়োজন।" });
+    }
+
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "সদস্য খুঁজে পাওয়া যায়নি।" });
+      }
+
+      await pool.query("UPDATE members SET payment_status = ? WHERE form_number = ?", [paymentStatus, formNumber]);
+      const [updatedRows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      const r = updatedRows[0];
+      const member = {
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      };
 
       addLog("পেমেন্ট আপডেট", `সদস্য '${member.name}' (ফরম নম্বর: ${formNumber}) এর পেমেন্ট স্ট্যাটাস '${paymentStatus}' এ আপডেট করা হয়েছে।`);
       res.json({ success: true, member });
     } catch (err: any) {
+      console.error(err);
       res.status(500).json({ error: "পেমেন্ট আপডেট করতে সার্ভার ত্রুটি হয়েছে।" });
     }
   });
 
   app.delete("/api/members/:formNumber", authenticateAdmin, async (req, res) => {
     const { formNumber } = req.params;
-    const db = readDb();
-    const index = db.members.findIndex(m => m.formNumber === formNumber);
-    if (index === -1) {
-      return res.status(404).json({ error: "সদস্য খুঁজে পাওয়া যায়নি।" });
+    
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "সদস্য খুঁজে পাওয়া যায়নি।" });
+      }
+
+      const r = rows[0];
+      const member = {
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      };
+
+      await pool.query("DELETE FROM members WHERE form_number = ?", [formNumber]);
+
+      postToGoogleSheets("সদস্য", "মুছে ফেলা হয়েছে", member).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      addLog("সদস্য ডিলিট", `সদস্য '${member.name}' (ফরম নম্বর: ${formNumber}) কে মুছে ফেলা হয়েছে।`);
+
+      res.json({ success: true, message: "সদস্য সফলভাবে মুছে ফেলা হয়েছে।" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-    
-    const member = db.members[index];
-    
-    // Remove member from member list
-    db.members.splice(index, 1);
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("সদস্য", "মুছে ফেলা হয়েছে", member).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("সদস্য ডিলিট", `সদস্য '${member.name}' (ফরম নম্বর: ${formNumber}) কে মুছে ফেলা হয়েছে।`);
-
-    res.json({ success: true, message: "সদস্য সফলভাবে মুছে ফেলা হয়েছে।" });
   });
 
   // ---------------- BOOK ISSUE SYSTEM ----------------
 
   app.post("/api/issues", authenticateAdmin, async (req, res) => {
-    const {
-      name,
-      formNumber,
-      mobile,
-      address,
-      bookCode,
-      bookName,
-      author,
-      publisher,
-      returnOption, // "1", "2", "7", "10", "manual"
-      manualReturnDate,
-    } = req.body;
+    const { name, formNumber, mobile, address, bookCode, bookName, author, publisher, returnOption, manualReturnDate } = req.body;
 
     if (!name || !formNumber || !mobile || !bookCode || !bookName) {
       return res.status(400).json({ error: "সদস্যর তথ্য এবং বইয়ের কোড বা নাম আবশ্যক।" });
     }
 
-    const db = readDb();
+    try {
+      // 1. Identify the book
+      const [bookRows]: any = await pool.query("SELECT * FROM books WHERE code = ?", [bookCode.toUpperCase()]);
+      if (bookRows.length === 0) {
+        return res.status(404).json({ error: "এই কোডযুক্ত বইটি লাইব্রেরিতে নিবন্ধিত নেই।" });
+      }
 
-    // 1. Identify the book
-    const book = db.books.find(b => b.code.toUpperCase() === bookCode.toUpperCase());
-    if (!book) {
-      return res.status(404).json({ error: "এই কোডযুক্ত বইটি লাইব্রেরিতে নিবন্ধিত নেই।" });
-    }
+      const book = bookRows[0];
+      if (book.status === "Issued") {
+        return res.status(400).json({ error: "বইটি ইতিমধ্যে ইস্যু করা আছে। ফেরত দেওয়ার পরই আবার ইস্যু করা যাবে।" });
+      }
 
-    if (book.status === "Issued") {
-      return res.status(400).json({ error: "বইটি ইতিমধ্যে ইস্যু করা আছে। ফেরত দেওয়ার পরই আবার ইস্যু করা যাবে।" });
-    }
+      // 2. Member auto creation/update check
+      const [memberRows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber]);
+      let member;
+      if (memberRows.length === 0) {
+        const finalAddress = address || "অজানা ঠিকানা";
+        const [mRes]: any = await pool.query(
+          "INSERT INTO members (form_number, name, mobile, address, payment_status) VALUES (?, ?, ?, ?, ?)",
+          [formNumber, name, mobile, finalAddress, "Paid"]
+        );
+        const [newM]: any = await pool.query("SELECT * FROM members WHERE id = ?", [mRes.insertId]);
+        member = newM[0];
+        addLog("সদস্য যোগ", `ইস্যু সময় তৈরি: নতুন সদস্য ${name} (ফরম: ${formNumber}) স্বয়ংক্রিয়ভাবে তৈরি হয়েছে।`);
+      } else {
+        member = memberRows[0];
+        const updatedAddress = address || member.address;
+        await pool.query("UPDATE members SET name = ?, mobile = ?, address = ? WHERE form_number = ?", [name, mobile, updatedAddress, formNumber]);
+        member.name = name;
+        member.mobile = mobile;
+        member.address = updatedAddress;
+      }
 
-    // 2. Member auto creation/update check
-    let member = db.members.find(m => m.formNumber === formNumber);
-    if (!member) {
-      member = {
-        name,
-        formNumber,
-        mobile,
-        address: address || "অজানা ঠিকানা",
+      // 3. Compute Dates
+      const today = new Date();
+      const issueDateStr = today.toISOString().split("T")[0];
+
+      let computedReturnDateStr = "";
+      if (returnOption === "manual") {
+        computedReturnDateStr = manualReturnDate;
+      } else {
+        const days = parseInt(returnOption, 10) || 7;
+        const retDate = new Date();
+        retDate.setDate(today.getDate() + days);
+        computedReturnDateStr = retDate.toISOString().split("T")[0];
+      }
+
+      if (!computedReturnDateStr) {
+        return res.status(400).json({ error: "একটি সঠিক রিটার্ন তারিখ নির্বাচন করুন।" });
+      }
+
+      // Insert issue record
+      const [iRes]: any = await pool.query(
+        "INSERT INTO issues (book_id, member_id, issue_date, return_date, status) VALUES (?, ?, ?, ?, ?)",
+        [book.id, member.id, issueDateStr, computedReturnDateStr, "Issued"]
+      );
+
+      // Update book status
+      await pool.query("UPDATE books SET status = 'Issued' WHERE id = ?", [book.id]);
+
+      // fetch full issue structure
+      const [insertedIssue]: any = await pool.query(
+        "SELECT i.*, b.name as book_name, b.code as book_code, b.author, b.publisher, m.name as member_name, m.mobile as member_mobile, m.form_number as member_form_number, m.address as member_address FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE i.id = ?",
+        [iRes.insertId]
+      );
+      
+      const r = insertedIssue[0];
+      const newIssue = {
+        id: String(r.id), bookCode: r.book_code, bookName: r.book_name, author: r.author, publisher: r.publisher,
+        memberName: r.member_name, formNumber: r.member_form_number, mobile: r.member_mobile, address: r.member_address,
+        issueDate: r.issue_date, returnDate: r.return_date, status: r.status, extensionHistory: [], comments: []
       };
-      db.members.push(member);
-      addLog("সদস্য যোগ", `ইস্যু সময় তৈরি: নতুন সদস্য ${name} (ফরম: ${formNumber}) স্বয়ংক্রিয়ভাবে তৈরি হয়েছে।`);
-    } else {
-      // Keep mobile/address updated
-      member.name = name;
-      member.mobile = mobile;
-      member.address = address || member.address;
+
+      addLog("বই ইস্যু", `বই '${book.name}' (কোড: ${book.code}) সদস্য ${member.name} (ফরম: ${member.form_number}) কে ইস্যু করা হয়েছে।`);
+      postToGoogleSheets("লেনদেন", "ইস্যু করা হয়েছে", newIssue).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
+      res.status(201).json({ success: true, issue: newIssue });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
+  });
 
-    // 3. Compute Dates
-    const today = new Date();
-    const issueDateStr = today.toISOString().split("T")[0];
+  // Returns currently scheduled warnings
+  app.get("/api/sms/scheduled", authenticateAdmin, async (req, res) => {
+    const todayStr = (req.query.todayStr as string) || new Date().toISOString().split("T")[0];
+    const bypassRules = req.query.bypassRules === "true";
 
-    let computedReturnDateStr = "";
-    if (returnOption === "manual") {
-      computedReturnDateStr = manualReturnDate;
-    } else {
-      const days = parseInt(returnOption, 10) || 7;
-      const retDate = new Date();
-      retDate.setDate(today.getDate() + days);
-      computedReturnDateStr = retDate.toISOString().split("T")[0];
+    try {
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let smsTemplate = "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        smsTemplate = settings.smsTemplate || smsTemplate;
+      }
+
+      const [issueRows]: any = await pool.query(
+        "SELECT i.*, b.name as book_name, b.code as book_code, m.name as member_name, m.mobile FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE i.status = 'Issued'"
+      );
+
+      const alerts: Array<{
+        id: string;
+        bookName: string;
+        memberName: string;
+        returnDate: string;
+        mobile: string;
+        status: "Scheduled" | "Sent";
+        alertText: string;
+        triggerTime: string;
+        bookCode?: string;
+        issueId?: string;
+      }> = [];
+
+      issueRows.forEach((issue: any) => {
+        const diffDays = getBangladeshDiffDays(todayStr, issue.return_date);
+
+        const text = smsTemplate
+          .replace(/{bookName}/g, issue.book_name)
+          .replace(/{বইয়েরনাম}/g, issue.book_name)
+          .replace(/{বইয়েরনাম}/g, issue.book_name)
+          .replace(/{book}/g, issue.book_name)
+          .replace(/{বই}/g, issue.book_name)
+          .replace(/{memberName}/g, issue.member_name)
+          .replace(/{সদস্যেরনাম}/g, issue.member_name)
+          .replace(/{সদস্য}/g, issue.member_name)
+          .replace(/{returnDate}/g, issue.return_date)
+          .replace(/{ফেরততারিখ}/g, issue.return_date)
+          .replace(/{তারিখ}/g, issue.return_date);
+
+        if (bypassRules) {
+          alerts.push({
+            id: `sms-${issue.id}-bypass`,
+            bookName: issue.book_name,
+            memberName: issue.member_name,
+            returnDate: issue.return_date,
+            mobile: issue.mobile,
+            status: "Sent",
+            alertText: text,
+            triggerTime: `তাৎক্ষণিক ওভাররাইড টেস্ট অ্যালার্ট (সব সক্রিয় সদস্যকে সচল ওয়ার্নিং)`,
+            bookCode: issue.book_code,
+            issueId: String(issue.id),
+          });
+        } else if (diffDays >= 0) {
+          const isTriggerDay = diffDays % 2 === 0;
+          alerts.push({
+            id: `sms-${issue.id}-${diffDays}`,
+            bookName: issue.book_name,
+            memberName: issue.member_name,
+            returnDate: issue.return_date,
+            mobile: issue.mobile,
+            status: isTriggerDay ? "Sent" : "Scheduled",
+            alertText: text,
+            triggerTime: `${issue.return_date} দুপুর ২:০০ টা (আজ থেকে প্রতি ২ দিন অন্তর)`,
+            bookCode: issue.book_code,
+            issueId: String(issue.id),
+          });
+        } else {
+          alerts.push({
+            id: `sms-${issue.id}-future`,
+            bookName: issue.book_name,
+            memberName: issue.member_name,
+            returnDate: issue.return_date,
+            mobile: issue.mobile,
+            status: "Scheduled",
+            alertText: text,
+            triggerTime: `${issue.return_date} দুপুর ২:০০ টা`,
+            bookCode: issue.book_code,
+            issueId: String(issue.id),
+          });
+        }
+      });
+
+      res.json(alerts);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    if (!computedReturnDateStr) {
-      return res.status(400).json({ error: "একটি সঠিক রিটার্ন তারিখ নির্বাচন করুন।" });
-    }
-
-    const newIssue: IssueRecord = {
-      id: `i-${Date.now()}`,
-      bookCode: book.code,
-      bookName: book.name,
-      author: book.author,
-      publisher: book.publisher,
-      memberName: member.name,
-      formNumber: member.formNumber,
-      mobile: member.mobile,
-      address: member.address,
-      issueDate: issueDateStr,
-      returnDate: computedReturnDateStr,
-      status: "Issued",
-      extensionHistory: [],
-      comments: [],
-    };
-
-    // Update book status
-    book.status = "Issued";
-
-    db.issues.unshift(newIssue);
-    writeDb(db);
-
-    addLog("বই ইস্যু", `বই '${book.name}' (কোড: ${book.code}) সদস্য ${member.name} (ফরম: ${member.formNumber}) কে ইস্যু করা হয়েছে।`);
-    
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("লেনদেন", "ইস্যু করা হয়েছে", newIssue).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    res.status(201).json({ success: true, issue: newIssue });
   });
 
   // Return Book
@@ -2310,87 +2151,111 @@ if (process.env.VERCEL) {
       return res.status(400).json({ error: "বই কোড আবশ্যক।" });
     }
 
-    const db = readDb();
+    try {
+      const [issueRows]: any = await pool.query(
+        "SELECT i.*, b.id as b_id, b.name as book_name, b.code as book_code, m.name as member_name FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE b.code = ? AND i.status = 'Issued' ORDER BY i.id DESC LIMIT 1",
+        [bookCode.toUpperCase()]
+      );
 
-    // Find the active issued record
-    const issueIdx = db.issues.findIndex(i => i.bookCode.toUpperCase() === bookCode.toUpperCase() && i.status === "Issued");
-    if (issueIdx === -1) {
-      return res.status(404).json({ error: "বইটির কোনো সক্রিয় ইস্যু অ্যাকাউন্ট পাওয়া যায়নি।" });
+      if (issueRows.length === 0) {
+        return res.status(404).json({ error: "বইটির কোনো সক্রিয় ইস্যু অ্যাকাউন্ট পাওয়া যায়নি।" });
+      }
+
+      const issue = issueRows[0];
+      const returnedAt = new Date().toISOString().split("T")[0];
+
+      await pool.query("UPDATE books SET status = 'Available' WHERE id = ?", [issue.b_id]);
+      await pool.query("UPDATE issues SET status = 'Returned', actual_return_date = ? WHERE id = ?", [returnedAt, issue.id]);
+
+      let parsedComments = typeof issue.comments === 'string' ? JSON.parse(issue.comments) : (issue.comments || []);
+      if (comments) {
+        parsedComments.push(comments);
+        await pool.query("UPDATE issues SET comments = ? WHERE id = ?", [JSON.stringify(parsedComments), issue.id]);
+      }
+
+      addLog("বই ফেরত", `বই '${issue.book_name}' (কোড: ${issue.book_code}) সদস্য ${issue.member_name} থেকে ফেরত গ্রহণ করা হয়েছে।`);
+      
+      const updatedIssue = {
+        id: String(issue.id), bookCode: issue.book_code, bookName: issue.book_name, memberName: issue.member_name,
+        issueDate: issue.issue_date, returnDate: issue.return_date, actualReturnDate: returnedAt, status: "Returned",
+        comments: parsedComments
+      };
+      
+      postToGoogleSheets("লেনদেন", "ফেরত দেওয়া হয়েছে", updatedIssue).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
+      res.json({ success: true, message: "বইটি সফলভাবে ফেরত গ্রহণ করা হয়েছে।" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    const book = db.books.find(b => b.code.toUpperCase() === bookCode.toUpperCase());
-    if (book) {
-      book.status = "Available";
-    }
-
-    const issue = db.issues[issueIdx];
-    issue.status = "Returned";
-    issue.returnedAt = new Date().toISOString().split("T")[0];
-    if (comments) {
-      issue.comments.push(comments);
-    }
-
-    writeDb(db);
-
-    addLog("বই ফেরত", `বই '${issue.bookName}' (কোড: ${issue.bookCode}) সদস্য ${issue.memberName} থেকে ফেরত গ্রহণ করা হয়েছে।`);
-    
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("লেনদেন", "ফেরত দেওয়া হয়েছে", issue).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    res.json({ success: true, message: "বইটি সফলভাবে ফেরত গ্রহণ করা হয়েছে।" });
   });
 
   // Time Extension or Reduction
-  app.post("/api/issues/time-change", authenticateAdmin, (req, res) => {
-    const { issueId, action, days } = req.body; // action: "Extend" | "Reduce", days: number
+  app.post("/api/issues/time-change", authenticateAdmin, async (req, res) => {
+    const { issueId, action, days } = req.body;
 
     if (!issueId || !action || !days) {
       return res.status(400).json({ error: "প্রয়োজনীয় তথ্য অনুপস্থিত।" });
     }
 
-    const db = readDb();
-    const issue = db.issues.find(i => i.id === issueId);
+    try {
+      const [rows]: any = await pool.query(
+        "SELECT i.*, b.name as book_name, b.code as book_code FROM issues i JOIN books b ON i.book_id = b.id WHERE i.id = ?",
+        [issueId]
+      );
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "ইস্যু অ্যাকাউন্ট পাওয়া যায়নি।" });
+      }
 
-    if (!issue) {
-      return res.status(404).json({ error: "ইস্যু অ্যাকাউন্ট পাওয়া যায়নি।" });
+      const issue = rows[0];
+      if (issue.status !== "Issued") {
+        return res.status(400).json({ error: "শুধুমাত্র চলমান ইস্যু বইয়ের সময় বৃদ্ধি/হ্রাস সম্ভব।" });
+      }
+
+      const currentDate = new Date(issue.return_date);
+      const offset = parseInt(days, 10);
+      let parsedHistory = typeof issue.extension_history === "string" ? JSON.parse(issue.extension_history) : (issue.extension_history || []);
+
+      if (action === "Extend") {
+        currentDate.setDate(currentDate.getDate() + offset);
+        parsedHistory.push({
+          date: new Date().toISOString().split("T")[0],
+          action: "Extended",
+          payload: `${offset} দিন বাড়ানো হয়েছে`,
+        });
+        addLog("সময় বাড়ানো", `'${issue.book_name}' (কোড: ${issue.book_code}) বইয়ের সময়সীমা ${offset} দিন বৃদ্ধি করা হয়েছে। নতুন তারিখ: ${currentDate.toISOString().split("T")[0]}`);
+      } else {
+        currentDate.setDate(currentDate.getDate() - offset);
+        parsedHistory.push({
+          date: new Date().toISOString().split("T")[0],
+          action: "Reduced",
+          payload: `${offset} দিন কমানো হয়েছে`,
+        });
+        addLog("সময় কমানো", `'${issue.book_name}' (কোড: ${issue.book_code}) বইয়ের সময়সীমা ${offset} দিন কমানো হয়েছে। নতুন তারিখ: ${currentDate.toISOString().split("T")[0]}`);
+      }
+
+      const newReturnDate = currentDate.toISOString().split("T")[0];
+      await pool.query("UPDATE issues SET return_date = ?, extension_history = ? WHERE id = ?", [newReturnDate, JSON.stringify(parsedHistory), issueId]);
+
+      res.json({ success: true, newReturnDate: newReturnDate });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    if (issue.status !== "Issued") {
-      return res.status(400).json({ error: "শুধুমাত্র চলমান ইস্যু বইয়ের সময় বৃদ্ধি/হ্রাস সম্ভব।" });
-    }
-
-    const currentDate = new Date(issue.returnDate);
-    const offset = parseInt(days, 10);
-
-    if (action === "Extend") {
-      currentDate.setDate(currentDate.getDate() + offset);
-      issue.extensionHistory.push({
-        date: new Date().toISOString().split("T")[0],
-        action: "Extended",
-        payload: `${offset} দিন বাড়ানো হয়েছে`,
-      });
-      addLog("সময় বাড়ানো", `'${issue.bookName}' (কোড: ${issue.bookCode}) বইয়ের সময়সীমা ${offset} দিন বৃদ্ধি করা হয়েছে। নতুন তারিখ: ${currentDate.toISOString().split("T")[0]}`);
-    } else {
-      currentDate.setDate(currentDate.getDate() - offset);
-      issue.extensionHistory.push({
-        date: new Date().toISOString().split("T")[0],
-        action: "Reduced",
-        payload: `${offset} দিন কমানো হয়েছে`,
-      });
-      addLog("সময় কমানো", `'${issue.bookName}' (কোড: ${issue.bookCode}) বইয়ের সময়সীমা ${offset} দিন কমানো হয়েছে। নতুন তারিখ: ${currentDate.toISOString().split("T")[0]}`);
-    }
-
-    issue.returnDate = currentDate.toISOString().split("T")[0];
-    writeDb(db);
-
-    res.json({ success: true, newReturnDate: issue.returnDate });
   });
 
   // ---------------- WISHLIST API ----------------
 
-  app.get("/api/wishlist", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    res.json(db.wishlist);
+  app.get("/api/wishlist", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM wishlist ORDER BY id DESC");
+      res.json(rows.map((r: any) => ({
+        id: String(r.id), name: r.name, author: r.author, publisher: r.publisher, createdAt: r.created_at
+      })));
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   app.post("/api/wishlist", authenticateAdmin, async (req, res) => {
@@ -2400,78 +2265,88 @@ if (process.env.VERCEL) {
       return res.status(400).json({ error: "বইয়ের নাম থাকতে হবে।" });
     }
 
-    const db = readDb();
-    const newItem: WishlistItem = {
-      id: `w-${Date.now()}`,
-      name,
-      author: author || "অজ্ঞাত",
-      publisher: publisher || "অজ্ঞাত",
-      createdAt: formatCurrentDateTime(),
-    };
+    try {
+      const p_author = author || "অজ্ঞাত";
+      const p_publisher = publisher || "অজ্ঞাত";
+      const createdAt = formatCurrentDateTime();
 
-    db.wishlist.unshift(newItem);
-    writeDb(db);
+      const [result]: any = await pool.query("INSERT INTO wishlist (name, author, publisher, created_at) VALUES (?, ?, ?, ?)", [name, p_author, p_publisher, createdAt]);
+      const newItem = {
+        id: String(result.insertId), name, author: p_author, publisher: p_publisher, createdAt
+      };
 
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("উইশলিস্ট", "যোগ করা হয়েছে", newItem).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      postToGoogleSheets("উইশলিস্ট", "যোগ করা হয়েছে", newItem).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      addLog("বই যোগ", `উইশলিস্টে নতুন বই '${name}' যোগ করা হয়েছে।`);
 
-    addLog("বই যোগ", `উইশলিস্টে নতুন বই '${name}' যোগ করা হয়েছে।`);
-
-    res.status(201).json(newItem);
+      res.status(201).json(newItem);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   app.delete("/api/wishlist/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const db = readDb();
 
-    const item = db.wishlist.find(w => w.id === id);
-    if (!item) {
-      return res.status(404).json({ error: "আইটেমটি পাওয়া যায়নি।" });
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM wishlist WHERE id = ?", [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "আইটেমটি পাওয়া যায়নি।" });
+      }
+
+      const item = { id: String(rows[0].id), name: rows[0].name, author: rows[0].author, publisher: rows[0].publisher, createdAt: rows[0].created_at };
+      await pool.query("DELETE FROM wishlist WHERE id = ?", [id]);
+
+      postToGoogleSheets("উইশলিস্ট", "মুছে ফেলা হয়েছে", item).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      addLog("বই মুছে ফেলা", `উইশলিস্ট থেকে বই '${item.name}' মুছে ফেলা হয়েছে।`);
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    db.wishlist = db.wishlist.filter(w => w.id !== id);
-    writeDb(db);
-
-    // Sync to Google Sheets asynchronously in the background so save is instant
-    postToGoogleSheets("উইশলিস্ট", "মুছে ফেলা হয়েছে", item).catch(err => console.warn("[Google Sheets Background Error]:", err));
-
-    addLog("বই মুছে ফেলা", `উইশলিস্ট থেকে বই '${item.name}' মুছে ফেলা হয়েছে।`);
-
-    res.json({ success: true });
   });
 
   // ---------------- NOTEPAD / NOTES SYSTEM ----------------
 
-  app.get("/api/notes", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    res.json(db.notes);
+  app.get("/api/notes", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM notes ORDER BY id DESC");
+      res.json(rows.map((r: any) => ({
+        id: String(r.id), title: r.title, content: r.content, createdAt: r.created_at, updatedAt: r.updated_at
+      })));
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
-  app.post("/api/notes", authenticateAdmin, (req, res) => {
+  app.post("/api/notes", authenticateAdmin, async (req, res) => {
     const { title, content } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: "নোটের শিরোনাম আবশ্যক।" });
     }
 
-    const db = readDb();
-    const newNote: Note = {
-      id: `n-${Date.now()}`,
-      title,
-      content: content || "",
-      createdAt: formatCurrentDateTime(),
-      updatedAt: formatCurrentDateTime(),
-    };
+    try {
+      const p_content = content || "";
+      const dt = formatCurrentDateTime();
 
-    db.notes.unshift(newNote);
-    writeDb(db);
+      const [result]: any = await pool.query("INSERT INTO notes (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)", [title, p_content, dt, dt]);
+      const newNote = {
+        id: String(result.insertId), title, content: p_content, createdAt: dt, updatedAt: dt
+      };
 
-    addLog("নোট তৈরি", `নোটের শিরোনাম: '${title}' সফলভাবে তৈরি হয়েছে।`);
+      addLog("নোট তৈরি", `নোটের শিরোনাম: '${title}' সফলভাবে তৈরি হয়েছে।`);
 
-    res.status(201).json(newNote);
+      res.status(201).json(newNote);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
-  app.put("/api/notes/:id", authenticateAdmin, (req, res) => {
+  app.put("/api/notes/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
     const { title, content } = req.body;
 
@@ -2479,80 +2354,106 @@ if (process.env.VERCEL) {
       return res.status(400).json({ error: "নোটের শিরোনাম আবশ্যক।" });
     }
 
-    const db = readDb();
-    const noteIdx = db.notes.findIndex(n => n.id === id);
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM notes WHERE id = ?", [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "নোটটি খুঁজে পাওয়া যায়নি।" });
+      }
 
-    if (noteIdx === -1) {
-      return res.status(404).json({ error: "নোটটি খুঁজে পাওয়া যায়নি।" });
+      const p_content = content || "";
+      const dt = formatCurrentDateTime();
+
+      await pool.query("UPDATE notes SET title = ?, content = ?, updated_at = ? WHERE id = ?", [title, p_content, dt, id]);
+      
+      const [updatedRows]: any = await pool.query("SELECT * FROM notes WHERE id = ?", [id]);
+      const r = updatedRows[0];
+      const updatedNote = {
+        id: String(r.id), title: r.title, content: r.content, createdAt: r.created_at, updatedAt: r.updated_at
+      };
+
+      res.json(updatedNote);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    db.notes[noteIdx] = {
-      ...db.notes[noteIdx],
-      title,
-      content: content || "",
-      updatedAt: formatCurrentDateTime(),
-    };
-
-    writeDb(db);
-    res.json(db.notes[noteIdx]);
   });
 
-  app.delete("/api/notes/:id", authenticateAdmin, (req, res) => {
+  app.delete("/api/notes/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const db = readDb();
 
-    const note = db.notes.find(n => n.id === id);
-    if (!note) {
-      return res.status(404).json({ error: "নোটটি খুঁজে পাওয়া যায়নি।" });
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM notes WHERE id = ?", [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "নোটটি খুঁজে পাওয়া যায়নি।" });
+      }
+
+      const note = rows[0];
+      await pool.query("DELETE FROM notes WHERE id = ?", [id]);
+
+      addLog("নোট মুছে ফেলা", `শিরোনাম: '${note.title}' নোটটি সম্পূর্ণ মুছে ফেলা হয়েছে।`);
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    db.notes = db.notes.filter(n => n.id !== id);
-    writeDb(db);
-
-    addLog("নোট মুছে ফেলা", `শিরোনাম: '${note.title}' নোটটি সম্পূর্ণ মুছে ফেলা হয়েছে।`);
-
-    res.json({ success: true });
   });
 
   // ---------------- AUDIT HISTORY LOOPS ----------------
 
-  app.get("/api/history", authenticateAdmin, (req, res) => {
+  app.get("/api/history", authenticateAdmin, async (req, res) => {
     const q = (req.query.q || "").toString().toLowerCase();
     const actionFilter = (req.query.action || "").toString();
-    const db = readDb();
 
-    let list = db.auditLogs;
+    try {
+      let query = "SELECT * FROM audit_logs";
+      const params = [];
 
-    if (q) {
-      list = list.filter(l => l.details.toLowerCase().includes(q) || l.action.toLowerCase().includes(q));
+      if (q || actionFilter) {
+        query += " WHERE 1=1";
+        if (q) {
+          query += " AND (LOWER(details) LIKE ? OR LOWER(action) LIKE ?)";
+          params.push(`%${q}%`, `%${q}%`);
+        }
+        if (actionFilter) {
+          query += " AND action = ?";
+          params.push(actionFilter);
+        }
+      }
+
+      query += " ORDER BY id DESC";
+
+      const [rows]: any = await pool.query(query, params);
+      res.json(rows.map((r: any) => ({
+        id: String(r.id), action: r.action, details: r.details, timestamp: r.timestamp
+      })));
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
     }
-
-    if (actionFilter) {
-      list = list.filter(l => l.action === actionFilter);
-    }
-
-    res.json(list);
   });
 
-  app.delete("/api/history/:id", authenticateAdmin, (req, res) => {
+  app.delete("/api/history/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const db = readDb();
-
-    db.auditLogs = db.auditLogs.filter(l => l.id !== id);
-    writeDb(db);
-
-    res.json({ success: true });
+    try {
+      await pool.query("DELETE FROM audit_logs WHERE id = ?", [id]);
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   // Delete batch/filtered history
-  app.delete("/api/history", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    db.auditLogs = [];
-    writeDb(db);
-
-    addLog("ইতিহাস মুছে ফেলা", `লগ হিস্ট্রি রিবুট করা হয়েছে।`);
-
-    res.json({ success: true, message: "সমস্ত হিস্ট্রি লোগ সফলভাবে বাতিল করা হয়েছে।" });
+  app.delete("/api/history", authenticateAdmin, async (req, res) => {
+    try {
+      await pool.query("TRUNCATE TABLE audit_logs");
+      addLog("ইতিহাস মুছে ফেলা", `লগ হিস্ট্রি রিবুট করা হয়েছে।`);
+      res.json({ success: true, message: "সমস্ত হিস্ট্রি লোগ সফলভাবে বাতিল করা হয়েছে।" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
   });
 
   // ---------------- SIMULATED SMS SCHEDULER & LIST ----------------
@@ -2573,132 +2474,53 @@ if (process.env.VERCEL) {
     }
   }
 
-  // Returns currently scheduled warnings
-  app.get("/api/sms/scheduled", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    const todayStr = (req.query.todayStr as string) || new Date().toISOString().split("T")[0];
-    const bypassRules = req.query.bypassRules === "true";
-
-    const alerts: Array<{
-      id: string;
-      bookName: string;
-      memberName: string;
-      returnDate: string;
-      mobile: string;
-      status: "Scheduled" | "Sent";
-      alertText: string;
-      triggerTime: string;
-      bookCode?: string;
-      issueId?: string;
-    }> = [];
-
-    db.issues.forEach(issue => {
-      if (issue.status !== "Issued") return;
-
-      const diffDays = getBangladeshDiffDays(todayStr, issue.returnDate);
-
-      // Rules:
-      // - At return date 2:00 PM it triggers SMS.
-      // - Every 2 days after return date it continues.
-      // Determine if an alert was triggered today or is scheduled
-      const rawTemplate = (db as any).smsTemplate || "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
-      
-      const text = rawTemplate
-        .replace(/{bookName}/g, issue.bookName)
-        .replace(/{বইয়েরনাম}/g, issue.bookName)
-        .replace(/{বইয়েরনাম}/g, issue.bookName)
-        .replace(/{book}/g, issue.bookName)
-        .replace(/{বই}/g, issue.bookName)
-        .replace(/{memberName}/g, issue.memberName)
-        .replace(/{সদস্যেরনাম}/g, issue.memberName)
-        .replace(/{সদস্য}/g, issue.memberName)
-        .replace(/{returnDate}/g, issue.returnDate)
-        .replace(/{ফেরততারিখ}/g, issue.returnDate)
-        .replace(/{তারিখ}/g, issue.returnDate);
-
-      if (bypassRules) {
-        alerts.push({
-          id: `sms-${issue.id}-bypass`,
-          bookName: issue.bookName,
-          memberName: issue.memberName,
-          returnDate: issue.returnDate,
-          mobile: issue.mobile,
-          status: "Sent",
-          alertText: text,
-          triggerTime: `তাৎক্ষণিক ওভাররাইড টেস্ট অ্যালার্ট (সব সক্রিয় সদস্যকে সচল ওয়ার্নিং)`,
-          bookCode: issue.bookCode,
-          issueId: issue.id,
-        });
-      } else if (diffDays >= 0) {
-        // Returned date is today or has passed
-        const isTriggerDay = diffDays % 2 === 0;
-        alerts.push({
-          id: `sms-${issue.id}-${diffDays}`,
-          bookName: issue.bookName,
-          memberName: issue.memberName,
-          returnDate: issue.returnDate,
-          mobile: issue.mobile,
-          status: isTriggerDay ? "Sent" : "Scheduled",
-          alertText: text,
-          triggerTime: `${issue.returnDate} দুপুর ২:০০ টা (আজ থেকে প্রতি ২ দিন অন্তর)`,
-          bookCode: issue.bookCode,
-          issueId: issue.id,
-        });
-      } else {
-        // Scheduled in future
-        alerts.push({
-          id: `sms-${issue.id}-future`,
-          bookName: issue.bookName,
-          memberName: issue.memberName,
-          returnDate: issue.returnDate,
-          mobile: issue.mobile,
-          status: "Scheduled",
-          alertText: text,
-          triggerTime: `${issue.returnDate} দুপুর ২:০০ টা`,
-          bookCode: issue.bookCode,
-          issueId: issue.id,
-        });
-      }
-    });
-
-    res.json(alerts);
-  });
 
   // Trigger simulated cron job to run check immediately
   app.post("/api/sms/trigger", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
       const todayStr = (req.body.todayStr as string) || (req.query.todayStr as string) || new Date().toISOString().split("T")[0];
       const bypassRules = req.body.bypassRules === true || req.body.bypassRules === "true" || req.query.bypassRules === "true";
-      const gateway = db.smsGateway || { provider: "simulated", apiKey: "", senderId: "", customUrl: "" };
+      
+      const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
+      let gateway = { provider: "simulated", apiKey: "", senderId: "", customUrl: "" };
+      let smsTemplate = "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
+
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        if (settings.smsGateway) gateway = settings.smsGateway;
+        if (settings.smsTemplate) smsTemplate = settings.smsTemplate;
+      }
+
+      const [issues]: any = await pool.query("SELECT * FROM issues WHERE status = 'Issued'");
 
       // Find all live active alerts for today (corresponds to active overdue notifications that modulo hits)
       const activeAlerts: Array<{ mobile: string; text: string; memberName: string }> = [];
 
-      db.issues.forEach(issue => {
-        if (issue.status !== "Issued") return;
+      issues.forEach((issue: any) => {
+        // Return date from DB might be a Date object, convert to YYYY-MM-DD string
+        const issueReturnDateStr = (issue.return_date instanceof Date) ? issue.return_date.toISOString().split("T")[0] : String(issue.return_date).split(" ")[0];
 
-        const diffDays = getBangladeshDiffDays(todayStr, issue.returnDate);
+        const diffDays = getBangladeshDiffDays(todayStr, issueReturnDateStr);
 
         if (bypassRules || (diffDays >= 0 && diffDays % 2 === 0)) {
-          const rawTemplate = db.smsTemplate || "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
+          const rawTemplate = smsTemplate;
           const text = rawTemplate
-            .replace(/{bookName}/g, issue.bookName)
-            .replace(/{বইয়েরনাম}/g, issue.bookName)
-            .replace(/{বইয়েরনাম}/g, issue.bookName)
-            .replace(/{book}/g, issue.bookName)
-            .replace(/{বই}/g, issue.bookName)
-            .replace(/{memberName}/g, issue.memberName)
-            .replace(/{সদস্যেরনাম}/g, issue.memberName)
-            .replace(/{সদস্য}/g, issue.memberName)
-            .replace(/{returnDate}/g, issue.returnDate)
-            .replace(/{ফেরততারিখ}/g, issue.returnDate)
-            .replace(/{তারিখ}/g, issue.returnDate);
+            .replace(/{bookName}/g, issue.book_name)
+            .replace(/{বইয়েরনাম}/g, issue.book_name)
+            .replace(/{বইয়েরনাম}/g, issue.book_name)
+            .replace(/{book}/g, issue.book_name)
+            .replace(/{বই}/g, issue.book_name)
+            .replace(/{memberName}/g, issue.member_name)
+            .replace(/{সদস্যেরনাম}/g, issue.member_name)
+            .replace(/{সদস্য}/g, issue.member_name)
+            .replace(/{returnDate}/g, issueReturnDateStr)
+            .replace(/{ফেরততারিখ}/g, issueReturnDateStr)
+            .replace(/{তারিখ}/g, issueReturnDateStr);
 
           activeAlerts.push({
             mobile: issue.mobile,
             text,
-            memberName: issue.memberName
+            memberName: issue.member_name
           });
         }
       });
@@ -2788,8 +2610,12 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "মোবাইল এবং বার্তা উভয়ই প্রদান করা আবশ্যক।" });
       }
 
-      const db = readDb();
-      const gateway = db.smsGateway || { provider: "simulated", apiKey: "", senderId: "", customUrl: "" };
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let gateway = { provider: "simulated", apiKey: "", senderId: "", customUrl: "" };
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        gateway = settings.smsGateway || gateway;
+      }
 
       let rawMobile = mobile.replace(/\D/g, "");
       let mobileWith88 = rawMobile.startsWith("88") ? rawMobile : "88" + rawMobile;
@@ -2855,8 +2681,13 @@ if (process.env.VERCEL) {
   // POST Google Sheets Import database
   app.post("/api/settings/googlesheets/import-all", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      const config = db.googleSheetsConfig;
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let config = null;
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        config = settings.googleSheetsConfig;
+      }
+      
       if (!config || !config.webAppUrl) {
         return res.status(400).json({ error: "কোনো গুগল শিট Web App URL সেট করা নেই। দয়া করে সেটিংস প্রথমে সেট করে সেভ করুন।" });
       }
@@ -2881,7 +2712,7 @@ if (process.env.VERCEL) {
       } catch (e: any) {
         console.warn("[Google Sheets Import] Response is not valid JSON. First 100 chars:", text.substring(0, 100));
         return res.status(400).json({
-          error: "গুগল শিট থেকে অকার্যকর রেসপন্স পাওয়া গেছে (রেসপন্সটি JSON ফরম্যাটে নয়)। নিশ্চিত করুন যে আপনি সঠিক 'গুগল অ্যাপস স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল' (Web App URL) ব্যবহার করছেন। কোনো সাধারণ গুগল স্প্রেডশিট লিংক এখানে কাজ করবে না।"
+          error: "গুগল শিট থেকে অকার্যকর রেসপন্স পাওয়া গেছে (রেসপন্সটি JSON ফরম্যাটে নয়)। নিশ্চিত করুন যে আপনি সঠিক 'গুগল অ্যাপস স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল' (Web App URL) ব্যবহার করছেন। কোনো সাধারণ গুগল স্প্রেডশিট লিংক এখানে কাজ করবে আধুনিক।"
         });
       }
       
@@ -2895,74 +2726,66 @@ if (process.env.VERCEL) {
 
       // Import books safely
       if (Array.isArray(data.books)) {
-        data.books.forEach((b: any) => {
-          if (!b.code || !b.name) return;
-          const exists = db.books.some(existing => existing.code === b.code);
-          if (!exists) {
-            db.books.unshift({
-              id: b.id || `book-${Math.random().toString(36).substr(2, 9)}`,
-              code: b.code,
-              name: b.name,
-              author: b.author || "অজ্ঞাত",
-              publisher: b.publisher || "অজ্ঞাত প্রকাশনী",
-              imageUrl: b.imageUrl?.trim() || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
-              status: b.status || "Available"
-            });
+        for (const b of data.books) {
+          if (!b.code || !b.name) continue;
+          const [existingBooks]: any = await pool.query("SELECT id FROM books WHERE code = ?", [b.code]);
+          if (existingBooks.length === 0) {
+            await pool.query(
+              "INSERT INTO books (code, name, author, publisher, image_url, status) VALUES (?, ?, ?, ?, ?, ?)",
+              [
+                b.code, b.name, b.author || "অজ্ঞাত", b.publisher || "অজ্ঞাত প্রকাশনী",
+                b.imageUrl?.trim() || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
+                b.status || "Available"
+              ]
+            );
             importedBooks++;
           }
-        });
+        }
       }
 
       // Import members safely
       if (Array.isArray(data.members)) {
-        data.members.forEach((m: any) => {
-          if (!m.formNumber || !m.name) return;
-          const index = db.members.findIndex(existing => existing.formNumber === m.formNumber);
-          if (index !== -1) {
-            db.members[index] = {
-              ...db.members[index],
-              mobile: m.mobile || db.members[index].mobile || "",
-              address: m.address || db.members[index].address || "",
-              dob: m.dob || db.members[index].dob || "",
-              educationInstitution: m.educationInstitution || db.members[index].educationInstitution || "",
-              className: m.className || db.members[index].className || "",
-              classRoll: m.classRoll || db.members[index].classRoll || ""
-            };
+        for (const m of data.members) {
+          if (!m.formNumber || !m.name) continue;
+          const [existingMembers]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [m.formNumber]);
+          if (existingMembers.length > 0) {
+            const em = existingMembers[0];
+            await pool.query(
+              "UPDATE members SET mobile = ?, address = ?, dob = ?, education_institution = ?, class_name = ?, class_roll = ? WHERE id = ?",
+              [
+                m.mobile || em.mobile || "", m.address || em.address || "", m.dob || em.dob || "",
+                m.educationInstitution || em.education_institution || "", m.className || em.class_name || "",
+                m.classRoll || em.class_roll || "", em.id
+              ]
+            );
           } else {
-            db.members.push({
-              formNumber: m.formNumber,
-              name: m.name,
-              mobile: m.mobile || "",
-              address: m.address || "",
-              dob: m.dob || "",
-              educationInstitution: m.educationInstitution || "",
-              className: m.className || "",
-              classRoll: m.classRoll || ""
-            });
+            await pool.query(
+              "INSERT INTO members (form_number, name, mobile, address, dob, education_institution, class_name, class_roll) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+              [
+                m.formNumber, m.name, m.mobile || "", m.address || "", m.dob || "",
+                m.educationInstitution || "", m.className || "", m.classRoll || ""
+              ]
+            );
             importedMembers++;
           }
-        });
+        }
       }
 
       // Import wishlist safely
       if (Array.isArray(data.wishlist)) {
-        data.wishlist.forEach((w: any) => {
-          if (!w.name) return;
-          const exists = db.wishlist.some(existing => existing.name === w.name);
-          if (!exists) {
-            db.wishlist.unshift({
-              id: w.id || `wish-${Math.random().toString(36).substr(2, 9)}`,
-              name: w.name,
-              author: w.author || "",
-              publisher: w.publisher || "",
-              createdAt: new Date().toISOString().split("T")[0]
-            });
+        for (const w of data.wishlist) {
+          if (!w.name) continue;
+          const [existingWishlist]: any = await pool.query("SELECT id FROM wishlist WHERE name = ?", [w.name]);
+          if (existingWishlist.length === 0) {
+            await pool.query(
+              "INSERT INTO wishlist (name, author, publisher, created_at) VALUES (?, ?, ?, ?)",
+              [w.name, w.author || "", w.publisher || "", new Date().toISOString().split("T")[0]]
+            );
             importedWishlist++;
           }
-        });
+        }
       }
 
-      writeDb(db);
       addLog("গুগল শিট ডাটা ইম্পোর্ট", `গুগল শিট থেকে সর্বমোট সফলভাবে ডাটা ডাউনলোড ইম্পোর্ট করা হয়েছে। নতুন বই: ${importedBooks}টি, নতুন সদস্য: ${importedMembers}টি, নতুন উইশলিস্ট: ${importedWishlist}টি।`);
       
       res.json({
@@ -2979,21 +2802,28 @@ if (process.env.VERCEL) {
   // ---------------- PUBLIC PORTAL & GROUPS & LEADERBOARDS API ----------------
 
   // 1. Member login
-  app.post("/api/public/member-login", (req, res) => {
+  app.post("/api/public/member-login", async (req, res) => {
     try {
       const { formNumber, dob, mobile } = req.body;
       if (!formNumber || !mobile) {
         return res.status(400).json({ error: "সদস্য ফরম নং এবং মোবাইল নম্বর দেওয়া আবশ্যক।" });
       }
 
-      const db = readDb();
-      const member = db.members.find(
-        m => m.formNumber.trim().toLowerCase() === formNumber.trim().toLowerCase()
-      );
-
-      if (!member) {
+      const [memberRows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber.trim()]);
+      if (memberRows.length === 0) {
         return res.status(404).json({ error: "এই ফরম নম্বরের কোনো সদস্য খুঁজে পাওয়া যায়নি।" });
       }
+
+      const m = memberRows[0];
+      const member = {
+        id: String(m.id), formNumber: m.form_number, name: m.name, nameEnglish: m.name_english,
+        mobile: m.mobile, address: m.address, dob: m.dob, educationInstitution: m.education_institution,
+        className: m.class_name, classRoll: m.class_roll, fatherName: m.father_name, motherName: m.mother_name,
+        currVillage: m.curr_village, currPostOffice: m.curr_post_office, currUpazila: m.curr_upazila, currDistrict: m.curr_district,
+        permVillage: m.perm_village, permPostOffice: m.perm_post_office, permUpazila: m.perm_upazila, permDistrict: m.perm_district,
+        bloodGroup: m.blood_group, nidBirthReg: m.nid_birth_reg, educationQualification: m.education_qualification,
+        profession: m.profession, nationality: m.nationality, photo: m.photo, paymentStatus: m.payment_status
+      };
 
       // Check mobile. Match last 10 digits to be extremely robust against country codes or formats
       const cleanMobile = mobile.replace(/\D/g, "");
@@ -3012,7 +2842,7 @@ if (process.env.VERCEL) {
       } else if (dob && dob.trim()) {
         // Automatically save the DOB to their member profile
         member.dob = dob.trim();
-        writeDb(db);
+        await pool.query("UPDATE members SET dob = ? WHERE id = ?", [member.dob, m.id]);
         addLog("জন্ম তারিখ আপডেট", `সদস্য ${member.name} (ফরম: ${member.formNumber}) এর জন্ম তারিখ প্রথম লগইনে স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়েছে।`);
       }
 
@@ -3024,35 +2854,13 @@ if (process.env.VERCEL) {
   });
 
   // 1c. Public member registration self-service
-  app.post("/api/public/register", (req, res) => {
+  app.post("/api/public/register", async (req, res) => {
     try {
       const {
-        name,
-        nameEnglish,
-        fatherName,
-        motherName,
-        currVillage,
-        currPostOffice,
-        currUpazila,
-        currDistrict,
-        permVillage,
-        permPostOffice,
-        permUpazila,
-        permDistrict,
-        dob,
-        mobile,
-        bloodGroup,
-        nidBirthReg,
-        educationInstitution,
-        className,
-        classRoll,
-        educationQualification,
-        profession,
-        nationality,
-        paymentMethod,
-        senderNumber,
-        transactionId,
-        photo
+        name, nameEnglish, fatherName, motherName, currVillage, currPostOffice, currUpazila, currDistrict,
+        permVillage, permPostOffice, permUpazila, permDistrict, dob, mobile, bloodGroup, nidBirthReg,
+        educationInstitution, className, classRoll, educationQualification, profession, nationality,
+        paymentMethod, senderNumber, transactionId, photo
       } = req.body;
 
       if (!name || !name.trim()) {
@@ -3074,62 +2882,60 @@ if (process.env.VERCEL) {
         }
       }
 
-      const db = readDb();
-
       // Check if mobile is already registered
       const cleanMobile = mobile.replace(/\D/g, "");
-      const mobileExists = db.members.some(m => m.mobile.replace(/\D/g, "") === cleanMobile);
-      if (mobileExists) {
+      const [existingRows]: any = await pool.query("SELECT id FROM members WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '+', ''), '(', ''), ')', '') LIKE ?", [`%${cleanMobile}%`]);
+      if (existingRows.length > 0) {
         return res.status(400).json({ error: "এই মোবাইল নম্বরটি দিয়ে ইতিমধ্যেই একাউন্ট রেজিস্টার্ড রয়েছে।" });
       }
 
       // Auto-generate unique Form Number. Find the highest numeric Form Number and add 1
+      const [maxFormRows]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as max_form FROM members WHERE form_number REGEXP '^[0-9]+$'");
       let maxForm = 999;
-      db.members.forEach(m => {
-        const num = parseInt(m.formNumber, 10);
-        if (!isNaN(num) && num > maxForm) {
-          maxForm = num;
-        }
-      });
+      if (maxFormRows.length > 0 && maxFormRows[0].max_form !== null) {
+        maxForm = Math.max(999, parseInt(maxFormRows[0].max_form, 10));
+      }
       const nextFormNumber = (maxForm + 1).toString();
 
       // Compile current address and permanent address
       const addressStr = `বর্তমান: ${currVillage || ""}, ডাকঘর: ${currPostOffice || ""}, উপজেলা: ${currUpazila || ""}, জেলা: ${currDistrict || ""}. স্থায়ী: ${permVillage || ""}, ডাকঘর: ${permPostOffice || ""}, উপজেলা: ${permUpazila || ""}, জেলা: ${permDistrict || ""}`;
 
-      const newMember: Member = {
-        formNumber: nextFormNumber,
-        name: name.trim(),
-        nameEnglish: (nameEnglish || "").trim(),
-        mobile: mobile.trim(),
-        address: addressStr,
-        dob: dob.trim(),
-        educationInstitution: (educationInstitution || "").trim(),
-        className: (className || "").trim(),
-        classRoll: (classRoll || "").trim(),
-        fatherName: (fatherName || "").trim(),
-        motherName: (motherName || "").trim(),
-        currVillage: (currVillage || "").trim(),
-        currPostOffice: (currPostOffice || "").trim(),
-        currUpazila: (currUpazila || "").trim(),
-        currDistrict: (currDistrict || "").trim(),
-        permVillage: (permVillage || "").trim(),
-        permPostOffice: (permPostOffice || "").trim(),
-        permUpazila: (permUpazila || "").trim(),
-        permDistrict: (permDistrict || "").trim(),
-        bloodGroup: (bloodGroup || "").trim(),
-        nidBirthReg: (nidBirthReg || "").trim(),
-        educationQualification: (educationQualification || "").trim(),
-        profession: (profession || "").trim(),
-        nationality: (nationality || "বাংলাদেশী").trim(),
-        paymentMethod: (paymentMethod || "অফলাইন কাউন্টার").trim(),
-        senderNumber: (senderNumber || "").trim(),
-        transactionId: (transactionId || "").trim(),
-        paymentStatus: paymentMethod === "অফলাইন কাউন্টার" ? "Unpaid" : "Pending",
-        photo: photo || ""
-      };
+      const p_paymentStatus = paymentMethod === "অফলাইন কাউন্টার" ? "Unpaid" : "Pending";
 
-      db.members.push(newMember);
-      writeDb(db);
+      const insertValues = [
+        nextFormNumber, name.trim(), (nameEnglish || "").trim(), mobile.trim(), addressStr, dob.trim(),
+        (educationInstitution || "").trim(), (className || "").trim(), (classRoll || "").trim(),
+        (fatherName || "").trim(), (motherName || "").trim(), (currVillage || "").trim(),
+        (currPostOffice || "").trim(), (currUpazila || "").trim(), (currDistrict || "").trim(),
+        (permVillage || "").trim(), (permPostOffice || "").trim(), (permUpazila || "").trim(),
+        (permDistrict || "").trim(), (bloodGroup || "").trim(), (nidBirthReg || "").trim(),
+        (educationQualification || "").trim(), (profession || "").trim(), (nationality || "বাংলাদেশী").trim(),
+        (paymentMethod || "অফলাইন কাউন্টার").trim(), p_paymentStatus, photo || ""
+      ];
+
+      const [resInsert]: any = await pool.query(
+        `INSERT INTO members (
+          form_number, name, name_english, mobile, address, dob,
+          education_institution, class_name, class_roll, father_name, mother_name,
+          curr_village, curr_post_office, curr_upazila, curr_district,
+          perm_village, perm_post_office, perm_upazila, perm_district,
+          blood_group, nid_birth_reg, education_qualification, profession, nationality,
+          payment_method, payment_status, photo
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        insertValues
+      );
+
+      const [newRow]: any = await pool.query("SELECT * FROM members WHERE id = ?", [resInsert.insertId]);
+      const r = newRow[0];
+      const newMember = {
+        id: String(r.id), formNumber: r.form_number, name: r.name, nameEnglish: r.name_english,
+        mobile: r.mobile, address: r.address, dob: r.dob, educationInstitution: r.education_institution,
+        className: r.class_name, classRoll: r.class_roll, fatherName: r.father_name, motherName: r.mother_name,
+        currVillage: r.curr_village, currPostOffice: r.curr_post_office, currUpazila: r.curr_upazila, currDistrict: r.curr_district,
+        permVillage: r.perm_village, permPostOffice: r.perm_post_office, permUpazila: r.perm_upazila, permDistrict: r.perm_district,
+        bloodGroup: r.blood_group, nidBirthReg: r.nid_birth_reg, educationQualification: r.education_qualification,
+        profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
+      };
 
       // Sync to Google Sheets in background
       postToGoogleSheets("সদস্য", "নিবন্ধন করা হয়েছে", newMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
@@ -3144,31 +2950,47 @@ if (process.env.VERCEL) {
   });
 
   // 1b. Public Member Profile & History (No admin token required)
-  app.get("/api/public/members/:formNumber/profile", (req, res) => {
+  app.get("/api/public/members/:formNumber/profile", async (req, res) => {
     try {
       const { formNumber } = req.params;
-      const db = readDb();
       
-      const member = db.members.find(m => m.formNumber.trim().toLowerCase() === formNumber.trim().toLowerCase());
-      if (!member) {
+      const [memberRows]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [formNumber.trim()]);
+      if (memberRows.length === 0) {
         return res.status(404).json({ error: "এই ফরম নম্বরের কোনো সদস্য খুঁজে পাওয়া যায়নি।" });
       }
-
-      // Get active rents
-      const activeRents = (db.issues || []).filter(i => i.formNumber.trim().toLowerCase() === formNumber.trim().toLowerCase() && i.status === "Issued");
       
-      // Get returned history
-      const returnedHistory = (db.issues || []).filter(i => i.formNumber.trim().toLowerCase() === formNumber.trim().toLowerCase() && i.status === "Returned");
-      
-      // Get all rents count
-      const allRents = (db.issues || []).filter(i => i.formNumber.trim().toLowerCase() === formNumber.trim().toLowerCase());
+      const m = memberRows[0];
+      const member = {
+        id: String(m.id), formNumber: m.form_number, name: m.name, nameEnglish: m.name_english,
+        mobile: m.mobile, address: m.address, dob: m.dob, educationInstitution: m.education_institution,
+        className: m.class_name, classRoll: m.class_roll, fatherName: m.father_name, motherName: m.mother_name,
+        currVillage: m.curr_village, currPostOffice: m.curr_post_office, currUpazila: m.curr_upazila, currDistrict: m.curr_district,
+        permVillage: m.perm_village, permPostOffice: m.perm_post_office, permUpazila: m.perm_upazila, permDistrict: m.perm_district,
+        bloodGroup: m.blood_group, nidBirthReg: m.nid_birth_reg, educationQualification: m.education_qualification,
+        profession: m.profession, nationality: m.nationality, photo: m.photo, paymentStatus: m.payment_status
+      };
 
+      const [issueRows]: any = await pool.query(
+        "SELECT i.*, b.name as book_name, b.code as book_code, m.name as member_name, m.mobile as member_mobile, m.form_number as member_form_number, m.address as member_address FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE i.member_id = ?",
+        [m.id]
+      );
+      
+      const issues = issueRows.map((r: any) => ({
+        id: String(r.id), bookCode: r.book_code, bookName: r.book_name, memberName: r.member_name, formNumber: r.member_form_number,
+        mobile: r.member_mobile, address: r.member_address, issueDate: r.issue_date, returnDate: r.return_date,
+        actualReturnDate: r.actual_return_date, status: r.status, extensionHistory: typeof r.extension_history === 'string' ? JSON.parse(r.extension_history) : (r.extension_history || []),
+        comments: typeof r.comments === 'string' ? JSON.parse(r.comments) : (r.comments || [])
+      }));
+
+      const activeRents = issues.filter((i: any) => i.status === "Issued");
+      const returnedHistory = issues.filter((i: any) => i.status === "Returned");
+      
       res.json({
         success: true,
         member,
         activeRents,
         returnedHistory,
-        rentCount: allRents.length,
+        rentCount: issues.length,
       });
     } catch (err: any) {
       console.error("Public profile fetch failed:", err);
@@ -3177,103 +2999,149 @@ if (process.env.VERCEL) {
   });
 
   // 2. Fetch all book groups
-  app.get("/api/public/groups", (req, res) => {
+  app.get("/api/public/groups", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({ success: true, groups: db.groups || ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"] });
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        groups = settings.groups || groups;
+      }
+      res.json({ success: true, groups });
     } catch (err: any) {
       res.status(500).json({ error: "গ্রুপ সমূহ লোড করতে ব্যর্থ।" });
     }
   });
 
   // 2b. Fetch active membership fee payment methods
-  app.get("/api/public/payment-methods", (req, res) => {
+  app.get("/api/public/payment-methods", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({ success: true, paymentMethods: db.paymentMethods || [] });
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let paymentMethods = [];
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        paymentMethods = settings.paymentMethods || [];
+      }
+      res.json({ success: true, paymentMethods });
     } catch (err: any) {
       res.status(500).json({ error: "পেমেন্ট মাধ্যমসমূহ লোড করতে ব্যর্থ।" });
     }
   });
 
   // 2c. Save membership fee payment methods (Admin only)
-  app.post("/api/settings/payment-methods", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/payment-methods", authenticateAdmin, async (req, res) => {
     try {
       const { paymentMethods } = req.body;
       if (!Array.isArray(paymentMethods)) {
         return res.status(400).json({ error: "পেমেন্ট মেথড লিস্ট অবশ্যই একটি অ্যারে হতে হবে।" });
       }
 
-      const db = readDb();
-      db.paymentMethods = paymentMethods.map((pm: any, idx: number) => ({
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      }
+      
+      settings.paymentMethods = paymentMethods.map((pm: any, idx: number) => ({
         id: pm.id || `pm-${Date.now()}-${idx}`,
         name: (pm.name || "").trim(),
         type: (pm.type || "Personal").trim(),
         number: (pm.number || "").trim()
-      })).filter(pm => pm.name && pm.number);
+      })).filter((pm: any) => pm.name && pm.number);
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
-      writeDb(db);
       addLog("পেমেন্ট সেটিং", "সদস্য মেম্বারশিপ ফি পেমেন্ট মেথড তালিকা আপডেট করা হয়েছে।");
-      res.json({ success: true, paymentMethods: db.paymentMethods });
+      res.json({ success: true, paymentMethods: settings.paymentMethods });
     } catch (err: any) {
       res.status(500).json({ error: "পেমেন্ট মেথড আপডেট করতে সার্ভার ত্রুটি হয়েছে।" });
     }
   });
 
   // 3. Add a new book group (Admin only)
-  app.post("/api/settings/groups", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/groups", authenticateAdmin, async (req, res) => {
     try {
       const { groupName } = req.body;
       if (!groupName || !groupName.trim()) {
         return res.status(400).json({ error: "গ্রুপের নাম প্রদান করা আবশ্যক।" });
       }
 
-      const db = readDb();
-      if (!db.groups) {
-        db.groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      }
+      
+      if (!settings.groups) {
+        settings.groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
       }
 
       const trimmedName = groupName.trim();
-      if (db.groups.some(g => g.toLowerCase() === trimmedName.toLowerCase())) {
+      if (settings.groups.some((g: string) => g.toLowerCase() === trimmedName.toLowerCase())) {
         return res.status(400).json({ error: "এই গ্রুপটি ইতিমধ্যে বিদ্যমান রয়েছে।" });
       }
 
-      db.groups.push(trimmedName);
-      writeDb(db);
+      settings.groups.push(trimmedName);
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
       addLog("গ্রুপ যোগ", `নতুন বইয়ের গ্রুপ '${trimmedName}' যোগ করা হয়েছে।`);
-      res.json({ success: true, groups: db.groups });
+      res.json({ success: true, groups: settings.groups });
     } catch (err: any) {
       res.status(500).json({ error: "গ্রুপ তৈরি করতে সমস্যা হয়েছে।" });
     }
   });
 
   // 4. Delete a book group (Admin only)
-  app.delete("/api/settings/groups/:groupName", authenticateAdmin, (req, res) => {
+  app.delete("/api/settings/groups/:groupName", authenticateAdmin, async (req, res) => {
     try {
       const { groupName } = req.params;
-      const db = readDb();
-      if (!db.groups) {
-        db.groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
+      
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      }
+      
+      if (!settings.groups) {
+        settings.groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
       }
 
-      db.groups = db.groups.filter(g => g.toLowerCase() !== groupName.toLowerCase());
-      writeDb(db);
+      settings.groups = settings.groups.filter((g: string) => g.toLowerCase() !== groupName.toLowerCase());
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
       addLog("গ্রুপ ডিলিট", `বইয়ের গ্রুপ '${groupName}' ডিলিট করা হয়েছে।`);
-      res.json({ success: true, groups: db.groups });
+      res.json({ success: true, groups: settings.groups });
     } catch (err: any) {
       res.status(500).json({ error: "গ্রুপ ডিলিট করতে সমস্যা হয়েছে।" });
     }
   });
 
   // 5. Fetch public stats
-  app.get("/api/public/stats", (req, res) => {
+  app.get("/api/public/stats", async (req, res) => {
     try {
-      const db = readDb();
-      const totalBooks = db.books.length;
-      const issuedBooks = db.books.filter(b => b.status === "Issued").length;
-      const availableBooks = db.books.filter(b => b.status === "Available").length;
+      const [bookRows]: any = await pool.query("SELECT status, COUNT(*) as count FROM books GROUP BY status");
+      let totalBooks = 0;
+      let issuedBooks = 0;
+      let availableBooks = 0;
+      bookRows.forEach((r: any) => {
+        totalBooks += r.count;
+        if (r.status === "Issued") issuedBooks += r.count;
+        else if (r.status === "Available") availableBooks += r.count;
+      });
       res.json({ success: true, totalBooks, issuedBooks, availableBooks });
     } catch (err: any) {
       res.status(500).json({ error: "পরিসংখ্যান লোড করা যায়নি।" });
@@ -3281,60 +3149,65 @@ if (process.env.VERCEL) {
   });
 
   // 6. Public Book List (Search & Filter)
-  app.get("/api/public/books", (req, res) => {
+  app.get("/api/public/books", async (req, res) => {
     try {
       const { q, status, group } = req.query;
-      const db = readDb();
-      let filtered = [...db.books];
-
+      let query = "SELECT * FROM books WHERE 1=1";
+      const params: any[] = [];
+      
       if (q) {
-        const queryStr = q.toString().toLowerCase().trim();
-        filtered = filtered.filter(b => 
-          b.name.toLowerCase().includes(queryStr) ||
-          b.code.toLowerCase().includes(queryStr) ||
-          b.author.toLowerCase().includes(queryStr) ||
-          b.publisher.toLowerCase().includes(queryStr)
-        );
+        query += " AND (LOWER(name) LIKE ? OR LOWER(code) LIKE ? OR LOWER(author) LIKE ? OR LOWER(publisher) LIKE ?)";
+        const likeQ = `%${q.toString().toLowerCase().trim()}%`;
+        params.push(likeQ, likeQ, likeQ, likeQ);
       }
-
+      
       if (status) {
-        filtered = filtered.filter(b => b.status === status);
+        query += " AND status = ?";
+        params.push(status);
       }
-
+      
       if (group) {
-        const groupStr = group.toString().toLowerCase().trim();
-        filtered = filtered.filter(b => b.group && b.group.toLowerCase().trim() === groupStr.toLowerCase().trim());
+        query += " AND LOWER(book_group) = ?";
+        params.push(group.toString().toLowerCase().trim());
       }
+      
+      const [rows]: any = await pool.query(query, params);
+      const books = rows.map((r: any) => ({
+        id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
+        imageUrl: r.image_url, status: r.status, group: r.book_group
+      }));
 
-      res.json({ success: true, books: filtered });
+      res.json({ success: true, books });
     } catch (err: any) {
       res.status(500).json({ error: "বইয়ের তালিকা লোড করা যায়নি।" });
     }
   });
 
   // 7. Public wishlist post (for members)
-  app.post("/api/public/wishlist", (req, res) => {
+  app.post("/api/public/wishlist", async (req, res) => {
     try {
       const { name, author, publisher, memberFormNumber } = req.body;
       if (!name || !name.trim()) {
         return res.status(400).json({ error: "বইয়ের নাম আবশ্যক।" });
       }
 
-      const db = readDb();
-      const exists = db.books.some(b => b.name.trim().toLowerCase() === name.trim().toLowerCase());
+      const [bookRows]: any = await pool.query("SELECT id FROM books WHERE LOWER(name) = ?", [name.trim().toLowerCase()]);
+      const isAvailable = bookRows.length > 0;
       
-      const newItem: WishlistItem = {
-        id: `w-${Date.now()}`,
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO wishlist (name, author, publisher, member_form_number, created_at, status) VALUES (?, ?, ?, ?, ?, ?)",
+        [name.trim(), (author || "").trim() || "অজ্ঞাত", (publisher || "").trim() || "অজ্ঞাত", memberFormNumber || "", formatCurrentDateTime(), isAvailable ? "Available" : "Waiting"]
+      );
+
+      const newItem = {
+        id: String(resInsert.insertId),
         name: name.trim(),
         author: (author || "").trim() || "অজ্ঞাত",
         publisher: (publisher || "").trim() || "অজ্ঞাত",
         createdAt: formatCurrentDateTime(),
         memberFormNumber: memberFormNumber || "",
-        status: exists ? "Available" : "Waiting"
+        status: isAvailable ? "Available" : "Waiting"
       };
-
-      db.wishlist.unshift(newItem);
-      writeDb(db);
 
       // Sync to Google Sheets asynchronously
       postToGoogleSheets("উইশলিস্ট", "যোগ করা হয়েছে", newItem).catch(err => console.warn("[Google Sheets Background Error]:", err));
@@ -3348,24 +3221,33 @@ if (process.env.VERCEL) {
   });
 
   // 8. Public Wishlist fetch (with dynamic status resolution)
-  app.get("/api/public/wishlist", (req, res) => {
+  app.get("/api/public/wishlist", async (req, res) => {
     try {
       const { memberFormNumber } = req.query;
-      const db = readDb();
-      let list = [...db.wishlist];
+      let query = "SELECT * FROM wishlist";
+      const params: any[] = [];
 
       if (memberFormNumber) {
-        list = list.filter(w => w.memberFormNumber === memberFormNumber.toString());
+        query += " WHERE member_form_number = ?";
+        params.push(memberFormNumber.toString());
       }
+      query += " ORDER BY id DESC";
 
-      // Dynamically calculate status on the fly based on current books in library
-      const resolvedList = list.map(item => {
-        const isAvailable = db.books.some(b => b.name.trim().toLowerCase() === item.name.trim().toLowerCase());
-        return {
-          ...item,
-          status: isAvailable ? "Available" : "Waiting"
-        };
-      });
+      const [rows]: any = await pool.query(query, params);
+      
+      const resolvedList = [];
+      for (const item of rows) {
+        const [bookRows]: any = await pool.query("SELECT id FROM books WHERE LOWER(name) = ?", [item.name.trim().toLowerCase()]);
+        resolvedList.push({
+          id: String(item.id),
+          name: item.name,
+          author: item.author,
+          publisher: item.publisher,
+          createdAt: item.created_at,
+          memberFormNumber: item.member_form_number,
+          status: bookRows.length > 0 ? "Available" : "Waiting"
+        });
+      }
 
       res.json({ success: true, wishlist: resolvedList });
     } catch (err: any) {
@@ -3374,26 +3256,20 @@ if (process.env.VERCEL) {
   });
 
   // 9. Public Book Leaderboard
-  app.get("/api/public/leaderboard/books", (req, res) => {
+  app.get("/api/public/leaderboard/books", async (req, res) => {
     try {
-      const db = readDb();
-      const counts: Record<string, { code: string; name: string; author: string; publisher: string; count: number }> = {};
+      const [rows]: any = await pool.query(
+        "SELECT book_code, book_name, author, publisher, COUNT(*) as count FROM issues GROUP BY book_code, book_name, author, publisher ORDER BY count DESC"
+      );
       
-      db.issues.forEach(issue => {
-        const key = issue.bookCode;
-        if (!counts[key]) {
-          counts[key] = {
-            code: issue.bookCode,
-            name: issue.bookName,
-            author: issue.author || "অজ্ঞাত",
-            publisher: issue.publisher || "অজ্ঞাত",
-            count: 0
-          };
-        }
-        counts[key].count++;
-      });
-
-      const list = Object.values(counts).sort((a, b) => b.count - a.count);
+      const list = rows.map((r: any) => ({
+        code: r.book_code,
+        name: r.book_name,
+        author: r.author || "অজ্ঞাত",
+        publisher: r.publisher || "অজ্ঞাত",
+        count: r.count
+      }));
+      
       res.json({ success: true, leaderboard: list });
     } catch (err: any) {
       res.status(500).json({ error: "বই লিডারবোর্ড লোড করা যায়নি।" });
@@ -3401,25 +3277,19 @@ if (process.env.VERCEL) {
   });
 
   // 10. Admin Member Leaderboard (Admin Only)
-  app.get("/api/admin/leaderboard/members", authenticateAdmin, (req, res) => {
+  app.get("/api/admin/leaderboard/members", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      const counts: Record<string, { formNumber: string; name: string; mobile: string; count: number }> = {};
-
-      db.issues.forEach(issue => {
-        const key = issue.formNumber;
-        if (!counts[key]) {
-          counts[key] = {
-            formNumber: issue.formNumber,
-            name: issue.memberName,
-            mobile: issue.mobile,
-            count: 0
-          };
-        }
-        counts[key].count++;
-      });
-
-      const list = Object.values(counts).sort((a, b) => b.count - a.count);
+      const [rows]: any = await pool.query(
+        "SELECT form_number, member_name, mobile, COUNT(*) as count FROM issues GROUP BY form_number, member_name, mobile ORDER BY count DESC"
+      );
+      
+      const list = rows.map((r: any) => ({
+        formNumber: r.form_number,
+        name: r.member_name,
+        mobile: r.mobile,
+        count: r.count
+      }));
+      
       res.json({ success: true, leaderboard: list });
     } catch (err: any) {
       res.status(500).json({ error: "সদস্য লিডারবোর্ড লোড করা যায়নি।" });
@@ -3428,123 +3298,172 @@ if (process.env.VERCEL) {
 
   // --- Sales Corner / Shop Corner APIs ---
   // 1. Get all shop items (Public)
-  app.get("/api/public/shop/items", (req, res) => {
+  app.get("/api/public/shop/items", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({ success: true, shopItems: db.shopItems || [] });
+      const [rows]: any = await pool.query("SELECT * FROM shop_items ORDER BY id DESC");
+      const shopItems = rows.map((r: any) => ({
+        id: String(r.id),
+        name: r.name,
+        description: r.description,
+        price: r.price,
+        imageUrl: r.image_url,
+        category: r.category,
+        createdAt: r.created_at
+      }));
+      res.json({ success: true, shopItems });
     } catch (err: any) {
       res.status(500).json({ error: "বিক্রয় কর্নার সামগ্রী লোড করা যায়নি।" });
     }
   });
 
   // 1b. Get all shop categories/groups (Public)
-  app.get("/api/public/shop/categories", (req, res) => {
+  app.get("/api/public/shop/categories", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({ success: true, categories: db.shopCategories || ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"] });
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let categories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        categories = settings.shopCategories || categories;
+      }
+      res.json({ success: true, categories });
     } catch (err: any) {
       res.status(500).json({ error: "বিক্রয় ক্যাটাগরি লোড করতে ব্যর্থ।" });
     }
   });
 
   // 1d. Get shop helpline config (Public)
-  app.get("/api/public/shop/helpline", (req, res) => {
+  app.get("/api/public/shop/helpline", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({
-        success: true,
-        helpline: db.shopHelpline || {
-          number: "০১৩৩৩৪৭৮৪৪৮",
-          text: "বিক্রয় কর্নারের যেকোনো পণ্য সংগ্রহ করতে আমাদের হেল্পলাইন নাম্বারে যোগাযোগ করুন অথবা সরাসরি অক্ষর লাইব্রেরির কাউন্টারে ভিজিট করে সংগ্রহ করতে পারবেন।"
-        }
-      });
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let helpline = {
+        number: "০১৩৩৩৪৭৮৪৪৮",
+        text: "বিক্রয় কর্নারের যেকোনো পণ্য সংগ্রহ করতে আমাদের হেল্পলাইন নাম্বারে যোগাযোগ করুন অথবা সরাসরি অক্ষর লাইব্রেরির কাউন্টারে ভিজিট করে সংগ্রহ করতে পারবেন।"
+      };
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        helpline = settings.shopHelpline || helpline;
+      }
+      res.json({ success: true, helpline });
     } catch (err: any) {
       res.status(500).json({ error: "হেল্পলাইন তথ্য লোড করতে ব্যর্থ।" });
     }
   });
 
   // 1e. Save shop helpline config (Admin only)
-  app.post("/api/settings/shop/helpline", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/shop/helpline", authenticateAdmin, async (req, res) => {
     try {
       const { number, text } = req.body;
       if (!number || !number.trim() || !text || !text.trim()) {
         return res.status(400).json({ error: "হেল্পলাইন নাম্বার এবং ক্রয় করার নির্দেশিকা লিখুন।" });
       }
 
-      const db = readDb();
-      db.shopHelpline = {
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      }
+
+      settings.shopHelpline = {
         number: number.trim(),
         text: text.trim()
       };
-      writeDb(db);
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
       addLog("হেল্পলাইন আপডেট", `বিক্রয় কর্নারের হেল্পলাইন কাস্টমাইজ করা হয়েছে। নাম্বার: ${number.trim()}`);
-      res.json({ success: true, helpline: db.shopHelpline });
+      res.json({ success: true, helpline: settings.shopHelpline });
     } catch (err: any) {
       res.status(500).json({ error: "হেল্পলাইন কাস্টমাইজেশন সেভ করতে ব্যর্থ।" });
     }
   });
 
   // 1c. Add a new shop category/group (Admin only)
-  app.post("/api/settings/shop/categories", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/shop/categories", authenticateAdmin, async (req, res) => {
     try {
       const { categoryName } = req.body;
       if (!categoryName || !categoryName.trim()) {
         return res.status(400).json({ error: "ক্যাটাগরির নাম প্রদান করা আবশ্যক।" });
       }
 
-      const db = readDb();
-      if (!db.shopCategories) {
-        db.shopCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      }
+
+      if (!settings.shopCategories) {
+        settings.shopCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
       }
 
       const trimmedName = categoryName.trim();
-      if (db.shopCategories.some(c => c.toLowerCase() === trimmedName.toLowerCase())) {
+      if (settings.shopCategories.some((c: string) => c.toLowerCase() === trimmedName.toLowerCase())) {
         return res.status(400).json({ error: "এই ক্যাটাগরি বা গ্রুপটি ইতিমধ্যে বিদ্যমান রয়েছে।" });
       }
 
-      db.shopCategories.push(trimmedName);
-      writeDb(db);
+      settings.shopCategories.push(trimmedName);
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
       addLog("ক্যাটাগরি যোগ", `নতুন বিক্রয় ক্যাটাগরি '${trimmedName}' যোগ করা হয়েছে।`);
-      res.json({ success: true, categories: db.shopCategories });
+      res.json({ success: true, categories: settings.shopCategories });
     } catch (err: any) {
       res.status(500).json({ error: "ক্যাটাগরি তৈরি করতে সমস্যা হয়েছে।" });
     }
   });
 
   // 1d. Delete a shop category/group (Admin only)
-  app.delete("/api/settings/shop/categories/:categoryName", authenticateAdmin, (req, res) => {
+  app.delete("/api/settings/shop/categories/:categoryName", authenticateAdmin, async (req, res) => {
     try {
       const { categoryName } = req.params;
-      const db = readDb();
-      if (!db.shopCategories) {
-        db.shopCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
+      
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
       }
 
-      db.shopCategories = db.shopCategories.filter(c => c.toLowerCase() !== categoryName.toLowerCase());
-      writeDb(db);
+      if (!settings.shopCategories) {
+        settings.shopCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
+      }
+
+      settings.shopCategories = settings.shopCategories.filter((c: string) => c.toLowerCase() !== categoryName.toLowerCase());
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
       addLog("ক্যাটাগরি ডিলিট", `বিক্রয় ক্যাটাগরি '${categoryName}' ডিলিট করা হয়েছে।`);
-      res.json({ success: true, categories: db.shopCategories });
+      res.json({ success: true, categories: settings.shopCategories });
     } catch (err: any) {
       res.status(500).json({ error: "ক্যাটাগরি ডিলিট করতে সমস্যা হয়েছে।" });
     }
   });
 
   // 2. Add a new shop item (Admin only)
-  app.post("/api/admin/shop/items", authenticateAdmin, (req, res) => {
+  app.post("/api/admin/shop/items", authenticateAdmin, async (req, res) => {
     try {
       const { name, description, price, category, imageUrl } = req.body;
       if (!name || !price || !category) {
         return res.status(400).json({ error: "নাম, মূল্য এবং ক্যাটাগরি পূরণ করা আবশ্যক!" });
       }
 
-      const db = readDb();
-      if (!db.shopItems) db.shopItems = [];
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO shop_items (name, description, price, image_url, category, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        [name.trim(), (description || "").trim(), Number(price), imageUrl || "", category.trim(), formatCurrentDateTime()]
+      );
 
-      const newItem: ShopItem = {
-        id: "shop-" + Date.now(),
+      const newItem = {
+        id: String(resInsert.insertId),
         name: name.trim(),
         description: (description || "").trim(),
         price: Number(price),
@@ -3552,9 +3471,6 @@ if (process.env.VERCEL) {
         imageUrl: imageUrl || "",
         createdAt: formatCurrentDateTime()
       };
-
-      db.shopItems.push(newItem);
-      writeDb(db);
 
       addLog("বিক্রয় কর্নার", `নতুন পণ্য '${newItem.name}' যোগ করা হয়েছে। মূল্য: ${newItem.price} টাকা`);
       res.json({ success: true, item: newItem });
@@ -3564,7 +3480,7 @@ if (process.env.VERCEL) {
   });
 
   // 3. Edit shop item (Admin only)
-  app.put("/api/admin/shop/items/:id", authenticateAdmin, (req, res) => {
+  app.put("/api/admin/shop/items/:id", authenticateAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const { name, description, price, category, imageUrl } = req.body;
@@ -3572,49 +3488,29 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "নাম, মূল্য এবং ক্যাটাগরি পূরণ করা আবশ্যক!" });
       }
 
-      const db = readDb();
-      if (!db.shopItems) db.shopItems = [];
+      await pool.query(
+        "UPDATE shop_items SET name = ?, description = ?, price = ?, category = ?, image_url = ? WHERE id = ?",
+        [name.trim(), (description || "").trim(), Number(price), category.trim(), imageUrl || "", id]
+      );
 
-      const index = db.shopItems.findIndex(item => item.id === id);
-      if (index === -1) {
-        return res.status(404).json({ error: "পণ্যটি খুঁজে পাওয়া যায়নি।" });
-      }
-
-      const updatedItem: ShopItem = {
-        ...db.shopItems[index],
-        name: name.trim(),
-        description: (description || "").trim(),
-        price: Number(price),
-        category: category.trim(),
-        imageUrl: imageUrl || db.shopItems[index].imageUrl
-      };
-
-      db.shopItems[index] = updatedItem;
-      writeDb(db);
-
-      addLog("বিক্রয় কর্নার", `পণ্য '${updatedItem.name}' এর তথ্য পরিবর্তন করা হয়েছে।`);
-      res.json({ success: true, item: updatedItem });
+      addLog("বিক্রয় কর্নার", `পণ্য '${name.trim()}' এর তথ্য পরিবর্তন করা হয়েছে।`);
+      res.json({ success: true });
     } catch (err: any) {
       res.status(500).json({ error: "পণ্যের তথ্য পরিবর্তন করতে ব্যর্থ হয়েছে।" });
     }
   });
 
   // 4. Delete shop item (Admin only)
-  app.delete("/api/admin/shop/items/:id", authenticateAdmin, (req, res) => {
+  app.delete("/api/admin/shop/items/:id", authenticateAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const db = readDb();
-      if (!db.shopItems) db.shopItems = [];
-
-      const itemToDelete = db.shopItems.find(item => item.id === id);
-      if (!itemToDelete) {
+      const [rows]: any = await pool.query("SELECT name FROM shop_items WHERE id = ?", [id]);
+      if (rows.length === 0) {
         return res.status(404).json({ error: "পণ্যটি খুঁজে পাওয়া যায়নি।" });
       }
 
-      db.shopItems = db.shopItems.filter(item => item.id !== id);
-      writeDb(db);
-
-      addLog("বিক্রয় কর্নার", `'${itemToDelete.name}' পণ্যটি বিক্রয় তালিকা থেকে মুছে ফেলা হয়েছে।`);
+      await pool.query("DELETE FROM shop_items WHERE id = ?", [id]);
+      addLog("বিক্রয় কর্নার", `'${rows[0].name}' পণ্যটি বিক্রয় তালিকা থেকে মুছে ফেলা হয়েছে।`);
       res.json({ success: true, message: "পণ্যটি সফলভাবে মুছে ফেলা হয়েছে।" });
     } catch (err: any) {
       res.status(500).json({ error: "পণ্যটি মুছতে ব্যর্থ হয়েছে।" });
@@ -3622,42 +3518,57 @@ if (process.env.VERCEL) {
   });
 
   // Get custom login flow setting (Public)
-  app.get("/api/public/settings/login-flow", (req, res) => {
+  app.get("/api/public/settings/login-flow", async (req, res) => {
     try {
-      const db = readDb();
-      res.json({
-        success: true,
-        isCustomLoginFlowEnabled: !!db.isCustomLoginFlowEnabled
-      });
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      let isCustomLoginFlowEnabled = false;
+      if (settingsRows.length > 0) {
+        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        isCustomLoginFlowEnabled = !!settings.isCustomLoginFlowEnabled;
+      }
+      res.json({ success: true, isCustomLoginFlowEnabled });
     } catch (err: any) {
       res.status(500).json({ error: "লগইন ফ্লো সেটিংস লোড করতে ব্যর্থ।" });
     }
   });
 
   // Save custom login flow setting (Admin only)
-  app.post("/api/settings/login-flow", authenticateAdmin, (req, res) => {
+  app.post("/api/settings/login-flow", authenticateAdmin, async (req, res) => {
     try {
       const { isEnabled } = req.body;
-      const db = readDb();
-      db.isCustomLoginFlowEnabled = !!isEnabled;
-      writeDb(db);
+      
+      let settings: any = {};
+      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      if (settingsRows.length > 0) {
+        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+      }
+
+      settings.isCustomLoginFlowEnabled = !!isEnabled;
+      
+      if (settingsRows.length > 0) {
+        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
+      } else {
+        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
+      }
 
       addLog("সেটিংস পরিবর্তন", `কাস্টম লগইন ফ্লো ${isEnabled ? "সক্রিয়" : "নিষ্ক্রিয়"} করা হয়েছে।`);
-      res.json({ success: true, isCustomLoginFlowEnabled: db.isCustomLoginFlowEnabled });
+      res.json({ success: true, isCustomLoginFlowEnabled: settings.isCustomLoginFlowEnabled });
     } catch (err: any) {
       res.status(500).json({ error: "কাস্টম লগইন ফ্লো সেটিংস সংরক্ষণ করতে ব্যর্থ।" });
     }
   });
 
   // Bulk ZIP download endpoint returns JSON files ready for zip downloads
-  app.get("/api/bulk-raw", authenticateAdmin, (req, res) => {
-    const db = readDb();
-    res.json({
-      books: db.books,
-      members: db.members,
-      issues: db.issues,
-      auditLogs: db.auditLogs,
-    });
+  app.get("/api/bulk-raw", authenticateAdmin, async (req, res) => {
+    try {
+      const [books]: any = await pool.query("SELECT * FROM books");
+      const [members]: any = await pool.query("SELECT * FROM members");
+      const [issues]: any = await pool.query("SELECT * FROM issues");
+      const [auditLogs]: any = await pool.query("SELECT * FROM audit_logs");
+      res.json({ books, members, issues, auditLogs });
+    } catch (error) {
+      res.status(500).json({ error: "ডাউনলোড তৈরি করতে সমস্যা হয়েছে।" });
+    }
   });
 
   // =============================================
@@ -3665,16 +3576,20 @@ if (process.env.VERCEL) {
   // =============================================
 
   // Member submits a review (requires member auth via form number in body)
-  app.post("/api/reviews", (req, res) => {
+  app.post("/api/reviews", async (req, res) => {
     try {
       const { memberFormNumber, memberName, subject, content, rating } = req.body;
       if (!memberFormNumber || !memberName || !subject || !content) {
         return res.status(400).json({ error: "সব তথ্য পূরণ করুন।" });
       }
-      const db = readDb();
-      if (!db.reviews) db.reviews = [];
-      const newReview: Review = {
-        id: `rev-${Date.now()}`,
+      
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO reviews (member_form_number, member_name, subject, content, rating, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [memberFormNumber, memberName, subject, content, Math.min(5, Math.max(1, rating || 5)), "pending", formatCurrentDateTime()]
+      );
+
+      const newReview = {
+        id: String(resInsert.insertId),
         memberFormNumber,
         memberName,
         subject,
@@ -3683,8 +3598,7 @@ if (process.env.VERCEL) {
         status: "pending",
         createdAt: formatCurrentDateTime(),
       };
-      db.reviews.push(newReview);
-      writeDb(db);
+      
       addLog("রিভিউ জমা", `সদস্য ${memberName} (ফরম: ${memberFormNumber}) রিভিউ জমা দিয়েছেন: "${subject}"`);
       res.json({ success: true, review: newReview });
     } catch (err: any) {
@@ -3693,59 +3607,68 @@ if (process.env.VERCEL) {
   });
 
   // Admin: Get all reviews
-  app.get("/api/reviews", authenticateAdmin, (req, res) => {
+  app.get("/api/reviews", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      res.json(db.reviews || []);
+      const [rows]: any = await pool.query("SELECT * FROM reviews ORDER BY id DESC");
+      const reviews = rows.map((r: any) => ({
+        id: String(r.id),
+        memberFormNumber: r.member_form_number,
+        memberName: r.member_name,
+        subject: r.subject,
+        content: r.content,
+        rating: r.rating,
+        status: r.status,
+        createdAt: r.created_at,
+        reviewedAt: r.reviewed_at
+      }));
+      res.json(reviews);
     } catch (err: any) {
       res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
     }
   });
 
   // Admin: Approve a review
-  app.put("/api/reviews/:id/approve", authenticateAdmin, (req, res) => {
+  app.put("/api/reviews/:id/approve", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      if (!db.reviews) db.reviews = [];
-      const review = db.reviews.find(r => r.id === req.params.id);
-      if (!review) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
-      review.status = "approved";
-      review.reviewedAt = formatCurrentDateTime();
-      writeDb(db);
-      addLog("রিভিউ অনুমোদন", `রিভিউ অনুমোদিত হয়েছে: "${review.subject}" — ${review.memberName}`);
-      res.json({ success: true, review });
+      const { id } = req.params;
+      const [rows]: any = await pool.query("SELECT subject, member_name FROM reviews WHERE id = ?", [id]);
+      if (rows.length === 0) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
+      
+      await pool.query("UPDATE reviews SET status = ?, reviewed_at = ? WHERE id = ?", ["approved", formatCurrentDateTime(), id]);
+      
+      addLog("রিভিউ অনুমোদন", `রিভিউ অনুমোদিত হয়েছে: "${rows[0].subject}" — ${rows[0].member_name}`);
+      res.json({ success: true });
     } catch (err: any) {
       res.status(500).json({ error: "রিভিউ অনুমোদন করতে ব্যর্থ।" });
     }
   });
 
   // Admin: Reject a review
-  app.put("/api/reviews/:id/reject", authenticateAdmin, (req, res) => {
+  app.put("/api/reviews/:id/reject", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      if (!db.reviews) db.reviews = [];
-      const review = db.reviews.find(r => r.id === req.params.id);
-      if (!review) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
-      review.status = "rejected";
-      review.reviewedAt = formatCurrentDateTime();
-      writeDb(db);
-      addLog("রিভিউ প্রত্যাখ্যান", `রিভিউ প্রত্যাখ্যাত হয়েছে: "${review.subject}" — ${review.memberName}`);
-      res.json({ success: true, review });
+      const { id } = req.params;
+      const [rows]: any = await pool.query("SELECT subject, member_name FROM reviews WHERE id = ?", [id]);
+      if (rows.length === 0) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
+      
+      await pool.query("UPDATE reviews SET status = ?, reviewed_at = ? WHERE id = ?", ["rejected", formatCurrentDateTime(), id]);
+      
+      addLog("রিভিউ প্রত্যাখ্যান", `রিভিউ প্রত্যাখ্যাত হয়েছে: "${rows[0].subject}" — ${rows[0].member_name}`);
+      res.json({ success: true });
     } catch (err: any) {
       res.status(500).json({ error: "রিভিউ প্রত্যাখ্যান করতে ব্যর্থ।" });
     }
   });
 
   // Admin: Delete a review
-  app.delete("/api/reviews/:id", authenticateAdmin, (req, res) => {
+  app.delete("/api/reviews/:id", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      if (!db.reviews) db.reviews = [];
-      const idx = db.reviews.findIndex(r => r.id === req.params.id);
-      if (idx === -1) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
-      const removed = db.reviews.splice(idx, 1)[0];
-      writeDb(db);
-      addLog("রিভিউ মুছে ফেলা", `রিভিউ মুছে ফেলা হয়েছে: "${removed.subject}" — ${removed.memberName}`);
+      const { id } = req.params;
+      const [rows]: any = await pool.query("SELECT subject, member_name FROM reviews WHERE id = ?", [id]);
+      if (rows.length === 0) return res.status(404).json({ error: "রিভিউ পাওয়া যায়নি।" });
+      
+      await pool.query("DELETE FROM reviews WHERE id = ?", [id]);
+      
+      addLog("রিভিউ মুছে ফেলা", `রিভিউ মুছে ফেলা হয়েছে: "${rows[0].subject}" — ${rows[0].member_name}`);
       res.json({ success: true });
     } catch (err: any) {
       res.status(500).json({ error: "রিভিউ মুছতে ব্যর্থ।" });
@@ -3753,10 +3676,20 @@ if (process.env.VERCEL) {
   });
 
   // Public: Get approved reviews only
-  app.get("/api/public/reviews", (req, res) => {
+  app.get("/api/public/reviews", async (req, res) => {
     try {
-      const db = readDb();
-      const approved = (db.reviews || []).filter(r => r.status === "approved");
+      const [rows]: any = await pool.query("SELECT * FROM reviews WHERE status = 'approved' ORDER BY id DESC");
+      const approved = rows.map((r: any) => ({
+        id: String(r.id),
+        memberFormNumber: r.member_form_number,
+        memberName: r.member_name,
+        subject: r.subject,
+        content: r.content,
+        rating: r.rating,
+        status: r.status,
+        createdAt: r.created_at,
+        reviewedAt: r.reviewed_at
+      }));
       res.json(approved);
     } catch (err: any) {
       res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
@@ -3768,22 +3701,25 @@ if (process.env.VERCEL) {
   // =============================================
 
   // Admin: Create a notice (immediately published)
-  app.post("/api/notices", authenticateAdmin, (req, res) => {
+  app.post("/api/notices", authenticateAdmin, async (req, res) => {
     try {
       const { subject, content } = req.body;
       if (!subject || !content) {
         return res.status(400).json({ error: "বিষয় এবং বিস্তারিত উভয়ই পূরণ করুন।" });
       }
-      const db = readDb();
-      if (!db.notices) db.notices = [];
-      const newNotice: Notice = {
-        id: `notice-${Date.now()}`,
+      
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO notices (subject, content, created_at) VALUES (?, ?, ?)",
+        [subject, content, formatCurrentDateTime()]
+      );
+
+      const newNotice = {
+        id: String(resInsert.insertId),
         subject,
         content,
         createdAt: formatCurrentDateTime(),
       };
-      db.notices.push(newNotice);
-      writeDb(db);
+      
       addLog("নটিশ প্রকাশ", `নতুন নটিশ প্রকাশিত: "${subject}"`);
       res.json({ success: true, notice: newNotice });
     } catch (err: any) {
@@ -3792,25 +3728,30 @@ if (process.env.VERCEL) {
   });
 
   // Admin: Get all notices
-  app.get("/api/notices", authenticateAdmin, (req, res) => {
+  app.get("/api/notices", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      res.json(db.notices || []);
+      const [rows]: any = await pool.query("SELECT * FROM notices ORDER BY id DESC");
+      const notices = rows.map((r: any) => ({
+        id: String(r.id),
+        subject: r.subject,
+        content: r.content,
+        createdAt: r.created_at
+      }));
+      res.json(notices);
     } catch (err: any) {
       res.status(500).json({ error: "নটিশ লোড করতে ব্যর্থ।" });
     }
   });
 
   // Admin: Delete a notice
-  app.delete("/api/notices/:id", authenticateAdmin, (req, res) => {
+  app.delete("/api/notices/:id", authenticateAdmin, async (req, res) => {
     try {
-      const db = readDb();
-      if (!db.notices) db.notices = [];
-      const idx = db.notices.findIndex(n => n.id === req.params.id);
-      if (idx === -1) return res.status(404).json({ error: "নটিশ পাওয়া যায়নি।" });
-      const removed = db.notices.splice(idx, 1)[0];
-      writeDb(db);
-      addLog("নটিশ মুছে ফেলা", `নটিশ মুছে ফেলা হয়েছে: "${removed.subject}"`);
+      const { id } = req.params;
+      const [rows]: any = await pool.query("SELECT subject FROM notices WHERE id = ?", [id]);
+      if (rows.length === 0) return res.status(404).json({ error: "নটিশ পাওয়া যায়নি।" });
+      
+      await pool.query("DELETE FROM notices WHERE id = ?", [id]);
+      addLog("নটিশ মুছে ফেলা", `নটিশ মুছে ফেলা হয়েছে: "${rows[0].subject}"`);
       res.json({ success: true });
     } catch (err: any) {
       res.status(500).json({ error: "নটিশ মুছতে ব্যর্থ।" });
@@ -3818,10 +3759,16 @@ if (process.env.VERCEL) {
   });
 
   // Public: Get all published notices
-  app.get("/api/public/notices", (req, res) => {
+  app.get("/api/public/notices", async (req, res) => {
     try {
-      const db = readDb();
-      res.json(db.notices || []);
+      const [rows]: any = await pool.query("SELECT * FROM notices ORDER BY id DESC");
+      const notices = rows.map((r: any) => ({
+        id: String(r.id),
+        subject: r.subject,
+        content: r.content,
+        createdAt: r.created_at
+      }));
+      res.json(notices);
     } catch (err: any) {
       res.status(500).json({ error: "নটিশ লোড করতে ব্যর্থ।" });
     }
