@@ -318,14 +318,15 @@ function QuillSVG() {
 
 interface HomePageProps {
   onLogin: () => void;         // Navigate to admin login
-  onMemberLogin: () => void;   // Navigate to member login
+  onMemberLogin: () => void;   // Navigate to membership signup
+  onLibraryMemberLogin: () => void; // Navigate to member login
   onGuestEntry: () => void;    // Enter as guest
   logoBase64?: string;         // Dynamic logo from server
   onSalesCorner?: () => void;  // Navigate to dedicated sales page
   onBookSelect?: (book: any) => void; // Show book details
 }
 
-export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect }: HomePageProps) {
+export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect }: HomePageProps) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openCorner, setOpenCorner] = useState<string | null>("নজরুল কর্নার");
@@ -637,19 +638,26 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               transition={{ duration: 0.5, delay: 1 }}
             >
               <button
-                onClick={onMemberLogin}
-                className="btn-flame px-6 py-3 text-sm md:text-base font-ui flex items-center gap-2 group"
-                id="hero-cta-primary"
-              >
-                লাইব্রেরি এক্সপ্লোর করুন
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-              </button>
-              <button
                 onClick={onGuestEntry}
                 className="btn-ghost px-6 py-3 text-sm md:text-base font-ui"
                 id="hero-cta-guest"
               >
                 গেস্ট হিসেবে দেখুন
+              </button>
+              <button
+                onClick={onLibraryMemberLogin}
+                className="btn-flame px-6 py-3 text-sm md:text-base font-ui"
+                id="hero-cta-member-login"
+              >
+                পাঠাগারের সদস্য লগইন
+              </button>
+              <button
+                onClick={onMemberLogin}
+                className="btn-flame px-6 py-3 text-sm md:text-base font-ui flex items-center gap-2 group"
+                id="hero-cta-primary"
+              >
+                পাঠাগারে সদস্য হোন
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </button>
             </motion.div>
 
@@ -690,7 +698,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="features" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="" heading="কেন অক্ষর পাঠাগার" />
+          <SectionHeader eyebrow="" heading="অক্ষর পাঠাগার কী" />
           <motion.div 
             className="hp-card p-8 md:p-12 text-center max-w-4xl mx-auto relative overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -703,10 +711,13 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
             }}
           >
             <div className="absolute top-0 left-0 w-2 h-full" style={{ background: "var(--flame-gradient)" }}></div>
+            <h4 className="font-display-lat text-lg md:text-xl font-bold mb-4" style={{ color: "var(--book-blue)" }}>
+              What is the Okkhor Pathagar? Just a public library?
+            </h4>
             <p className="font-body-bn text-xl md:text-2xl leading-relaxed z-10 relative" style={{ color: "var(--ink-navy)" }}>
-              <strong style={{ color: "var(--book-blue)", fontSize: "1.15em" }}>"অক্ষর পাঠাগার"</strong> একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। 
-              যা <span style={{ background: "var(--flame-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent", fontWeight: "bold" }}>জ্ঞানচর্চা ও মানবিক মূল্যবোধে</span> বিশ্বাসী। 
-              সংগঠনটি শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছে।
+              জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!<br />
+              "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত বেসর/লাই নং-০৪।<br />
+              আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
             </p>
           </motion.div>
         </div>
@@ -717,7 +728,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="corners" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="কর্নার" heading="আপনার বইগুলো যেভাবে সাজানো" />
+          <SectionHeader eyebrow="কর্নার" heading="পাঠাগারের বইগুলো বিষয়ভিত্তিকভাবে সাজানো রয়েছে" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
             {/* Left: Shelf Image Placeholder */}
             <motion.div
@@ -902,7 +913,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="membership" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="সদস্যপদ" heading="আপনার জন্য কোনটি ঠিক" />
+          <SectionHeader eyebrow="সদস্যপদ" heading="আপনার পছন্দের পরিষেবাটি বেছে নিন" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {/* Guest */}
             <motion.div
@@ -1027,7 +1038,7 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
           ====================================== */}
       <section id="about" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="আমাদের গল্প" heading="" />
+          <SectionHeader eyebrow="কেন শুরু হলো অক্ষর পাঠাগার?" heading="আমাদের গল্প" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
             {/* Left: Founder Image */}
             <motion.div
@@ -1069,23 +1080,6 @@ export default function HomePage({ onLogin, onMemberLogin, onGuestEntry, logoBas
               <p className="font-body-bn text-base leading-relaxed mb-6" style={{ color: "#475569" }}>
                 আমাদের বিশ্বাস, প্রতিটি মানুষের হাতে একটি বই এবং প্রতিটি এলাকায় একটি কার্যকর পাঠাগার গড়ে উঠলে জ্ঞানের আলো পৌঁছে যাবে প্রতিটি হৃদয়ে; গড়ে উঠবে একটি আলোকিত, নৈতিক, মানবিক ও সমৃদ্ধ সমাজ।
               </p>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { label: "প্রতিষ্ঠা", value: "২০২৩" },
-                  { label: "অবস্থান", value: "পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা" },
-                  { label: "ইমেইল", value: "okkhorpathagar@gmail.com" },
-                  { label: "ফোন", value: "01642816737, 01798084404" },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <dt className="font-ui text-xs font-bold uppercase tracking-wider" style={{ color: "var(--book-blue)" }}>
-                      {item.label}
-                    </dt>
-                    <dd className="font-body-bn text-sm mt-0.5" style={{ color: "var(--ink-navy)" }}>
-                      {item.value}
-                    </dd>
-                  </div>
-                ))}
-              </div>
             </motion.div>
           </div>
         </div>
@@ -1563,7 +1557,7 @@ function StatsSection() {
   return (
     <section id="stats" className="section-warm py-16 md:py-24 px-4" ref={ref}>
       <div className="max-w-7xl mx-auto">
-        <SectionHeader eyebrow="সংক্ষেপে" heading="এক নজরে অক্ষর পাঠাগার" />
+        <SectionHeader eyebrow="সংক্ষেপে" heading="এক নজরে পাঠাগারের হালচাল" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 max-w-5xl mx-auto">
           {statItems.map((stat, i) => (
             <StatCard key={stat.label} stat={stat} index={i} inView={inView} />

@@ -3758,7 +3758,107 @@ if (process.env.VERCEL) {
     }
   });
 
-  // Public: Get all published notices
+  // =============================================
+  // REVIEWS API (Member submit, admin manage, public view)
+  // =============================================
+
+  // Member: Submit a review
+  app.post("/api/reviews", async (req, res) => {
+    try {
+      const { memberFormNumber, memberName, subject, content, rating } = req.body;
+      if (!memberFormNumber || !memberName || !subject || !content || !rating) {
+        return res.status(400).json({ error: "রিভিউয়ের সব তথ্য দেওয়া আবশ্যক।" });
+      }
+      
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO reviews (member_form_number, member_name, subject, content, rating, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [memberFormNumber, memberName, subject, content, rating, "pending", formatCurrentDateTime()]
+      );
+
+      res.json({ success: true, reviewId: String(resInsert.insertId) });
+    } catch (err: any) {
+      console.error("Error submitting review:", err);
+      res.status(500).json({ error: "রিভিউ সাবমিট করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Get all reviews (with optional status filter)
+  app.get("/api/reviews", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM reviews ORDER BY created_at DESC");
+      const reviews = rows.map((r: any) => ({
+        id: String(r.id),
+        memberFormNumber: r.member_form_number,
+        memberName: r.member_name,
+        subject: r.subject,
+        content: r.content,
+        rating: r.rating,
+        status: r.status,
+        createdAt: r.created_at,
+        reviewedAt: r.reviewed_at
+      }));
+      res.json(reviews);
+    } catch (err: any) {
+      console.error("Error fetching admin reviews:", err);
+      res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Approve a review
+  app.put("/api/reviews/:id/approve", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await pool.query("UPDATE reviews SET status = 'approved', reviewed_at = ? WHERE id = ?", [formatCurrentDateTime(), id]);
+      addLog("রিভিউ অনুমোদন", `রিভিউ আইডি ${id} অনুমোদিত হয়েছে।`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ অনুমোদন করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Reject a review
+  app.put("/api/reviews/:id/reject", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await pool.query("UPDATE reviews SET status = 'rejected', reviewed_at = ? WHERE id = ?", [formatCurrentDateTime(), id]);
+      addLog("রিভিউ প্রত্যাখ্যান", `রিভিউ আইডি ${id} প্রত্যাখ্যাত হয়েছে।`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ প্রত্যাখ্যান করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Delete a review
+  app.delete("/api/reviews/:id", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await pool.query("DELETE FROM reviews WHERE id = ?", [id]);
+      addLog("রিভিউ ডিলিট", `রিভিউ আইডি ${id} মুছে ফেলা হয়েছে।`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "রিভিউ মুছতে ব্যর্থ।" });
+    }
+  });
+
+  // Public: Get approved reviews
+  app.get("/api/public/reviews", async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10");
+      const reviews = rows.map((r: any) => ({
+        id: String(r.id),
+        memberName: r.member_name,
+        memberFormNumber: r.member_form_number,
+        subject: r.subject,
+        content: r.content,
+        rating: r.rating,
+        createdAt: r.created_at
+      }));
+      res.json(reviews);
+    } catch (err: any) {
+      console.error("Error fetching public reviews:", err);
+      res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
+    }
+  });
   app.get("/api/public/notices", async (req, res) => {
     try {
       const [rows]: any = await pool.query("SELECT * FROM notices ORDER BY id DESC");
@@ -3776,6 +3876,27 @@ if (process.env.VERCEL) {
 
   // Vite middleware setup and server listening
   async function initServerListening() {
+    try {
+      const connection = await pool.getConnection();
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS reviews (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          member_form_number VARCHAR(255) NOT NULL,
+          member_name VARCHAR(255) NOT NULL,
+          subject VARCHAR(255) NOT NULL,
+          content TEXT NOT NULL,
+          rating INT NOT NULL,
+          status VARCHAR(50) NOT NULL,
+          created_at DATETIME NOT NULL,
+          reviewed_at DATETIME
+        );
+      `);
+      connection.release();
+      console.log("Database initialized successfully.");
+    } catch (e) {
+      console.error("Database init error:", e);
+    }
+
     if (process.env.NODE_ENV !== "production") {
       const { createServer: createViteServer } = await import("vite");
       const vite = await createViteServer({

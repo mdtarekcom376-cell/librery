@@ -772,6 +772,10 @@ export default function App() {
               setShowHomePage(false);
             }}
             onMemberLogin={() => setIsRegisterOpen(true)}
+            onLibraryMemberLogin={() => {
+              setLoginTab("member");
+              setShowHomePage(false);
+            }}
             onGuestEntry={handleGuestEntry}
             logoBase64={logoBase64}
             onSalesCorner={() => {
@@ -1407,6 +1411,14 @@ export default function App() {
                 isAdmin={true}
                 onRefreshStats={handleRefreshStats}
               />
+            )}
+
+            {userRole === "admin" && activeTab === "reviews" && (
+              <ReviewManager onRefreshStats={handleRefreshStats} />
+            )}
+
+            {userRole === "admin" && activeTab === "notices" && (
+              <NoticeManager onRefreshStats={handleRefreshStats} />
             )}
 
             {userRole === "admin" && activeTab === "settings" && (
