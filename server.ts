@@ -3297,12 +3297,19 @@ if (process.env.VERCEL) {
     }
 
     if (process.env.NODE_ENV !== "production") {
-      const { createServer: createViteServer } = await import("vite");
-      const vite = await createViteServer({
-        server: { middlewareMode: true },
-        appType: "spa",
-      });
-      app.use(vite.middlewares);
+      try {
+        const { createServer: createViteServer } = await import("vite");
+        const vite = await createViteServer({
+          server: { middlewareMode: true },
+          appType: "spa",
+        });
+        app.use(vite.middlewares);
+      } catch (e) {
+        console.warn("Vite not found or failed to load. Falling back to static files (Production mode). Please set NODE_ENV=production in your .env file.");
+        const distPath = path.join(process.cwd(), "dist");
+        app.use(express.static(distPath));
+        app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
+      }
     } else {
       const distPath = path.join(process.cwd(), "dist");
       app.use(express.static(distPath));
@@ -3312,8 +3319,8 @@ if (process.env.VERCEL) {
     }
 
     if (!process.env.VERCEL) {
-      const PORT = 3000;
-      app.listen(PORT, "0.0.0.0", () => {
+      const PORT = process.env.PORT || 3000;
+      app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
       });
     }
