@@ -32,7 +32,7 @@ jobs:
           cp package.json _deploy/
           cp package-lock.json _deploy/
           
-      - name: FTP Deploy
+    - name: FTP Deploy
   uses: SamKirkland/FTP-Deploy-Action@v4.3.5
   with:
     server: ${{ secrets.FTP_HOST }}
@@ -40,7 +40,3 @@ jobs:
     password: ${{ secrets.FTP_PASSWORD }}
     local-dir: ./_deploy/
     server-dir: librery/  # ঠিক এই জায়গাটিতে পরিবর্তন হবে
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./_deploy/
-          server-dir: public_html/librery/
