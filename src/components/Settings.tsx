@@ -13,7 +13,7 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
   const [settingsUnlockPassword, setSettingsUnlockPassword] = useState("");
   const [unlockError, setUnlockError] = useState("");
 
-  const [activeSection, setActiveSection] = useState("branding"); // "branding", "security", "googlesheets", "sms", "pdf_reports"
+  const [activeSection, setActiveSection] = useState("branding"); // "branding", "security", "sms", "pdf_reports"
 
   // Firebase configurations
   const [firebaseApiKey, setFirebaseApiKey] = useState("");
@@ -1283,11 +1283,88 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
               </h3>
 
               {errorMsg && (
-                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center ga  // 1. Fetch Books from "Books" tab
-    var booksSheet = ss.getSheetByName("Books");
-    if (booksSheet) {
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
 
+              {successMsg && (
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4 animate-pulse">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
+                  <span>{successMsg}</span>
+                </div>
+              )}
 
+              <form onSubmit={handleUpdateCredentials} className="space-y-4 relative">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">বর্তমান ইউজারনেম (Username)</label>
+                  <input
+                    type="text"
+                    value={currentUsername}
+                    onChange={(e) => setCurrentUsername(e.target.value)}
+                    placeholder="বর্তমান ইউজারনেম"
+                    className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">বর্তমান পাসওয়ার্ড (Password)</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="বর্তমান পাসওয়ার্ড"
+                    className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">সিকিউরিটি পিন/পাসওয়ার্ড</label>
+                  <input
+                    type="password"
+                    value={securityPassword}
+                    onChange={(e) => setSecurityPassword(e.target.value)}
+                    placeholder="সিকিউরিটি পিন"
+                    className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] transition-colors"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">নতুন ইউজারনেম</label>
+                    <input
+                      type="text"
+                      value={newUsername}
+                      onChange={(e) => setNewUsername(e.target.value)}
+                      placeholder="নতুন ইউজারনেম"
+                      className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">নতুন পাসওয়ার্ড</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="নতুন পাসওয়ার্ড"
+                      className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-5 py-3 bg-[#22242A] hover:bg-[#2d2f36] disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer transition-colors shadow-lg"
+                  >
+                    {loading ? <RefreshCw className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
+                    আপডেট করুন
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+          </div>
+        )}
         {/* TAB 4: SMS CONFIGURATION */}
         {activeSection === "sms" && (
           <div className="space-y-6">
