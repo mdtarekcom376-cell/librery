@@ -85,7 +85,7 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold">📝 রিভিউ ম্যানেজমেন্ট</h2>
-          <p className="text-xs text-[#8E8E93] mt-1">সদস্যদের জমাদানকৃত রিভিউ অনুমোদন বা প্রত্যাখ্যান করুন</p>
+          <p className="text-xs text-[#6B6B70] mt-1">সদস্যদের জমাদানকৃত রিভিউ অনুমোদন বা প্রত্যাখ্যান করুন</p>
         </div>
         <button
           onClick={loadReviews}
@@ -119,7 +119,7 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
             className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all border ${
               filter === f
                 ? "bg-[#F5F3EF] text-[#22242A] border-[#E5E5EA]"
-                : "bg-transparent text-[#8E8E93] border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-white"
+                : "bg-transparent text-[#6B6B70] border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-white"
             }`}
           >
             <Filter size={11} className="inline mr-1" />
@@ -131,12 +131,12 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
       {/* Review Cards */}
       {loading ? (
         <div className="text-center py-12">
-          <RefreshCw size={24} className="animate-spin text-[#8E8E93] mx-auto" />
-          <p className="text-xs text-[#8E8E93] mt-2">লোড হচ্ছে...</p>
+          <RefreshCw size={24} className="animate-spin text-[#6B6B70] mx-auto" />
+          <p className="text-xs text-[#6B6B70] mt-2">লোড হচ্ছে...</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 bg-white/[0.02] border border-[#E5E5EA] rounded-2xl">
-          <p className="text-sm text-[#8E8E93]">কোনো রিভিউ নেই</p>
+          <p className="text-sm text-[#6B6B70]">কোনো রিভিউ নেই</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -149,7 +149,7 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-sm truncate">{review.subject}</h3>
-                  <p className="text-[10px] text-[#8E8E93] mt-0.5">
+                  <p className="text-[10px] text-[#6B6B70] mt-0.5">
                     {review.memberName} (ফরম: {review.memberFormNumber}) • {review.createdAt}
                   </p>
                 </div>
@@ -193,7 +193,7 @@ export default function ReviewManager({ onRefreshStats }: { onRefreshStats?: () 
                 <button
                   onClick={() => handleDelete(review.id)}
                   disabled={actionLoading === review.id}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white text-[#8E8E93] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] hover:text-[#FF6B6B] hover:border-[#E5E5EA] transition-colors cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white text-[#6B6B70] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] hover:text-[#FF6B6B] hover:border-[#E5E5EA] transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <Trash2 size={13} /> মুছুন
                 </button>

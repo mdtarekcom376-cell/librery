@@ -88,7 +88,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">৫. বই উইশলিস্ট (Wishlist)</h2>
-          <p className="text-xs text-[#8E8E93]">পাঠকদের চাহিদা বা কেনার জন্য প্রস্তাবিত বইয়ের তালিকা সংরক্ষণ করুন</p>
+          <p className="text-xs text-[#6B6B70]">পাঠকদের চাহিদা বা কেনার জন্য প্রস্তাবিত বইয়ের তালিকা সংরক্ষণ করুন</p>
         </div>
         <button
           onClick={() => {
@@ -104,7 +104,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
 
       {/* Searching wishlist */}
       <div className="relative">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" />
         <input
           type="text"
           value={q}
@@ -116,29 +116,29 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
 
       {/* Grid list container */}
       {loading ? (
-        <div className="py-12 text-center text-xs text-[#8E8E93]">উইশলিস্ট লোড হচ্ছে...</div>
+        <div className="py-12 text-center text-xs text-[#6B6B70]">উইশলিস্ট লোড হচ্ছে...</div>
       ) : filteredWish.length === 0 ? (
-        <div className=" p-10 text-center rounded-2xl">
-          <p className="text-[#8E8E93] text-sm">উইশলিস্টে কোনো বই সাজানো নেই। উপরের বাটন দিয়ে নতুন বই সাজান।</p>
+        <div className="glass-panel p-10 text-center rounded-2xl">
+          <p className="text-[#6B6B70] text-sm">উইশলিস্টে কোনো বই সাজানো নেই। উপরের বাটন দিয়ে নতুন বই সাজান।</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredWish.map((item) => (
             <div
               key={item.id}
-              className=" p-4 rounded-xl border border-[#E5E5EA] flex flex-col justify-between hover:border-[#22242A] duration-200"
+              className="glass-panel p-4 rounded-xl border border-[#E5E5EA] flex flex-col justify-between hover:border-[#22242A] duration-200"
             >
               <div className="space-y-1">
                 <span className="text-[9px] font-mono font-bold text-[#22242A] tracking-widest uppercase bg-[#F5F3EF] px-1.5 py-0.5 rounded">
                   WISHLIST ITEM
                 </span>
                 <h3 className="font-bold text-[#22242A] text-sm sm:text-base pt-1">{item.name}</h3>
-                <p className="text-[#8E8E93] text-xs">লেখক: {item.author || "অজ্ঞাত"}</p>
-                <p className="text-[#8E8E93] text-[10px]">প্রকাশনা: {item.publisher || "অজ্ঞাত"}</p>
+                <p className="text-[#6B6B70] text-xs">লেখক: {item.author || "অজ্ঞাত"}</p>
+                <p className="text-[#6B6B70] text-[10px]">প্রকাশনা: {item.publisher || "অজ্ঞাত"}</p>
               </div>
 
               <div className="flex justify-between items-center pt-3 border-t border-[#E5E5EA] mt-3">
-                <span className="text-[9px] font-mono text-[#8E8E93]">সংরক্ষিত: {item.createdAt.split(" ")[0]}</span>
+                <span className="text-[9px] font-mono text-[#6B6B70]">সংরক্ষিত: {item.createdAt.split(" ")[0]}</span>
                 <div className="flex gap-1">
                   <button
                     onClick={() => onPreviewWishlist(item)}
@@ -179,7 +179,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
 
             <form onSubmit={handleAddWishSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বইয়ের নাম *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বইয়ের নাম *</label>
                 <input
                   type="text"
                   value={wishName}
@@ -191,7 +191,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">লেখক (ঐচ্ছিক)</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">লেখক (ঐচ্ছিক)</label>
                 <input
                   type="text"
                   value={wishAuthor}
@@ -202,7 +202,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">প্রকাশনা (ঐচ্ছিক)</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">প্রকাশনা (ঐচ্ছিক)</label>
                 <input
                   type="text"
                   value={wishPublisher}
@@ -216,7 +216,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 bg-[#F5F3EF] border text-[#8E8E93] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 bg-[#F5F3EF] border text-[#6B6B70] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
                 >
                   বাতিল
                 </button>
@@ -249,7 +249,7 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
               <button
                 type="button"
                 onClick={() => setWishToDelete(null)}
-                className="px-3 py-1.5 bg-[#F5F3EF] border text-[#8E8E93] rounded-lg hover:bg-white text-[11px] font-semibold cursor-pointer"
+                className="px-3 py-1.5 bg-[#F5F3EF] border text-[#6B6B70] rounded-lg hover:bg-white text-[11px] font-semibold cursor-pointer"
               >
                 বাতিল করুন
               </button>

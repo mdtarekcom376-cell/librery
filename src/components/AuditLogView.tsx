@@ -89,7 +89,7 @@ export default function AuditLogView({ onPreviewSingleLog, onPreviewBulkHistory,
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">৭. ইতিহাস ও অডিট ট্রেইল (Audit Logs)</h2>
-          <p className="text-xs text-[#8E8E93]">লাইব্রেরি ম্যানেজমেন্ট সিস্টেমের প্রতিটি ঘটনার রিয়েল-টাইম লগ সংরক্ষণ ও নিরাপত্তা নিরীক্ষণ</p>
+          <p className="text-xs text-[#6B6B70]">লাইব্রেরি ম্যানেজমেন্ট সিস্টেমের প্রতিটি ঘটনার রিয়েল-টাইম লগ সংরক্ষণ ও নিরাপত্তা নিরীক্ষণ</p>
         </div>
         
         <div className="flex gap-2 w-full sm:w-auto shrink-0">
@@ -108,7 +108,7 @@ export default function AuditLogView({ onPreviewSingleLog, onPreviewBulkHistory,
       {/* Query Search / Query Categorizer Filter bars */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-[#F5F3EF] p-4 rounded-xl border border-[#E5E5EA]">
         <div className="relative col-span-2">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" />
           <input
             type="text"
             value={searchVal}
@@ -136,18 +136,18 @@ export default function AuditLogView({ onPreviewSingleLog, onPreviewBulkHistory,
       {loading ? (
         <div className="py-24 text-center">
           <RefreshCw className="animate-spin text-[#22242A] mx-auto mb-2" size={24} />
-          <p className="text-xs text-[#8E8E93]">ইতিহাস কন্টেনার লোড হচ্ছে...</p>
+          <p className="text-xs text-[#6B6B70]">ইতিহাস কন্টেনার লোড হচ্ছে...</p>
         </div>
       ) : logs.length === 0 ? (
         <div className=" p-12 text-center rounded-2xl">
-          <p className="text-[#8E8E93] text-sm">কোনো ইতিহাস ডাটা রেকর্ড পাওয়া যায়নি। উপরের অবজেক্ট পরিবর্তন ট্রিগার চেক করুন।</p>
+          <p className="text-[#6B6B70] text-sm">কোনো ইতিহাস ডাটা রেকর্ড পাওয়া যায়নি। উপরের অবজেক্ট পরিবর্তন ট্রিগার চেক করুন।</p>
         </div>
       ) : (
         <div className=" p-4 rounded-2xl border border-[#E5E5EA] overflow-hidden">
           <div className="max-h-[60vh] overflow-y-auto pr-1">
             <table className="w-full text-left text-xs text-[#22242A] border-collapse">
               <thead>
-                <tr className="border-b border-[#E5E5EA] text-[#8E8E93] text-[10px] uppercase font-bold">
+                <tr className="border-b border-[#E5E5EA] text-[#6B6B70] text-[10px] uppercase font-bold">
                   <th className="py-2 px-3">তারিখ ও সময় (সেকেন্ড সহ)</th>
                   <th className="py-2 px-3">অ্যাকশন ট্রিগার</th>
                   <th className="py-2 px-3">বিস্তারিত পরিবর্তন বিবরণী</th>
@@ -159,7 +159,7 @@ export default function AuditLogView({ onPreviewSingleLog, onPreviewBulkHistory,
                   <tr key={log.id} className="hover:bg-[#F5F3EF] transition-all duration-100 group">
                     <td className="py-2.5 px-3 font-mono text-[11px] text-[#22242A]">
                       <span className="flex items-center gap-1">
-                        <Calendar size={12} className="text-[#8E8E93]" />
+                        <Calendar size={12} className="text-[#6B6B70]" />
                         {log.timestamp}
                       </span>
                     </td>
@@ -214,7 +214,7 @@ export default function AuditLogView({ onPreviewSingleLog, onPreviewBulkHistory,
               <button
                 type="button"
                 onClick={() => setLogToDelete(null)}
-                className="px-3 py-1.5 bg-[#F5F3EF] border text-[#8E8E93] rounded-lg hover:bg-white text-[11px] font-semibold cursor-pointer"
+                className="px-3 py-1.5 bg-[#F5F3EF] border text-[#6B6B70] rounded-lg hover:bg-white text-[11px] font-semibold cursor-pointer"
               >
                 বাতিল করুন
               </button>
@@ -251,7 +251,7 @@ export default function AuditLogView({ onPreviewSingleLog, onPreviewBulkHistory,
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(false)}
-                className="px-3 py-1.5 bg-[#F5F3EF] border text-[#8E8E93] rounded-lg hover:bg-white text-[11px] font-semibold cursor-pointer"
+                className="px-3 py-1.5 bg-[#F5F3EF] border text-[#6B6B70] rounded-lg hover:bg-white text-[11px] font-semibold cursor-pointer"
               >
                 বাতিল করুন
               </button>

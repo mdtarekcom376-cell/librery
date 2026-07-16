@@ -1332,7 +1332,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <h2 className="font-display-bn text-2xl md:text-4xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
                 আমাদের লিখুন
               </h2>
-              <p className="text-xs text-[#8E8E93] mt-2">অভিযোগ, পরামর্শ, গল্প, কবিতা, উপন্যাস, প্রবন্ধ রচনা।</p>
+              <p className="text-xs text-[#6B6B70] mt-2">অভিযোগ, পরামর্শ, গল্প, কবিতা, উপন্যাস, প্রবন্ধ রচনা।</p>
               <motion.div
                 className="mx-auto mt-4"
                 style={{ maxWidth: 80, height: 3, background: "linear-gradient(90deg, #F7941D, #EC2C7B)", borderRadius: 2 }}
@@ -1349,13 +1349,13 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             <div className="flex items-center bg-white rounded-full p-1.5 border border-[#E5E5EA] shadow-sm">
               <button
                 onClick={() => setContactTab('contact')}
-                className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all ${contactTab === 'contact' ? 'bg-[#22242A] text-[#FACC15]' : 'text-[#8E8E93] hover:text-[#22242A]'}`}
+                className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all ${contactTab === 'contact' ? 'bg-[#22242A] text-[#FACC15]' : 'text-[#6B6B70] hover:text-[#22242A]'}`}
               >
                 যোগাযোগ
               </button>
               <button
                 onClick={() => setContactTab('write')}
-                className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all ${contactTab === 'write' ? 'bg-[#22242A] text-[#FACC15]' : 'text-[#8E8E93] hover:text-[#22242A]'}`}
+                className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all ${contactTab === 'write' ? 'bg-[#22242A] text-[#FACC15]' : 'text-[#6B6B70] hover:text-[#22242A]'}`}
               >
                 আমাদের লিখুন
               </button>

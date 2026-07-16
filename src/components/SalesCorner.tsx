@@ -275,7 +275,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
             <h1 className="text-xl font-bold text-[#22242A] tracking-tight flex items-center gap-2">
               অক্ষর বিক্রয় কর্নার <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-full">বই ও উপহার</span>
             </h1>
-            <p className="text-xs text-[#8E8E93]">পাঠাগারের অফিশিয়াল টি-শার্ট, রাইটিং প্যাড, ডায়েরি এবং কাস্টমাইজড উপহার সামগ্রীর নির্ভরযোগ্য সংগ্রহশালা।</p>
+            <p className="text-xs text-[#6B6B70]">পাঠাগারের অফিশিয়াল টি-শার্ট, রাইটিং প্যাড, ডায়েরি এবং কাস্টমাইজড উপহার সামগ্রীর নির্ভরযোগ্য সংগ্রহশালা।</p>
           </div>
         </div>
 
@@ -308,7 +308,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
       {/* Filter and Search Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
         <div className="lg:col-span-5 relative">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B6B70]" />
           <input
             type="text"
             placeholder="পণ্যের নাম বা বিবরণ লিখে খুঁজুন..."
@@ -330,7 +330,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
             >
               <ArrowLeft size={14} /> সকল গ্রুপে ফিরে যান
             </button>
-            <span className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-wide">
+            <span className="text-[10px] text-[#6B6B70] font-bold uppercase tracking-wide">
               বর্তমান বিভাগঃ <span className="text-[#22242A]">{selectedCategory}</span>
             </span>
           </div>
@@ -355,7 +355,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-extrabold text-[#22242A] group-hover:text-[#22242A] transition-colors">সকল উপহার ও পণ্য</h3>
-                <p className="text-[11px] text-[#8E8E93] mt-0.5">সব ক্যাটাগরির সামগ্রী একসাথে দেখুন</p>
+                <p className="text-[11px] text-[#6B6B70] mt-0.5">সব ক্যাটাগরির সামগ্রী একসাথে দেখুন</p>
                 <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-full">
                   মোট {items.length} টি সামগ্রী
                 </span>
@@ -376,7 +376,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-extrabold text-[#22242A] group-hover:text-[#22242A] transition-colors">{cat}</h3>
-                    <p className="text-[11px] text-[#8E8E93] mt-0.5">{cat} সম্পর্কিত উপহার সামগ্রী</p>
+                    <p className="text-[11px] text-[#6B6B70] mt-0.5">{cat} সম্পর্কিত উপহার সামগ্রী</p>
                     <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] rounded-full">
                       {count} টি সামগ্রী
                     </span>
@@ -391,7 +391,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
         <div className="space-y-4">
           {/* Internal sub-category switching chips inside level 2 */}
           <div className="flex flex-wrap gap-1.5 items-center bg-white p-3 rounded-xl border border-[#E5E5EA]">
-            <span className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-wider mr-2 flex items-center gap-1 shrink-0">
+            <span className="text-[10px] text-[#6B6B70] font-bold uppercase tracking-wider mr-2 flex items-center gap-1 shrink-0">
               <Filter size={10} /> বিভাগঃ
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -413,7 +413,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
                       isActive 
                         ? "bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] font-bold shadow-md shadow-none" 
-                        : "bg-white hover:bg-[#F5F3EF] border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#8E8E93] hover:text-[#22242A]"
+                        : "bg-white hover:bg-[#F5F3EF] border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#6B6B70] hover:text-[#22242A]"
                     }`}
                   >
                     {cat}
@@ -424,14 +424,14 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-16 text-[#8E8E93] gap-3">
+            <div className="flex flex-col items-center justify-center py-16 text-[#6B6B70] gap-3">
               <div className="w-6 h-6 border-2 border-[#E5E5EA] border-t-transparent rounded-full animate-spin"></div>
               <p className="text-xs">পণ্য তালিকা লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
             </div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-16 bg-[#F5F3EF] border border-dashed border-[#E5E5EA] rounded-2xl">
               <ShoppingBag className="mx-auto text-slate-600 mb-3" size={32} />
-              <p className="text-xs text-[#8E8E93]">কোন সামগ্রী খুঁজে পাওয়া যায়নি।</p>
+              <p className="text-xs text-[#6B6B70]">কোন সামগ্রী খুঁজে পাওয়া যায়নি।</p>
             </div>
           ) : (
             /* COMPACT CARDS GRID (Matching the book catalog layout style precisely) */
@@ -440,7 +440,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 <div
                   key={item.id}
                   onClick={() => setSelectedItem(item)}
-                  className=" p-3.5 rounded-2xl border border-[#E5E5EA] flex gap-4 hover:border-[#E5E5EA] duration-200 hover:-translate-y-0.5 relative group cursor-pointer"
+                  className="glass-panel p-3.5 flex gap-4 hover:border-[#E5E5EA] duration-200 hover:-translate-y-0.5 relative group cursor-pointer"
                 >
                   {/* Compact Product Image panel */}
                   <div className="w-20 h-28 rounded-xl bg-white overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0 relative">
@@ -472,7 +472,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                       <h3 className="font-bold text-[#22242A] text-xs sm:text-sm truncate pt-1 group-hover:text-[#22242A] transition-colors font-sans" title={item.name}>
                         {item.name}
                       </h3>
-                      <p className="text-[#8E8E93] text-[11px] line-clamp-2 leading-relaxed" title={item.description}>
+                      <p className="text-[#6B6B70] text-[11px] line-clamp-2 leading-relaxed" title={item.description}>
                         {item.description || "কোনো বিবরণ প্রদান করা হয়নি।"}
                       </p>
                     </div>
@@ -487,14 +487,14 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                         <div className="flex items-center gap-1">
                           <button
                             onClick={(e) => openEditForm(item, e)}
-                            className="p-1.5 bg-[#F5F3EF] hover:bg-white text-[#8E8E93] hover:text-[#22242A] border border-[#E5E5EA] rounded-lg cursor-pointer transition-colors"
+                            className="p-1.5 bg-[#F5F3EF] hover:bg-white text-[#6B6B70] hover:text-[#22242A] border border-[#E5E5EA] rounded-lg cursor-pointer transition-colors"
                             title="সম্পাদনা করুন"
                           >
                             <Edit2 size={10} />
                           </button>
                           <button
                             onClick={(e) => handleDeleteClick(item, e)}
-                            className="p-1.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#8E8E93] hover:text-[#FF6B6B] border border-[#E5E5EA] hover:border-[#E5E5EA] rounded-lg cursor-pointer transition-colors"
+                            className="p-1.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#6B6B70] hover:text-[#FF6B6B] border border-[#E5E5EA] hover:border-[#E5E5EA] rounded-lg cursor-pointer transition-colors"
                             title="মুছে ফেলুন"
                           >
                             <Trash2 size={10} />
@@ -517,7 +517,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
         </div>
         <div className="space-y-1">
           <p className="text-xs font-bold text-[#22242A]">ক্রয় করার নির্দেশিকা (How to buy?)</p>
-          <p className="text-xs text-[#8E8E93] leading-relaxed">
+          <p className="text-xs text-[#6B6B70] leading-relaxed">
             {helplineText}
           </p>
         </div>
@@ -547,7 +547,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               </div>
               <button 
                 onClick={() => setIsFormOpen(false)}
-                className="text-[#8E8E93] hover:text-[#22242A] p-1 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                className="text-[#6B6B70] hover:text-[#22242A] p-1 hover:bg-white rounded-lg transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -564,7 +564,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
             {/* Form Fields */}
             <form onSubmit={handleFormSubmit} className="space-y-4 py-4 overflow-y-auto flex-1 text-left">
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">পণ্যের নাম *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">পণ্যের নাম *</label>
                 <input
                   type="text"
                   required
@@ -577,7 +577,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">ক্যাটাগরি *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">ক্যাটাগরি *</label>
                   <select
                     value={itemCategory}
                     onChange={(e) => setItemCategory(e.target.value)}
@@ -592,7 +592,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">মূল্য (টাকা) *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">মূল্য (টাকা) *</label>
                   <input
                     type="number"
                     required
@@ -606,7 +606,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">সংক্ষিপ্ত বিবরণ</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">সংক্ষিপ্ত বিবরণ</label>
                 <textarea
                   placeholder="পণ্যের সংক্ষিপ্ত বর্ণনা দিন..."
                   rows={3}
@@ -618,13 +618,13 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
 
               {/* Photo Upload Area */}
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">পণ্যের ছবি (Gallery থেকে আপলোড)</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">পণ্যের ছবি (Gallery থেকে আপলোড)</label>
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                   <div className="sm:col-span-8">
                     <label className="flex flex-col items-center justify-center p-4 border border-dashed border-[#E5E5EA] hover:border-[#22242A] rounded-xl bg-white hover:bg-[#F5F3EF] cursor-pointer transition-all gap-1.5 text-center">
                       <Upload size={16} className="text-[#22242A] animate-pulse" />
                       <span className="text-[11px] text-[#22242A] font-semibold">ছবি আপলোড করুন</span>
-                      <span className="text-[9px] text-[#8E8E93]">JPG, PNG (Max 2MB)</span>
+                      <span className="text-[9px] text-[#6B6B70]">JPG, PNG (Max 2MB)</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -667,7 +667,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-white text-[#8E8E93] hover:text-[#22242A] rounded-lg border border-[#E5E5EA] transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-white text-[#6B6B70] hover:text-[#22242A] rounded-lg border border-[#E5E5EA] transition-colors cursor-pointer"
                 >
                   বাতিল করুন
                 </button>
@@ -691,7 +691,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
             
             <button 
               onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 text-[#8E8E93] hover:text-[#22242A] p-1 hover:bg-white rounded-lg transition-colors cursor-pointer z-10"
+              className="absolute top-4 right-4 text-[#6B6B70] hover:text-[#22242A] p-1 hover:bg-white rounded-lg transition-colors cursor-pointer z-10"
             >
               <X size={16} />
             </button>
@@ -722,7 +722,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               {/* Text content */}
               <div>
                 <h3 className="text-base font-extrabold text-[#22242A] mb-1">{selectedItem.name}</h3>
-                <p className="text-[10px] font-mono text-[#8E8E93]">ID: {selectedItem.id} | যোগ করা হয়েছে: {selectedItem.createdAt}</p>
+                <p className="text-[10px] font-mono text-[#6B6B70]">ID: {selectedItem.id} | যোগ করা হয়েছে: {selectedItem.createdAt}</p>
                 
                 <div className="mt-3 text-xs text-[#22242A] leading-relaxed max-h-32 overflow-y-auto pr-1">
                   {selectedItem.description || "পণ্যটির কোন বিস্তারিত বিবরণ দেওয়া হয়নি।"}
@@ -732,7 +732,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               {/* Price Tag Box */}
               <div className="p-4 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] text-[#8E8E93] font-bold uppercase tracking-wider block">মূল্য (Total Price)</span>
+                  <span className="text-[10px] text-[#6B6B70] font-bold uppercase tracking-wider block">মূল্য (Total Price)</span>
                   <span className="text-lg font-extrabold text-[#22242A]">৳{selectedItem.price} টাকা</span>
                 </div>
                 
@@ -755,7 +755,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                 <p className="font-bold text-[#22242A] flex items-center gap-1.5">
                   <Info size={13} /> অর্ডার করতে চান?
                 </p>
-                <p className="text-[#8E8E93] leading-relaxed">
+                <p className="text-[#6B6B70] leading-relaxed">
                   {helplineText}
                 </p>
                 <div className="flex items-center gap-2 pt-1">
@@ -781,14 +781,14 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
             </div>
             
             <h3 className="text-sm font-bold text-[#22242A] mb-2">আপনি কি নিশ্চিত?</h3>
-            <p className="text-xs text-[#8E8E93] mb-5 leading-relaxed">
+            <p className="text-xs text-[#6B6B70] mb-5 leading-relaxed">
               আপনি কি সত্যিই <span className="font-semibold text-[#22242A]">'{itemToDelete.name}'</span> পণ্যটি বিক্রয় তালিকা থেকে মুছে ফেলতে চান? এই কাজটি আর ফিরিয়ে আনা সম্ভব নয়।
             </p>
 
             <div className="flex items-center justify-center gap-2.5">
               <button
                 onClick={() => setItemToDelete(null)}
-                className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-white text-[#8E8E93] hover:text-[#22242A] rounded-lg border border-[#E5E5EA] cursor-pointer transition-colors"
+                className="px-4 py-2 text-xs bg-[#F5F3EF] hover:bg-white text-[#6B6B70] hover:text-[#22242A] rounded-lg border border-[#E5E5EA] cursor-pointer transition-colors"
               >
                 বাতিল করুন
               </button>

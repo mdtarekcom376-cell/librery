@@ -69,7 +69,7 @@ export default function WritingsManager({ onRefreshStats }: { onRefreshStats?: (
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold">✍️ লেখা ও অভিযোগ ম্যানেজমেন্ট</h2>
-          <p className="text-xs text-[#8E8E93] mt-1">পাবলিকদের পাঠানো লেখা, অভিযোগ বা পরামর্শ পর্যালোচনা করুন</p>
+          <p className="text-xs text-[#6B6B70] mt-1">পাবলিকদের পাঠানো লেখা, অভিযোগ বা পরামর্শ পর্যালোচনা করুন</p>
         </div>
         <button
           onClick={loadSubmissions}
@@ -103,7 +103,7 @@ export default function WritingsManager({ onRefreshStats }: { onRefreshStats?: (
             className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all border ${
               filter === f
                 ? "bg-[#F5F3EF] text-[#22242A] border-[#E5E5EA]"
-                : "bg-transparent text-[#8E8E93] border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-white"
+                : "bg-transparent text-[#6B6B70] border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-white"
             }`}
           >
             <Filter size={11} className="inline mr-1" />
@@ -115,12 +115,12 @@ export default function WritingsManager({ onRefreshStats }: { onRefreshStats?: (
       {/* Submission Cards */}
       {loading ? (
         <div className="text-center py-12">
-          <RefreshCw size={24} className="animate-spin text-[#8E8E93] mx-auto" />
-          <p className="text-xs text-[#8E8E93] mt-2">লোড হচ্ছে...</p>
+          <RefreshCw size={24} className="animate-spin text-[#6B6B70] mx-auto" />
+          <p className="text-xs text-[#6B6B70] mt-2">লোড হচ্ছে...</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 bg-white/[0.02] border border-[#E5E5EA] rounded-2xl">
-          <p className="text-sm text-[#8E8E93]">কোনো তথ্য নেই</p>
+          <p className="text-sm text-[#6B6B70]">কোনো তথ্য নেই</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -138,7 +138,7 @@ export default function WritingsManager({ onRefreshStats }: { onRefreshStats?: (
                     </span>
                     <h3 className="font-bold text-sm truncate">{submission.subject}</h3>
                   </div>
-                  <p className="text-[10px] text-[#8E8E93] mt-1">
+                  <p className="text-[10px] text-[#6B6B70] mt-1">
                     {submission.name} ({submission.email}) • {submission.createdAt}
                   </p>
                 </div>

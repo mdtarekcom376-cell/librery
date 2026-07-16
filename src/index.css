@@ -9,7 +9,7 @@
   --color-dark-slate: #22242A;
   --color-yellow: #FACC15;
   --color-coral: #FF6B6B;
-  --color-muted: #8E8E93;
+  --color-muted: #6B6B70;
   --color-border: #E5E5EA;
   --color-bg-muted: #EEECEA;
 }
@@ -22,7 +22,7 @@
   --accent-yellow: #FACC15;
   --accent-coral: #FF6B6B;
   --text-primary: #22242A;
-  --text-muted: #8E8E93;
+  --text-muted: #6B6B70;
   --text-subtle: #B0B0B4;
   --border-light: #E5E5EA;
   --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06);

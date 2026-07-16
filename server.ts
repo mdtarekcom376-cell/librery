@@ -176,10 +176,6 @@ interface DatabaseSchema {
     senderId: string;
     customUrl: string;
   };
-  googleSheetsConfig?: {
-    webAppUrl: string;
-    isAutoSyncEnabled: boolean;
-  };
   logoBase64?: string;
   groups?: string[]; // Book groups/corners
   settingsPassword?: string; // Password to enter settings panel
@@ -204,389 +200,6 @@ interface DatabaseSchema {
 }
 
 // Database logic migrated to MySQL using pool from src/db.ts
-
-// Google Sheets Auto-Import Helper for logging in and initial verification auto-loading
-async function importGoogleSheetsData(timeoutMs: number = 25000): Promise<any> {
-  try {
-    const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
-    let config = { webAppUrl: "", isAutoSyncEnabled: false };
-    if (settingsRows.length > 0) {
-      const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-      config = settings.googleSheetsConfig || config;
-    }
-
-    if (!config || !config.webAppUrl) {
-      console.log("[Google Sheets Auto-Import] Skipped: Web App URL not configured.");
-      return null;
-    }
-
-    console.log(`[Google Sheets Auto-Import] Syncing from ${config.webAppUrl}...`);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-    const response = await globalThis.fetch(config.webAppUrl, {
-      method: "GET",
-      headers: {
-        "User-Agent": "Akkhor-Pathagar-Library-System-AutoImport"
-      },
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-    if (!response.ok) {
-      console.warn(`[Google Sheets Auto-Import] Fetch failed with status ${response.status}`);
-      return null;
-    }
-
-    const text = await response.text();
-    let data: any;
-    try {
-      data = JSON.parse(text);
-    } catch (e: any) {
-      console.log("[Google Sheets Auto-Import] Response was not valid JSON, skipping background import.");
-      return null;
-    }
-    if (!data || data.error) {
-      console.log(`[Google Sheets Auto-Import] Sync skipped or returned empty error.`);
-      return null;
-    }
-
-    let importedBooks = 0;
-    let importedMembers = 0;
-    let importedWishlist = 0;
-
-    // Import books safely
-    if (Array.isArray(data.books)) {
-      for (const b of data.books) {
-        if (!b.code || !b.name) continue;
-        const [existing]: any = await pool.query("SELECT id FROM books WHERE code = ?", [b.code]);
-        if (existing.length === 0) {
-          await pool.query(
-            "INSERT INTO books (code, name, author, publisher, image_url, status, book_group) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [b.code, b.name, b.author || "অজ্ঞাত", b.publisher || "অজ্ঞাত প্রকাশনী", b.imageUrl?.trim() || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400", b.status || "Available", b.group || ""]
-          );
-          importedBooks++;
-        }
-      }
-    }
-
-    // Import members safely
-    if (Array.isArray(data.members)) {
-      for (const m of data.members) {
-        if (!m.formNumber || !m.name) continue;
-        const [existing]: any = await pool.query("SELECT id FROM members WHERE form_number = ?", [m.formNumber]);
-        if (existing.length === 0) {
-          await pool.query(
-            "INSERT INTO members (form_number, name, name_english, mobile, address, dob, education_institution, class_name, class_roll, father_name, mother_name, curr_village, curr_post_office, curr_upazila, curr_district, perm_village, perm_post_office, perm_upazila, perm_district, blood_group, nid_birth_reg, education_qualification, profession, nationality, payment_method, sender_number, transaction_id, payment_status, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [m.formNumber, m.name, m.nameEnglish || "", m.mobile || "", m.address || "", m.dob || "", m.educationInstitution || "", m.className || "", m.classRoll || "", m.fatherName || "", m.motherName || "", m.currVillage || "", m.currPostOffice || "", m.currUpazila || "", m.currDistrict || "", m.permVillage || "", m.permPostOffice || "", m.permUpazila || "", m.permDistrict || "", m.bloodGroup || "", m.nidBirthReg || "", m.educationQualification || "", m.profession || "", m.nationality || "বাংলাদেশী", m.paymentMethod || "অফলাইন কাউন্টার", m.senderNumber || "", m.transactionId || "", m.paymentStatus || "Paid", m.photo || ""]
-          );
-          importedMembers++;
-        }
-      }
-    }
-
-    // Import wishlist safely
-    if (Array.isArray(data.wishlist)) {
-      for (const w of data.wishlist) {
-        if (!w.name) continue;
-        const [existing]: any = await pool.query("SELECT id FROM wishlist WHERE name = ?", [w.name]);
-        if (existing.length === 0) {
-          await pool.query(
-            "INSERT INTO wishlist (name, author, publisher, created_at) VALUES (?, ?, ?, ?)",
-            [w.name, w.author || "", w.publisher || "", new Date().toISOString().split("T")[0] + " 00:00:00"]
-          );
-          importedWishlist++;
-        }
-      }
-    }
-
-    addLog("গুগল শিট স্বয়ংক্রিয় ডাউনলোড (লগইন)", `লগইন সফল হওয়ায় গুগল শিট থেকে ডাটা অটো-ইম্পোর্ট করা হয়েছে। নতুন বই: ${importedBooks}টি, নতুন সদস্য: ${importedMembers}টি, নতুন উইশলিস্ট: ${importedWishlist}টি।`);
-    console.log(`[Google Sheets Auto-Import] Successfully imported. Books: ${importedBooks}, Members: ${importedMembers}, Wishlist: ${importedWishlist}`);
-    return { importedBooks, importedMembers, importedWishlist };
-  } catch (err: any) {
-    console.log("[Google Sheets Auto-Import Note] Skipping background sync:", err.message || err);
-    return null;
-  }
-}
-
-// Shared helper to build comprehensive Google Sheets URL parameters
-function buildGoogleSheetsParams(type: string, action: string, data: any): URLSearchParams {
-  const params = new URLSearchParams();
-  params.append("type", type);
-  params.append("type_en", type);
-  params.append("type_bn", type);
-  params.append("action", action);
-  params.append("action_en", action);
-  params.append("action_bn", action);
-
-  // Mapped fields supporting English & Bengali spreadsheet headers across books, members, wishlist & transactions
-  params.append("id", data.id || data.formNumber || "");
-  params.append("code", data.code || data.bookCode || "");
-  params.append("bookCode", data.bookCode || data.code || "");
-  params.append("বইকোড", data.bookCode || data.code || "");
-  params.append("বারকোড", data.bookCode || data.code || "");
-
-  params.append("name", data.name || data.bookName || data.memberName || "");
-  params.append("bookName", data.bookName || data.name || "");
-  params.append("memberName", data.memberName || data.name || "");
-  params.append("নাম", data.name || data.bookName || data.memberName || "");
-  params.append("বইয়েরনাম", data.bookName || data.name || "");
-  params.append("সদস্যেরনাম", data.memberName || data.name || "");
-
-  params.append("author", data.author || "");
-  params.append("bookAuthor", data.author || "");
-  params.append("লেখক", data.author || "");
-
-  params.append("publisher", data.publisher || "");
-  params.append("প্রকাশনী", data.publisher || "");
-
-  params.append("status", data.status || "");
-  params.append("অবস্থা", data.status || "");
-
-  params.append("formNumber", data.formNumber || "");
-  params.append("ফরমনম্বর", data.formNumber || "");
-  params.append("ফরম_নম্বর", data.formNumber || "");
-
-  params.append("mobile", data.mobile || "");
-  params.append("মোবাইল", data.mobile || "");
-  params.append("মোবাইল_নম্বর", data.mobile || "");
-
-  params.append("address", data.address || "");
-  params.append("ঠিকানা", data.address || "");
-
-  params.append("dob", data.dob || "");
-  params.append("জন্মতারিখ", data.dob || "");
-  params.append("educationInstitution", data.educationInstitution || "");
-  params.append("শিক্ষাপ্রতিষ্ঠান", data.educationInstitution || "");
-  params.append("className", data.className || "");
-  params.append("শ্রেণী", data.className || "");
-  params.append("classRoll", data.classRoll || "");
-  params.append("রোল", data.classRoll || "");
-
-  // Expanded member registration details
-  params.append("nameEnglish", data.nameEnglish || "");
-  params.append("ইংরেজি_নাম", data.nameEnglish || "");
-  params.append("englishName", data.nameEnglish || "");
-
-  params.append("fatherName", data.fatherName || "");
-  params.append("পিতার_নাম", data.fatherName || "");
-  params.append("father_name", data.fatherName || "");
-
-  params.append("motherName", data.motherName || "");
-  params.append("মাতার_নাম", data.motherName || "");
-  params.append("mother_name", data.motherName || "");
-
-  params.append("currVillage", data.currVillage || "");
-  params.append("বর্তমান_গ্রাম", data.currVillage || "");
-  params.append("curr_village", data.currVillage || "");
-
-  params.append("currPostOffice", data.currPostOffice || "");
-  params.append("বর্তমান_ডাকঘর", data.currPostOffice || "");
-  params.append("curr_post_office", data.currPostOffice || "");
-
-  params.append("currUpazila", data.currUpazila || "");
-  params.append("বর্তমান_উপজেলা", data.currUpazila || "");
-  params.append("curr_upazila", data.currUpazila || "");
-
-  params.append("currDistrict", data.currDistrict || "");
-  params.append("বর্তমান_জেলা", data.currDistrict || "");
-  params.append("curr_district", data.currDistrict || "");
-
-  params.append("permVillage", data.permVillage || "");
-  params.append("স্থায়ী_গ্রাম", data.permVillage || "");
-  params.append("perm_village", data.permVillage || "");
-
-  params.append("permPostOffice", data.permPostOffice || "");
-  params.append("স্থায়ী_ডাকঘর", data.permPostOffice || "");
-  params.append("perm_post_office", data.permPostOffice || "");
-
-  params.append("permUpazila", data.permUpazila || "");
-  params.append("স্থায়ী_উপজেলা", data.permUpazila || "");
-  params.append("perm_upazila", data.permUpazila || "");
-
-  params.append("permDistrict", data.permDistrict || "");
-  params.append("স্থায়ী_জেলা", data.permDistrict || "");
-  params.append("perm_district", data.permDistrict || "");
-
-  params.append("bloodGroup", data.bloodGroup || "");
-  params.append("রক্তের_গ্রুপ", data.bloodGroup || "");
-  params.append("blood_group", data.bloodGroup || "");
-
-  params.append("nidBirthReg", data.nidBirthReg || "");
-  params.append("এনআইডি_জন্ম_নিবন্ধন", data.nidBirthReg || "");
-  params.append("nid_or_birth_reg", data.nidBirthReg || "");
-
-  params.append("educationQualification", data.educationQualification || "");
-  params.append("শিক্ষাগত_যোগ্যতা", data.educationQualification || "");
-  params.append("edu_qualification", data.educationQualification || "");
-
-  params.append("profession", data.profession || "");
-  params.append("পেশা", data.profession || "");
-
-  params.append("nationality", data.nationality || "");
-  params.append("জাতীয়তা", data.nationality || "");
-
-  params.append("paymentMethod", data.paymentMethod || "");
-  params.append("পেমেন্ট_পদ্ধতি", data.paymentMethod || "");
-  params.append("payment_method", data.paymentMethod || "");
-
-  params.append("senderNumber", data.senderNumber || "");
-  params.append("প্রেরক_নম্বর", data.senderNumber || "");
-  params.append("sender_number", data.senderNumber || "");
-
-  params.append("transactionId", data.transactionId || "");
-  params.append("ট্রানজেকশন_আইডি", data.transactionId || "");
-  params.append("transaction_id", data.transactionId || "");
-
-  params.append("paymentStatus", data.paymentStatus || "");
-  params.append("পেমেন্ট_অবস্থা", data.paymentStatus || "");
-  params.append("payment_status", data.paymentStatus || "");
-
-  params.append("photo", data.photo || "");
-  params.append("ছবি", data.photo || "");
-
-  // Book fields: group, imageUrl
-  params.append("group", data.group || "");
-  params.append("তাক", data.group || "");
-  params.append("বইয়ের_তাক", data.group || "");
-  params.append("book_group", data.group || "");
-
-  params.append("imageUrl", data.imageUrl || "");
-  params.append("ইমেজ_লিংক", data.imageUrl || "");
-  params.append("image_url", data.imageUrl || "");
-
-  const dateVal = data.issueDate || data.returnDate || data.createdAt || "";
-  params.append("date", dateVal);
-
-  return params;
-}
-
-// Google Sheets Sync Helper (Sends URL-encoded requests to support Google Apps Script with POST and retry-GET Fallback)
-async function postToGoogleSheets(type: string, action: string, data: any) {
-  try {
-    const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
-    let config = { webAppUrl: "", isAutoSyncEnabled: false };
-    if (settingsRows.length > 0) {
-      const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-      config = settings.googleSheetsConfig || config;
-    }
-    
-    if (!config || !config.webAppUrl) {
-      console.log(`[Google Sheets Sync skipped] Auto-sync skipped: Web App URL is missing.`);
-      return;
-    }
-
-    const params = buildGoogleSheetsParams(type, action, data);
-    const queryString = params.toString();
-    const targetUrl = config.webAppUrl;
-
-    console.log(`[Google Sheets] Syncing ${type} ('${data.name || data.formNumber || data.code}') to Google Sheet URL...`);
-    
-    // We send parameters in both URL query-string AND POST body to ensure maximum compatibility 
-    // with different Google Apps Script configurations
-    const finalUrl = targetUrl + (targetUrl.includes("?") ? "&" : "?") + queryString;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 seconds timeout for faster fallback
-
-    let success = false;
-    let resText = "";
-    let usedMethod = "POST";
-
-    try {
-      console.log(`[Google Sheets] Trying POST payload for ${type}...`);
-      const res = await globalThis.fetch(finalUrl, {
-        method: "POST",
-        body: queryString,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent": "Akkhor-Pathagar-Library-System-POST"
-        },
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-      resText = await res.text();
-      console.log(`[Google Sheets] POST response HTTP ${res.status}:`, resText);
-
-      // Apps Scripts sometimes return HTML error or redirect warnings when posts aren't configured with CORS
-      if (res.ok && !resText.includes("<!DOCTYPE html>") && !resText.toLowerCase().includes("error")) {
-        success = true;
-      }
-    } catch (postErr: any) {
-      console.warn(`[Google Sheets Async] POST sync failed, trying GET fallback. Error:`, postErr.message || postErr);
-    }
-
-    // FALLBACK TO GET!
-    if (!success) {
-      console.log(`[Google Sheets] POST failed or returned HTML error. Retrying with GET fallback...`);
-      usedMethod = "GET";
-      try {
-        const getController = new AbortController();
-        const getTimeoutId = setTimeout(() => getController.abort(), 45000);
-        
-        const resGet = await globalThis.fetch(finalUrl, {
-          method: "GET",
-          headers: {
-            "User-Agent": "Akkhor-Pathagar-Library-System-GET"
-          },
-          signal: getController.signal
-        });
-        
-        clearTimeout(getTimeoutId);
-        resText = await resGet.text();
-        console.log(`[Google Sheets GET Fallback] Response HTTP ${resGet.status}:`, resText);
-        
-        if (resGet.ok && !resText.includes("<!DOCTYPE html>") && !resText.toLowerCase().includes("error")) {
-          success = true;
-        }
-      } catch (getErr: any) {
-        console.warn(`[Google Sheets Sync] GET Fallback also failed:`, getErr.message || getErr);
-      }
-    }
-
-    if (success) {
-      addLog("গুগল শিট স্বয়ংক্রিয় সিঙ্ক", `সফলভাবে '${data.name || data.code || type}' গুগল শিটে সংরক্ষণ করা হয়েছে (পদ্ধতি: ${usedMethod})।`);
-    } else {
-      console.error(`[Google Sheets Sync Failed] Auto-sync did not save. Response text preview: ${resText.substring(0, 150)}`);
-      addLog("গুগল শিট স্বয়ংক্রিয় সিঙ্ক ব্যর্থ", `'${data.name || data.code || type}' সিঙ্ক করার সময় গুগল শিট থেকে প্রত্যাখ্যাত বা কানেকশন ত্রুটি হয়েছে (পদ্ধতি: ${usedMethod})।`);
-    }
-  } catch (err: any) {
-    const errorMsg = err.message || err;
-    console.warn(`[Google Sheets] Failed to post to spreadsheet: ${errorMsg}`);
-    addLog("গুগল শিট স্বয়ংক্রিয় সিঙ্ক ব্যর্থ", `গুগল শিটের সাথে সংযোগ করা সম্ভব হয়নি। এরর: ${errorMsg}`);
-  }
-}
-
-// Forced Google Sheets Sync helper ignoring isAutoSyncEnabled flag (used for bulk sync & test connection)
-async function forcePostToGoogleSheets(webAppUrl: string, type: string, action: string, data: any) {
-  try {
-    const params = buildGoogleSheetsParams(type, action, data);
-    const queryString = params.toString();
-    let targetUrl = webAppUrl;
-    if (queryString) {
-      targetUrl += (targetUrl.includes("?") ? "&" : "?") + queryString;
-    }
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-    const res = await globalThis.fetch(targetUrl, {
-      method: "POST",
-      body: queryString,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Akkhor-Pathagar-Library-System-ForceSync"
-      },
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    await res.text();
-  } catch (err: any) {
-    console.warn(`[Google Sheets Force] Sync failed for '${data.name || data.formNumber}': ${err.message || err}`);
-  }
-}
 
 // Write Audit Log Helper
 function addLog(action: string, details: string) {
@@ -708,12 +321,6 @@ if (process.env.VERCEL) {
         const token = await generateSignedToken(username);
         ACTIVE_SESSIONS.add(token);
 
-        console.log("[Google Sheets] Successful admin login! Triggering background auto-sync...");
-        // Trigger background auto-sync with a healthy 60-second limit and do not block the login response
-        importGoogleSheetsData(60000).catch(err => {
-          console.log("[Google Sheets Auto-Import Login Background Note]:", err.message || err);
-        });
-
         return res.json({ token, username: admin.username });
       } else {
         return res.status(401).json({ error: "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" });
@@ -752,11 +359,6 @@ if (process.env.VERCEL) {
         const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
         if (rows.length > 0) username = rows[0].setting_value.username;
       }
-
-      // Trigger automatic background sheet import (highly responsive, no races or aborts)
-      importGoogleSheetsData(60000).catch(err => {
-        console.log("[Google Sheets Auto-Import Verify Background Note]:", err.message || err);
-      });
 
       return res.json({ authenticated: true, username });
     }
@@ -1036,144 +638,6 @@ if (process.env.VERCEL) {
     }
   });
 
-  // GET Google Sheets Settings
-  app.get("/api/settings/googlesheets", authenticateAdmin, async (req, res) => {
-    try {
-      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'googleSheetsConfig'");
-      const config = rows.length > 0 ? rows[0].setting_value : { webAppUrl: "", isAutoSyncEnabled: false };
-      res.json(config);
-    } catch (err: any) {
-      console.error("GET /api/settings/googlesheets failed:", err);
-      res.status(500).json({ error: "গুগল শিট কনফিগারেশন লোড করা যায়নি।" });
-    }
-  });
-
-  // POST Google Sheets Settings
-  app.post("/api/settings/googlesheets", authenticateAdmin, async (req, res) => {
-    try {
-      const { webAppUrl, isAutoSyncEnabled, securityPassword } = req.body;
-      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'googleSheetsConfig'");
-      const existingConfig = rows.length > 0 ? rows[0].setting_value : {};
-      const existingUrl = existingConfig.webAppUrl || "";
-      const newUrl = (webAppUrl || "").trim();
-
-      if (existingUrl && newUrl && existingUrl !== newUrl) {
-        if (!securityPassword) {
-          return res.status(400).json({ error: "গুগল শিট লিংক পরিবর্তন করার জন্য সিকিউরিটি কী প্রদান করুন!" });
-        }
-        if (securityPassword !== SECURITY_PASSWORD) {
-          return res.status(400).json({ error: "ভুল সিকিউরিটি কী!" });
-        }
-      }
-
-      const newConfig = { webAppUrl: newUrl, isAutoSyncEnabled: !!isAutoSyncEnabled };
-      await pool.query("INSERT INTO settings (setting_key, setting_value) VALUES ('googleSheetsConfig', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)", [JSON.stringify(newConfig)]);
-
-      addLog("গুগল শিট সেটিংস আপডেট", `গুগল শিট Web App URL এবং অটো-সিঙ্ক সেটিংস আপডেট করা হয়েছে।`);
-      res.json({ success: true, message: "গুগল শিট কানেকশন সেটিংস সফলভাবে সেভ করা হয়েছে।" });
-    } catch (err: any) {
-      console.error("POST /api/settings/googlesheets failed:", err);
-      res.status(500).json({ error: "সার্ভারে গুগল শিট সেটিংস সেভ করতে সমস্যা হয়েছে।" });
-    }
-  });
-
-  // POST Google Sheets Test Connection
-  app.post("/api/settings/googlesheets/test", authenticateAdmin, async (req, res) => {
-    try {
-      const { webAppUrl } = req.body;
-      if (!webAppUrl) {
-        return res.status(400).json({ error: "পরীক্ষা করার জন্য একটি সঠিক Web App URL দিন।" });
-      }
-
-      console.log(`[Google Sheets Test] Testing connection to ${webAppUrl}...`);
-      const params = new URLSearchParams();
-      params.append("type", "টেস্ট কনেকশন");
-      params.append("type_en", "Test Connection");
-      params.append("action", "পরীক্ষা");
-      params.append("action_en", "Test");
-      params.append("name", "অক্ষর পাঠাগার সংযোগ পরীক্ষা");
-      params.append("code", "TEST-COL-101");
-      params.append("id", "TEST-ID-999");
-      params.append("mobile", "01333474848");
-      params.append("address", "অক্ষর পাঠাগার (টেস্ট রেকর্ড)");
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-      const response = await globalThis.fetch(webAppUrl, {
-        method: "POST",
-        body: params.toString(),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent": "Akkhor-Pathagar-Test"
-        },
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-      const text = await response.text();
-      addLog("গুগল শিট টেস্ট", "গুগল শিট এর সাথে সংযোগ পরীক্ষা সাকসেসফুলি সম্পন্ন করা হয়েছে।");
-      res.json({ success: true, message: "পপ্রস্তাবিত গুগল শিট Web App-এ টেস্ট রেকর্ড পাঠানো হয়েছে!", details: text });
-    } catch (err: any) {
-      console.error("[Google Sheets Test] connection failed:", err);
-      res.status(500).json({ error: `সংযোগ স্থাপন বা টেস্ট রেকর্ড পাঠানো সম্ভব হয়নি। অনুগ্রহ করে নিশ্চিত হন আপনার Apps Script পাবলিশ (Deploy as Web App) করা হয়েছে এবং অ্যাক্সেস 'Anyone' দেয়া আছে। এরর: ${err.message || err}` });
-    }
-  });
-
-  // POST Google Sheets Manual Full Synchronization
-  app.post("/api/settings/googlesheets/sync-all", authenticateAdmin, async (req, res) => {
-    try {
-      const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
-      let config = { webAppUrl: "" };
-      if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        if (settings.googleSheetsConfig) config = settings.googleSheetsConfig;
-      }
-
-      if (!config || !config.webAppUrl) {
-        return res.status(400).json({ error: "কোনো গুগল শিট Web App URL সেট করা নেই। দয়া করে সেটিংস প্রথমে সেট করে সেভ করুন।" });
-      }
-
-      const webAppUrl = config.webAppUrl;
-      const [booksList]: any = await pool.query("SELECT * FROM books");
-      const [membersList]: any = await pool.query("SELECT * FROM members");
-      const [wishlistList]: any = await pool.query("SELECT * FROM wishlist");
-
-      const totalItems = booksList.length + membersList.length + wishlistList.length;
-
-      // Run synchronization in safe background timeouts so the HTTP request completes instantly
-      setTimeout(async () => {
-        try {
-          console.log(`[Google Sheets Async Sync] Processing ${totalItems} items...`);
-          // Sync books
-          for (const book of booksList) {
-            await forcePostToGoogleSheets(webAppUrl, "বই", "যোগ করা হয়েছে", book);
-            await new Promise(resolve => setTimeout(resolve, 310)); // Rate limiting gap
-          }
-          // Sync members
-          for (const member of membersList) {
-            await forcePostToGoogleSheets(webAppUrl, "সদস্য", "যোগ করা হয়েছে", member);
-            await new Promise(resolve => setTimeout(resolve, 310));
-          }
-          // Sync wishlist items
-          for (const item of wishlistList) {
-            await forcePostToGoogleSheets(webAppUrl, "উইশলিস্ট", "যোগ করা হয়েছে", item);
-            await new Promise(resolve => setTimeout(resolve, 310));
-          }
-          console.log(`[Google Sheets Async Sync] Finished syncing all ${totalItems} items!`);
-        } catch (bgErr: any) {
-          console.warn("[Google Sheets Async Sync] Error in background bulk sync:", bgErr?.message || bgErr);
-        }
-      }, 50);
-
-      addLog("গুগল শিট ফুল সিঙ্ক", `ইউজারের অনুরোধে ব্যাকগ্রাউন্ডে সর্বমোট ${totalItems}টি বই, সদস্য ও উইশলিস্ট ডাটা গুগোল শিটে প্রেরণের কাজ শুরু করা হয়েছে।`);
-      res.json({ success: true, message: `মোট ${totalItems}টি ডাটা (বই: ${booksList.length}টি, সদস্য: ${membersList.length}টি, উইশলিস্ট: ${wishlistList.length}টি) ব্যাকগ্রাউন্ড প্রসেসের মাধ্যমে গুগল শিটে ট্রান্সফার করা শুরু হয়েছে। এটি সম্পন্ন হতে কিছু সময় নিতে পারে।` });
-    } catch (err: any) {
-      console.error("POST /api/settings/googlesheets/sync-all failed:", err);
-      res.status(500).json({ error: "সকল ডেটা সিঙ্ক ইনিশিয়েট করার সময় ইন্টারনাল সার্ভার এরর ঘটেছে।" });
-    }
-  });
-
   // ---------------- DASHBOARD DATA API ----------------
 
   app.get("/api/dashboard", authenticateAdmin, async (req, res) => {
@@ -1316,7 +780,7 @@ if (process.env.VERCEL) {
       const mapBookRow = (r: any) => ({
         id: String(r.id),
         code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.book_group
+        imageUrl: r.image_url, status: r.status, group: r.group_name
       });
       const mapped = rows.map(mapBookRow);
 
@@ -1374,7 +838,7 @@ if (process.env.VERCEL) {
       const mapBookRow = (r: any) => ({
         id: String(r.id),
         code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.book_group
+        imageUrl: r.image_url, status: r.status, group: r.group_name
       });
       const mapped = rows.map(mapBookRow);
 
@@ -1437,7 +901,7 @@ if (process.env.VERCEL) {
       const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description };
 
       // Sync to Google Sheets asynchronously in the background so save is instant
-      postToGoogleSheets("বই", "যোগ করা হয়েছে", newBook).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
 
       addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${grp ? `, গ্রুপ: ${grp}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
 
@@ -1472,19 +936,19 @@ if (process.env.VERCEL) {
       const oldBook = bookRows[0];
       const img = imageUrl || oldBook.image_url;
       const stat = status || oldBook.status;
-      const grp = group !== undefined ? group : oldBook.book_group;
+      const grp = group !== undefined ? group : oldBook.group_name;
 
       await pool.query(
-        "UPDATE books SET code = ?, name = ?, author = ?, publisher = ?, image_url = ?, status = ?, book_group = ? WHERE id = ?",
+        "UPDATE books SET code = ?, name = ?, author = ?, publisher = ?, image_url = ?, status = ?, group_name = ? WHERE id = ?",
         [uCode, name, author, publisher, img, stat, grp, id]
       );
 
       const [updatedBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
       const r = updatedBookRow[0];
-      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.book_group };
+      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name };
 
       // Sync to Google Sheets asynchronously in the background so save is instant
-      postToGoogleSheets("বই", "আপডেট করা হয়েছে", updatedBook).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
 
       addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
 
@@ -1512,8 +976,8 @@ if (process.env.VERCEL) {
 
       await pool.query("DELETE FROM books WHERE id = ?", [id]);
 
-      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.book_group };
-      postToGoogleSheets("বই", "মুছে ফেলা হয়েছে", book).catch(err => console.warn("[Google Sheets Background Error]:", err));
+      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name };
+
       addLog("বই মুছে ফেলা", `বই '${book.name}' (কোড: ${book.code}) সিস্টেম থেকে মুছে ফেলা হয়েছে।`);
 
       res.json({ message: "বইটি সফলভাবে সিস্টেম থেকে মুছে ফেলা হয়েছে।" });
@@ -1544,7 +1008,7 @@ if (process.env.VERCEL) {
             const img = imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
             const pub = publisher || "অজ্ঞাত প্রকাশনা";
             await pool.query(
-              "INSERT INTO books (code, name, author, publisher, image_url, status, book_group) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              "INSERT INTO books (code, name, author, publisher, image_url, status, group_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
               [uCode, name, author, pub, img, "Available", ""]
             );
             importedCount++;
@@ -1580,7 +1044,7 @@ if (process.env.VERCEL) {
 
       const result = [];
       for (const bRow of booksRows) {
-        const book = { id: String(bRow.id), code: bRow.code, name: bRow.name, author: bRow.author, publisher: bRow.publisher, imageUrl: bRow.image_url, status: bRow.status, group: bRow.book_group };
+        const book = { id: String(bRow.id), code: bRow.code, name: bRow.name, author: bRow.author, publisher: bRow.publisher, imageUrl: bRow.image_url, status: bRow.status, group: bRow.group_name };
         
         // Find issue records
         const [issueRows]: any = await pool.query(
@@ -1591,7 +1055,7 @@ if (process.env.VERCEL) {
         const mapIssue = (r: any) => ({
           id: String(r.id), bookId: String(r.book_id), bookCode: r.book_code, bookName: r.book_name,
           memberId: String(r.member_id), formNumber: r.member_form_number, memberName: r.member_name, memberMobile: r.member_mobile,
-          issueDate: r.issue_date, returnDate: r.return_date, actualReturnDate: r.actual_return_date || undefined,
+          issueDate: r.issue_date, returnDate: r.return_date, actualReturnDate: r.returned_at || undefined,
           status: r.status, fineAmount: r.fine_amount || 0,
           extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
         });
@@ -1684,7 +1148,7 @@ if (process.env.VERCEL) {
       const mapIssue = (r: any) => ({
         id: String(r.id), bookId: String(r.book_id), bookCode: r.book_code, bookName: r.book_name,
         memberId: String(r.member_id), formNumber: r.member_form_number, memberName: r.member_name, memberMobile: r.member_mobile,
-        issueDate: r.issue_date, returnDate: r.return_date, actualReturnDate: r.actual_return_date || undefined,
+        issueDate: r.issue_date, returnDate: r.return_date, actualReturnDate: r.returned_at || undefined,
         status: r.status, fineAmount: r.fine_amount || 0,
         extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
       });
@@ -1786,7 +1250,7 @@ if (process.env.VERCEL) {
         profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
       };
 
-      postToGoogleSheets("সদস্য", "যোগ করা হয়েছে", newMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
       addLog("সদস্য যোগ", `নতুন সদস্য ${newMember.name} (ফরম নম্বর: ${finalFormNumber}) যোগ করা হয়েছে।`);
 
       res.status(201).json(newMember);
@@ -1878,7 +1342,7 @@ if (process.env.VERCEL) {
         profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
       };
 
-      postToGoogleSheets("সদস্য", "আপডেট করা হয়েছে", updatedMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
       addLog("সদস্য সম্পাদনা", `সদস্য '${name}' (ফরম নম্বর: ${formNumber}) এর তথ্য আপডেট করা হয়েছে।`);
 
       res.json(updatedMember);
@@ -1946,7 +1410,7 @@ if (process.env.VERCEL) {
 
       await pool.query("DELETE FROM members WHERE form_number = ?", [formNumber]);
 
-      postToGoogleSheets("সদস্য", "মুছে ফেলা হয়েছে", member).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
       addLog("সদস্য ডিলিট", `সদস্য '${member.name}' (ফরম নম্বর: ${formNumber}) কে মুছে ফেলা হয়েছে।`);
 
       res.json({ success: true, message: "সদস্য সফলভাবে মুছে ফেলা হয়েছে।" });
@@ -2039,7 +1503,7 @@ if (process.env.VERCEL) {
       };
 
       addLog("বই ইস্যু", `বই '${book.name}' (কোড: ${book.code}) সদস্য ${member.name} (ফরম: ${member.form_number}) কে ইস্যু করা হয়েছে।`);
-      postToGoogleSheets("লেনদেন", "ইস্যু করা হয়েছে", newIssue).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
 
       res.status(201).json({ success: true, issue: newIssue });
     } catch (err) {
@@ -2054,11 +1518,11 @@ if (process.env.VERCEL) {
     const bypassRules = req.query.bypassRules === "true";
 
     try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsTemplate'");
       let smsTemplate = "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        smsTemplate = settings.smsTemplate || smsTemplate;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        smsTemplate = val || smsTemplate;
       }
 
       const [issueRows]: any = await pool.query(
@@ -2166,7 +1630,7 @@ if (process.env.VERCEL) {
       const returnedAt = new Date().toISOString().split("T")[0];
 
       await pool.query("UPDATE books SET status = 'Available' WHERE id = ?", [issue.b_id]);
-      await pool.query("UPDATE issues SET status = 'Returned', actual_return_date = ? WHERE id = ?", [returnedAt, issue.id]);
+      await pool.query("UPDATE issues SET status = 'Returned', returned_at = ? WHERE id = ?", [returnedAt, issue.id]);
 
       let parsedComments = typeof issue.comments === 'string' ? JSON.parse(issue.comments) : (issue.comments || []);
       if (comments) {
@@ -2182,7 +1646,7 @@ if (process.env.VERCEL) {
         comments: parsedComments
       };
       
-      postToGoogleSheets("লেনদেন", "ফেরত দেওয়া হয়েছে", updatedIssue).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
 
       res.json({ success: true, message: "বইটি সফলভাবে ফেরত গ্রহণ করা হয়েছে।" });
     } catch (err) {
@@ -2276,7 +1740,7 @@ if (process.env.VERCEL) {
         id: String(result.insertId), name, author: p_author, publisher: p_publisher, createdAt
       };
 
-      postToGoogleSheets("উইশলিস্ট", "যোগ করা হয়েছে", newItem).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
       addLog("বই যোগ", `উইশলিস্টে নতুন বই '${name}' যোগ করা হয়েছে।`);
 
       res.status(201).json(newItem);
@@ -2298,7 +1762,7 @@ if (process.env.VERCEL) {
       const item = { id: String(rows[0].id), name: rows[0].name, author: rows[0].author, publisher: rows[0].publisher, createdAt: rows[0].created_at };
       await pool.query("DELETE FROM wishlist WHERE id = ?", [id]);
 
-      postToGoogleSheets("উইশলিস্ট", "মুছে ফেলা হয়েছে", item).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
       addLog("বই মুছে ফেলা", `উইশলিস্ট থেকে বই '${item.name}' মুছে ফেলা হয়েছে।`);
 
       res.json({ success: true });
@@ -2482,14 +1946,18 @@ if (process.env.VERCEL) {
       const todayStr = (req.body.todayStr as string) || (req.query.todayStr as string) || new Date().toISOString().split("T")[0];
       const bypassRules = req.body.bypassRules === true || req.body.bypassRules === "true" || req.query.bypassRules === "true";
       
-      const [settingsRows]: any = await pool.query("SELECT data FROM settings LIMIT 1");
+      const [gatewayRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsGateway'");
+      const [templateRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsTemplate'");
       let gateway = { provider: "simulated", apiKey: "", senderId: "", customUrl: "" };
       let smsTemplate = "আসসালামু আলাইকুম, আপনার ({bookName}) বইটি জমাদেয়ার সময় অতিক্রম হয়েছে। অনুগ্রহ করে বইটি অক্ষর পাঠাগার এ জমা দিয়ে আসুন। আমাদের পাঠাগার প্রতিদিন বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা থাকে। বা আপনার বই যদি পড়া শেষ না হয়ে থাকে তাহলে অনুগ্রহ করে এই নাম্বারে call /WhatsApp এ যোগাযোগ করেন: 01333474848";
 
-      if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        if (settings.smsGateway) gateway = settings.smsGateway;
-        if (settings.smsTemplate) smsTemplate = settings.smsTemplate;
+      if (gatewayRows.length > 0) {
+        const val = typeof gatewayRows[0].setting_value === "string" ? JSON.parse(gatewayRows[0].setting_value) : gatewayRows[0].setting_value;
+        if (val) gateway = val;
+      }
+      if (templateRows.length > 0) {
+        const val = typeof templateRows[0].setting_value === "string" ? JSON.parse(templateRows[0].setting_value) : templateRows[0].setting_value;
+        if (val) smsTemplate = val;
       }
 
       const [issues]: any = await pool.query("SELECT * FROM issues WHERE status = 'Issued'");
@@ -2611,11 +2079,11 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "মোবাইল এবং বার্তা উভয়ই প্রদান করা আবশ্যক।" });
       }
 
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsGateway'");
       let gateway = { provider: "simulated", apiKey: "", senderId: "", customUrl: "" };
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        gateway = settings.smsGateway || gateway;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        gateway = val || gateway;
       }
 
       let rawMobile = mobile.replace(/\D/g, "");
@@ -2679,126 +2147,7 @@ if (process.env.VERCEL) {
     }
   });
 
-  // POST Google Sheets Import database
-  app.post("/api/settings/googlesheets/import-all", authenticateAdmin, async (req, res) => {
-    try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
-      let config = null;
-      if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        config = settings.googleSheetsConfig;
-      }
-      
-      if (!config || !config.webAppUrl) {
-        return res.status(400).json({ error: "কোনো গুগল শিট Web App URL সেট করা নেই। দয়া করে সেটিংস প্রথমে সেট করে সেভ করুন।" });
-      }
 
-      console.log(`[Google Sheets Import] Fetching data from ${config.webAppUrl}...`);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
-
-      const response = await globalThis.fetch(config.webAppUrl, {
-        method: "GET",
-        headers: {
-          "User-Agent": "Akkhor-Pathagar-Library-System-Import"
-        },
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-      const text = await response.text();
-      let data: any;
-      try {
-        data = JSON.parse(text);
-      } catch (e: any) {
-        console.warn("[Google Sheets Import] Response is not valid JSON. First 100 chars:", text.substring(0, 100));
-        return res.status(400).json({
-          error: "গুগল শিট থেকে অকার্যকর রেসপন্স পাওয়া গেছে (রেসপন্সটি JSON ফরম্যাটে নয়)। নিশ্চিত করুন যে আপনি সঠিক 'গুগল অ্যাপস স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল' (Web App URL) ব্যবহার করছেন। কোনো সাধারণ গুগল স্প্রেডশিট লিংক এখানে কাজ করবে আধুনিক।"
-        });
-      }
-      
-      if (data.error) {
-        return res.status(500).json({ error: `গুগল অ্যাপস স্ক্রিপ্ট এরর: ${data.error}` });
-      }
-
-      let importedBooks = 0;
-      let importedMembers = 0;
-      let importedWishlist = 0;
-
-      // Import books safely
-      if (Array.isArray(data.books)) {
-        for (const b of data.books) {
-          if (!b.code || !b.name) continue;
-          const [existingBooks]: any = await pool.query("SELECT id FROM books WHERE code = ?", [b.code]);
-          if (existingBooks.length === 0) {
-            await pool.query(
-              "INSERT INTO books (code, name, author, publisher, image_url, status) VALUES (?, ?, ?, ?, ?, ?)",
-              [
-                b.code, b.name, b.author || "অজ্ঞাত", b.publisher || "অজ্ঞাত প্রকাশনী",
-                b.imageUrl?.trim() || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
-                b.status || "Available"
-              ]
-            );
-            importedBooks++;
-          }
-        }
-      }
-
-      // Import members safely
-      if (Array.isArray(data.members)) {
-        for (const m of data.members) {
-          if (!m.formNumber || !m.name) continue;
-          const [existingMembers]: any = await pool.query("SELECT * FROM members WHERE form_number = ?", [m.formNumber]);
-          if (existingMembers.length > 0) {
-            const em = existingMembers[0];
-            await pool.query(
-              "UPDATE members SET mobile = ?, address = ?, dob = ?, education_institution = ?, class_name = ?, class_roll = ? WHERE id = ?",
-              [
-                m.mobile || em.mobile || "", m.address || em.address || "", m.dob || em.dob || "",
-                m.educationInstitution || em.education_institution || "", m.className || em.class_name || "",
-                m.classRoll || em.class_roll || "", em.id
-              ]
-            );
-          } else {
-            await pool.query(
-              "INSERT INTO members (form_number, name, mobile, address, dob, education_institution, class_name, class_roll) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-              [
-                m.formNumber, m.name, m.mobile || "", m.address || "", m.dob || "",
-                m.educationInstitution || "", m.className || "", m.classRoll || ""
-              ]
-            );
-            importedMembers++;
-          }
-        }
-      }
-
-      // Import wishlist safely
-      if (Array.isArray(data.wishlist)) {
-        for (const w of data.wishlist) {
-          if (!w.name) continue;
-          const [existingWishlist]: any = await pool.query("SELECT id FROM wishlist WHERE name = ?", [w.name]);
-          if (existingWishlist.length === 0) {
-            await pool.query(
-              "INSERT INTO wishlist (name, author, publisher, created_at) VALUES (?, ?, ?, ?)",
-              [w.name, w.author || "", w.publisher || "", new Date().toISOString().split("T")[0]]
-            );
-            importedWishlist++;
-          }
-        }
-      }
-
-      addLog("গুগল শিট ডাটা ইম্পোর্ট", `গুগল শিট থেকে সর্বমোট সফলভাবে ডাটা ডাউনলোড ইম্পোর্ট করা হয়েছে। নতুন বই: ${importedBooks}টি, নতুন সদস্য: ${importedMembers}টি, নতুন উইশলিস্ট: ${importedWishlist}টি।`);
-      
-      res.json({
-        success: true,
-        message: `গুগল শিট থেকে ডাটা সফলভাবে ডাউনলোড ও ইম্পোর্ট করা হয়েছে!`,
-        details: `নতুন ইম্পোর্টকৃত - বই: ${importedBooks}টি, সদস্য: ${importedMembers}জন, উইশলিস্ট: ${importedWishlist}টি।`
-      });
-    } catch (err: any) {
-      console.warn("[Google Sheets Import] Connection failed:", err.message || err);
-      res.status(500).json({ error: `গুগল শিট থেকে ডাটা ডাউনলোড সম্ভব হয়নি। অনুগ্রহ করে নিশ্চিত হোন আপনার Apps Script-এ doGet(e) ফাংশনটি যুক্ত রয়েছে এবং Deploy-এ অ্যাক্সেস 'Anyone' দেয়া আছে। এরর: ${err.message || err}` });
-    }
-  });
 
   // ---------------- PUBLIC PORTAL & GROUPS & LEADERBOARDS API ----------------
 
@@ -2939,7 +2288,7 @@ if (process.env.VERCEL) {
       };
 
       // Sync to Google Sheets in background
-      postToGoogleSheets("সদস্য", "নিবন্ধন করা হয়েছে", newMember).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
 
       addLog("সদস্য নিবন্ধন", `নতুন সদস্য নিজে অনলাইন নিবন্ধন ফরমের মাধ্যমে যুক্ত হয়েছেন: ${name.trim()} (ফরম নম্বর: ${nextFormNumber})`);
 
@@ -2979,7 +2328,7 @@ if (process.env.VERCEL) {
       const issues = issueRows.map((r: any) => ({
         id: String(r.id), bookCode: r.book_code, bookName: r.book_name, memberName: r.member_name, formNumber: r.member_form_number,
         mobile: r.member_mobile, address: r.member_address, issueDate: r.issue_date, returnDate: r.return_date,
-        actualReturnDate: r.actual_return_date, status: r.status, extensionHistory: typeof r.extension_history === 'string' ? JSON.parse(r.extension_history) : (r.extension_history || []),
+        actualReturnDate: r.returned_at, status: r.status, extensionHistory: typeof r.extension_history === 'string' ? JSON.parse(r.extension_history) : (r.extension_history || []),
         comments: typeof r.comments === 'string' ? JSON.parse(r.comments) : (r.comments || [])
       }));
 
@@ -3002,11 +2351,11 @@ if (process.env.VERCEL) {
   // 2. Fetch all book groups
   app.get("/api/public/groups", async (req, res) => {
     try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'groups'");
       let groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        groups = settings.groups || groups;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        groups = val || groups;
       }
       res.json({ success: true, groups });
     } catch (err: any) {
@@ -3017,11 +2366,11 @@ if (process.env.VERCEL) {
   // 2b. Fetch active membership fee payment methods
   app.get("/api/public/payment-methods", async (req, res) => {
     try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'paymentMethods'");
       let paymentMethods = [];
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        paymentMethods = settings.paymentMethods || [];
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        paymentMethods = val || [];
       }
       res.json({ success: true, paymentMethods });
     } catch (err: any) {
@@ -3037,27 +2386,20 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "পেমেন্ট মেথড লিস্ট অবশ্যই একটি অ্যারে হতে হবে।" });
       }
 
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
-      if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-      }
-      
-      settings.paymentMethods = paymentMethods.map((pm: any, idx: number) => ({
+      const formattedMethods = paymentMethods.map((pm: any, idx: number) => ({
         id: pm.id || `pm-${Date.now()}-${idx}`,
         name: (pm.name || "").trim(),
         type: (pm.type || "Personal").trim(),
         number: (pm.number || "").trim()
       })).filter((pm: any) => pm.name && pm.number);
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['paymentMethods', JSON.stringify(formattedMethods)]
+      );
 
       addLog("পেমেন্ট সেটিং", "সদস্য মেম্বারশিপ ফি পেমেন্ট মেথড তালিকা আপডেট করা হয়েছে।");
-      res.json({ success: true, paymentMethods: settings.paymentMethods });
+      res.json({ success: true, paymentMethods: formattedMethods });
     } catch (err: any) {
       res.status(500).json({ error: "পেমেন্ট মেথড আপডেট করতে সার্ভার ত্রুটি হয়েছে।" });
     }
@@ -3071,31 +2413,27 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "গ্রুপের নাম প্রদান করা আবশ্যক।" });
       }
 
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'groups'");
+      let currentGroups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
       if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        currentGroups = val || currentGroups;
       }
       
-      if (!settings.groups) {
-        settings.groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
-      }
-
       const trimmedName = groupName.trim();
-      if (settings.groups.some((g: string) => g.toLowerCase() === trimmedName.toLowerCase())) {
+      if (currentGroups.some((g: string) => g.toLowerCase() === trimmedName.toLowerCase())) {
         return res.status(400).json({ error: "এই গ্রুপটি ইতিমধ্যে বিদ্যমান রয়েছে।" });
       }
 
-      settings.groups.push(trimmedName);
+      currentGroups.push(trimmedName);
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['groups', JSON.stringify(currentGroups)]
+      );
 
       addLog("গ্রুপ যোগ", `নতুন বইয়ের গ্রুপ '${trimmedName}' যোগ করা হয়েছে।`);
-      res.json({ success: true, groups: settings.groups });
+      res.json({ success: true, groups: currentGroups });
     } catch (err: any) {
       res.status(500).json({ error: "গ্রুপ তৈরি করতে সমস্যা হয়েছে।" });
     }
@@ -3106,26 +2444,22 @@ if (process.env.VERCEL) {
     try {
       const { groupName } = req.params;
       
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'groups'");
+      let currentGroups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
       if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        currentGroups = val || currentGroups;
       }
       
-      if (!settings.groups) {
-        settings.groups = ["নজরুল কর্নার", "রবীন্দ্রনাথ কর্নার", "উপন্যাস", "গল্প"];
-      }
-
-      settings.groups = settings.groups.filter((g: string) => g.toLowerCase() !== groupName.toLowerCase());
+      currentGroups = currentGroups.filter((g: string) => g.toLowerCase() !== groupName.toLowerCase());
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['groups', JSON.stringify(currentGroups)]
+      );
 
       addLog("গ্রুপ ডিলিট", `বইয়ের গ্রুপ '${groupName}' ডিলিট করা হয়েছে।`);
-      res.json({ success: true, groups: settings.groups });
+      res.json({ success: true, groups: currentGroups });
     } catch (err: any) {
       res.status(500).json({ error: "গ্রুপ ডিলিট করতে সমস্যা হয়েছে।" });
     }
@@ -3168,14 +2502,14 @@ if (process.env.VERCEL) {
       }
       
       if (group) {
-        query += " AND LOWER(book_group) = ?";
+        query += " AND LOWER(group_name) = ?";
         params.push(group.toString().toLowerCase().trim());
       }
       
       const [rows]: any = await pool.query(query, params);
       const books = rows.map((r: any) => ({
         id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.book_group
+        imageUrl: r.image_url, status: r.status, group: r.group_name
       }));
 
       res.json({ success: true, books });
@@ -3211,7 +2545,7 @@ if (process.env.VERCEL) {
       };
 
       // Sync to Google Sheets asynchronously
-      postToGoogleSheets("উইশলিস্ট", "যোগ করা হয়েছে", newItem).catch(err => console.warn("[Google Sheets Background Error]:", err));
+
 
       addLog("উইশলিস্ট যোগ", `সদস্য ${memberFormNumber || "গোপন"} উইশলিস্টে নতুন বই '${name}' যোগ করেছেন।`);
 
@@ -3320,11 +2654,11 @@ if (process.env.VERCEL) {
   // 1b. Get all shop categories/groups (Public)
   app.get("/api/public/shop/categories", async (req, res) => {
     try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
       let categories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        categories = settings.shopCategories || categories;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        categories = val || categories;
       }
       res.json({ success: true, categories });
     } catch (err: any) {
@@ -3335,14 +2669,14 @@ if (process.env.VERCEL) {
   // 1d. Get shop helpline config (Public)
   app.get("/api/public/shop/helpline", async (req, res) => {
     try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopHelpline'");
       let helpline = {
         number: "০১৩৩৩৪৭৮৪৪৮",
         text: "বিক্রয় কর্নারের যেকোনো পণ্য সংগ্রহ করতে আমাদের হেল্পলাইন নাম্বারে যোগাযোগ করুন অথবা সরাসরি অক্ষর লাইব্রেরির কাউন্টারে ভিজিট করে সংগ্রহ করতে পারবেন।"
       };
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        helpline = settings.shopHelpline || helpline;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        helpline = val || helpline;
       }
       res.json({ success: true, helpline });
     } catch (err: any) {
@@ -3358,25 +2692,18 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "হেল্পলাইন নাম্বার এবং ক্রয় করার নির্দেশিকা লিখুন।" });
       }
 
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
-      if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-      }
-
-      settings.shopHelpline = {
+      const newHelpline = {
         number: number.trim(),
         text: text.trim()
       };
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['shopHelpline', JSON.stringify(newHelpline)]
+      );
 
       addLog("হেল্পলাইন আপডেট", `বিক্রয় কর্নারের হেল্পলাইন কাস্টমাইজ করা হয়েছে। নাম্বার: ${number.trim()}`);
-      res.json({ success: true, helpline: settings.shopHelpline });
+      res.json({ success: true, helpline: newHelpline });
     } catch (err: any) {
       res.status(500).json({ error: "হেল্পলাইন কাস্টমাইজেশন সেভ করতে ব্যর্থ।" });
     }
@@ -3390,31 +2717,27 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "ক্যাটাগরির নাম প্রদান করা আবশ্যক।" });
       }
 
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
+      let currentCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
       if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-      }
-
-      if (!settings.shopCategories) {
-        settings.shopCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        currentCategories = val || currentCategories;
       }
 
       const trimmedName = categoryName.trim();
-      if (settings.shopCategories.some((c: string) => c.toLowerCase() === trimmedName.toLowerCase())) {
+      if (currentCategories.some((c: string) => c.toLowerCase() === trimmedName.toLowerCase())) {
         return res.status(400).json({ error: "এই ক্যাটাগরি বা গ্রুপটি ইতিমধ্যে বিদ্যমান রয়েছে।" });
       }
 
-      settings.shopCategories.push(trimmedName);
+      currentCategories.push(trimmedName);
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['shopCategories', JSON.stringify(currentCategories)]
+      );
 
       addLog("ক্যাটাগরি যোগ", `নতুন বিক্রয় ক্যাটাগরি '${trimmedName}' যোগ করা হয়েছে।`);
-      res.json({ success: true, categories: settings.shopCategories });
+      res.json({ success: true, categories: currentCategories });
     } catch (err: any) {
       res.status(500).json({ error: "ক্যাটাগরি তৈরি করতে সমস্যা হয়েছে।" });
     }
@@ -3425,26 +2748,22 @@ if (process.env.VERCEL) {
     try {
       const { categoryName } = req.params;
       
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
+      let currentCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
       if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        currentCategories = val || currentCategories;
       }
 
-      if (!settings.shopCategories) {
-        settings.shopCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
-      }
-
-      settings.shopCategories = settings.shopCategories.filter((c: string) => c.toLowerCase() !== categoryName.toLowerCase());
+      currentCategories = currentCategories.filter((c: string) => c.toLowerCase() !== categoryName.toLowerCase());
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['shopCategories', JSON.stringify(currentCategories)]
+      );
 
       addLog("ক্যাটাগরি ডিলিট", `বিক্রয় ক্যাটাগরি '${categoryName}' ডিলিট করা হয়েছে।`);
-      res.json({ success: true, categories: settings.shopCategories });
+      res.json({ success: true, categories: currentCategories });
     } catch (err: any) {
       res.status(500).json({ error: "ক্যাটাগরি ডিলিট করতে সমস্যা হয়েছে।" });
     }
@@ -3521,11 +2840,11 @@ if (process.env.VERCEL) {
   // Get custom login flow setting (Public)
   app.get("/api/public/settings/login-flow", async (req, res) => {
     try {
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'isCustomLoginFlowEnabled'");
       let isCustomLoginFlowEnabled = false;
       if (settingsRows.length > 0) {
-        const settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-        isCustomLoginFlowEnabled = !!settings.isCustomLoginFlowEnabled;
+        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
+        isCustomLoginFlowEnabled = !!val;
       }
       res.json({ success: true, isCustomLoginFlowEnabled });
     } catch (err: any) {
@@ -3538,22 +2857,15 @@ if (process.env.VERCEL) {
     try {
       const { isEnabled } = req.body;
       
-      let settings: any = {};
-      const [settingsRows]: any = await pool.query("SELECT * FROM settings LIMIT 1");
-      if (settingsRows.length > 0) {
-        settings = typeof settingsRows[0].data === "string" ? JSON.parse(settingsRows[0].data) : settingsRows[0].data;
-      }
-
-      settings.isCustomLoginFlowEnabled = !!isEnabled;
+      const isCustomLoginFlowEnabled = !!isEnabled;
       
-      if (settingsRows.length > 0) {
-        await pool.query("UPDATE settings SET data = ? WHERE id = ?", [JSON.stringify(settings), settingsRows[0].id]);
-      } else {
-        await pool.query("INSERT INTO settings (data) VALUES (?)", [JSON.stringify(settings)]);
-      }
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",
+        ['isCustomLoginFlowEnabled', JSON.stringify(isCustomLoginFlowEnabled)]
+      );
 
       addLog("সেটিংস পরিবর্তন", `কাস্টম লগইন ফ্লো ${isEnabled ? "সক্রিয়" : "নিষ্ক্রিয়"} করা হয়েছে।`);
-      res.json({ success: true, isCustomLoginFlowEnabled: settings.isCustomLoginFlowEnabled });
+      res.json({ success: true, isCustomLoginFlowEnabled });
     } catch (err: any) {
       res.status(500).json({ error: "কাস্টম লগইন ফ্লো সেটিংস সংরক্ষণ করতে ব্যর্থ।" });
     }

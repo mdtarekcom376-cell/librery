@@ -857,7 +857,7 @@ export default function App() {
             <h1 className="text-2xl font-bold text-[#22242A] mt-3 font-sans">
               অক্ষর পাঠাগার
             </h1>
-            <p className="text-xs text-[#8E8E93]">স্মার্ট লাইব্রেরি সিস্টেম</p>
+            <p className="text-xs text-[#6B6B70]">স্মার্ট লাইব্রেরি সিস্টেম</p>
             <div className="mt-2 px-3 py-1 bg-[#F5F3EF] border border-[#E5E5EA] rounded-full text-[10px] font-bold text-[#22242A] inline-block font-sans">
               {loginTab === "member" ? "👤 সদস্য প্রবেশদ্বার" : "🔑 অ্যাডমিন প্রবেশদ্বার"}
             </div>
@@ -893,7 +893,7 @@ export default function App() {
                           onClick={() => setMemberQuestionStep("non_member_options")}
                           className="py-4 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] hover:border-[#22242A]/20 text-[#22242A] font-bold rounded-2xl text-xs sm:text-sm transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
                         >
-                          <HelpCircle size={20} className="text-[#8E8E93]" />
+                          <HelpCircle size={20} className="text-[#6B6B70]" />
                           <span>না, সদস্য নই</span>
                         </button>
                       </div>
@@ -905,7 +905,7 @@ export default function App() {
                     <div className="space-y-4">
                       <form onSubmit={handleMemberLoginSubmit} className="space-y-4 text-left">
                         <div>
-                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
+                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
                           <input
                             type="text"
                             value={memberFormNo}
@@ -917,7 +917,7 @@ export default function App() {
                         </div>
 
                         <div>
-                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
+                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
                           <input
                             type="date"
                             value={memberDob}
@@ -927,7 +927,7 @@ export default function App() {
                         </div>
 
                         <div>
-                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
+                          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
                           <input
                             type="tel"
                             value={memberMobile}
@@ -950,7 +950,7 @@ export default function App() {
 
                       <button
                         onClick={() => setMemberQuestionStep("ask")}
-                        className="w-full py-2 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] rounded-xl text-[11px] font-bold text-[#8E8E93] hover:text-[#22242A] transition-all cursor-pointer flex items-center justify-center gap-1"
+                        className="w-full py-2 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] rounded-xl text-[11px] font-bold text-[#6B6B70] hover:text-[#22242A] transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <ArrowLeft size={12} />
                         <span>পিছনে যান</span>
@@ -976,14 +976,14 @@ export default function App() {
                           লাইব্রেরি পরিদর্শন (সরাসরি সাধারণ প্রবেশ)
                         </button>
                         
-                        <p className="text-[10px] text-[#8E8E93] text-center leading-relaxed">
+                        <p className="text-[10px] text-[#6B6B70] text-center leading-relaxed">
                           * আপনি সদস্য না হয়ে প্রবেশ করলেও লাইব্রেরির সকল বইয়ের তালিকা, পরিসংখ্যান ও লিডারবোর্ড দেখতে পারবেন (বই উইশলিস্ট এবং অডিট ট্র্যাকিং ছাড়া)।
                         </p>
                       </div>
 
                       <button
                         onClick={() => setMemberQuestionStep("ask")}
-                        className="w-full py-2 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] rounded-xl text-[11px] font-bold text-[#8E8E93] hover:text-[#22242A] transition-all cursor-pointer flex items-center justify-center gap-1"
+                        className="w-full py-2 bg-[#F5F3EF] hover:bg-[#EEECEA] border border-[#E5E5EA] rounded-xl text-[11px] font-bold text-[#6B6B70] hover:text-[#22242A] transition-all cursor-pointer flex items-center justify-center gap-1"
                       >
                         <ArrowLeft size={12} />
                         <span>পিছনে যান</span>
@@ -996,7 +996,7 @@ export default function App() {
                   {/* Standard Flow */}
                   <form onSubmit={handleMemberLoginSubmit} className="space-y-4 text-left">
                     <div>
-                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
+                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">সদস্য ফরম নং (Member Form No)</label>
                       <input
                         type="text"
                         value={memberFormNo}
@@ -1008,7 +1008,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
+                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">জন্ম তারিখ (Date of Birth)</label>
                       <input
                         type="date"
                         value={memberDob}
@@ -1018,7 +1018,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
+                      <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">মোবাইল নম্বর (Mobile Number)</label>
                       <input
                         type="tel"
                         value={memberMobile}
@@ -1047,7 +1047,7 @@ export default function App() {
           {loginTab === "admin" && (
             <form onSubmit={handleLoginSubmit} className="space-y-4 text-left">
               <div>
-                <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">ইউজারনেম (Username)</label>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">ইউজারনেম (Username)</label>
                 <input
                   type="text"
                   value={loginUser}
@@ -1059,7 +1059,7 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5 ml-1">পাসওয়ার্ড (Password)</label>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5 ml-1">পাসওয়ার্ড (Password)</label>
                 <input
                   type="password"
                   value={loginPass}
@@ -1098,7 +1098,7 @@ export default function App() {
                 লাইব্রেরি পরিদর্শন (সরাসরি সাধারণ প্রবেশ)
               </button>
               
-              <p className="text-[10px] text-[#8E8E93] text-center leading-relaxed">
+              <p className="text-[10px] text-[#6B6B70] text-center leading-relaxed">
                 * আপনি সদস্য না হয়ে প্রবেশ করলেও লাইব্রেরির সকল বইয়ের তালিকা, পরিসংখ্যান ও লিডারবোর্ড দেখতে পারবেন (বই উইশলিস্ট এবং অডিট ট্র্যাকিং ছাড়া)।
               </p>
             </div>
@@ -1128,7 +1128,7 @@ export default function App() {
           {/* Mobile hamburger menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 text-[#8E8E93] hover:text-[#22242A] hover:bg-white rounded-lg cursor-pointer shrink-0 z-50"
+            className="md:hidden p-1.5 text-[#6B6B70] hover:text-[#22242A] hover:bg-white rounded-lg cursor-pointer shrink-0 z-50"
             aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -1184,7 +1184,7 @@ export default function App() {
             <h1 className="text-xs sm:text-sm md:text-lg font-bold tracking-tight text-[#22242A] flex items-center gap-1 font-sans truncate">
               অক্ষর পাঠাগার
             </h1>
-            <p className="hidden sm:block text-[9px] text-[#8E8E93] font-sans tracking-wide truncate">স্মার্ট লাইব্রেরি সিস্টেম</p>
+            <p className="hidden sm:block text-[9px] text-[#6B6B70] font-sans tracking-wide truncate">স্মার্ট লাইব্রেরি সিস্টেম</p>
           </div>
 
         </div>
@@ -1194,8 +1194,8 @@ export default function App() {
 
           {/* Search bar (decorative) */}
           <div className="hidden md:flex items-center gap-2 bg-white border border-[#E5E5EA] rounded-full px-4 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] min-w-[200px]">
-            <Search size={14} className="text-[#8E8E93] shrink-0" />
-            <span className="text-xs text-[#8E8E93]">অনুসন্ধান করুন...</span>
+            <Search size={14} className="text-[#6B6B70] shrink-0" />
+            <span className="text-xs text-[#6B6B70]">অনুসন্ধান করুন...</span>
           </div>
 
           {/* Unified ZIP backup download indicator */}
@@ -1222,7 +1222,7 @@ export default function App() {
           {/* Logout button */}
           <button
             onClick={handleLogout}
-            className="p-1.5 hover:bg-red-50 text-[#8E8E93] hover:text-[#FF6B6B] border border-[#E5E5EA] rounded-full cursor-pointer transition-colors shrink-0"
+            className="p-1.5 hover:bg-red-50 text-[#6B6B70] hover:text-[#FF6B6B] border border-[#E5E5EA] rounded-full cursor-pointer transition-colors shrink-0"
             title="নিরাপদে একাউন্ট লগআউট করুন"
           >
             <LogOut size={14} />
@@ -1245,7 +1245,7 @@ export default function App() {
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   title={item.label}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#8E8E93] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
                 >
                   <Icon size={18} />
                 </button>
@@ -1261,7 +1261,7 @@ export default function App() {
             <button
               onClick={handleLogout}
               title="লগআউট"
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-[#8E8E93] hover:text-[#FF6B6B] hover:bg-red-50 cursor-pointer transition-colors"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-[#6B6B70] hover:text-[#FF6B6B] hover:bg-red-50 cursor-pointer transition-colors"
             >
               <LogOut size={16} />
             </button>
@@ -1276,7 +1276,7 @@ export default function App() {
               <div className="space-y-5">
                 <div className="flex justify-between items-center pb-2 border-b border-[#E5E5EA]">
                   <p className="font-bold text-[#22242A] text-xs uppercase tracking-wider">মেনু নেভিগেশন</p>
-                  <button onClick={() => setMobileMenuOpen(false)} className="text-[#8E8E93] p-1">
+                  <button onClick={() => setMobileMenuOpen(false)} className="text-[#6B6B70] p-1">
                     <X size={18} />
                   </button>
                 </div>
@@ -1291,7 +1291,7 @@ export default function App() {
                           setActiveTab(item.id);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#8E8E93] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
                       >
                         <Icon size={16} />
                         <span>{item.label}</span>

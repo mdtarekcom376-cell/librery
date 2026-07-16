@@ -234,7 +234,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
             <Smartphone className="text-[#22242A]" size={24} />
             ৮. অটোমেটেড SMS কন্ট্রোল প্যানেল
           </h2>
-          <p className="text-xs text-[#8E8E93]">মেয়াদোত্তীর্ণ বই জমা নেওয়ার জন্য শিডিউলড SMS অ্যালার্ট, ২ মিনিটের লাইভ লুপ ও টেস্ট টুলস</p>
+          <p className="text-xs text-[#6B6B70]">মেয়াদোত্তীর্ণ বই জমা নেওয়ার জন্য শিডিউলড SMS অ্যালার্ট, ২ মিনিটের লাইভ লুপ ও টেস্ট টুলস</p>
         </div>
         
         <button
@@ -272,7 +272,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
               ক্রন সক্রিয়: {countdown} সে. বাকি
             </span>
           ) : (
-            <span className="px-2.5 py-1 rounded-full bg-white text-[#8E8E93] border border-[#E5E5EA] text-[10px] sm:text-xs font-bold flex items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-full bg-white text-[#6B6B70] border border-[#E5E5EA] text-[10px] sm:text-xs font-bold flex items-center gap-1.5">
               <Clock size={12} />
               অটো-লুপ বন্ধ আছে
             </span>
@@ -301,7 +301,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
               <button
                 type="button"
                 onClick={resetSimulatedDate}
-                className="px-2.5 py-2 bg-white border border-[#E5E5EA] text-[10px] text-[#8E8E93] hover:text-[#22242A] rounded-xl active:scale-95"
+                className="px-2.5 py-2 bg-white border border-[#E5E5EA] text-[10px] text-[#6B6B70] hover:text-[#22242A] rounded-xl active:scale-95"
                 title="আজকের তারিখ রিসেট"
               >
                 রিসেট
@@ -324,7 +324,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
               className={`w-full text-xs p-2.5 rounded-xl border flex items-center justify-center gap-1.5 font-bold transition-all ${
                 bypassRules 
                   ? "bg-[#F5F3EF] border-[#E5E5EA] text-[#22242A] shadow-md shadow-pink-500/5 animate-pulse" 
-                  : "bg-white border-[#E5E5EA] text-[#8E8E93]"
+                  : "bg-white border-[#E5E5EA] text-[#6B6B70]"
               }`}
             >
               <ListFilter size={13} />
@@ -374,7 +374,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
         {/* Live debug logs output box */}
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] uppercase font-bold text-[#8E8E93] flex items-center gap-1">
+            <span className="text-[10px] uppercase font-bold text-[#6B6B70] flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-[#F5F3EF] rounded-full animate-ping"></span>
               লাইভ টেস্ট ও অ্যাকশন লগ (Sandbox Logs)
             </span>
@@ -390,7 +390,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
           </div>
           <div className="bg-[#04060b] p-3 rounded-xl border border-[#E5E5EA] max-h-36 overflow-y-auto font-mono text-[9px] text-[#22242A] space-y-1 text-left">
             {liveLogs.length === 0 ? (
-              <p className="text-[#8E8E93] italic">সিমুলেশন বা টেস্ট রান করলে এখানে তাৎক্ষণিক লগ রিপোর্ট দেখা যাবে।</p>
+              <p className="text-[#6B6B70] italic">সিমুলেশন বা টেস্ট রান করলে এখানে তাৎক্ষণিক লগ রিপোর্ট দেখা যাবে।</p>
             ) : (
               liveLogs.map((log, index) => (
                 <div key={index} className="flex gap-2">
@@ -414,7 +414,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
             <Smartphone size={20} className="text-[#22242A] shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="font-bold text-[#22242A]">স্বয়ংক্রিয় SMS সতর্কীকরণের নিয়মাবলী:</p>
-              <ul className="list-disc pl-4 space-y-1 text-[#8E8E93] text-xs">
+              <ul className="list-disc pl-4 space-y-1 text-[#6B6B70] text-xs">
                 <li>বই ফেরত দেওয়ার নির্ধারিত দিন (Return Date) <b>দুপুর ২:০০ টায়</b> স্বয়ংক্রিয়ভাবে প্রথম SMS সচল হবে।</li>
                 <li>যদি বই ফেরত না আসে, তবে প্রতি <b>২ দিন পর পর দুপুর ২:০০ টায়</b> এই সতর্কতা পাঠাগারে জমা নেওয়া পর্যন্ত চলতে থাকবে।</li>
                 <li>সময় বাড়ানো (Extend Time) হলে পূর্ববর্তী লুপটি বাতিল হয়ে নতুন Return Date হিসেবে অ্যালার্টটি রিক্যালকুলেট হবে।</li>
@@ -444,23 +444,23 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
               <h3 className="text-xs font-bold text-[#22242A] uppercase tracking-wider">
                 শিডিউল অ্যালার্ট উইন্ডো ({alerts.length}টি লাইভ পাওয়া গেছে)
               </h3>
-              <p className="text-[10px] text-[#8E8E93]">
+              <p className="text-[10px] text-[#6B6B70]">
                 তারিখ সিলেক্ট করে তালিকা পরিবর্তন করুন
               </p>
             </div>
 
             {loading ? (
-              <div className="py-12 text-center text-xs text-[#8E8E93]">অ্যালার্টসমূহ লোড করা হচ্ছে...</div>
+              <div className="py-12 text-center text-xs text-[#6B6B70]">অ্যালার্টসমূহ লোড করা হচ্ছে...</div>
             ) : alerts.length === 0 ? (
-              <div className=" p-10 text-center rounded-2xl">
-                <p className="text-[#8E8E93] text-sm">বর্তমানে কোনো বই সচল বা মেয়াদোত্তীর্ণ ঋণ অবস্থায় নাই। সচল ইস্যু করার প্যানেল চেক করুন অথবা date simulation পরিবর্তন করুন বা Rule Bypass অন করুন।</p>
+              <div className="glass-panel p-10 text-center rounded-2xl">
+                <p className="text-[#6B6B70] text-sm">বর্তমানে কোনো বই সচল বা মেয়াদোত্তীর্ণ ঋণ অবস্থায় নাই। সচল ইস্যু করার প্যানেল চেক করুন অথবা date simulation পরিবর্তন করুন বা Rule Bypass অন করুন।</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {alerts.map((al) => (
                   <div
                     key={al.id}
-                    className=" p-4 rounded-2xl border border-[#E5E5EA] flex flex-col justify-between hover:border-[#E5E5EA] transition-all duration-150 bg-white"
+                    className="glass-panel p-4 rounded-2xl border border-[#E5E5EA] flex flex-col justify-between hover:border-[#E5E5EA] transition-all duration-150 bg-white"
                   >
                     <div className="space-y-3">
                       
@@ -468,7 +468,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
                       <div className="flex justify-between items-start gap-1">
                         <div className="min-w-0">
                           <h4 className="font-bold text-[#22242A] text-xs sm:text-sm truncate">{al.bookName}</h4>
-                          <p className="text-[10px] text-[#8E8E93]">গ্রাহক: {al.memberName}</p>
+                          <p className="text-[10px] text-[#6B6B70]">গ্রাহক: {al.memberName}</p>
                         </div>
                         <span className={`px-2 py-0.5 rounded text-[9px] font-bold shrink-0 ${al.status === "Sent" ? "bg-[#E5E5EA] text-[#22242A]" : "bg-[#F5F3EF] text-[#22242A]"}`}>
                           {al.status === "Sent" ? "Dispatched / Sent" : "Scheduled"}
@@ -476,7 +476,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
                       </div>
 
                       {/* Receiver and schedule info */}
-                      <div className="grid grid-cols-2 gap-y-1 text-[10px] text-[#8E8E93] border-t border-b border-[#E5E5EA] py-2">
+                      <div className="grid grid-cols-2 gap-y-1 text-[10px] text-[#6B6B70] border-t border-b border-[#E5E5EA] py-2">
                         <div>রিসিভার নম্বর: <span className="font-mono text-[#22242A] font-semibold">{al.mobile}</span></div>
                         <div>রিটার্ন শেষ দিন: <span className="font-mono text-[#22242A] font-bold">{al.returnDate}</span></div>
                         <div className="col-span-2 mt-1">
@@ -486,7 +486,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
 
                       {/* SMS content body */}
                       <div className="bg-[#F5F3EF] p-3 rounded-lg text-[#22242A] font-sans text-xs relative max-h-24 overflow-y-auto">
-                        <p className="text-[9px] text-[#8E8E93] uppercase font-bold mb-1 flex items-center gap-1">
+                        <p className="text-[9px] text-[#6B6B70] uppercase font-bold mb-1 flex items-center gap-1">
                           <MessageSquare size={10} />
                           মো바일 SMS বার্তা বিবরণী
                         </p>
@@ -524,13 +524,13 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
         </div>
 
         {/* Right 1 Col: Quick Direct Manual SMS Form */}
-        <div className=" p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
+        <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
           <div className="border-b border-[#E5E5EA] pb-2">
             <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5 uppercase tracking-wider">
               <SendHorizontal className="text-[#22242A]" size={15} />
               ম্যানুয়াল কাস্টম SMS পাঠান
             </h3>
-            <p className="text-[10px] text-[#8E8E93] mt-1 leading-snug">
+            <p className="text-[10px] text-[#6B6B70] mt-1 leading-snug">
               সদস্যকে সরাসরি যেকোনো কাস্টম মেসেজ বা টেস্ট SMS পাঠাতে এই প্যানেলটি ব্যবহার করুন।
             </p>
           </div>
@@ -552,7 +552,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
           <form onSubmit={handleSendSingleSMS} className="space-y-4 text-xs font-sans">
             {/* Auto-suggest Search Box */}
             <div className="relative">
-              <label className="block text-[9px] uppercase font-bold text-[#8E8E93] mb-1">সদস্য খুঁজুন (ঐচ্ছিক অটোফিলের জন্য)</label>
+              <label className="block text-[9px] uppercase font-bold text-[#6B6B70] mb-1">সদস্য খুঁজুন (ঐচ্ছিক অটোফিলের জন্য)</label>
               <div className="relative">
                 <input
                   type="text"
@@ -578,7 +578,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
                     >
                       <div>
                         <p className="font-bold text-[#22242A]">{mem.name}</p>
-                        <p className="text-[9px] text-[#8E8E93] font-mono">মোবাইল: {mem.mobile}</p>
+                        <p className="text-[9px] text-[#6B6B70] font-mono">মোবাইল: {mem.mobile}</p>
                       </div>
                       <span className="text-[9px] bg-[#F5F3EF] px-1.5 py-0.5 rounded text-[#22242A] font-bold shrink-0">
                         #{mem.formNumber}
@@ -591,7 +591,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
 
             {/* Manual Mobile Number */}
             <div>
-              <label className="block text-[9px] uppercase font-bold text-[#8E8E93] mb-1">মোবাইল নম্বর *</label>
+              <label className="block text-[9px] uppercase font-bold text-[#6B6B70] mb-1">মোবাইল নম্বর *</label>
               <input
                 type="text"
                 value={manualMobile}
@@ -604,7 +604,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
 
             {/* Custom Message */}
             <div>
-              <label className="block text-[9px] uppercase font-bold text-[#8E8E93] mb-1">বার্তার বিবরণী (Message Body) *</label>
+              <label className="block text-[9px] uppercase font-bold text-[#6B6B70] mb-1">বার্তার বিবরণী (Message Body) *</label>
               <textarea
                 value={manualMessage}
                 onChange={(e) => setManualMessage(e.target.value)}
@@ -616,7 +616,7 @@ export default function SmsAlerts({ onRefreshStats }: SmsAlertsProps) {
             </div>
 
             {/* Guide message */}
-            <div className="p-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[9px] text-[#8E8E93] space-y-1">
+            <div className="p-2.5 bg-white border border-[#E5E5EA] rounded-xl text-[9px] text-[#6B6B70] space-y-1">
               <span className="font-bold text-[#22242A] flex items-center gap-1">
                 <HelpCircle size={10} />
                 ফ্রি বনাম গেটওয়ে অপশন গাইড:

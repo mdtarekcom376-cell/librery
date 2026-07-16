@@ -277,13 +277,13 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
             </div>
             <div>
               <h3 className="font-extrabold text-[#22242A] text-sm sm:text-base">অক্ষর পাঠাগার - সদস্য অনলাইন নিবন্ধন ফর্ম</h3>
-              <p className="text-[10px] text-[#8E8E93]">সকল তথ্য নির্ভুলভাবে বাংলায় পূরণ করার জন্য অনুরোধ করা হলো</p>
+              <p className="text-[10px] text-[#6B6B70]">সকল তথ্য নির্ভুলভাবে বাংলায় পূরণ করার জন্য অনুরোধ করা হলো</p>
             </div>
           </div>
           {!registeredMember && (
             <button 
               onClick={onClose}
-              className="p-1.5 text-[#8E8E93] hover:text-[#22242A] hover:bg-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-[#6B6B70] hover:text-[#22242A] hover:bg-white rounded-lg transition-colors cursor-pointer"
             >
               <X size={16} />
             </button>
@@ -307,14 +307,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               </div>
               <div className="space-y-2">
                 <h4 className="text-lg font-black text-[#22242A]">নিবন্ধন সফলভাবে সম্পন্ন হয়েছে!</h4>
-                <p className="text-xs text-[#8E8E93] leading-relaxed">
+                <p className="text-xs text-[#6B6B70] leading-relaxed">
                   অভিনন্দন <span className="font-bold text-[#22242A]">{registeredMember.name}</span>! অক্ষর পাঠাগারের সদস্য হিসেবে আপনার অনলাইন আবেদনটি ডাটাবেজে যুক্ত করা হয়েছে।
                 </p>
               </div>
 
               {/* Unique ID Display */}
               <div className="bg-white border border-[#E5E5EA] rounded-2xl p-5 space-y-3.5 shadow-inner">
-                <p className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-widest">আপনার মেম্বার ফরম নম্বর (লগইন আইডি)</p>
+                <p className="text-[10px] font-bold text-[#6B6B70] uppercase tracking-widest">আপনার মেম্বার ফরম নম্বর (লগইন আইডি)</p>
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-3xl font-black text-[#22242A] tracking-wider font-mono">
                     {registeredMember.formNumber}
@@ -358,7 +358,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     {photo ? (
                       <img src={photo} alt="Member preview" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="text-[#8E8E93] flex flex-col items-center gap-1">
+                      <div className="text-[#6B6B70] flex flex-col items-center gap-1">
                         <Camera size={20} />
                         <span className="text-[8px] font-bold">ছবি দিন</span>
                       </div>
@@ -366,7 +366,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
                   <div className="space-y-2 flex-1 w-full text-center sm:text-left">
                     <span className="text-[10px] font-bold text-[#22242A] block">সদস্যের ছবি আপলোড করুন</span>
-                    <p className="text-[9px] text-[#8E8E93] leading-normal">
+                    <p className="text-[9px] text-[#6B6B70] leading-normal">
                       লাইব্রেরি কার্ড ও সনদের জন্য আপনার পাসপোর্ট সাইজের ছবি দিন (ঐচ্ছিক)।
                     </p>
                     <div className="flex justify-center sm:justify-start gap-2">
@@ -396,7 +396,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">১. আবেদনকারীর পূর্ণ নাম (বাংলায়) *</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">১. আবেদনকারীর পূর্ণ নাম (বাংলায়) *</label>
                     <input
                       type="text"
                       required
@@ -408,7 +408,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">২. আবেদনকারীর নাম (ইংরেজিতে)</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">২. আবেদনকারীর নাম (ইংরেজিতে)</label>
                     <input
                       type="text"
                       value={nameEnglish}
@@ -421,7 +421,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">৩. পিতার নাম</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">৩. পিতার নাম</label>
                     <input
                       type="text"
                       value={fatherName}
@@ -432,7 +432,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">৪. মাতার নাম</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">৪. মাতার নাম</label>
                     <input
                       type="text"
                       value={motherName}
@@ -455,7 +455,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   <span className="text-[10px] font-black text-[#22242A]">৫. বর্তমান ঠিকানা:</span>
                   <div className="grid grid-cols-2 gap-3.5">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-[#8E8E93]">গ্রাম/মহল্লা:</label>
+                      <label className="text-[9px] font-bold text-[#6B6B70]">গ্রাম/মহল্লা:</label>
                       <input
                         type="text"
                         value={currVillage}
@@ -465,7 +465,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-[#8E8E93]">ডাকঘর:</label>
+                      <label className="text-[9px] font-bold text-[#6B6B70]">ডাকঘর:</label>
                       <input
                         type="text"
                         value={currPostOffice}
@@ -477,7 +477,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
                   <div className="grid grid-cols-2 gap-3.5">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-[#8E8E93]">উপজেলা:</label>
+                      <label className="text-[9px] font-bold text-[#6B6B70]">উপজেলা:</label>
                       <input
                         type="text"
                         value={currUpazila}
@@ -487,7 +487,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-[#8E8E93]">জেলা:</label>
+                      <label className="text-[9px] font-bold text-[#6B6B70]">জেলা:</label>
                       <input
                         type="text"
                         value={currDistrict}
@@ -519,7 +519,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     <span className="text-[10px] font-black text-[#22242A]">৬. স্থায়ী ঠিকানা:</span>
                     <div className="grid grid-cols-2 gap-3.5">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-[#8E8E93]">গ্রাম/মহল্লা:</label>
+                        <label className="text-[9px] font-bold text-[#6B6B70]">গ্রাম/মহল্লা:</label>
                         <input
                           type="text"
                           value={permVillage}
@@ -529,7 +529,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-[#8E8E93]">ডাকঘর:</label>
+                        <label className="text-[9px] font-bold text-[#6B6B70]">ডাকঘর:</label>
                         <input
                           type="text"
                           value={permPostOffice}
@@ -541,7 +541,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     </div>
                     <div className="grid grid-cols-2 gap-3.5">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-[#8E8E93]">উপজেলা:</label>
+                        <label className="text-[9px] font-bold text-[#6B6B70]">উপজেলা:</label>
                         <input
                           type="text"
                           value={permUpazila}
@@ -551,7 +551,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-[#8E8E93]">জেলা:</label>
+                        <label className="text-[9px] font-bold text-[#6B6B70]">জেলা:</label>
                         <input
                           type="text"
                           value={permDistrict}
@@ -573,7 +573,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">৭. জন্ম তারিখ *</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">৭. জন্ম তারিখ *</label>
                     <div className="relative">
                       <input
                         type="date"
@@ -586,7 +586,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">৮. মোবাইল নম্বর *</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">৮. মোবাইল নম্বর *</label>
                     <div className="relative">
                       <input
                         type="tel"
@@ -602,7 +602,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">৯. রক্তের গ্রুপ</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">৯. রক্তের গ্রুপ</label>
                     <select
                       value={bloodGroup}
                       onChange={(e) => setBloodGroup(e.target.value)}
@@ -621,7 +621,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">১০. জাতীয় পরিচয়পত্র নং / জন্ম নিবন্ধন নং</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">১০. জাতীয় পরিচয়পত্র নং / জন্ম নিবন্ধন নং</label>
                     <input
                       type="text"
                       value={nidBirthReg}
@@ -641,7 +641,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">১১. শিক্ষাগত যোগ্যতা</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">১১. শিক্ষাগত যোগ্যতা</label>
                     <input
                       type="text"
                       value={educationQualification}
@@ -652,7 +652,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">১২. পেশা</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">১২. পেশা</label>
                     <input
                       type="text"
                       value={profession}
@@ -664,10 +664,10 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </div>
 
                 <div className="p-3 bg-white rounded-xl border border-[#E5E5EA] space-y-3">
-                  <span className="text-[10px] font-black text-[#8E8E93]">শিক্ষার্থী হলে প্রতিষ্ঠান ও শ্রেণী বিবরণ (ঐচ্ছিক):</span>
+                  <span className="text-[10px] font-black text-[#6B6B70]">শিক্ষার্থী হলে প্রতিষ্ঠান ও শ্রেণী বিবরণ (ঐচ্ছিক):</span>
                   <div className="grid grid-cols-3 gap-2.5">
                     <div className="col-span-1.5 space-y-1">
-                      <label className="text-[8px] font-bold text-[#8E8E93]">শিক্ষা প্রতিষ্ঠান নাম:</label>
+                      <label className="text-[8px] font-bold text-[#6B6B70]">শিক্ষা প্রতিষ্ঠান নাম:</label>
                       <input
                         type="text"
                         value={educationInstitution}
@@ -677,7 +677,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       />
                     </div>
                     <div className="col-span-0.75 space-y-1">
-                      <label className="text-[8px] font-bold text-[#8E8E93]">শ্রেণী:</label>
+                      <label className="text-[8px] font-bold text-[#6B6B70]">শ্রেণী:</label>
                       <input
                         type="text"
                         value={className}
@@ -687,7 +687,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       />
                     </div>
                     <div className="col-span-0.75 space-y-1">
-                      <label className="text-[8px] font-bold text-[#8E8E93]">রোল:</label>
+                      <label className="text-[8px] font-bold text-[#6B6B70]">রোল:</label>
                       <input
                         type="text"
                         value={classRoll}
@@ -701,7 +701,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#8E8E93]">১৩. জাতীয়তা</label>
+                    <label className="text-[10px] font-bold text-[#6B6B70]">১৩. জাতীয়তা</label>
                     <input
                       type="text"
                       value={nationality}
@@ -756,7 +756,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-[#22242A]">১৪. পেমেন্ট মাধ্যম (Payment Method) *</label>
                     {dbPaymentMethods.length === 0 ? (
-                      <p className="text-[10px] text-[#8E8E93]">কোনো পেমেন্ট মাধ্যম পাওয়া যায়নি।</p>
+                      <p className="text-[10px] text-[#6B6B70]">কোনো পেমেন্ট মাধ্যম পাওয়া যায়নি।</p>
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {dbPaymentMethods.map((item) => {
@@ -784,7 +784,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   {paymentMethod && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 animate-in fade-in slide-in-from-top-1 duration-150">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#8E8E93]">যে নম্বর থেকে টাকা পাঠিয়েছেন *</label>
+                        <label className="text-[10px] font-bold text-[#6B6B70]">যে নম্বর থেকে টাকা পাঠিয়েছেন *</label>
                         <input
                           type="tel"
                           required
@@ -796,7 +796,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#8E8E93]">ট্রানজেকশন আইডি (TrxID) *</label>
+                        <label className="text-[10px] font-bold text-[#6B6B70]">ট্রানজেকশন আইডি (TrxID) *</label>
                         <input
                           type="text"
                           required
@@ -827,7 +827,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   type="button"
                   disabled={loading}
                   onClick={onClose}
-                  className="px-4 py-2.5 bg-[#F5F3EF] border border-[#E5E5EA] hover:bg-slate-850 text-[#8E8E93] hover:text-[#22242A] text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                  className="px-4 py-2.5 bg-[#F5F3EF] border border-[#E5E5EA] hover:bg-slate-850 text-[#6B6B70] hover:text-[#22242A] text-xs font-bold rounded-xl transition-colors cursor-pointer"
                 >
                   বাতিল
                 </button>

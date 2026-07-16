@@ -121,7 +121,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">৬. নোটপ্যাড ও গুরুত্বপূর্ণ স্মারকসমূহ</h2>
-          <p className="text-xs text-[#8E8E93]">পাঠাগার পরিচালনার সুবিধার্থে যেকোনো প্রয়োজনীয় নোটিশ, সভার আলোচনা বা করণীয় তালিকা লিখে রাখুন</p>
+          <p className="text-xs text-[#6B6B70]">পাঠাগার পরিচালনার সুবিধার্থে যেকোনো প্রয়োজনীয় নোটিশ, সভার আলোচনা বা করণীয় তালিকা লিখে রাখুন</p>
         </div>
         <button
           onClick={() => {
@@ -142,7 +142,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
         {/* Left pane: search and notes list */}
         <div className="col-span-1 md:col-span-4  p-4 rounded-xl border border-[#E5E5EA] space-y-4 max-h-[85vh] flex flex-col">
           <div className="relative shrink-0">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" />
             <input
               type="text"
               value={searchQ}
@@ -154,9 +154,9 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
 
           <div className="overflow-y-auto flex-1 space-y-2 pr-1">
             {loading ? (
-              <p className="text-center text-xs text-[#8E8E93] py-6">লোড হচ্ছে...</p>
+              <p className="text-center text-xs text-[#6B6B70] py-6">লোড হচ্ছে...</p>
             ) : filteredNotes.length === 0 ? (
-              <p className="text-center text-xs text-[#8E8E93] py-6 font-mono">নোট খালি।</p>
+              <p className="text-center text-xs text-[#6B6B70] py-6 font-mono">নোট খালি।</p>
             ) : (
               filteredNotes.map((note) => {
                 const isSelected = activeNote && activeNote.id === note.id;
@@ -167,8 +167,8 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-100 ${isSelected ? "bg-[#F5F3EF] border-[#E5E5EA]" : "bg-[#F5F3EF] border-[#E5E5EA] hover:border-[#E5E5EA]"}`}
                   >
                     <h4 className="font-bold text-[#22242A] text-xs sm:text-sm truncate">{note.title}</h4>
-                    <p className="text-[#8E8E93] text-[10px] truncate mt-1">{note.content || "(ফ্রি টেক্সট নোটপ্যাড)"}</p>
-                    <p className="text-[9px] text-[#8E8E93] font-mono text-right mt-1.5">{note.updatedAt.split(" ")[0]}</p>
+                    <p className="text-[#6B6B70] text-[10px] truncate mt-1">{note.content || "(ফ্রি টেক্সট নোটপ্যাড)"}</p>
+                    <p className="text-[9px] text-[#6B6B70] font-mono text-right mt-1.5">{note.updatedAt.split(" ")[0]}</p>
                   </div>
                 );
               })
@@ -180,7 +180,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
         <div className="col-span-1 md:col-span-8  p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between min-h-[50vh]">
           
           {!activeNote ? (
-            <div className="py-24 text-center text-[#8E8E93] text-xs flex-1">
+            <div className="py-24 text-center text-[#6B6B70] text-xs flex-1">
               ডানদিকের প্যানেলে নোট সম্পাদনা করতে বাম পাশের স্মারক তালিকায় ক্লিক করুন।
             </div>
           ) : (
@@ -231,7 +231,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-[10px] text-[#8E8E93] border-t border-[#E5E5EA] pt-3 shrink-0">
+              <div className="flex justify-between items-center text-[10px] text-[#6B6B70] border-t border-[#E5E5EA] pt-3 shrink-0">
                 <span>শেষ পরিবর্তন: {activeNote.updatedAt}</span>
                 <button
                   type="button"
@@ -268,7 +268,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">নোটের প্রধান শিরোনাম *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">নোটের প্রধান শিরোনাম *</label>
                 <input
                   type="text"
                   value={newTitle}
@@ -280,7 +280,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বিস্তারিত বিবরণ লিখুন (বাংলা ইউনিকোড)</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বিস্তারিত বিবরণ লিখুন (বাংলা ইউনিকোড)</label>
                 <textarea
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
@@ -293,7 +293,7 @@ export default function Notepad({ onPreviewNote }: NotepadProps) {
                 <button
                   type="button"
                   onClick={() => setIsNewOpen(false)}
-                  className="px-4 py-2 bg-[#F5F3EF] border text-[#8E8E93] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 bg-[#F5F3EF] border text-[#6B6B70] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
                 >
                   বাতিল
                 </button>

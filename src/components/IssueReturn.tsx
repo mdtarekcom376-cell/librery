@@ -209,7 +209,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "issue" ? "border-[#E5E5EA] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#8E8E93] hover:text-[#22242A]"}`}
+          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "issue" ? "border-[#E5E5EA] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
         >
           <BookOpen size={16} />
           বই ইস্যু করুন (Checkout)
@@ -221,7 +221,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "return" ? "border-[#22242A] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#8E8E93] hover:text-[#22242A]"}`}
+          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "return" ? "border-[#22242A] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
         >
           <CheckCircle2 size={16} />
           বই রিটার্ন গ্রহণ (Checkin)
@@ -233,7 +233,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "time" ? "border-[#E5E5EA] text-[#FACC15] bg-[#F5F3EF]" : "border-transparent text-[#8E8E93] hover:text-[#22242A]"}`}
+          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "time" ? "border-[#E5E5EA] text-[#FACC15] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
         >
           <ArrowRightLeft size={16} />
           সময় বৃদ্ধি ও হ্রাস (Time Offset)
@@ -261,7 +261,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* 1. Borrower Customer Information */}
-            <div className=" p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
+            <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
               <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
                 <UserCheck size={16} className="text-[#22242A]" />
                 গ্রাহক সদস্যের তথ্যাদি
@@ -269,7 +269,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
               {/* Form text input with dynamic AutoSuggest overlay */}
               <div className="relative">
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">সদস্যের নাম বা ফরম নাম্বার লিখুন *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">সদস্যের নাম বা ফরম নাম্বার লিখুন *</label>
                 <input
                   type="text"
                   value={issueMemName}
@@ -294,7 +294,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                       >
                         <div>
                           <p className="font-bold text-[#22242A]">{mem.name}</p>
-                          <p className="text-[10px] text-[#8E8E93]">মোবাইল: {mem.mobile}</p>
+                          <p className="text-[10px] text-[#6B6B70]">মোবাইল: {mem.mobile}</p>
                         </div>
                         <span className="font-mono text-[#22242A] font-semibold text-[10px] bg-[#F5F3EF] px-1.5 py-0.5 rounded">
                           #{mem.formNumber}
@@ -310,7 +310,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">সদস্য ফরম নাম্বার (ID) *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">সদস্য ফরম নাম্বার (ID) *</label>
                   <input
                     type="text"
                     value={issueMemForm}
@@ -324,7 +324,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">মোবাইল নম্বর *</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">মোবাইল নম্বর *</label>
                   <input
                     type="text"
                     value={issueMemMobile}
@@ -337,7 +337,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">গ্রাহকের ঠিকানা</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">গ্রাহকের ঠিকানা</label>
                 <input
                   type="text"
                   value={issueMemAddress}
@@ -350,7 +350,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             </div>
 
             {/* 2. Target Book Information to issue */}
-            <div className=" p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
+            <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
               <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
                 <BookOpen size={16} className="text-[#22242A]" />
                 বইয়ের কোড ও বিবরণ
@@ -358,7 +358,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
               {/* Book search input with AutoSuggest */}
               <div className="relative">
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বই কোড বা নাম লিখুন *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বই কোড বা নাম লিখুন *</label>
                 <input
                   type="text"
                   value={issueBookCode}
@@ -383,10 +383,10 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                       >
                         <div className="min-w-0 pr-2">
                           <p className="font-bold text-[#22242A] truncate text-xs">{book.name}</p>
-                          <p className="text-[10px] text-[#8E8E93] truncate">{book.author}</p>
+                          <p className="text-[10px] text-[#6B6B70] truncate">{book.author}</p>
                         </div>
                         <span className={`shrink-0 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded ${book.status === "Available" ? "bg-[#F5F3EF] text-[#22242A]" : "bg-[#F5F3EF] text-[#FF6B6B]"}`}>
-                          {book.code} ({book.status === "Available" ? "Avail" : "Issued"})
+                          {book.code} ({book.status === "Available" ? "উপলব্ধ" : "ধারকৃত"})
                         </span>
                       </div>
                     ))}
@@ -395,7 +395,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বইয়ের নাম *</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বইয়ের নাম *</label>
                 <input
                   type="text"
                   value={issueBookName}
@@ -408,7 +408,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">লেখক</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">লেখক</label>
                   <input
                     type="text"
                     value={issueBookAuthor}
@@ -418,7 +418,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">প্রকাশনী</label>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">প্রকাশনী</label>
                   <input
                     type="text"
                     value={issueBookPublisher}
@@ -433,7 +433,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
           </div>
 
           {/* 3. Date settings and submit */}
-          <div className=" p-5 rounded-2xl border border-[#E5E5EA]">
+          <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA]">
             <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 mb-4 border-b border-[#E5E5EA] pb-2">
               <CalendarDays size={16} className="text-[#22242A]" />
               বই ফেরত দেওয়ার সময়সীমা নির্ধারণ (Time Offset & Return Date)
@@ -441,7 +441,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1.5">ফেরত লিজ সময় কোটা দিন</label>
+                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">ফেরত লিজ সময় কোটা দিন</label>
                 <div className="grid grid-cols-5 gap-1.5">
                   {["1", "2", "7", "10", "manual"].map((opt) => (
                     <button
@@ -469,7 +469,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                   />
                 </div>
               ) : (
-                <div className="text-xs text-[#8E8E93] py-2">
+                <div className="text-xs text-[#6B6B70] py-2">
                   ফেরত প্রদানের শেষ তারিখটি আজ থেকে হিসাব করে সিস্টেমের ডাটাবেইজে স্বয়ংক্রিয় শিডিউলে সংযুক্ত হবে।
                 </div>
               )}
@@ -495,14 +495,14 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
       {/* --- FORM SUBTAB B: RETURN BOOK --- */}
       {activeSubTab === "return" && (
-        <form onSubmit={handleReturnSubmit} className=" p-6 rounded-2xl border border-[#E5E5EA] max-w-xl mx-auto space-y-4">
+        <form onSubmit={handleReturnSubmit} className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] max-w-xl mx-auto space-y-4">
           <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
             <CheckCircle2 size={18} className="text-[#22242A]" />
             বই লাইব্রেরিতে ফেরত গ্রহণ ও রিসেট প্যানেল
           </h3>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">বই কোড স্ক্যান অথবা কী-ইন করুন *</label>
+            <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বই কোড স্ক্যান অথবা কী-ইন করুন *</label>
             <input
               type="text"
               value={returnBookCode}
@@ -514,7 +514,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">ফেরত গ্রহণের সময় মন্তব্য / ক্ষতির বিবরণী (ঐচ্ছিক)</label>
+            <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">ফেরত গ্রহণের সময় মন্তব্য / ক্ষতির বিবরণী (ঐচ্ছিক)</label>
             <textarea
               value={returnComments}
               onChange={(e) => setReturnComments(e.target.value)}
@@ -538,14 +538,14 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
       {/* --- FORM SUBTAB C: TIME EXTENSION/REDUCTION --- */}
       {activeSubTab === "time" && (
-        <form onSubmit={handleTimeSubmit} className=" p-6 rounded-2xl border border-[#E5E5EA] max-w-xl mx-auto space-y-4">
+        <form onSubmit={handleTimeSubmit} className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] max-w-xl mx-auto space-y-4">
           <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
             <Clock size={18} className="text-[#FACC15]" />
             সময়সীমা প্রলম্বিত করা অথবা হ্রাসকরণ (Return Line Extend/Reduce)
           </h3>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1">চলমান ইস্যুকৃত ধার স্লিপ সিলেক্ট করুন *</label>
+            <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">চলমান ইস্যুকৃত ধার স্লিপ সিলেক্ট করুন *</label>
             {activeIssues.length === 0 ? (
               <p className="text-xs text-[#22242A] py-3 block">বর্তমানে কোনো বই ধারকৃত বা Issued হিসেবে সচল নাই।</p>
             ) : (
@@ -567,7 +567,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1.5">কোন একশনটি নিবেন?</label>
+              <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">কোন একশনটি নিবেন?</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -587,7 +587,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase font-bold text-[#8E8E93] mb-1.5">কত দিন পরিবর্তন করবেন? *</label>
+              <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">কত দিন পরিবর্তন করবেন? *</label>
               <input
                 type="number"
                 value={timeDays}

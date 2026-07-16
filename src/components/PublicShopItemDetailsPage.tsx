@@ -138,7 +138,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
 
             {/* Description */}
             <div className="mb-8 flex-1">
-              <h3 className="text-sm font-bold text-[#8E8E93] uppercase tracking-wider mb-3">পণ্যের বিবরণ</h3>
+              <h3 className="text-sm font-bold text-[#6B6B70] uppercase tracking-wider mb-3">পণ্যের বিবরণ</h3>
               <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap bg-slate-50 p-5 rounded-xl border border-[#E5E5EA]">
                 {item.description || "এই পণ্যের কোনো বিবরণ যুক্ত করা হয়নি।"}
               </p>
@@ -161,7 +161,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
 
       {/* Footer */}
       <footer className="border-t py-6 px-4 text-center bg-slate-50 border-[#E5E5EA] mt-auto">
-        <p className="text-xs text-[#8E8E93] font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
+        <p className="text-xs text-[#6B6B70] font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
           © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
         </p>
         <button

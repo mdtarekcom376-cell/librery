@@ -66,7 +66,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg sm:text-xl font-bold">📢 নটিশ বোর্ড ম্যানেজমেন্ট</h2>
-          <p className="text-xs text-[#8E8E93] mt-1">নতুন নটিশ প্রকাশ করুন — তাৎক্ষণিকভাবে পাবলিক পেজে দেখা যাবে</p>
+          <p className="text-xs text-[#6B6B70] mt-1">নতুন নটিশ প্রকাশ করুন — তাৎক্ষণিকভাবে পাবলিক পেজে দেখা যাবে</p>
         </div>
         <button
           onClick={loadNotices}
@@ -85,7 +85,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
         </div>
 
         <div>
-          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5">বিষয় (Subject)</label>
+          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5">বিষয় (Subject)</label>
           <input
             type="text"
             value={subject}
@@ -97,7 +97,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
         </div>
 
         <div>
-          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#8E8E93] mb-1.5">বিস্তারিত (Details)</label>
+          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5">বিস্তারিত (Details)</label>
           <textarea
             value={content}
             onChange={e => setContent(e.target.value)}
@@ -132,12 +132,12 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
 
         {loading ? (
           <div className="text-center py-12">
-            <RefreshCw size={24} className="animate-spin text-[#8E8E93] mx-auto" />
-            <p className="text-xs text-[#8E8E93] mt-2">লোড হচ্ছে...</p>
+            <RefreshCw size={24} className="animate-spin text-[#6B6B70] mx-auto" />
+            <p className="text-xs text-[#6B6B70] mt-2">লোড হচ্ছে...</p>
           </div>
         ) : notices.length === 0 ? (
           <div className="text-center py-12 bg-white/[0.02] border border-[#E5E5EA] rounded-2xl">
-            <p className="text-sm text-[#8E8E93]">কোনো নটিশ প্রকাশিত হয়নি</p>
+            <p className="text-sm text-[#6B6B70]">কোনো নটিশ প্রকাশিত হয়নি</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -149,7 +149,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-sm mb-1">{notice.subject}</h4>
-                    <div className="flex items-center gap-1.5 text-[10px] text-[#8E8E93] mb-3">
+                    <div className="flex items-center gap-1.5 text-[10px] text-[#6B6B70] mb-3">
                       <Calendar size={10} />
                       {notice.createdAt}
                     </div>
@@ -160,7 +160,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
                   <button
                     onClick={() => handleDelete(notice.id)}
                     disabled={deleteLoading === notice.id}
-                    className="flex-shrink-0 p-2 text-[#8E8E93] hover:text-[#FF6B6B] hover:bg-[#F5F3EF] rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                    className="flex-shrink-0 p-2 text-[#6B6B70] hover:text-[#FF6B6B] hover:bg-[#F5F3EF] rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                     title="মুছুন"
                   >
                     <Trash2 size={15} />

@@ -285,26 +285,26 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
               </div>
               <div className="flex-1 space-y-3">
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-[#8E8E93] text-sm">বই কোড</span>
+                  <span className="font-semibold text-[#6B6B70] text-sm">বই কোড</span>
                   <span className="col-span-2 font-mono font-semibold text-[#22242A] text-base">{data.code}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-[#8E8E93] text-sm">বইয়ের নাম</span>
+                  <span className="font-semibold text-[#6B6B70] text-sm">বইয়ের নাম</span>
                   <span className="col-span-2 font-bold text-[#22242A]">{data.name}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-[#8E8E93] text-sm">লেখক</span>
+                  <span className="font-semibold text-[#6B6B70] text-sm">লেখক</span>
                   <span className="col-span-2 text-[#22242A]">{data.author}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-[#8E8E93] text-sm">প্রকাশনা</span>
+                  <span className="font-semibold text-[#6B6B70] text-sm">প্রকাশনা</span>
                   <span className="col-span-2 text-[#22242A]">{data.publisher}</span>
                 </div>
                 <div className="grid grid-cols-3 border-b border-dashed pb-2">
-                  <span className="font-semibold text-[#8E8E93] text-sm">বর্তমান স্ট্যাটাস</span>
+                  <span className="font-semibold text-[#6B6B70] text-sm">বর্তমান স্ট্যাটাস</span>
                   <span className="col-span-2">
                     <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Available" ? "bg-[#F5F3EF] text-[#22242A]" : "bg-[#F5F3EF] text-[#FF6B6B]"}`}>
-                      {data.status === "Available" ? "Available" : "Issued"}
+                      {data.status === "Available" ? "উপলব্ধ" : "ধারকৃত"}
                     </span>
                   </span>
                 </div>
@@ -319,34 +319,34 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
             <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2">গ্রাহক সদস্য কার্ড</h2>
             <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg">
               <div>
-                <p className="text-xs text-[#8E8E93] font-semibold">সদস্যের নাম</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">সদস্যের নাম</p>
                 <p className="text-base font-bold text-[#22242A]">{data.member.name}</p>
               </div>
               <div>
-                <p className="text-xs text-[#8E8E93] font-semibold">ফরম নম্বর (ID)</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">ফরম নম্বর (ID)</p>
                 <p className="text-base font-bold text-[#22242A] font-mono">#{data.member.formNumber}</p>
               </div>
               <div>
-                <p className="text-xs text-[#8E8E93] font-semibold">মোবাইল নম্বর</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">মোবাইল নম্বর</p>
                 <p className="text-sm text-[#22242A] font-mono">{data.member.mobile}</p>
               </div>
               <div>
-                <p className="text-xs text-[#8E8E93] font-semibold">জন্ম তারিখ</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">জন্ম তারিখ</p>
                 <p className="text-sm text-[#22242A] font-mono">{data.member.dob || "—"}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-xs text-[#8E8E93] font-semibold">ঠিকানা</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">ঠিকানা</p>
                 <p className="text-sm text-[#22242A]">{data.member.address || "—"}</p>
               </div>
               {data.member.educationInstitution && (
                 <div>
-                  <p className="text-xs text-[#8E8E93] font-semibold">শিক্ষা প্রতিষ্ঠান</p>
+                  <p className="text-xs text-[#6B6B70] font-semibold">শিক্ষা প্রতিষ্ঠান</p>
                   <p className="text-sm text-[#22242A]">{data.member.educationInstitution}</p>
                 </div>
               )}
               {(data.member.className || data.member.classRoll) && (
                 <div>
-                  <p className="text-xs text-[#8E8E93] font-semibold">শ্রেণী ও রোল</p>
+                  <p className="text-xs text-[#6B6B70] font-semibold">শ্রেণী ও রোল</p>
                   <p className="text-sm text-[#22242A]">
                     {data.member.className ? `শ্রেণী: ${data.member.className}` : ""}
                     {data.member.className && data.member.classRoll ? " | " : ""}
@@ -373,7 +373,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
                 <div>
                   <h4 className="text-xs font-bold text-[#22242A] mb-1">ফেরত নেওয়া বইয়ের ইতিহাস ({data.returnedHistory?.length})</h4>
                   {data.returnedHistory?.length === 0 ? (
-                    <p className="text-xs text-[#8E8E93]">ইতিপূর্বে কোনো বই ফেরত দেওয়ার হিস্ট্রি নেই।</p>
+                    <p className="text-xs text-[#6B6B70]">ইতিপূর্বে কোনো বই ফেরত দেওয়ার হিস্ট্রি নেই।</p>
                   ) : (
                     data.returnedHistory.map((r: any) => (
                       <div key={r.id} className="text-xs bg-slate-50 text-slate-700 p-2 rounded mb-1 border">
@@ -395,32 +395,32 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
             
             <div className="border border-dashed border-[#E5E5EA] p-4 space-y-3 bg-[#F5F3EF] rounded-lg">
               <div className="grid grid-cols-2 gap-y-2 text-sm">
-                <div><span className="font-semibold text-[#8E8E93]">লেনদেন আইডি:</span> <span className="font-mono text-xs">{data.id}</span></div>
-                <div className="text-right"><span className="font-semibold text-[#8E8E93]">অবস্থা:</span> <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Issued" ? "bg-[#F5F3EF] text-[#FF6B6B]" : "bg-[#F5F3EF] text-[#22242A]"}`}>{data.status === "Issued" ? "Issued (চলমান)" : "Returned (ফেরত)"}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">লেনদেন আইডি:</span> <span className="font-mono text-xs">{data.id}</span></div>
+                <div className="text-right"><span className="font-semibold text-[#6B6B70]">অবস্থা:</span> <span className={`px-2 py-0.5 rounded text-xs font-semibold ${data.status === "Issued" ? "bg-[#F5F3EF] text-[#FF6B6B]" : "bg-[#F5F3EF] text-[#22242A]"}`}>{data.status === "Issued" ? "ধারকৃত (চলমান)" : "ফেরত"}</span></div>
                 
                 <div className="col-span-2 border-t border-[#E5E5EA] my-2"></div>
                 
                 <div className="col-span-2 font-bold text-[#22242A] border-b pb-1">বইয়ের তথ্য</div>
-                <div><span className="font-semibold text-[#8E8E93]">বই কোড:</span> <span className="font-mono text-[#22242A]">{data.bookCode}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">বইয়ের নাম:</span> <span className="font-bold">{data.bookName}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">লেখক:</span> <span>{data.author || "-"}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">প্রকাশক:</span> <span>{data.publisher || "-"}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">বই কোড:</span> <span className="font-mono text-[#22242A]">{data.bookCode}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">বইয়ের নাম:</span> <span className="font-bold">{data.bookName}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">লেখক:</span> <span>{data.author || "-"}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">প্রকাশক:</span> <span>{data.publisher || "-"}</span></div>
 
                 <div className="col-span-2 border-t border-[#E5E5EA] my-2"></div>
                 
                 <div className="col-span-2 font-bold text-[#22242A] border-b pb-1">সদস্যের তথ্য</div>
-                <div><span className="font-semibold text-[#8E8E93]">সদস্যের নাম:</span> <span className="font-bold">{data.memberName}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">ফরম নম্বর (ID):</span> <span className="font-mono text-[#22242A]">#{data.formNumber}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">মোবাইল:</span> <span className="font-mono">{data.mobile}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">ঠিকানা:</span> <span>{data.address || "-"}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">সদস্যের নাম:</span> <span className="font-bold">{data.memberName}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">ফরম নম্বর (ID):</span> <span className="font-mono text-[#22242A]">#{data.formNumber}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">মোবাইল:</span> <span className="font-mono">{data.mobile}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">ঠিকানা:</span> <span>{data.address || "-"}</span></div>
 
                 <div className="col-span-2 border-t border-[#E5E5EA] my-2"></div>
                 
                 <div className="col-span-2 font-bold text-[#22242A] border-b pb-1 font-mono">সময়সীমা</div>
-                <div><span className="font-semibold text-[#8E8E93]">ইস্যু ডেট:</span> <span className="font-bold font-mono text-[#22242A]">{data.issueDate}</span></div>
-                <div><span className="font-semibold text-[#8E8E93]">ফেরত শেষ দিন:</span> <span className="font-bold font-mono text-[#FF6B6B]">{data.returnDate}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">ইস্যু ডেট:</span> <span className="font-bold font-mono text-[#22242A]">{data.issueDate}</span></div>
+                <div><span className="font-semibold text-[#6B6B70]">ফেরত শেষ দিন:</span> <span className="font-bold font-mono text-[#FF6B6B]">{data.returnDate}</span></div>
                 {data.returnedAt && (
-                  <div><span className="font-semibold text-[#8E8E93]">আসল ফেরত দিন:</span> <span className="font-bold font-mono text-[#22242A]">{data.returnedAt}</span></div>
+                  <div><span className="font-semibold text-[#6B6B70]">আসল ফেরত দিন:</span> <span className="font-bold font-mono text-[#22242A]">{data.returnedAt}</span></div>
                 )}
               </div>
 
@@ -451,24 +451,24 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
             <h2 className="text-xl font-bold border-b border-[#E5E5EA] pb-2">উইশলিস্ট বই স্লিপ</h2>
             <div className="border p-4 bg-[#F5F3EF] rounded-lg space-y-3">
               <div>
-                <p className="text-xs text-[#8E8E93] font-semibold">বইয়ের নাম (ইচ্ছাতালিকা)</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">বইয়ের নাম (ইচ্ছাতালিকা)</p>
                 <p className="text-lg font-bold text-[#22242A]">{data.name}</p>
               </div>
               {data.author && (
                 <div>
-                  <p className="text-xs text-[#8E8E93] font-semibold">লেখক</p>
+                  <p className="text-xs text-[#6B6B70] font-semibold">লেখক</p>
                   <p className="text-sm font-semibold">{data.author}</p>
                 </div>
               )}
               {data.publisher && (
                 <div>
-                  <p className="text-xs text-[#8E8E93] font-semibold">প্রকাশনা</p>
+                  <p className="text-xs text-[#6B6B70] font-semibold">প্রকাশনা</p>
                   <p className="text-sm">{data.publisher}</p>
                 </div>
               )}
               <div>
-                <p className="text-xs text-[#8E8E93] font-semibold">সংরক্ষণের তারিখ</p>
-                <p className="text-xs font-mono text-[#8E8E93]">{data.createdAt}</p>
+                <p className="text-xs text-[#6B6B70] font-semibold">সংরক্ষণের তারিখ</p>
+                <p className="text-xs font-mono text-[#6B6B70]">{data.createdAt}</p>
               </div>
             </div>
           </div>
@@ -481,7 +481,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
             <div className="border p-4 bg-[#F5F3EF]/50 rounded-lg whitespace-pre-wrap text-sm leading-relaxed text-[#22242A] font-sans border-[#E5E5EA]">
               {data.content}
             </div>
-            <div className="text-right text-xs text-[#8E8E93]">
+            <div className="text-right text-xs text-[#6B6B70]">
               নতুন সংস্করণ: {data.updatedAt || data.createdAt}
             </div>
           </div>
@@ -540,10 +540,10 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
                     <td className="border border-[#E5E5EA] p-2.5 font-mono font-bold text-[#22242A]">{item.code}</td>
                     <td className="border border-[#E5E5EA] p-2.5 font-bold text-[#22242A]">{item.name}</td>
                     <td className="border border-[#E5E5EA] p-2.5 text-slate-700">{item.author}</td>
-                    <td className="border border-[#E5E5EA] p-2.5 text-[#8E8E93]">{item.publisher || "অজ্ঞাত"}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 text-[#6B6B70]">{item.publisher || "অজ্ঞাত"}</td>
                     <td className="border border-[#E5E5EA] p-2.5 text-center">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold inline-block ${item.status === "Available" ? "badge-success" : "badge-danger"}`}>
-                        {item.status === "Available" ? "মজুদ আছে" : "ধারকৃত (Issued)"}
+                        {item.status === "Available" ? "উপলব্ধ" : "ধারকৃত"}
                       </span>
                     </td>
                   </tr>
@@ -582,7 +582,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
                     <td className="border border-[#E5E5EA] p-2.5 font-bold text-[#22242A]">{item.name}</td>
                     <td className="border border-[#E5E5EA] p-2.5 font-mono text-slate-700">{item.dob || "—"}</td>
                     <td className="border border-[#E5E5EA] p-2.5 font-mono text-slate-700">{item.mobile}</td>
-                    <td className="border border-[#E5E5EA] p-2.5 text-[#8E8E93]">{item.address || "অজ্ঞাত ঠিকানা"}</td>
+                    <td className="border border-[#E5E5EA] p-2.5 text-[#6B6B70]">{item.address || "অজ্ঞাত ঠিকানা"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -318,7 +318,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">৪. সদস্য ব্যবস্থাপনা (Member Management)</h2>
-          <p className="text-xs text-[#8E8E93]">লাইব্রেরিতে পাঠক সদস্য যোগ করুন এবং সদস্য আইডি অনুযায়ী বিস্তারিত ব্যবহারের ইতিহাস অডিট করুন</p>
+          <p className="text-xs text-[#6B6B70]">লাইব্রেরিতে পাঠক সদস্য যোগ করুন এবং সদস্য আইডি অনুযায়ী বিস্তারিত ব্যবহারের ইতিহাস অডিট করুন</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button
@@ -354,7 +354,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
         <div className="col-span-1 lg:col-span-5  p-4 rounded-2xl border border-[#E5E5EA] space-y-4 max-h-[80vh] flex flex-col">
           
           <div className="relative shrink-0">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" />
             <input
               type="text"
               value={searchQuery}
@@ -372,7 +372,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "all"
                   ? "bg-[#F5F3EF] text-white shadow-sm"
-                  : "text-[#8E8E93] hover:text-[#22242A]"
+                  : "text-[#6B6B70] hover:text-[#22242A]"
               }`}
             >
               সকল ({members.length})
@@ -383,7 +383,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer relative ${
                 statusFilter === "Pending"
                   ? "bg-[#F5F3EF] text-white shadow-sm"
-                  : "text-[#8E8E93] hover:text-[#FACC15]"
+                  : "text-[#6B6B70] hover:text-[#FACC15]"
               }`}
             >
               যাচাইাধীন ({members.filter(m => m.paymentStatus === "Pending").length})
@@ -397,7 +397,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Paid"
                   ? "bg-[#F5F3EF] text-white shadow-sm"
-                  : "text-[#8E8E93] hover:text-[#22242A]"
+                  : "text-[#6B6B70] hover:text-[#22242A]"
               }`}
             >
               সক্রিয় ({members.filter(m => (m.paymentStatus || "Paid") === "Paid").length})
@@ -408,7 +408,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Unpaid"
                   ? "bg-[#F5F3EF] text-white shadow-sm"
-                  : "text-[#8E8E93] hover:text-[#FF6B6B]"
+                  : "text-[#6B6B70] hover:text-[#FF6B6B]"
               }`}
             >
               বাতিল ({members.filter(m => m.paymentStatus === "Unpaid").length})
@@ -417,9 +417,9 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
           <div className="overflow-y-auto flex-1 space-y-2 pr-1">
             {loading ? (
-              <p className="text-center text-xs text-[#8E8E93] py-6">তালিকা লোড হচ্ছে...</p>
+              <p className="text-center text-xs text-[#6B6B70] py-6">তালিকা লোড হচ্ছে...</p>
             ) : filteredList.length === 0 ? (
-              <p className="text-center text-xs text-[#8E8E93] py-6">কোনো সদস্য নিবন্ধিত পাওয়া যায়নি।</p>
+              <p className="text-center text-xs text-[#6B6B70] py-6">কোনো সদস্য নিবন্ধিত পাওয়া যায়নি।</p>
             ) : (
               filteredList.map((m) => {
                 const isActive = activeProfile && activeProfile.member.formNumber === m.formNumber;
@@ -435,7 +435,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         #{m.formNumber}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-[10px] text-[#8E8E93] mt-1">
+                    <div className="flex justify-between items-center text-[10px] text-[#6B6B70] mt-1">
                       <div className="flex items-center gap-1.5">
                         <span className="font-mono">{m.mobile}</span>
                         {(m.paymentMethod || m.paymentStatus) && (
@@ -469,10 +469,10 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
           {profileLoading ? (
             <div className="py-24 flex flex-col items-center justify-center flex-1">
               <RefreshCw className="animate-spin text-[#22242A] mb-2" size={24} />
-              <p className="text-xs text-[#8E8E93]">প্রোফাইল লোড হচ্ছে...</p>
+              <p className="text-xs text-[#6B6B70]">প্রোফাইল লোড হচ্ছে...</p>
             </div>
           ) : !activeProfile ? (
-            <div className="py-24 text-center text-[#8E8E93] text-xs flex-1">
+            <div className="py-24 text-center text-[#6B6B70] text-xs flex-1">
               বিস্তারিত ব্যবহারের রেকর্ড এবং ব্যবহারের চক্রসমূহ দেখতে বামে সদস্য তালিকায় ক্লিক করুন।
             </div>
           ) : (
@@ -490,29 +490,29 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     <div>
                       <h3 className="text-lg font-bold text-[#22242A] flex items-center gap-1.5 flex-wrap">
                         {activeProfile.member.name}
-                        {activeProfile.member.nameEnglish && <span className="text-xs font-normal text-[#8E8E93] block font-mono mt-0.5">({activeProfile.member.nameEnglish})</span>}
+                        {activeProfile.member.nameEnglish && <span className="text-xs font-normal text-[#6B6B70] block font-mono mt-0.5">({activeProfile.member.nameEnglish})</span>}
                       </h3>
                       
                       {activeProfile.member.currVillage ? (
-                        <div className="text-[10px] text-[#8E8E93] mt-1 space-y-0.5">
+                        <div className="text-[10px] text-[#6B6B70] mt-1 space-y-0.5">
                           <p className="flex items-center gap-1">
                             <MapPin size={11} className="text-[#22242A] shrink-0" />
-                            <span className="text-[#8E8E93]">বর্তমান:</span> {activeProfile.member.currVillage}, ডাকঘর: {activeProfile.member.currPostOffice}, উপজেলা: {activeProfile.member.currUpazila}, জেলা: {activeProfile.member.currDistrict}
+                            <span className="text-[#6B6B70]">বর্তমান:</span> {activeProfile.member.currVillage}, ডাকঘর: {activeProfile.member.currPostOffice}, উপজেলা: {activeProfile.member.currUpazila}, জেলা: {activeProfile.member.currDistrict}
                           </p>
                           <p className="flex items-center gap-1">
                             <MapPin size={11} className="text-[#22242A] shrink-0" />
-                            <span className="text-[#8E8E93]">স্থায়ী:</span> {activeProfile.member.permVillage}, ডাকঘর: {activeProfile.member.permPostOffice}, উপজেলা: {activeProfile.member.permUpazila}, জেলা: {activeProfile.member.permDistrict}
+                            <span className="text-[#6B6B70]">স্থায়ী:</span> {activeProfile.member.permVillage}, ডাকঘর: {activeProfile.member.permPostOffice}, উপজেলা: {activeProfile.member.permUpazila}, জেলা: {activeProfile.member.permDistrict}
                           </p>
                         </div>
                       ) : (
-                        <p className="text-[10px] text-[#8E8E93] mt-0.5 flex items-center gap-1">
+                        <p className="text-[10px] text-[#6B6B70] mt-0.5 flex items-center gap-1">
                           <MapPin size={11} className="text-[#22242A] shrink-0" />
                           ঠিকানা: {activeProfile.member.address}
                         </p>
                       )}
 
                       {activeProfile.member.dob && (
-                        <p className="text-[10px] text-[#8E8E93] mt-1 flex items-center gap-1">
+                        <p className="text-[10px] text-[#6B6B70] mt-1 flex items-center gap-1">
                           📅 জন্ম তারিখ: {activeProfile.member.dob}
                         </p>
                       )}
@@ -520,7 +520,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-[11px] font-bold font-mono text-[#22242A]">ID: #{activeProfile.member.formNumber}</p>
-                    <p className="text-[10px] text-[#8E8E93] mt-0.5 flex items-center justify-end gap-1 font-mono">
+                    <p className="text-[10px] text-[#6B6B70] mt-0.5 flex items-center justify-end gap-1 font-mono">
                       <Phone size={10} className="text-[#22242A] shrink-0" />
                       {activeProfile.member.mobile}
                     </p>
@@ -551,37 +551,37 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[10px] bg-[#070b16]/60 p-2.5 rounded-lg border border-[#E5E5EA]">
                       {activeProfile.member.fatherName && (
                         <div>
-                          <span className="text-[#8E8E93]">পিতার নাম:</span>
+                          <span className="text-[#6B6B70]">পিতার নাম:</span>
                           <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.fatherName}</p>
                         </div>
                       )}
                       {activeProfile.member.motherName && (
                         <div>
-                          <span className="text-[#8E8E93]">মাতার নাম:</span>
+                          <span className="text-[#6B6B70]">মাতার নাম:</span>
                           <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.motherName}</p>
                         </div>
                       )}
                       {activeProfile.member.nidBirthReg && (
                         <div>
-                          <span className="text-[#8E8E93]">NID / জন্ম নিবন্ধন:</span>
+                          <span className="text-[#6B6B70]">NID / জন্ম নিবন্ধন:</span>
                           <p className="font-bold text-[#22242A] mt-0.5 font-mono select-all bg-white px-1 py-0.5 rounded border border-[#E5E5EA] inline-block">{activeProfile.member.nidBirthReg}</p>
                         </div>
                       )}
                       {activeProfile.member.bloodGroup && (
                         <div>
-                          <span className="text-[#8E8E93]">রক্তের গ্রুপ:</span>
+                          <span className="text-[#6B6B70]">রক্তের গ্রুপ:</span>
                           <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.bloodGroup}</p>
                         </div>
                       )}
                       {activeProfile.member.profession && (
                         <div>
-                          <span className="text-[#8E8E93]">পেশা:</span>
+                          <span className="text-[#6B6B70]">পেশা:</span>
                           <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.profession}</p>
                         </div>
                       )}
                       {activeProfile.member.educationQualification && (
                         <div>
-                          <span className="text-[#8E8E93]">শিক্ষাগত যোগ্যতা:</span>
+                          <span className="text-[#6B6B70]">শিক্ষাগত যোগ্যতা:</span>
                           <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.educationQualification}</p>
                         </div>
                       )}
@@ -593,7 +593,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                 {(activeProfile.member.paymentMethod || activeProfile.member.paymentStatus) && (
                   <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl space-y-2.5">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-[#8E8E93] uppercase tracking-wider">💳 মেম্বারশিপ নিবন্ধন ফি ও অনুমোদন বিবরণ:</span>
+                      <span className="text-[10px] font-black text-[#6B6B70] uppercase tracking-wider">💳 মেম্বারশিপ নিবন্ধন ফি ও অনুমোদন বিবরণ:</span>
                       <span className={`text-[9px] font-black px-2 py-0.5 rounded border ${
                         (activeProfile.member.paymentStatus || "Paid") === "Paid"
                           ? "bg-[#E5E5EA]/60 border-[#E5E5EA] text-[#22242A]"
@@ -608,15 +608,15 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     {activeProfile.member.paymentMethod && (
                       <div className="grid grid-cols-3 gap-2.5 text-[10px] bg-white p-2 rounded-lg border border-[#E5E5EA]">
                         <div>
-                          <span className="text-[#8E8E93] font-medium">পেমেন্ট মাধ্যম:</span>
+                          <span className="text-[#6B6B70] font-medium">পেমেন্ট মাধ্যম:</span>
                           <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.paymentMethod}</p>
                         </div>
                         <div>
-                          <span className="text-[#8E8E93] font-medium">প্রেরক মোবাইল:</span>
+                          <span className="text-[#6B6B70] font-medium">প্রেরক মোবাইল:</span>
                           <p className="font-bold text-[#22242A] mt-0.5 font-mono">{activeProfile.member.senderNumber || "N/A"}</p>
                         </div>
                         <div>
-                          <span className="text-[#8E8E93] font-medium">ট্রানজেকশন ID:</span>
+                          <span className="text-[#6B6B70] font-medium">ট্রানজেকশন ID:</span>
                           <p className="font-bold text-[#22242A] mt-0.5 font-mono select-all bg-[#F5F3EF] px-1 py-0.5 rounded border border-[#E5E5EA] inline-block" title="কপি করতে ডাবল ক্লিক করুন">
                             {activeProfile.member.transactionId || "N/A"}
                           </p>
@@ -626,7 +626,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     
                     {/* Admin actions to update payment status / approve member */}
                     <div className="pt-2.5 border-t border-[#E5E5EA] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="text-[9px] text-[#8E8E93] flex flex-col leading-relaxed max-w-[280px]">
+                      <div className="text-[9px] text-[#6B6B70] flex flex-col leading-relaxed max-w-[280px]">
                         <span className="font-extrabold text-[#22242A] text-[10px]">অ্যাডমিন অ্যাকশন (সদস্য অনুমোদন):</span>
                         {activeProfile.member.paymentStatus === "Pending" && (
                           <span>অনলাইন সদস্য আবেদনটি যাচাই করে মেম্বারশিপ সক্রিয় করতে ডানপাশের অনুমোদন বাটনে ক্লিক করুন।</span>
@@ -663,7 +663,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Unpaid")}
-                            className="px-2 py-1.5 bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#8E8E93] hover:text-[#22242A] rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                            className="px-2 py-1.5 bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#6B6B70] hover:text-[#22242A] rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
                           >
                             আবেদন রিজেক্ট
                           </button>
@@ -676,11 +676,11 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                 {/* Dashboard metric summary counters */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA] text-center">
-                    <p className="text-[10px] text-[#8E8E93] uppercase tracking-widest font-bold">মোট বই লেনদেন সংখ্যা</p>
+                    <p className="text-[10px] text-[#6B6B70] uppercase tracking-widest font-bold">মোট বই লেনদেন সংখ্যা</p>
                     <p className="text-2xl font-extrabold text-[#22242A] mt-1 font-mono">{activeProfile.rentCount} বার</p>
                   </div>
                   <div className="p-3 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA] text-center">
-                    <p className="text-[10px] text-[#8E8E93] uppercase tracking-widest font-bold">বর্তমানে নেওয়া বই (Issued)</p>
+                    <p className="text-[10px] text-[#6B6B70] uppercase tracking-widest font-bold">বর্তমানে নেওয়া বই (Issued)</p>
                     <p className="text-2xl font-extrabold text-[#22242A] mt-1 font-mono">{activeProfile.activeRents.length} টি</p>
                   </div>
                 </div>
@@ -695,7 +695,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       বর্তমানে ধারকৃত বইসমূহ ({activeProfile.activeRents.length})
                     </h4>
                     {activeProfile.activeRents.length === 0 ? (
-                      <p className="text-[11px] text-[#8E8E93] py-2 bg-[#F5F3EF] p-3 rounded">এই মুহূর্তে কোনো বই ইস্যু করা নাই।</p>
+                      <p className="text-[11px] text-[#6B6B70] py-2 bg-[#F5F3EF] p-3 rounded">এই মুহূর্তে কোনো বই ইস্যু করা নাই।</p>
                     ) : (
                       <div className="space-y-2">
                         {activeProfile.activeRents.map((item: any) => (
@@ -720,14 +720,14 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       ফেরত দেওয়া বইয়ের ইতিহাস ({activeProfile.returnedHistory.length})
                     </h4>
                     {activeProfile.returnedHistory.length === 0 ? (
-                      <p className="text-[11px] text-[#8E8E93] py-2 bg-[#F5F3EF] p-3 rounded">ইতিপূর্বে বই ফেরত দেওয়ার কোনো ইতিহাস নেই।</p>
+                      <p className="text-[11px] text-[#6B6B70] py-2 bg-[#F5F3EF] p-3 rounded">ইতিপূর্বে বই ফেরত দেওয়ার কোনো ইতিহাস নেই।</p>
                     ) : (
                       <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
                         {activeProfile.returnedHistory.map((item: any) => (
                           <div key={item.id} className="p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center text-xs">
                             <div>
                               <p className="font-semibold text-[#22242A] mb-0.5">{item.bookName}</p>
-                              <p className="text-[9px] text-[#8E8E93] font-mono">কোড: {item.bookCode} | ইস্যু: {item.issueDate}</p>
+                              <p className="text-[9px] text-[#6B6B70] font-mono">কোড: {item.bookCode} | ইস্যু: {item.issueDate}</p>
                             </div>
                             <div className="text-right">
                               <span className="text-[9px] text-[#22242A] font-semibold font-mono bg-[#E5E5EA]/60 border border-[#E5E5EA] px-1.5 py-0.5 rounded">
@@ -748,7 +748,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               <div className="pt-4 border-t border-[#E5E5EA] flex flex-col sm:flex-row justify-between items-center gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-[#FF6B6B] px-4 py-2.5 rounded-lg text-[#8E8E93] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-[#FF6B6B] px-4 py-2.5 rounded-lg text-[#6B6B70] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
                 >
                   <Trash2 size={12} />
                   সদস্য মুছে ফেলুন
@@ -781,7 +781,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               </h3>
               <button 
                 onClick={() => setIsAddOpen(false)}
-                className="text-[#8E8E93] hover:text-[#22242A] transition-colors cursor-pointer"
+                className="text-[#6B6B70] hover:text-[#22242A] transition-colors cursor-pointer"
               >
                 ✕
               </button>
@@ -803,7 +803,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     {addPhoto ? (
                       <img src={addPhoto} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="text-[#8E8E93] flex flex-col items-center gap-1">
+                      <div className="text-[#6B6B70] flex flex-col items-center gap-1">
                         <Camera size={20} />
                         <span className="text-[8px] font-bold">ছবি দিন</span>
                       </div>
@@ -811,7 +811,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   </div>
                   <div className="space-y-2 flex-1 w-full text-center sm:text-left">
                     <span className="text-[11px] font-bold text-[#22242A] block">সদস্যের ছবি আপলোড করুন</span>
-                    <p className="text-[10px] text-[#8E8E93] leading-normal">
+                    <p className="text-[10px] text-[#6B6B70] leading-normal">
                       লাইব্রেরি কার্ড ও ড্যাশবোর্ডের জন্য পাসপোর্ট সাইজের ছবি আপলোড করুন (ঐচ্ছিক)।
                     </p>
                     <div className="flex justify-center sm:justify-start gap-2">
@@ -846,7 +846,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">সদস্যের নাম (বাংলায়) {addForceRequired && "*"}</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">সদস্যের নাম (বাংলায়) {addForceRequired && "*"}</label>
                       <input
                         type="text"
                         value={addName}
@@ -857,7 +857,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">সদস্যের নাম (ইংরেজিতে)</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">সদস্যের নাম (ইংরেজিতে)</label>
                       <input
                         type="text"
                         value={addNameEnglish}
@@ -870,7 +870,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">ফরম নম্বর (ID)</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">ফরম নম্বর (ID)</label>
                       <input
                         type="text"
                         value={addForm}
@@ -880,7 +880,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">মোবাইল নম্বর {addForceRequired && "*"}</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">মোবাইল নম্বর {addForceRequired && "*"}</label>
                       <input
                         type="text"
                         value={addMobile}
@@ -891,7 +891,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">জন্ম তারিখ {addForceRequired && "*"}</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">জন্ম তারিখ {addForceRequired && "*"}</label>
                       <input
                         type="date"
                         value={addDob}
@@ -904,7 +904,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">পিতার নাম</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">পিতার নাম</label>
                       <input
                         type="text"
                         value={addFatherName}
@@ -914,7 +914,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">মাতার নাম</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">মাতার নাম</label>
                       <input
                         type="text"
                         value={addMotherName}
@@ -937,7 +937,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     <span className="text-[10px] font-black text-[#22242A] block">বর্তমান ঠিকানা</span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div>
-                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">গ্রাম/মহল্লা</label>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">গ্রাম/মহল্লা</label>
                         <input
                           type="text"
                           value={addCurrVillage}
@@ -947,7 +947,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">ডাকঘর</label>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">ডাকঘর</label>
                         <input
                           type="text"
                           value={addCurrPostOffice}
@@ -957,7 +957,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">উপজেলা</label>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">উপজেলা</label>
                         <input
                           type="text"
                           value={addCurrUpazila}
@@ -966,7 +966,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">জেলা</label>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">জেলা</label>
                         <input
                           type="text"
                           value={addCurrDistrict}
@@ -995,7 +995,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       }}
                       className="rounded border-[#E5E5EA] text-[#22242A] focus:ring-[#E5E5EA] bg-white h-3.5 w-3.5 cursor-pointer"
                     />
-                    <label htmlFor="addIsSameAddress" className="text-[10px] font-bold text-[#8E8E93] cursor-pointer select-none">
+                    <label htmlFor="addIsSameAddress" className="text-[10px] font-bold text-[#6B6B70] cursor-pointer select-none">
                       বর্তমান ঠিকানা ও স্থায়ী ঠিকানা একই
                     </label>
                   </div>
@@ -1006,7 +1006,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       <span className="text-[10px] font-black text-[#22242A] block">স্থায়ী ঠিকানা</span>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div>
-                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">গ্রাম/মহল্লা</label>
+                          <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">গ্রাম/মহল্লা</label>
                           <input
                             type="text"
                             value={addPermVillage}
@@ -1016,7 +1016,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">ডাকঘর</label>
+                          <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">ডাকঘর</label>
                           <input
                             type="text"
                             value={addPermPostOffice}
@@ -1026,7 +1026,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">উপজেলা</label>
+                          <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">উপজেলা</label>
                           <input
                             type="text"
                             value={addPermUpazila}
@@ -1035,7 +1035,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-bold text-[#8E8E93] mb-1">জেলা</label>
+                          <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">জেলা</label>
                           <input
                             type="text"
                             value={addPermDistrict}
@@ -1049,7 +1049,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   {/* Single string address fallback (optional) */}
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-bold text-[#8E8E93]">অতিরিক্ত বিবরণ/ঠিকানা নোট (ঐচ্ছিক)</label>
+                    <label className="block text-[10px] font-bold text-[#6B6B70]">অতিরিক্ত বিবরণ/ঠিকানা নোট (ঐচ্ছিক)</label>
                     <input
                       type="text"
                       value={addAddress}
@@ -1067,7 +1067,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">রক্তের গ্রুপ</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">রক্তের গ্রুপ</label>
                       <select
                         value={addBloodGroup}
                         onChange={(e) => setAddBloodGroup(e.target.value)}
@@ -1085,7 +1085,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">NID অথবা জন্ম নিবন্ধন নং</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">NID অথবা জন্ম নিবন্ধন নং</label>
                       <input
                         type="text"
                         value={addNidBirthReg}
@@ -1095,7 +1095,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">জাতীয়তা</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">জাতীয়তা</label>
                       <input
                         type="text"
                         value={addNationality}
@@ -1107,7 +1107,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">সর্বোচ্চ শিক্ষাগত যোগ্যতা</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">সর্বোচ্চ শিক্ষাগত যোগ্যতা</label>
                       <input
                         type="text"
                         value={addEducationQualification}
@@ -1117,7 +1117,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">পেশা</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">পেশা</label>
                       <input
                         type="text"
                         value={addProfession}
@@ -1130,7 +1130,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="sm:col-span-1">
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">শিক্ষা প্রতিষ্ঠান</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">শিক্ষা প্রতিষ্ঠান</label>
                       <input
                         type="text"
                         value={addInstitution}
@@ -1140,7 +1140,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">শ্রেণী</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">শ্রেণী</label>
                       <input
                         type="text"
                         value={addClassName}
@@ -1150,7 +1150,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-[#8E8E93] mb-1">শ্রেণী রোল</label>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">শ্রেণী রোল</label>
                       <input
                         type="text"
                         value={addClassRoll}
@@ -1166,7 +1166,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                 <div className="pt-4 border-t border-[#E5E5EA] flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl border border-[#E5E5EA]">
                   <div className="space-y-1 text-center sm:text-left">
                     <span className="text-[11px] font-bold text-[#22242A] block">তথ্যাদি দেওয়া বাধ্যতামূলক করুন</span>
-                    <p className="text-[10px] text-[#8E8E93] leading-tight">
+                    <p className="text-[10px] text-[#6B6B70] leading-tight">
                       এটি অন করলে সদস্যের নাম, মোবাইল এবং জন্ম তারিখ দেওয়া বাধ্যতামূলক হবে। অফ থাকলে কোন টাই বাধ্যতামূলক না।
                     </p>
                   </div>
@@ -1192,7 +1192,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   <button
                     type="button"
                     onClick={() => setIsAddOpen(false)}
-                    className="px-4 py-2 bg-[#F5F3EF] border border-[#E5E5EA] text-[#8E8E93] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
+                    className="px-4 py-2 bg-[#F5F3EF] border border-[#E5E5EA] text-[#6B6B70] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
                   >
                     বাতিল
                   </button>
