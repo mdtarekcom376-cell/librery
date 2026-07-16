@@ -333,6 +333,13 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [contactForm, setContactForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSent, setContactSent] = useState(false);
+
+  // New Write Form states
+  const [contactTab, setContactTab] = useState<'contact' | 'write'>('contact');
+  const [writeForm, setWriteForm] = useState({ name: "", email: "", subject: "", category: "পরামর্শ", message: "" });
+  const [writeAttachment, setWriteAttachment] = useState<File | null>(null);
+  const [writeSubmitting, setWriteSubmitting] = useState(false);
+  const [writeSent, setWriteSent] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [realBooks, setRealBooks] = useState<any[]>([]);
   const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
@@ -423,6 +430,41 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       setContactForm({ name: "", email: "", subject: "", message: "" });
       setTimeout(() => setContactSent(false), 4000);
     }, 1500);
+  };
+
+  // Write Us form submission
+  const handleWriteSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWriteSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", writeForm.name);
+      formData.append("email", writeForm.email);
+      formData.append("subject", writeForm.subject);
+      formData.append("category", writeForm.category);
+      formData.append("message", writeForm.message);
+      if (writeAttachment) {
+        formData.append("attachment", writeAttachment);
+      }
+
+      const res = await fetch("/api/submissions", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        setWriteSent(true);
+        setWriteForm({ name: "", email: "", subject: "", category: "পরামর্শ", message: "" });
+        setWriteAttachment(null);
+        setTimeout(() => setWriteSent(false), 4000);
+      } else {
+        alert("জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+      }
+    } catch (err) {
+      alert("জমা দিতে সমস্যা হয়েছে।");
+    } finally {
+      setWriteSubmitting(false);
+    }
   };
 
   // Carousel scroll
@@ -1280,90 +1322,253 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           ====================================== */}
       <section id="contact" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="যোগাযোগ" heading="আমাদের লিখুন" />
+          {contactTab === 'contact' ? (
+            <SectionHeader eyebrow="যোগাযোগ" heading="যোগাযোগ করুন" />
+          ) : (
+            <div className="text-center mb-12 md:mb-16">
+              <span className="font-display-lat text-sm md:text-base tracking-wide" style={{ color: "var(--flame-orange)" }}>
+                আমাদের লিখুন
+              </span>
+              <h2 className="font-display-bn text-2xl md:text-4xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
+                আমাদের লিখুন
+              </h2>
+              <p className="text-xs text-[#8E8E93] mt-2">অভিযোগ, পরামর্শ, গল্প, কবিতা, উপন্যাস, প্রবন্ধ রচনা।</p>
+              <motion.div
+                className="mx-auto mt-4"
+                style={{ maxWidth: 80, height: 3, background: "linear-gradient(90deg, #F7941D, #EC2C7B)", borderRadius: 2 }}
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              />
+            </div>
+          )}
+
+          {/* Toggle Buttons */}
+          <div className="flex justify-center mb-10">
+            <div className="flex items-center bg-white rounded-full p-1.5 border border-[#E5E5EA] shadow-sm">
+              <button
+                onClick={() => setContactTab('contact')}
+                className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all ${contactTab === 'contact' ? 'bg-[#22242A] text-[#FACC15]' : 'text-[#8E8E93] hover:text-[#22242A]'}`}
+              >
+                যোগাযোগ
+              </button>
+              <button
+                onClick={() => setContactTab('write')}
+                className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all ${contactTab === 'write' ? 'bg-[#22242A] text-[#FACC15]' : 'text-[#8E8E93] hover:text-[#22242A]'}`}
+              >
+                আমাদের লিখুন
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
             {/* Form */}
-            <motion.form
-              onSubmit={handleContactSubmit}
-              className="space-y-4"
-              initial={{ opacity: 0, x: -24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.5 }}
-            >
-              <div>
-                <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
-                  নাম
-                </label>
-                <input
-                  type="text"
-                  value={contactForm.name}
-                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
-                  style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
-                  placeholder="আপনার নাম"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
-                  ইমেইল
-                </label>
-                <input
-                  type="email"
-                  value={contactForm.email}
-                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
-                  style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
-                  placeholder="example@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
-                  বিষয়
-                </label>
-                <input
-                  type="text"
-                  value={contactForm.subject}
-                  onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
-                  style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
-                  placeholder="বিষয় লিখুন"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
-                  বার্তা
-                </label>
-                <textarea
-                  rows={4}
-                  value={contactForm.message}
-                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border resize-none"
-                  style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
-                  placeholder="আপনার বার্তা লিখুন..."
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={contactSubmitting}
-                className="btn-flame px-6 py-3 text-sm font-ui w-full flex items-center justify-center gap-2"
+            {contactTab === 'contact' ? (
+              <motion.form
+                onSubmit={handleContactSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, x: -24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.5 }}
               >
-                {contactSubmitting ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : contactSent ? (
-                  <>
-                    <Check size={16} /> পাঠানো হয়েছে!
-                  </>
-                ) : (
-                  <>
-                    <Send size={16} /> পাঠান
-                  </>
-                )}
-              </button>
-            </motion.form>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    নাম
+                  </label>
+                  <input
+                    type="text"
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="আপনার নাম"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    ইমেইল
+                  </label>
+                  <input
+                    type="email"
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="example@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    বিষয়
+                  </label>
+                  <input
+                    type="text"
+                    value={contactForm.subject}
+                    onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="বিষয় লিখুন"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    বার্তা
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border resize-none"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="আপনার বার্তা লিখুন..."
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={contactSubmitting}
+                  className="btn-flame px-6 py-3 text-sm font-ui w-full flex items-center justify-center gap-2"
+                >
+                  {contactSubmitting ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : contactSent ? (
+                    <>
+                      <Check size={16} /> পাঠানো হয়েছে!
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} /> পাঠান
+                    </>
+                  )}
+                </button>
+              </motion.form>
+            ) : (
+              <motion.form
+                onSubmit={handleWriteSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, x: -24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.5 }}
+              >
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    নাম
+                  </label>
+                  <input
+                    type="text"
+                    value={writeForm.name}
+                    onChange={(e) => setWriteForm({ ...writeForm, name: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border bg-white shadow-sm"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="আপনার নাম"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    ইমেইল
+                  </label>
+                  <input
+                    type="email"
+                    value={writeForm.email}
+                    onChange={(e) => setWriteForm({ ...writeForm, email: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border bg-white shadow-sm"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="example@email.com"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                      বিষয়
+                    </label>
+                    <input
+                      type="text"
+                      value={writeForm.subject}
+                      onChange={(e) => setWriteForm({ ...writeForm, subject: e.target.value })}
+                      required
+                      className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border bg-white shadow-sm"
+                      style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                      placeholder="বিষয় লিখুন"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                      ক্যাটাগরি
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={writeForm.category}
+                        onChange={(e) => setWriteForm({ ...writeForm, category: e.target.value })}
+                        required
+                        className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border appearance-none bg-white shadow-sm cursor-pointer"
+                        style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                      >
+                        <option value="অভিযোগ">অভিযোগ</option>
+                        <option value="পরামর্শ">পরামর্শ</option>
+                        <option value="গল্প">গল্প</option>
+                        <option value="কবিতা">কবিতা</option>
+                        <option value="উপন্যাস">উপন্যাস</option>
+                        <option value="প্রবন্ধ">প্রবন্ধ</option>
+                      </select>
+                      <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    বিস্তারিত লিখুন
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={writeForm.message}
+                    onChange={(e) => setWriteForm({ ...writeForm, message: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border resize-none bg-white shadow-sm"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="আপনার লেখা বা অভিযোগ বিস্তারিত এখানে লিখুন..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    ফাইল যুক্ত করুন (ঐচ্ছিক)
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setWriteAttachment(e.target.files[0]);
+                      }
+                    }}
+                    className="w-full px-4 py-2.5 rounded-xl text-xs sm:text-sm font-body-bn border bg-white shadow-sm text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#22242A] file:text-[#FACC15] hover:file:bg-black file:cursor-pointer"
+                    style={{ borderColor: "#e2e8f0", outline: "none" }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={writeSubmitting}
+                  className="px-6 py-3 text-sm font-bold w-full flex items-center justify-center gap-2 rounded-xl text-[#FACC15] bg-[#22242A] hover:bg-black transition-colors shadow-md"
+                >
+                  {writeSubmitting ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : writeSent ? (
+                    <>
+                      <Check size={16} /> জমা দেওয়া হয়েছে!
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} /> জমা দিন
+                    </>
+                  )}
+                </button>
+              </motion.form>
+            )}
 
             {/* Contact meta */}
             <motion.div

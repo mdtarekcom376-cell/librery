@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
+import multer from "multer";
 import pool from "./src/db";
 
 // Password Hasher Helper
@@ -3874,6 +3875,87 @@ if (process.env.VERCEL) {
     }
   });
 
+  // =============================================
+  // CONTACT SUBMISSIONS API (Write to us)
+  // =============================================
+
+  // Setup Multer Storage for Write to Us attachments
+  const submissionsUploadDir = path.join(process.cwd(), "uploads", "submissions");
+  if (!fs.existsSync(submissionsUploadDir)) {
+    fs.mkdirSync(submissionsUploadDir, { recursive: true });
+  }
+
+  const submissionStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, submissionsUploadDir),
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, `submission-${uniqueSuffix}${ext}`);
+    }
+  });
+  const uploadSubmission = multer({ storage: submissionStorage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
+
+  // Serve the uploads folder statically so admins can view attachments
+  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+  // Public: Submit a new writing/complaint
+  app.post("/api/submissions", uploadSubmission.single("attachment"), async (req, res) => {
+    try {
+      const { name, email, subject, category, message } = req.body;
+      if (!name || !email || !subject || !category || !message) {
+        return res.status(400).json({ error: "অনুগ্রহ করে সকল আবশ্যকীয় তথ্য প্রদান করুন।" });
+      }
+
+      const attachmentPath = req.file ? `/uploads/submissions/${req.file.filename}` : null;
+
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO contact_submissions (name, email, subject, category, message, attachment_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [name, email, subject, category, message, attachmentPath, "pending", formatCurrentDateTime()]
+      );
+
+      res.json({ success: true, submissionId: String(resInsert.insertId) });
+    } catch (err: any) {
+      console.error("Error submitting writing:", err);
+      res.status(500).json({ error: "জমা দিতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।" });
+    }
+  });
+
+  // Admin: Get all submissions
+  app.get("/api/submissions", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM contact_submissions ORDER BY created_at DESC");
+      const submissions = rows.map((r: any) => ({
+        id: String(r.id),
+        name: r.name,
+        email: r.email,
+        subject: r.subject,
+        category: r.category,
+        message: r.message,
+        attachmentPath: r.attachment_path,
+        status: r.status,
+        createdAt: r.created_at
+      }));
+      res.json(submissions);
+    } catch (err: any) {
+      console.error("Error fetching submissions:", err);
+      res.status(500).json({ error: "তথ্য লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Update submission status
+  app.put("/api/submissions/:id/status", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body; // e.g., 'reviewed', 'approved', 'rejected'
+      
+      await pool.query("UPDATE contact_submissions SET status = ? WHERE id = ?", [status, id]);
+      addLog("লেখা/অভিযোগ আপডেট", `আইডি ${id} এর স্ট্যাটাস '${status}' এ আপডেট করা হয়েছে।`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "স্ট্যাটাস আপডেট করতে ব্যর্থ।" });
+    }
+  });
+
   // Vite middleware setup and server listening
   async function initServerListening() {
     try {
@@ -3889,6 +3971,19 @@ if (process.env.VERCEL) {
           status VARCHAR(50) NOT NULL,
           created_at DATETIME NOT NULL,
           reviewed_at DATETIME
+        );
+      `);
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS contact_submissions (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          email VARCHAR(255) NOT NULL,
+          subject VARCHAR(255) NOT NULL,
+          category VARCHAR(100) NOT NULL,
+          message TEXT NOT NULL,
+          attachment_path VARCHAR(500),
+          status VARCHAR(50) NOT NULL DEFAULT 'pending',
+          created_at DATETIME NOT NULL
         );
       `);
       connection.release();

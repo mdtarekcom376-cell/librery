@@ -47,6 +47,7 @@ import PublicPortal from "./components/PublicPortal";
 import SalesCorner from "./components/SalesCorner";
 import ReviewManager from "./components/ReviewManager";
 import NoticeManager from "./components/NoticeManager";
+import WritingsManager from "./components/WritingsManager";
 import { RegistrationModal } from "./components/RegistrationModal";
 import HomePage from "./components/HomePage";
 import PublicSalesPage from "./components/PublicSalesPage";
@@ -689,6 +690,7 @@ export default function App() {
         { id: "sms", label: "রিমাইন্ডার ও এসএমএস", icon: MailWarning },
         { id: "reviews", label: "রিভিউ ম্যানেজমেন্ট", icon: Star },
         { id: "notices", label: "নটিশ বোর্ড", icon: Bell },
+        { id: "writings", label: "লেখা ও অভিযোগ", icon: MessageSquare },
         { id: "shop", label: "বিক্রয় কর্নার", icon: Store },
         { id: "settings", label: "সেটিংস", icon: Sliders }
       ];
@@ -1417,8 +1419,12 @@ export default function App() {
               <ReviewManager onRefreshStats={handleRefreshStats} />
             )}
 
-            {userRole === "admin" && activeTab === "notices" && (
+            { userRole === "admin" && activeTab === "notices" && (
               <NoticeManager onRefreshStats={handleRefreshStats} />
+            )}
+
+            {userRole === "admin" && activeTab === "writings" && (
+              <WritingsManager onRefreshStats={handleRefreshStats} />
             )}
 
             {userRole === "admin" && activeTab === "settings" && (
