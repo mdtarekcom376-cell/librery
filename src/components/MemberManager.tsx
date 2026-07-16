@@ -15,8 +15,6 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
   const [statusFilter, setStatusFilter] = useState<"all" | "Pending" | "Paid" | "Unpaid">("all");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [isImporting, setIsImporting] = useState(false);
-  const [importStatus, setImportStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   // Adding single Member states
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -78,38 +76,9 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
   useEffect(() => {
     fetchMembers();
 
-    const handleImportedReload = () => {
-      fetchMembers();
-    };
 
-    window.addEventListener("data-imported", handleImportedReload);
-    return () => {
-      window.removeEventListener("data-imported", handleImportedReload);
-    };
   }, []);
 
-  const handleImportFromSheets = async () => {
-    setIsImporting(true);
-    setImportStatus(null);
-    try {
-      const res = await apiClient.post("/settings/googlesheets/import-all", {});
-      setImportStatus({
-        type: "success",
-        msg: res.message || "গুগল শিট থেকে সর্বমোট তথ্য সফলভাবে ইম্পোর্ট করা হয়েছে!"
-      });
-      fetchMembers();
-      onRefreshStats();
-      window.dispatchEvent(new Event("data-imported"));
-      setTimeout(() => setImportStatus(null), 8000); // clear after 8s
-    } catch (err: any) {
-      setImportStatus({
-        type: "error",
-        msg: err.message || "গুগল শিট থেকে ডাটা ইম্পোর্ট করা সম্ভব হয়নি। দয়া করে সেটিংস পরীক্ষা করুন।"
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  };
 
   const fetchProfile = async (formNum: string) => {
     setProfileLoading(true);
@@ -307,12 +276,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
   return (
     <div className="space-y-6">
 
-      {importStatus && (
-        <div className={`p-4 rounded-xl text-xs flex items-center gap-3 shadow-lg ${importStatus.type === "success" ? "bg-[#E5E5EA]/60 border border-[#E5E5EA] text-[#22242A] animate-pulse" : "bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B]"}`}>
-          {importStatus.type === "success" ? <Check size={16} className="text-[#22242A] shrink-0" /> : <AlertCircle size={16} className="text-[#FF6B6B] shrink-0" />}
-          <span className="font-semibold">{importStatus.msg}</span>
-        </div>
-      )}
+
       
       {/* Upper header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -321,20 +285,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
           <p className="text-xs text-[#6B6B70]">লাইব্রেরিতে পাঠক সদস্য যোগ করুন এবং সদস্য আইডি অনুযায়ী বিস্তারিত ব্যবহারের ইতিহাস অডিট করুন</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={handleImportFromSheets}
-            disabled={isImporting}
-            className="flex-1 sm:flex-none px-4 py-2.5 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] ring-1 ring-[#E5E5EA] text-xs font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
-            title="গুগল শিট থেকে সমস্ত বর্তমান সদস্যের ডেটা ইম্পোর্ট/সিঙ্ক করবে।"
-          >
-            {isImporting ? (
-              <RefreshCw size={14} className="text-[#22242A] animate-spin" />
-            ) : (
-              <Database size={14} className="text-[#22242A]" />
-            )}
-            গুগল শিট থেকে লোড (Pull)
-          </button>
+
           <button
             onClick={() => {
               setFormErr("");

@@ -900,9 +900,6 @@ if (process.env.VERCEL) {
       const r = newBookRow[0];
       const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description };
 
-      // Sync to Google Sheets asynchronously in the background so save is instant
-
-
       addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${grp ? `, গ্রুপ: ${grp}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
 
       res.status(201).json(newBook);
@@ -946,9 +943,6 @@ if (process.env.VERCEL) {
       const [updatedBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
       const r = updatedBookRow[0];
       const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name };
-
-      // Sync to Google Sheets asynchronously in the background so save is instant
-
 
       addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
 
@@ -2287,7 +2281,6 @@ if (process.env.VERCEL) {
         profession: r.profession, nationality: r.nationality, photo: r.photo, paymentStatus: r.payment_status
       };
 
-      // Sync to Google Sheets in background
 
 
       addLog("সদস্য নিবন্ধন", `নতুন সদস্য নিজে অনলাইন নিবন্ধন ফরমের মাধ্যমে যুক্ত হয়েছেন: ${name.trim()} (ফরম নম্বর: ${nextFormNumber})`);
@@ -2544,7 +2537,6 @@ if (process.env.VERCEL) {
         status: isAvailable ? "Available" : "Waiting"
       };
 
-      // Sync to Google Sheets asynchronously
 
 
       addLog("উইশলিস্ট যোগ", `সদস্য ${memberFormNumber || "গোপন"} উইশলিস্টে নতুন বই '${name}' যোগ করেছেন।`);

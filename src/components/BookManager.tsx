@@ -16,8 +16,7 @@ interface BookManagerProps {
 export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook, onBulkImport, onPreview, onPreviewBooksList }: BookManagerProps) {
   const [searchVal, setSearchVal] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [isImporting, setIsImporting] = useState(false);
-  const [importStatus, setImportStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+
   
   // Modals status
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -233,36 +232,11 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     document.body.removeChild(link);
   };
 
-  const handleImportFromSheets = async () => {
-    setIsImporting(true);
-    setImportStatus(null);
-    try {
-      const res = await apiClient.post("/settings/googlesheets/import-all", {});
-      setImportStatus({
-        type: "success",
-        msg: res.message || "গুগল শিট থেকে সর্বমোট তথ্য সফলভাবে ইম্পোর্ট করা হয়েছে!"
-      });
-      window.dispatchEvent(new Event("data-imported"));
-      setTimeout(() => setImportStatus(null), 8000); // clear after 8s
-    } catch (err: any) {
-      setImportStatus({
-        type: "error",
-        msg: err.message || "গুগল শিট থেকে ডাটা ইম্পোর্ট করা সম্ভব হয়নি। দয়া করে সেটিংস পরীক্ষা করুন।"
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  };
+
 
   return (
     <div className="space-y-6">
 
-      {importStatus && (
-        <div className={`p-4 rounded-xl text-xs flex items-center gap-3 shadow-sm ${importStatus.type === "success" ? "bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] animate-pulse" : "bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B]"}`}>
-          {importStatus.type === "success" ? <Check size={16} className="text-[#22242A] shrink-0" /> : <AlertCircle size={16} className="text-[#FF6B6B] shrink-0" />}
-          <span className="font-semibold">{importStatus.msg}</span>
-        </div>
-      )}
 
       {/* Title block */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -283,20 +257,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
             <FilePlus2 size={14} className="text-[#FACC15]" />
             বাল্ক ইম্পোর্ট
           </button>
-          <button
-            type="button"
-            onClick={handleImportFromSheets}
-            disabled={isImporting}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-[#E5E5EA] hover:border-[#22242A]/30 text-[#22242A] text-xs font-bold rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-colors cursor-pointer disabled:opacity-50"
-            title="গুগল শিট থেকে সমস্ত বর্তমান বই এবং সদস্যদের ডেটা ইম্পোর্ট/সিঙ্ক করবে।"
-          >
-            {isImporting ? (
-              <RefreshCw size={14} className="text-[#FACC15] animate-spin" />
-            ) : (
-              <Database size={14} className="text-[#FACC15]" />
-            )}
-            গুগল শিট থেকে লোড (Pull)
-          </button>
+
           <button
             onClick={() => {
               setBookCode("");
