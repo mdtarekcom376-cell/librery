@@ -40,10 +40,12 @@ import {
   Send,
   Loader2,
   Book,
+  Heart,
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
 import foundersImg from "../assets/images/founders.png";
 import karyonirbahiImg from "../assets/images/karyonirbahi.png";
+import tawhidImg from "../assets/images/tawhid.png";
 import cornerBanner from "../assets/images/corner-banner.jpg";
 import Hero3DImage from "./Hero3DImage";
 
@@ -775,49 +777,67 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           ====================================== */}
       <section id="features" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="" heading="অক্ষর পাঠাগার কী" />
           <motion.div 
-            className="hp-card p-8 md:p-12 text-center max-w-4xl mx-auto relative overflow-hidden"
+            className="max-w-4xl mx-auto relative overflow-hidden rounded-[2rem] shadow-2xl"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.5 }}
-            style={{ 
-              boxShadow: "0 20px 50px -10px rgba(28, 143, 224, 0.15)",
-              background: "linear-gradient(135deg, #ffffff 0%, #f1f8ff 100%)"
-            }}
           >
-            <div className="absolute top-0 left-0 w-2 h-full" style={{ background: "var(--flame-gradient)" }}></div>
-            
-            {/* Visual Header Pill */}
-            <h3 
-              className="inline-block text-[10px] md:text-xs uppercase font-bold tracking-widest px-5 py-2 rounded-full mb-8 font-display-lat shadow-sm" 
-              style={{ 
-                color: "var(--flame-orange)", 
-                background: "linear-gradient(to right, #FFF7F0, #FFFFFF)", 
-                border: "1px solid #FFEDDF" 
-              }}
+            {/* Dark Header Block */}
+            <div 
+              className="px-8 py-12 md:py-16 md:px-16 text-center relative"
+              style={{ background: "linear-gradient(135deg, #0B1120 0%, #172554 100%)" }}
             >
-              What is the Okkhor Pathagar? Just a public library?
-            </h3>
-            
-            {/* Elevated Body Content */}
-            <div className="relative text-left mx-auto px-2 sm:px-6 py-2" style={{ maxWidth: "800px" }}>
+              {/* Decorative Circle */}
+              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mx-auto mb-6 bg-white/5 backdrop-blur-sm">
+                <div className="w-4 h-4 rounded-full bg-white/20" />
+              </div>
+              
+              {/* Pill Badge */}
               <div 
-                className="absolute -left-2 top-0 bottom-0 w-1 rounded-full opacity-50" 
-                style={{ background: "var(--flame-gradient)" }} 
-              />
-              <p className="font-body-bn text-xl md:text-[22px] leading-relaxed relative z-10" style={{ color: "var(--ink-navy)" }}>
-                <span 
-                  className="font-bold text-2xl md:text-3xl block mb-6 leading-tight" 
-                  style={{ color: "var(--book-blue)" }}
-                >
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
+                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8]" />
+                <span className="text-[10px] md:text-xs uppercase font-bold tracking-[0.2em] text-white/90 font-display-lat">
+                  WHAT IS THE OKKHOR PATHAGAR?
+                </span>
+              </div>
+
+              {/* Headings */}
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 font-display-bn">
+                অক্ষর পাঠাগার কী?
+              </h2>
+              <p className="text-[#94a3b8] text-lg md:text-xl font-display-lat italic">
+                Just a <span className="relative inline-block">
+                  <span className="relative z-10 text-white">public library?</span>
+                  <span className="absolute bottom-1 left-0 w-full h-[3px] rounded-full bg-[#38BDF8]/60 z-0" />
+                </span>
+              </p>
+
+              {/* Wavy Divider */}
+              <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
+                <svg className="relative block w-full h-[40px] rotate-180" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                  <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#ffffff"></path>
+                </svg>
+              </div>
+            </div>
+
+            {/* White Body Content */}
+            <div className="bg-white px-6 py-12 md:p-16 text-center relative z-10">
+              <span className="inline-block text-[10px] md:text-xs uppercase font-bold tracking-widest px-4 py-1.5 rounded-full mb-8 font-display-bn bg-[#F8FAFC] text-[#64748b] border border-[#E2E8F0]">
+                বিস্তারিত
+              </span>
+
+              <p className="font-body-bn text-xl md:text-[22px] leading-relaxed mx-auto mb-8 text-left" style={{ color: "var(--ink-navy)", maxWidth: "700px" }}>
+                <span className="font-bold text-2xl md:text-3xl block mb-6 leading-tight" style={{ color: "var(--book-blue)" }}>
                   <span style={{ color: "var(--flame-orange)" }}>*</span> অক্ষর পাঠাগার জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!
                 </span>
                 <span className="block mb-5 text-[#334155]">
                   "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত, বেসর/লাই নং-০৪।
                 </span>
-                <span className="block text-[#475569] font-medium p-4 rounded-xl" style={{ background: "#F8FAFC", borderLeft: "3px solid var(--book-blue)" }}>
+                <span className="block text-[#475569] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
                   আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
                 </span>
               </p>
@@ -1735,15 +1755,33 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       <footer className="py-12 md:py-16 px-4" style={{ background: "var(--ink-navy)", color: "white" }}>
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-10">
-            {/* Brand */}
+            {/* Brand & Donate */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <img src={logoSrc} alt="Logo" className="w-9 h-9 rounded-lg object-contain bg-white p-0.5" />
                 <span className="font-display-bn text-lg font-bold">অক্ষর পাঠাগার</span>
               </div>
-              <p className="font-body-bn text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
+              <p className="font-body-bn text-sm leading-relaxed mb-6" style={{ color: "#94a3b8" }}>
                 বাংলায় তৈরি স্মার্ট লাইব্রেরি ম্যানেজমেন্ট সিস্টেম। প্রতিটি বই, প্রতিটি সদস্য — এক জায়গায়।
               </p>
+              
+              {/* Donate CTA */}
+              <div className="bg-gradient-to-r from-[#F7941D]/10 to-[#EC2C7B]/10 p-5 rounded-xl border border-[#F7941D]/30 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-white opacity-5 mix-blend-overlay"></div>
+                <h4 className="font-display-bn text-sm font-bold text-white mb-3 relative z-10">
+                  আলো ছড়ানোর মিছিলে যুক্ত হোন
+                </h4>
+                <a 
+                  href="http://donat.okkhorpathagar.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="relative z-10 flex items-center justify-center gap-2 bg-gradient-to-r from-[#F7941D] to-[#EC2C7B] text-white px-5 py-2.5 rounded-lg font-ui text-sm font-bold shadow-lg shadow-[#F7941D]/20 group-hover:shadow-xl group-hover:shadow-[#F7941D]/40 group-hover:-translate-y-0.5 transition-all w-full text-center"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Heart size={16} className="text-white fill-white/80" strokeWidth={2} />
+                  ডোনেট করুন
+                </a>
+              </div>
             </div>
 
             {/* Quick links */}
@@ -1777,18 +1815,36 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
                 যোগাযোগ
               </h4>
-              <div className="flex flex-col gap-2 font-body-bn text-sm" style={{ color: "#94a3b8" }}>
-                <span>পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা</span>
-                <span>01642816737, 01798084404</span>
-                <span>hello@okkhorpathagar.com</span>
-                <span>okkhorpathagar@gmail.com</span>
+              <div className="flex flex-col gap-3 font-body-bn text-sm" style={{ color: "#94a3b8" }}>
+                <a 
+                  href="https://maps.app.goo.gl/E5vehANcowQ2vcEv5?g_st=aw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 group border border-white/10 bg-white/5 p-2 rounded-lg hover:border-[#38BDF8]/50 hover:bg-[#38BDF8]/10 transition-all text-[#94a3b8] hover:text-white"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <MapPin size={16} className="mt-0.5 shrink-0 text-[#38BDF8] group-hover:-translate-y-0.5 transition-transform" />
+                  <span>পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা</span>
+                </a>
+                <span className="flex items-center gap-2 px-2 mt-1">
+                  <Phone size={14} className="text-[#64748b]" />
+                  01642816737, 01798084404
+                </span>
+                <span className="flex items-center gap-2 px-2 py-1 bg-white/5 rounded-md border border-white/5 w-fit mt-1">
+                  <Mail size={14} className="text-[#38BDF8]" />
+                  <span className="text-white font-bold tracking-wide">hello@okkhorpathagar.com</span>
+                </span>
+                <span className="flex items-center gap-2 px-2">
+                  <Mail size={14} className="text-[#64748b]" />
+                  okkhorpathagar@gmail.com
+                </span>
               </div>
             </div>
 
             {/* Founders */}
             <div>
               <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
-                পরিচালনা পর্ষদ
+                পরিচালনা পরিষদ
               </h4>
               <div className="flex flex-col gap-5">
                 <div>
@@ -1830,10 +1886,16 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t pt-6" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
-            <p className="text-center font-body-bn text-xs" style={{ color: "#64748b" }}>
+          <div className="border-t pt-8 mt-4 flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
+            <p className="text-center md:text-left font-body-bn text-sm text-[#94a3b8]">
               © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩 | Developed by <a href="https://artx.techvrs.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#22242A] transition-colors" style={{ textDecoration: 'none', color: 'inherit', borderBottom: '1px solid rgba(255,255,255,0.3)' }}>ARTX</a>
             </p>
+            <div className="flex items-center gap-3 bg-white/5 rounded-full pl-3 pr-4 py-2 border border-white/10 hover:bg-white/10 transition-colors cursor-default">
+              <img src={tawhidImg} alt="মোঃ তাওহীদ ইসলাম অন্তর" className="w-7 h-7 rounded-full object-cover border border-white/20" />
+              <span className="font-body-bn text-xs text-[#cbd5e1]">
+                Crafted by — <strong className="text-white font-medium">মোঃ তাওহীদ ইসলাম অন্তর</strong>
+              </span>
+            </div>
           </div>
         </div>
       </footer>
