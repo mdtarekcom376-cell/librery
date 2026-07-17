@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   BookMarked,
@@ -61,6 +62,7 @@ import akkhorLogo from "./assets/images/akkhor_logo_1781456142605.jpg";
 import { initFirebase, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "./lib/firebase";
 
 export default function App() {
+  const navigate = useNavigate();
   const [userRole, setUserRole] = useState<"admin" | "member" | "guest" | null>(() => {
     return (localStorage.getItem("okkhor_pathagar_role") as any) || null;
   });
@@ -678,7 +680,7 @@ export default function App() {
   };
 
   const handleNavigateHome = () => {
-    setActiveTab("home");
+    navigate("/");
   };
 
   // Dynamic Nav tab buttons mapping
@@ -732,87 +734,54 @@ export default function App() {
   const [selectedPublicBook, setSelectedPublicBook] = useState<any | null>(null);
   const [selectedShopItem, setSelectedShopItem] = useState<any | null>(null);
 
-  if (!isAuthenticated) {
-    // Show dedicated Sales Corner page
-    if (showSalesPage) {
-      if (selectedShopItem) {
-        return (
-          <PublicShopItemDetailsPage
-            item={selectedShopItem}
-            onBack={() => setSelectedShopItem(null)}
-            logoBase64={logoBase64}
-          />
-        );
-      }
+  const publicHomeRender = (
+    <>
+      <HomePage
+        onLogin={() => {
+          if (isAuthenticated) {
+            navigate("/dashboard");
+          } else {
+            setLoginTab("admin");
+            navigate("/login");
+          }
+        }}
+        onMemberLogin={() => setIsRegisterOpen(true)}
+        onLibraryMemberLogin={() => {
+          if (isAuthenticated) {
+            navigate("/dashboard");
+          } else {
+            setLoginTab("member");
+            navigate("/login");
+          }
+        }}
+        onGuestEntry={() => {
+          if (!isAuthenticated) handleGuestEntry();
+          navigate("/dashboard");
+        }}
+        logoBase64={logoBase64}
+        onSalesCorner={() => {
+          navigate("/shop");
+        }}
+        onBookSelect={(book) => {
+          setSelectedPublicBook(book);
+          navigate("/book/view");
+        }}
+      />
+      <RegistrationModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        onDirectLogin={handleDirectMemberLogin}
+      />
+    </>
+  );
 
-      return (
-        <PublicSalesPage
-          onBack={() => {
-            setShowSalesPage(false);
-            setShowHomePage(true);
-          }}
-          onItemSelect={(item) => setSelectedShopItem(item)}
-          logoBase64={logoBase64}
-        />
-      );
-    }
-
-    // Show dedicated Book Details page
-    if (selectedPublicBook) {
-      return (
-        <PublicBookDetailsPage
-          book={selectedPublicBook}
-          onBack={() => {
-            setSelectedPublicBook(null);
-            setShowHomePage(true);
-          }}
-          logoBase64={logoBase64}
-        />
-      );
-    }
-
-    // Show the landing/home page by default for unauthenticated visitors
-    if (showHomePage) {
-      return (
-        <>
-          <HomePage
-            onLogin={() => {
-              setLoginTab("admin");
-              setShowHomePage(false);
-            }}
-            onMemberLogin={() => setIsRegisterOpen(true)}
-            onLibraryMemberLogin={() => {
-              setLoginTab("member");
-              setShowHomePage(false);
-            }}
-            onGuestEntry={handleGuestEntry}
-            logoBase64={logoBase64}
-            onSalesCorner={() => {
-              setShowHomePage(false);
-              setShowSalesPage(true);
-            }}
-            onBookSelect={(book) => {
-              setShowHomePage(false);
-              setSelectedPublicBook(book);
-            }}
-          />
-          <RegistrationModal
-            isOpen={isRegisterOpen}
-            onClose={() => setIsRegisterOpen(false)}
-            onDirectLogin={handleDirectMemberLogin}
-          />
-        </>
-      );
-    }
-
-    // Existing login form UI
-    return (
+  const loginRender = (
       <div className="flex items-center justify-center min-h-screen p-4 relative overflow-hidden bg-[#F5F3EF]">
         
         {/* Back to home page button */}
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 sm:left-auto sm:translate-x-0 sm:right-32">
           <button
-            onClick={() => setShowHomePage(true)}
+            onClick={() => navigate("/")}
             className="flex items-center gap-1.5 px-4 py-2 bg-white text-[10px] sm:text-xs font-bold text-[#22242A] border border-[#E5E5EA] hover:border-[#22242A]/30 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.06)] cursor-pointer transition-colors"
             title="হোম পেজে ফিরে যান"
             id="back-to-home-btn"
@@ -1119,12 +1088,10 @@ export default function App() {
           onDirectLogin={handleDirectMemberLogin}
         />
       </div>
-    );
-  }
+  );
 
-  // MASTER AUTHENTICATED PANEL
-  return (
-    <div className="min-h-screen flex flex-col bg-[#F5F3EF] text-[#22242A] relative">
+  const adminRender = (
+    <div className="min-h-screen flex flex-col bg-[#F5F3EF] overflow-hidden theme-royal-ivory">
       
       {/* 1. Header Navigation Bar */}
       <header className="sticky top-0 z-40 bg-[#F5F3EF] px-3 py-2.5 md:px-6 flex items-center justify-between gap-1.5 sm:gap-4">
@@ -1512,6 +1479,50 @@ export default function App() {
       />
 
     </div>
+  );
+
+  return (
+    <Routes>
+      <Route path="/" element={publicHomeRender} />
+      
+      <Route path="/shop" element={
+        selectedShopItem ? (
+          <PublicShopItemDetailsPage
+            item={selectedShopItem}
+            onBack={() => { setSelectedShopItem(null); navigate("/shop"); }}
+            logoBase64={logoBase64}
+          />
+        ) : (
+          <PublicSalesPage
+            onBack={() => navigate("/")}
+            onItemSelect={(item) => setSelectedShopItem(item)}
+            logoBase64={logoBase64}
+          />
+        )
+      } />
+      
+      <Route path="/book/view" element={
+        selectedPublicBook ? (
+          <PublicBookDetailsPage
+            book={selectedPublicBook}
+            onBack={() => { setSelectedPublicBook(null); navigate("/"); }}
+            logoBase64={logoBase64}
+          />
+        ) : (
+          <Navigate to="/" replace />
+        )
+      } />
+
+      <Route path="/login" element={
+        isAuthenticated ? <Navigate to="/dashboard" replace /> : loginRender
+      } />
+
+      <Route path="/dashboard/*" element={
+        isAuthenticated ? adminRender : <Navigate to="/login" replace />
+      } />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
