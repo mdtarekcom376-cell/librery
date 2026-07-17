@@ -344,6 +344,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
   const [liveReviews, setLiveReviews] = useState<any[]>([]);
   const [liveNotices, setLiveNotices] = useState<any[]>([]);
+  const [liveStats, setLiveStats] = useState(DEMO_STATS);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -394,9 +395,30 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       }
     };
 
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/public/stats");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setLiveStats({
+              totalBooks: data.totalBooks || DEMO_STATS.totalBooks,
+              activeMembers: data.activeMembers || DEMO_STATS.activeMembers,
+              issuedBooks: data.issuedBooks || DEMO_STATS.issuedBooks,
+              activeCorners: data.activeCorners || DEMO_STATS.activeCorners,
+              yearsRunning: data.yearsRunning || DEMO_STATS.yearsRunning,
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load stats", e);
+      }
+    };
+
     fetchBooks();
     fetchSales();
     fetchReviewsAndNotices();
+    fetchStats();
   }, []);
 
   const displayBooks = realBooks.length >= 5 ? realBooks : [...realBooks, ...DEMO_BOOKS];
@@ -712,12 +734,12 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             >
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full" style={{ background: "var(--flame-orange)" }} />
-                চলছে <strong className="font-display-lat" style={{ color: "var(--ink-navy)" }}>{DEMO_STATS.totalBooks.toLocaleString("bn-BD")}+</strong> বই
+                চলছে <strong className="font-display-lat" style={{ color: "var(--ink-navy)" }}>{liveStats.totalBooks.toLocaleString("bn-BD")}+</strong> বই
               </span>
               <span style={{ color: "#cbd5e1" }}>·</span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full" style={{ background: "var(--book-blue)" }} />
-                <strong className="font-display-lat" style={{ color: "var(--ink-navy)" }}>{DEMO_STATS.activeMembers.toLocaleString("bn-BD")}</strong> সক্রিয় সদস্য
+                <strong className="font-display-lat" style={{ color: "var(--ink-navy)" }}>{liveStats.activeMembers.toLocaleString("bn-BD")}</strong> সক্রিয় সদস্য
               </span>
             </motion.div>
           </div>
@@ -752,12 +774,15 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             }}
           >
             <div className="absolute top-0 left-0 w-2 h-full" style={{ background: "var(--flame-gradient)" }}></div>
-            <h4 className="font-display-lat text-lg md:text-xl font-bold mb-4" style={{ color: "var(--book-blue)" }}>
+            <h3 
+              className="inline-block text-[10px] md:text-xs uppercase font-bold tracking-widest px-4 py-1.5 rounded-full mb-6 font-display-lat bg-white border border-[#E5E5EA] shadow-sm" 
+              style={{ color: "var(--flame-orange)" }}
+            >
               What is the Okkhor Pathagar? Just a public library?
-            </h4>
-            <p className="font-body-bn text-xl md:text-2xl leading-relaxed z-10 relative" style={{ color: "var(--ink-navy)" }}>
-              জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!<br />
-              "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত বেসর/লাই নং-০৪।<br />
+            </h3>
+            <p className="font-body-bn text-xl md:text-2xl leading-relaxed z-10 relative text-left mx-auto" style={{ color: "var(--ink-navy)", maxWidth: "800px" }}>
+              <span className="font-bold text-2xl md:text-3xl block mb-4" style={{ color: "var(--book-blue)" }}>* অক্ষর পাঠাগার জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!</span>
+              "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত, বেসর/লাই নং-০৪।<br /><br />
               আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
             </p>
           </motion.div>
@@ -1045,7 +1070,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             >
               <h3 className="font-display-bn text-xl font-bold" style={{ color: "var(--ink-navy)" }}>আজীবন সদস্য</h3>
               <p className="font-display-lat text-3xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
-                এককালীন
+                ৯৯৯৯ <span className="text-base font-normal font-body-bn text-[#64748b]">টাকা</span>
               </p>
               <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>অগ্রাধিকার সুবিধা</p>
               <ul className="space-y-2.5 mb-8 flex-1">
@@ -1129,7 +1154,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       {/* ======================================
           §4.8 LIVE STATS (COUNT-UP)
           ====================================== */}
-      <StatsSection />
+      <StatsSection stats={liveStats} />
 
       {/* ======================================
           §4.9 SALES CORNER
@@ -1746,16 +1771,16 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 /* ===========================================
    STATS SECTION (Extracted for useInView hook)
    =========================================== */
-function StatsSection() {
+function StatsSection({ stats = DEMO_STATS }: { stats?: typeof DEMO_STATS }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-10%" });
 
   const statItems = [
-    { label: "মোট বই", value: DEMO_STATS.totalBooks, suffix: "+", icon: Book },
-    { label: "সক্রিয় সদস্য", value: DEMO_STATS.activeMembers, suffix: "+", icon: Users },
-    { label: "ইস্যুকৃত বই", value: DEMO_STATS.issuedBooks, suffix: "+" },
-    { label: "সক্রিয় কর্নার", value: DEMO_STATS.activeCorners, suffix: "" },
-    { label: "চালু আছে (বছর)", value: DEMO_STATS.yearsRunning, suffix: "", icon: CalendarClock },
+    { label: "মোট বই", value: stats.totalBooks, suffix: "+", icon: Book },
+    { label: "সক্রিয় সদস্য", value: stats.activeMembers, suffix: "+", icon: Users },
+    { label: "ইস্যুকৃত বই", value: stats.issuedBooks, suffix: "+" },
+    { label: "সক্রিয় কর্নার", value: stats.activeCorners, suffix: "" },
+    { label: "চালু আছে (বছর)", value: stats.yearsRunning, suffix: "", icon: CalendarClock },
   ];
 
   return (

@@ -2541,7 +2541,19 @@ if (process.env.VERCEL) {
         if (r.status === "Issued") issuedBooks += r.count;
         else if (r.status === "Available") availableBooks += r.count;
       });
-      res.json({ success: true, totalBooks, issuedBooks, availableBooks });
+
+      const [memberRows]: any = await pool.query("SELECT COUNT(*) as count FROM members");
+      const activeMembers = memberRows[0]?.count || 0;
+
+      const [cornerRows]: any = await pool.query("SELECT COUNT(DISTINCT group_name) as count FROM books WHERE group_name IS NOT NULL AND group_name != ''");
+      const activeCorners = cornerRows[0]?.count || 0;
+
+      // Calculate years running (e.g. from 2021 or 2022)
+      const startYear = 2021;
+      const currentYear = new Date().getFullYear();
+      const yearsRunning = Math.max(1, currentYear - startYear);
+
+      res.json({ success: true, totalBooks, issuedBooks, availableBooks, activeMembers, activeCorners, yearsRunning });
     } catch (err: any) {
       res.status(500).json({ error: "পরিসংখ্যান লোড করা যায়নি।" });
     }
@@ -2573,7 +2585,8 @@ if (process.env.VERCEL) {
       const [rows]: any = await pool.query(query, params);
       const books = rows.map((r: any) => ({
         id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.group_name
+        imageUrl: r.image_url, status: r.status, group: r.group_name,
+        description: r.description, pageCount: r.page_count, price: r.price
       }));
 
       res.json({ success: true, books });
