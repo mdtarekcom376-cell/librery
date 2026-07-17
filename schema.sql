@@ -7,7 +7,9 @@ CREATE TABLE books (
   image_url TEXT,
   status VARCHAR(50) NOT NULL,
   group_name VARCHAR(255),
-  description TEXT
+  description TEXT,
+  page_count INT,
+  price DECIMAL(10,2)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE members (

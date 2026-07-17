@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { X, Printer, FileDown, Loader2 } from "lucide-react";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+// jsPDF and html2canvas are dynamically imported where used to reduce initial bundle size
 
 interface PreviewModalProps {
   isOpen: boolean;
@@ -207,6 +206,8 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
       document.body.appendChild(container);
 
       // 4. Capture the sandbox via html2canvas with optimal settings
+      const html2canvasModule = await import("html2canvas");
+      const html2canvas = html2canvasModule.default;
       const canvas = await html2canvas(container, {
         scale: 2, // Double resolution for ultra-sharp high DPI printing
         useCORS: true,
@@ -220,6 +221,7 @@ export default function PreviewModal({ isOpen, onClose, title, dataType, data }:
 
       // 6. Generate the high fidelity PDF document
       const imgData = canvas.toDataURL("image/jpeg", 0.98);
+      const { jsPDF } = await import("jspdf");
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",

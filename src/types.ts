@@ -8,6 +8,8 @@ export interface Book {
   status: "Available" | "Issued";
   group?: string; // e.g., নজরুল কর্নার, রবীন্দ্রনাথ কর্নার, উপন্যাস, গল্প ইত্যাদি
   description?: string;
+  pageCount?: number; // পৃষ্ঠা সংখ্যা
+  price?: number; // মূল্য (৳)
 }
 
 export interface Member {

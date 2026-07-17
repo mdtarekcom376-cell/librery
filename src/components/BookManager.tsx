@@ -32,6 +32,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
   const [bookImageUrl, setBookImageUrl] = useState("");
   const [bookGroup, setBookGroup] = useState("");
   const [bookDescription, setBookDescription] = useState("");
+  const [bookPageCount, setBookPageCount] = useState("");
+  const [bookPrice, setBookPrice] = useState("");
   const [groups, setGroups] = useState<string[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>("");
 
@@ -101,6 +103,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     setBookImageUrl(book.imageUrl);
     setBookGroup(book.group || "");
     setBookDescription(book.description || "");
+    setBookPageCount(book.pageCount ? String(book.pageCount) : "");
+    setBookPrice(book.price ? String(book.price) : "");
     setIsEditOpen(true);
     setFormErr("");
   };
@@ -121,7 +125,9 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
         imageUrl: bookImageUrl.trim() || undefined,
         group: bookGroup || undefined,
         description: bookDescription.trim() || undefined,
-      });
+        pageCount: bookPageCount ? Number(bookPageCount) : undefined,
+        price: bookPrice ? Number(bookPrice) : undefined,
+      } as any);
       // Reset form
       setBookCode("");
       setBookName("");
@@ -130,6 +136,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       setBookImageUrl("");
       setBookGroup("");
       setBookDescription("");
+      setBookPageCount("");
+      setBookPrice("");
       setIsAddOpen(false);
       setFormErr("");
     } catch (err: any) {
@@ -154,11 +162,15 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
         imageUrl: bookImageUrl.trim(),
         group: bookGroup || "",
         description: bookDescription.trim() || undefined,
-      });
+        pageCount: bookPageCount ? Number(bookPageCount) : undefined,
+        price: bookPrice ? Number(bookPrice) : undefined,
+      } as any);
       setIsEditOpen(false);
       setSelectedBook(null);
       setBookGroup("");
       setBookDescription("");
+      setBookPageCount("");
+      setBookPrice("");
       setFormErr("");
     } catch (err: any) {
       setFormErr(err.message || "সংরক্ষণ ব্যর্থ হয়েছে। কুয়েরি চেক করুন।");
@@ -357,7 +369,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   src={book.imageUrl && book.imageUrl.trim() ? book.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                   alt={book.name} 
                   className="w-full h-full object-cover" 
-                  referrerPolicy="no-referrer" 
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               </div>
               <div className="flex-1 flex flex-col justify-between min-w-0">
@@ -380,6 +393,12 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   <h3 className="font-bold text-[#22242A] text-xs sm:text-sm truncate" title={book.name}>{book.name}</h3>
                   <p className="text-[#6B6B70] text-xs truncate">{book.author}</p>
                   <p className="text-[#6B6B70] text-[10px] truncate">প্রকাশক: {book.publisher}</p>
+                  {(book.pageCount || book.price) && (
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {book.pageCount ? <span className="text-[9px] text-[#6B6B70] font-mono">📄 {book.pageCount} পৃষ্ঠা</span> : null}
+                      {book.price ? <span className="text-[9px] text-[#22242A] font-bold font-mono">৳{book.price}</span> : null}
+                    </div>
+                  )}
                 </div>
 
                 {/* Operations links and buttons */}
@@ -503,6 +522,32 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   placeholder="বইয়ের সংক্ষিপ্ত বিবরণ লিখুন..."
                   className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 h-20 resize-none"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6B6B70] mb-1">পৃষ্ঠা সংখ্যা (ঐচ্ছিক)</label>
+                  <input
+                    type="number"
+                    value={bookPageCount}
+                    onChange={(e) => setBookPageCount(e.target.value)}
+                    placeholder="যেমন: 250"
+                    min="0"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6B6B70] mb-1">মূল্য ৳ (ঐচ্ছিক)</label>
+                  <input
+                    type="number"
+                    value={bookPrice}
+                    onChange={(e) => setBookPrice(e.target.value)}
+                    placeholder="যেমন: 350.00"
+                    min="0"
+                    step="0.01"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
+                  />
+                </div>
               </div>
 
               <div>
@@ -664,6 +709,32 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                   placeholder="বইয়ের সংক্ষিপ্ত বিবরণ লিখুন..."
                   className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40 h-20 resize-none"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6B6B70] mb-1">পৃষ্ঠা সংখ্যা (ঐচ্ছিক)</label>
+                  <input
+                    type="number"
+                    value={bookPageCount}
+                    onChange={(e) => setBookPageCount(e.target.value)}
+                    placeholder="যেমন: 250"
+                    min="0"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6B6B70] mb-1">মূল্য ৳ (ঐচ্ছিক)</label>
+                  <input
+                    type="number"
+                    value={bookPrice}
+                    onChange={(e) => setBookPrice(e.target.value)}
+                    placeholder="যেমন: 350.00"
+                    min="0"
+                    step="0.01"
+                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
+                  />
+                </div>
               </div>
 
               <div>

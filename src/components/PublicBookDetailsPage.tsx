@@ -143,6 +143,28 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
                   <p className="font-bold text-slate-700 text-sm font-body-bn">{book.publisher}</p>
                 </div>
               </div>
+              {book.pageCount && (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
+                    <BookOpen size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#6B6B70] font-bold uppercase">পৃষ্ঠা সংখ্যা</p>
+                    <p className="font-bold text-slate-700 text-sm font-body-bn">{book.pageCount} পৃষ্ঠা</p>
+                  </div>
+                </div>
+              )}
+              {book.price != null && (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
+                    <Hash size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#6B6B70] font-bold uppercase">মূল্য</p>
+                    <p className="font-bold text-slate-700 text-sm font-body-bn">৳{book.price}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>
