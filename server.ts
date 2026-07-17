@@ -258,6 +258,7 @@ async function verifySignedToken(token: string): Promise<string | null> {
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Normalize request URL for serverless/Vercel environments where the '/api' prefix might be stripped in rewrites
 if (process.env.VERCEL) {
@@ -3184,7 +3185,9 @@ if (process.env.VERCEL) {
   // =============================================
 
   // Setup Multer Storage for Write to Us attachments
-  const submissionsUploadDir = path.join(process.cwd(), "uploads", "submissions");
+  const submissionsUploadDir = process.env.VERCEL
+    ? path.join("/tmp", "uploads", "submissions")
+    : path.join(process.cwd(), "uploads", "submissions");
   if (!fs.existsSync(submissionsUploadDir)) {
     fs.mkdirSync(submissionsUploadDir, { recursive: true });
   }
@@ -3203,7 +3206,15 @@ if (process.env.VERCEL) {
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
   // Public: Submit a new writing/complaint
-  app.post("/api/submissions", uploadSubmission.single("attachment"), async (req, res) => {
+  app.post("/api/submissions", (req, res, next) => {
+    uploadSubmission.single("attachment")(req, res, function (err) {
+      if (err) {
+        console.error("Multer file upload error:", err);
+        return res.status(500).json({ error: "ফাইল আপলোডে ত্রুটি হয়েছে। ফাইলের সাইজ চেক করুন।" });
+      }
+      next();
+    });
+  }, async (req, res) => {
     try {
       const { name, email, subject, category, message } = req.body;
       if (!name || !email || !subject || !category || !message) {

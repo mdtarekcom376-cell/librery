@@ -266,8 +266,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-[#070b13] border border-[#E5E5EA] rounded-2xl w-full max-w-2xl my-8 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-[#F5F3EF] border border-[#E5E5EA] rounded-2xl w-full max-w-2xl my-8 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white">

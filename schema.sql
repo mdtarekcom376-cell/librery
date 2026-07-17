@@ -8,7 +8,7 @@ CREATE TABLE books (
   status VARCHAR(50) NOT NULL,
   group_name VARCHAR(255),
   description TEXT
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE members (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,7 +41,7 @@ CREATE TABLE members (
   sender_number VARCHAR(255),
   transaction_id VARCHAR(255),
   payment_status VARCHAR(50)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE issues (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,7 +63,7 @@ CREATE TABLE issues (
   returned_at DATETIME,
   FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
   FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE wishlist (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +73,7 @@ CREATE TABLE wishlist (
   created_at DATETIME NOT NULL,
   member_form_number VARCHAR(255),
   status VARCHAR(50)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE notes (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -81,14 +81,14 @@ CREATE TABLE notes (
   content TEXT NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE audit_logs (
   id INT AUTO_INCREMENT PRIMARY KEY,
   timestamp DATETIME NOT NULL,
   action VARCHAR(255) NOT NULL,
   details TEXT NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE shop_items (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -98,7 +98,7 @@ CREATE TABLE shop_items (
   image_url TEXT,
   category VARCHAR(255) NOT NULL,
   created_at DATETIME NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE reviews (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -110,33 +110,33 @@ CREATE TABLE reviews (
   status VARCHAR(50) NOT NULL,
   created_at DATETIME NOT NULL,
   reviewed_at DATETIME
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE notices (
   id INT AUTO_INCREMENT PRIMARY KEY,
   subject VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
   created_at DATETIME NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE payment_methods (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   type VARCHAR(50) NOT NULL,
   number VARCHAR(255) NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE book_groups (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL UNIQUE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE shop_categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL UNIQUE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE settings (
   setting_key VARCHAR(255) PRIMARY KEY,
   setting_value JSON NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
