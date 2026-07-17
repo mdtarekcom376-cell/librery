@@ -1218,7 +1218,7 @@ export default function App() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveTab("home")}
+                    onClick={() => navigate("/")}
                     title={item.label}
                     className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
                   >
@@ -1275,7 +1275,7 @@ export default function App() {
                         <button
                           key={item.id}
                           onClick={() => {
-                            setActiveTab("home");
+                            navigate("/");
                             setMobileMenuOpen(false);
                           }}
                           className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
@@ -1340,20 +1340,6 @@ export default function App() {
                 memberInfo={loggedInMember}
                 activeTab={activeTab}
                 onNavigate={setActiveTab}
-              />
-            )}
-
-            {userRole === "admin" && activeTab === "home" && (
-              <HomePage
-                onLogin={() => setActiveTab("dashboard")}
-                onMemberLogin={() => setActiveTab("dashboard")}
-                onLibraryMemberLogin={() => setActiveTab("dashboard")}
-                onGuestEntry={() => setActiveTab("dashboard")}
-                logoBase64={logoBase64}
-                onSalesCorner={() => setActiveTab("shop")}
-                onBookSelect={(book) => {
-                  setSelectedPublicBook(book);
-                }}
               />
             )}
 
