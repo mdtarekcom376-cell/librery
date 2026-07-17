@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
 import foundersImg from "../assets/images/founders.png";
+import karyonirbahiImg from "../assets/images/karyonirbahi.png";
 import cornerBanner from "../assets/images/corner-banner.jpg";
 import Hero3DImage from "./Hero3DImage";
 
@@ -329,7 +330,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openCorner, setOpenCorner] = useState<string | null>("নজরুল কর্নার");
-  const [contactForm, setContactForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSent, setContactSent] = useState(false);
 
@@ -441,16 +442,29 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
     }
   }, []);
 
-  // Contact form submit simulation
-  const handleContactSubmit = (e: React.FormEvent) => {
+  // Contact form submission
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setContactSubmitting(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/public/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactForm)
+      });
+      if (res.ok) {
+        setContactSent(true);
+        setContactForm({ name: "", email: "", phone: "", subject: "", message: "" });
+        setTimeout(() => setContactSent(false), 4000);
+      } else {
+        alert("বার্তা পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।");
+    } finally {
       setContactSubmitting(false);
-      setContactSent(true);
-      setContactForm({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setContactSent(false), 4000);
-    }, 1500);
+    }
   };
 
   // Write Us form submission
@@ -774,17 +788,40 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             }}
           >
             <div className="absolute top-0 left-0 w-2 h-full" style={{ background: "var(--flame-gradient)" }}></div>
+            
+            {/* Visual Header Pill */}
             <h3 
-              className="inline-block text-[10px] md:text-xs uppercase font-bold tracking-widest px-4 py-1.5 rounded-full mb-6 font-display-lat bg-white border border-[#E5E5EA] shadow-sm" 
-              style={{ color: "var(--flame-orange)" }}
+              className="inline-block text-[10px] md:text-xs uppercase font-bold tracking-widest px-5 py-2 rounded-full mb-8 font-display-lat shadow-sm" 
+              style={{ 
+                color: "var(--flame-orange)", 
+                background: "linear-gradient(to right, #FFF7F0, #FFFFFF)", 
+                border: "1px solid #FFEDDF" 
+              }}
             >
               What is the Okkhor Pathagar? Just a public library?
             </h3>
-            <p className="font-body-bn text-xl md:text-2xl leading-relaxed z-10 relative text-left mx-auto" style={{ color: "var(--ink-navy)", maxWidth: "800px" }}>
-              <span className="font-bold text-2xl md:text-3xl block mb-4" style={{ color: "var(--book-blue)" }}>* অক্ষর পাঠাগার জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!</span>
-              "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত, বেসর/লাই নং-০৪।<br /><br />
-              আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
-            </p>
+            
+            {/* Elevated Body Content */}
+            <div className="relative text-left mx-auto px-2 sm:px-6 py-2" style={{ maxWidth: "800px" }}>
+              <div 
+                className="absolute -left-2 top-0 bottom-0 w-1 rounded-full opacity-50" 
+                style={{ background: "var(--flame-gradient)" }} 
+              />
+              <p className="font-body-bn text-xl md:text-[22px] leading-relaxed relative z-10" style={{ color: "var(--ink-navy)" }}>
+                <span 
+                  className="font-bold text-2xl md:text-3xl block mb-6 leading-tight" 
+                  style={{ color: "var(--book-blue)" }}
+                >
+                  <span style={{ color: "var(--flame-orange)" }}>*</span> অক্ষর পাঠাগার জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!
+                </span>
+                <span className="block mb-5 text-[#334155]">
+                  "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত, বেসর/লাই নং-০৪।
+                </span>
+                <span className="block text-[#475569] font-medium p-4 rounded-xl" style={{ background: "#F8FAFC", borderLeft: "3px solid var(--book-blue)" }}>
+                  আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
+                </span>
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -1114,13 +1151,17 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5 }}
             >
-              <div className="relative">
+              <div className="relative flex flex-col items-center">
                 <img 
-                  src={foundersImg} 
-                  alt="Akkhor Pathagar Founders" 
-                  className="w-56 h-56 md:w-72 md:h-72 object-contain"
-                  style={{ filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.15))" }}
+                  src={karyonirbahiImg} 
+                  alt="কার্যনির্বাহী পরিষদ" 
+                  className="w-full max-w-sm rounded-2xl object-cover shadow-lg border border-[#E5E5EA]"
                 />
+                <div className="mt-4 px-6 py-2 rounded-full bg-white shadow-sm border border-[#E5E5EA]">
+                  <p className="font-display-bn text-sm font-bold text-[#64748b] tracking-wide uppercase">
+                    কার্যনির্বাহী পরিষদ
+                  </p>
+                </div>
               </div>
             </motion.div>
 
@@ -1356,7 +1397,6 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <h2 className="font-display-bn text-2xl md:text-4xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
                 আমাদের লিখুন
               </h2>
-              <p className="text-xs text-[#6B6B70] mt-2">অভিযোগ, পরামর্শ, গল্প, কবিতা, উপন্যাস, প্রবন্ধ রচনা।</p>
               <motion.div
                 className="mx-auto mt-4"
                 style={{ maxWidth: 80, height: 3, background: "linear-gradient(90deg, #F7941D, #EC2C7B)", borderRadius: 2 }}
@@ -1423,6 +1463,19 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                     className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
                     style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
                     placeholder="example@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    ফোন নম্বর (ঐচ্ছিক)
+                  </label>
+                  <input
+                    type="tel"
+                    value={contactForm.phone}
+                    onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="০১৭xxxxxxxx"
                   />
                 </div>
                 <div>
@@ -1681,7 +1734,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           ====================================== */}
       <footer className="py-12 md:py-16 px-4" style={{ background: "var(--ink-navy)", color: "white" }}>
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-10">
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -1727,7 +1780,27 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <div className="flex flex-col gap-2 font-body-bn text-sm" style={{ color: "#94a3b8" }}>
                 <span>পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা</span>
                 <span>01642816737, 01798084404</span>
+                <span>hello@okkhorpathagar.com</span>
                 <span>okkhorpathagar@gmail.com</span>
+              </div>
+            </div>
+
+            {/* Founders */}
+            <div>
+              <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
+                পরিচালনা পর্ষদ
+              </h4>
+              <div className="flex flex-col gap-5">
+                <div>
+                  <p className="font-body-bn text-sm font-bold text-white mb-0.5">মোঃ সাইফুল ইসলাম তোহা</p>
+                  <p className="font-body-bn text-xs mb-1" style={{ color: "#94a3b8" }}>প্রতিষ্ঠাতা, পরিচালক, অক্ষর পাঠাগার</p>
+                  <p className="font-body-bn text-xs font-bold" style={{ color: "var(--sky-tint)" }}>01642-816737</p>
+                </div>
+                <div>
+                  <p className="font-body-bn text-sm font-bold text-white mb-0.5">ওমর বিন আব্দুল আজিজ</p>
+                  <p className="font-body-bn text-xs mb-1" style={{ color: "#94a3b8" }}>প্রতিষ্ঠাতা, সহকারী পরিচালক, অক্ষর পাঠাগার</p>
+                  <p className="font-body-bn text-xs font-bold" style={{ color: "var(--sky-tint)" }}>01798-084404</p>
+                </div>
               </div>
             </div>
 

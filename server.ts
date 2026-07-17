@@ -2595,6 +2595,26 @@ if (process.env.VERCEL) {
     }
   });
 
+  // 6.5. Public Contact Submission
+  app.post("/api/public/contact", async (req, res) => {
+    try {
+      const { name, email, phone, subject, message } = req.body;
+      if (!name || !email || !message) {
+        return res.status(400).json({ error: "নাম, ইমেইল এবং বার্তা আবশ্যক।" });
+      }
+      
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO contact_submissions (name, email, phone, subject, message, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        [name.trim(), email.trim(), (phone || "").trim(), (subject || "").trim(), message.trim(), formatCurrentDateTime()]
+      );
+
+      res.status(201).json({ success: true, id: resInsert.insertId });
+    } catch (err: any) {
+      console.error("POST /api/public/contact error:", err);
+      res.status(500).json({ error: "যোগাযোগের তথ্য জমা দিতে সমস্যা হয়েছে।" });
+    }
+  });
+
   // 7. Public wishlist post (for members)
   app.post("/api/public/wishlist", async (req, res) => {
     try {
