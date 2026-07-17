@@ -75,6 +75,17 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
     }
   };
 
+  const handleToggleStatus = async (id: string, currentStatus?: string) => {
+    try {
+      const nextStatus = currentStatus === "fulfilled" ? "pending" : "fulfilled";
+      await apiClient.put(`/wishlist/${id}/status`, { status: nextStatus });
+      fetchWishlist();
+      onRefreshStats();
+    } catch (err: any) {
+      alert(err.message || "স্ট্যাটাস আপডেট করা যায়নি।");
+    }
+  };
+
   const filteredWish = wishlist.filter(item =>
     item.name.toLowerCase().includes(q.toLowerCase()) ||
     item.author.toLowerCase().includes(q.toLowerCase()) ||
@@ -129,17 +140,32 @@ export default function Wishlist({ onPreviewWishlist, onRefreshStats }: Wishlist
               className="glass-panel p-4 rounded-xl border border-[#E5E5EA] flex flex-col justify-between hover:border-[#22242A] duration-200"
             >
               <div className="space-y-1">
-                <span className="text-[9px] font-mono font-bold text-[#22242A] tracking-widest uppercase bg-[#F5F3EF] px-1.5 py-0.5 rounded">
-                  WISHLIST ITEM
-                </span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-[9px] font-mono font-bold text-[#22242A] tracking-widest uppercase bg-[#F5F3EF] px-1.5 py-0.5 rounded">
+                    WISHLIST ITEM
+                  </span>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${item.status === "fulfilled" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
+                    {item.status === "fulfilled" ? "✓ সংগৃহীত (Fulfilled)" : "⏳ অপেক্ষমাণ (Pending)"}
+                  </span>
+                </div>
                 <h3 className="font-bold text-[#22242A] text-sm sm:text-base pt-1">{item.name}</h3>
                 <p className="text-[#6B6B70] text-xs">লেখক: {item.author || "অজ্ঞাত"}</p>
                 <p className="text-[#6B6B70] text-[10px]">প্রকাশনা: {item.publisher || "অজ্ঞাত"}</p>
+                {item.memberFormNumber && (
+                  <p className="text-[#6B6B70] text-[10px] font-mono mt-1">প্রস্তাবক সদস্য: #{item.memberFormNumber}</p>
+                )}
               </div>
 
               <div className="flex justify-between items-center pt-3 border-t border-[#E5E5EA] mt-3">
                 <span className="text-[9px] font-mono text-[#6B6B70]">সংরক্ষিত: {item.createdAt.split(" ")[0]}</span>
-                <div className="flex gap-1">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => handleToggleStatus(item.id, item.status)}
+                    className={`px-2 py-1 text-[10px] font-bold rounded cursor-pointer transition-colors flex items-center gap-1 ${item.status === "fulfilled" ? "bg-amber-100 text-amber-800 hover:bg-amber-200" : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"}`}
+                    title={item.status === "fulfilled" ? "Pending করুন" : "Fulfilled করুন"}
+                  >
+                    {item.status === "fulfilled" ? "↩ Pending" : "✓ Fulfill"}
+                  </button>
                   <button
                     onClick={() => onPreviewWishlist(item)}
                     className="p-1.5 hover:bg-white rounded text-[#22242A] cursor-pointer"

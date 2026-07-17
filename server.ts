@@ -15,17 +15,31 @@ const DEFAULT_USERNAME = "okkhor";
 const DEFAULT_PASSWORD_HASH = hashPassword("pathagar");
 const SECURITY_PASSWORD = "PASSWD";
 
-// Helper to format date with seconds: YYYY-MM-DD HH:mm:ss
+// Helper to format date with seconds in Bangladesh timezone (UTC+6): YYYY-MM-DD HH:mm:ss
 function formatCurrentDateTime(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
+  const bdNow = new Date(Date.now() + 6 * 60 * 60 * 1000);
+  const year = bdNow.getUTCFullYear();
+  const month = String(bdNow.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(bdNow.getUTCDate()).padStart(2, "0");
+  const hours = String(bdNow.getUTCHours()).padStart(2, "0");
+  const minutes = String(bdNow.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(bdNow.getUTCSeconds()).padStart(2, "0");
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+// Bangladesh Time (UTC+6) date string helper: YYYY-MM-DD
+function getBangladeshDateString(date: Date = new Date()): string {
+  const bdTime = new Date(date.getTime() + 6 * 60 * 60 * 1000);
+  return bdTime.toISOString().split("T")[0];
+}
+
+// Helper to add/subtract days from a YYYY-MM-DD string cleanly without timezone drift
+function addDaysToDateString(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + days));
+  return dt.toISOString().split("T")[0];
+}
+
 
 // Database Scheme Types
 interface Book {
@@ -645,7 +659,7 @@ if (process.env.VERCEL) {
 
   app.get("/api/dashboard", authenticateAdmin, async (req, res) => {
     try {
-      const todayStr = new Date().toISOString().split("T")[0];
+      const todayStr = getBangladeshDateString();
 
       // Execute basic count queries concurrently
       const [booksTotal]: any = await pool.query("SELECT COUNT(*) AS count FROM books");
@@ -1483,17 +1497,14 @@ if (process.env.VERCEL) {
       }
 
       // 3. Compute Dates
-      const today = new Date();
-      const issueDateStr = today.toISOString().split("T")[0];
+      const issueDateStr = getBangladeshDateString();
 
       let computedReturnDateStr = "";
       if (returnOption === "manual") {
         computedReturnDateStr = manualReturnDate;
       } else {
         const days = parseInt(returnOption, 10) || 7;
-        const retDate = new Date();
-        retDate.setDate(today.getDate() + days);
-        computedReturnDateStr = retDate.toISOString().split("T")[0];
+        computedReturnDateStr = addDaysToDateString(issueDateStr, days);
       }
 
       if (!computedReturnDateStr) {
@@ -1534,7 +1545,7 @@ if (process.env.VERCEL) {
 
   // Returns currently scheduled warnings
   app.get("/api/sms/scheduled", authenticateAdmin, async (req, res) => {
-    const todayStr = (req.query.todayStr as string) || new Date().toISOString().split("T")[0];
+    const todayStr = (req.query.todayStr as string) || getBangladeshDateString();
     const bypassRules = req.query.bypassRules === "true";
 
     try {
@@ -1647,7 +1658,7 @@ if (process.env.VERCEL) {
       }
 
       const issue = issueRows[0];
-      const returnedAt = new Date().toISOString().split("T")[0];
+      const returnedAt = getBangladeshDateString();
 
       await pool.query("UPDATE books SET status = 'Available' WHERE id = ?", [issue.b_id]);
       await pool.query("UPDATE issues SET status = 'Returned', returned_at = ? WHERE id = ?", [returnedAt, issue.id]);
@@ -1701,25 +1712,24 @@ if (process.env.VERCEL) {
       const offset = parseInt(days, 10);
       let parsedHistory = typeof issue.extension_history === "string" ? JSON.parse(issue.extension_history) : (issue.extension_history || []);
 
+      const newReturnDate = addDaysToDateString(String(issue.return_date).split("T")[0], action === "Extend" ? offset : -offset);
+
       if (action === "Extend") {
-        currentDate.setDate(currentDate.getDate() + offset);
         parsedHistory.push({
-          date: new Date().toISOString().split("T")[0],
+          date: getBangladeshDateString(),
           action: "Extended",
           payload: `${offset} দিন বাড়ানো হয়েছে`,
         });
-        addLog("সময় বাড়ানো", `'${issue.book_name}' (কোড: ${issue.book_code}) বইয়ের সময়সীমা ${offset} দিন বৃদ্ধি করা হয়েছে। নতুন তারিখ: ${currentDate.toISOString().split("T")[0]}`);
+        addLog("সময় বাড়ানো", `'${issue.book_name}' (কোড: ${issue.book_code}) বইয়ের সময়সীমা ${offset} দিন বৃদ্ধি করা হয়েছে। নতুন তারিখ: ${newReturnDate}`);
       } else {
-        currentDate.setDate(currentDate.getDate() - offset);
         parsedHistory.push({
-          date: new Date().toISOString().split("T")[0],
+          date: getBangladeshDateString(),
           action: "Reduced",
           payload: `${offset} দিন কমানো হয়েছে`,
         });
-        addLog("সময় কমানো", `'${issue.book_name}' (কোড: ${issue.book_code}) বইয়ের সময়সীমা ${offset} দিন কমানো হয়েছে। নতুন তারিখ: ${currentDate.toISOString().split("T")[0]}`);
+        addLog("সময় কমানো", `'${issue.book_name}' (কোড: ${issue.book_code}) বইয়ের সময়সীমা ${offset} দিন কমানো হয়েছে। নতুন তারিখ: ${newReturnDate}`);
       }
 
-      const newReturnDate = currentDate.toISOString().split("T")[0];
       await pool.query("UPDATE issues SET return_date = ?, extension_history = ? WHERE id = ?", [newReturnDate, JSON.stringify(parsedHistory), issueId]);
 
       res.json({ success: true, newReturnDate: newReturnDate });
@@ -1735,7 +1745,7 @@ if (process.env.VERCEL) {
     try {
       const [rows]: any = await pool.query("SELECT * FROM wishlist ORDER BY id DESC");
       res.json(rows.map((r: any) => ({
-        id: String(r.id), name: r.name, author: r.author, publisher: r.publisher, createdAt: r.created_at
+        id: String(r.id), name: r.name, author: r.author, publisher: r.publisher, createdAt: r.created_at, memberFormNumber: r.member_form_number || "", status: r.status || "pending"
       })));
     } catch (err) {
       console.error(err);
@@ -1744,7 +1754,7 @@ if (process.env.VERCEL) {
   });
 
   app.post("/api/wishlist", authenticateAdmin, async (req, res) => {
-    const { name, author, publisher } = req.body;
+    const { name, author, publisher, status } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: "বইয়ের নাম থাকতে হবে।" });
@@ -1753,17 +1763,52 @@ if (process.env.VERCEL) {
     try {
       const p_author = author || "অজ্ঞাত";
       const p_publisher = publisher || "অজ্ঞাত";
+      const p_status = status || "pending";
       const createdAt = formatCurrentDateTime();
 
-      const [result]: any = await pool.query("INSERT INTO wishlist (name, author, publisher, created_at) VALUES (?, ?, ?, ?)", [name, p_author, p_publisher, createdAt]);
+      const [result]: any = await pool.query("INSERT INTO wishlist (name, author, publisher, created_at, status) VALUES (?, ?, ?, ?, ?)", [name, p_author, p_publisher, createdAt, p_status]);
       const newItem = {
-        id: String(result.insertId), name, author: p_author, publisher: p_publisher, createdAt
+        id: String(result.insertId), name, author: p_author, publisher: p_publisher, createdAt, status: p_status
       };
 
 
       addLog("বই যোগ", `উইশলিস্টে নতুন বই '${name}' যোগ করা হয়েছে।`);
 
       res.status(201).json(newItem);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
+  });
+
+  app.put("/api/wishlist/:id/fulfill", authenticateAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM wishlist WHERE id = ?", [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "আইটেমটি পাওয়া যায়নি।" });
+      }
+      await pool.query("UPDATE wishlist SET status = 'fulfilled' WHERE id = ?", [id]);
+      addLog("উইশলিস্ট আপডেট", `বই '${rows[0].name}' সংগৃহীত (fulfilled) হিসেবে চিহ্নিত করা হয়েছে।`);
+      res.json({ success: true, status: "fulfilled" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
+  });
+
+  app.put("/api/wishlist/:id/status", authenticateAdmin, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM wishlist WHERE id = ?", [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "আইটেমটি পাওয়া যায়নি।" });
+      }
+      const newStatus = status || "fulfilled";
+      await pool.query("UPDATE wishlist SET status = ? WHERE id = ?", [newStatus, id]);
+      addLog("উইশলিস্ট আপডেট", `বই '${rows[0].name}' এর স্ট্যাটাস '${newStatus}' করা হয়েছে।`);
+      res.json({ success: true, status: newStatus });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "সার্ভার এরর" });
@@ -1963,7 +2008,7 @@ if (process.env.VERCEL) {
   // Trigger simulated cron job to run check immediately
   app.post("/api/sms/trigger", authenticateAdmin, async (req, res) => {
     try {
-      const todayStr = (req.body.todayStr as string) || (req.query.todayStr as string) || new Date().toISOString().split("T")[0];
+      const todayStr = (req.body.todayStr as string) || (req.query.todayStr as string) || getBangladeshDateString();
       const bypassRules = req.body.bypassRules === true || req.body.bypassRules === "true" || req.query.bypassRules === "true";
       
       const [gatewayRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'smsGateway'");
@@ -1986,8 +2031,8 @@ if (process.env.VERCEL) {
       const activeAlerts: Array<{ mobile: string; text: string; memberName: string }> = [];
 
       issues.forEach((issue: any) => {
-        // Return date from DB might be a Date object, convert to YYYY-MM-DD string
-        const issueReturnDateStr = (issue.return_date instanceof Date) ? issue.return_date.toISOString().split("T")[0] : String(issue.return_date).split(" ")[0];
+        // Return date from DB might be a Date object, convert to YYYY-MM-DD string cleanly
+        const issueReturnDateStr = (issue.return_date instanceof Date) ? getBangladeshDateString(issue.return_date) : String(issue.return_date).split(" ")[0].split("T")[0];
 
         const diffDays = getBangladeshDiffDays(todayStr, issueReturnDateStr);
 
@@ -3089,107 +3134,6 @@ if (process.env.VERCEL) {
     }
   });
 
-  // =============================================
-  // REVIEWS API (Member submit, admin manage, public view)
-  // =============================================
-
-  // Member: Submit a review
-  app.post("/api/reviews", async (req, res) => {
-    try {
-      const { memberFormNumber, memberName, subject, content, rating } = req.body;
-      if (!memberFormNumber || !memberName || !subject || !content || !rating) {
-        return res.status(400).json({ error: "রিভিউয়ের সব তথ্য দেওয়া আবশ্যক।" });
-      }
-      
-      const [resInsert]: any = await pool.query(
-        "INSERT INTO reviews (member_form_number, member_name, subject, content, rating, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [memberFormNumber, memberName, subject, content, rating, "pending", formatCurrentDateTime()]
-      );
-
-      res.json({ success: true, reviewId: String(resInsert.insertId) });
-    } catch (err: any) {
-      console.error("Error submitting review:", err);
-      res.status(500).json({ error: "রিভিউ সাবমিট করতে ব্যর্থ।" });
-    }
-  });
-
-  // Admin: Get all reviews (with optional status filter)
-  app.get("/api/reviews", authenticateAdmin, async (req, res) => {
-    try {
-      const [rows]: any = await pool.query("SELECT * FROM reviews ORDER BY created_at DESC");
-      const reviews = rows.map((r: any) => ({
-        id: String(r.id),
-        memberFormNumber: r.member_form_number,
-        memberName: r.member_name,
-        subject: r.subject,
-        content: r.content,
-        rating: r.rating,
-        status: r.status,
-        createdAt: r.created_at,
-        reviewedAt: r.reviewed_at
-      }));
-      res.json(reviews);
-    } catch (err: any) {
-      console.error("Error fetching admin reviews:", err);
-      res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
-    }
-  });
-
-  // Admin: Approve a review
-  app.put("/api/reviews/:id/approve", authenticateAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      await pool.query("UPDATE reviews SET status = 'approved', reviewed_at = ? WHERE id = ?", [formatCurrentDateTime(), id]);
-      addLog("রিভিউ অনুমোদন", `রিভিউ আইডি ${id} অনুমোদিত হয়েছে।`);
-      res.json({ success: true });
-    } catch (err: any) {
-      res.status(500).json({ error: "রিভিউ অনুমোদন করতে ব্যর্থ।" });
-    }
-  });
-
-  // Admin: Reject a review
-  app.put("/api/reviews/:id/reject", authenticateAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      await pool.query("UPDATE reviews SET status = 'rejected', reviewed_at = ? WHERE id = ?", [formatCurrentDateTime(), id]);
-      addLog("রিভিউ প্রত্যাখ্যান", `রিভিউ আইডি ${id} প্রত্যাখ্যাত হয়েছে।`);
-      res.json({ success: true });
-    } catch (err: any) {
-      res.status(500).json({ error: "রিভিউ প্রত্যাখ্যান করতে ব্যর্থ।" });
-    }
-  });
-
-  // Admin: Delete a review
-  app.delete("/api/reviews/:id", authenticateAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      await pool.query("DELETE FROM reviews WHERE id = ?", [id]);
-      addLog("রিভিউ ডিলিট", `রিভিউ আইডি ${id} মুছে ফেলা হয়েছে।`);
-      res.json({ success: true });
-    } catch (err: any) {
-      res.status(500).json({ error: "রিভিউ মুছতে ব্যর্থ।" });
-    }
-  });
-
-  // Public: Get approved reviews
-  app.get("/api/public/reviews", async (req, res) => {
-    try {
-      const [rows]: any = await pool.query("SELECT * FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10");
-      const reviews = rows.map((r: any) => ({
-        id: String(r.id),
-        memberName: r.member_name,
-        memberFormNumber: r.member_form_number,
-        subject: r.subject,
-        content: r.content,
-        rating: r.rating,
-        createdAt: r.created_at
-      }));
-      res.json(reviews);
-    } catch (err: any) {
-      console.error("Error fetching public reviews:", err);
-      res.status(500).json({ error: "রিভিউ লোড করতে ব্যর্থ।" });
-    }
-  });
   app.get("/api/public/notices", async (req, res) => {
     try {
       const [rows]: any = await pool.query("SELECT * FROM notices ORDER BY id DESC");

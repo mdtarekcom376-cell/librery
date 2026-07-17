@@ -4,7 +4,7 @@ CREATE TABLE books (
   name VARCHAR(255) NOT NULL,
   author VARCHAR(255) NOT NULL,
   publisher VARCHAR(255) NOT NULL,
-  image_url TEXT,
+  image_url LONGTEXT,
   status VARCHAR(50) NOT NULL,
   group_name VARCHAR(255),
   description TEXT,
@@ -74,7 +74,7 @@ CREATE TABLE wishlist (
   publisher VARCHAR(255) NOT NULL,
   created_at DATETIME NOT NULL,
   member_form_number VARCHAR(255),
-  status VARCHAR(50)
+  status VARCHAR(50) DEFAULT 'pending'
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE notes (

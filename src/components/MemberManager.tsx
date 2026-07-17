@@ -50,6 +50,36 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
   const [formErr, setFormErr] = useState("");
 
+  // Editing single Member states
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editFormNum, setEditFormNum] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editMobile, setEditMobile] = useState("");
+  const [editAddress, setEditAddress] = useState("");
+  const [editDob, setEditDob] = useState("");
+  const [editInstitution, setEditInstitution] = useState("");
+  const [editClassName, setEditClassName] = useState("");
+  const [editClassRoll, setEditClassRoll] = useState("");
+  const [editNameEnglish, setEditNameEnglish] = useState("");
+  const [editFatherName, setEditFatherName] = useState("");
+  const [editMotherName, setEditMotherName] = useState("");
+  const [editCurrVillage, setEditCurrVillage] = useState("");
+  const [editCurrPostOffice, setEditCurrPostOffice] = useState("");
+  const [editCurrUpazila, setEditCurrUpazila] = useState("");
+  const [editCurrDistrict, setEditCurrDistrict] = useState("");
+  const [editPermVillage, setEditPermVillage] = useState("");
+  const [editPermPostOffice, setEditPermPostOffice] = useState("");
+  const [editPermUpazila, setEditPermUpazila] = useState("");
+  const [editPermDistrict, setEditPermDistrict] = useState("");
+  const [editBloodGroup, setEditBloodGroup] = useState("");
+  const [editNidBirthReg, setEditNidBirthReg] = useState("");
+  const [editEducationQualification, setEditEducationQualification] = useState("");
+  const [editProfession, setEditProfession] = useState("");
+  const [editNationality, setEditNationality] = useState("");
+  const [editPhoto, setEditPhoto] = useState("");
+  const [editPhotoLoading, setEditPhotoLoading] = useState(false);
+  const [editErr, setEditErr] = useState("");
+
   // Active highlighted member profile details
   const [activeProfile, setActiveProfile] = useState<any | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -258,6 +288,140 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
     }
   };
 
+  const handleEditPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setEditPhotoLoading(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const MAX_WIDTH = 250;
+        const MAX_HEIGHT = 250;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL("image/jpeg", 0.7);
+          setEditPhoto(compressed);
+        } else {
+          setEditPhoto(event.target?.result as string);
+        }
+        setEditPhotoLoading(false);
+      };
+      img.onerror = () => {
+        setEditPhotoLoading(false);
+      };
+    };
+    reader.onerror = () => {
+      setEditPhotoLoading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const openEditModal = (member: any) => {
+    setEditFormNum(member.formNumber || "");
+    setEditName(member.name || "");
+    setEditMobile(member.mobile || "");
+    setEditAddress(member.address || "");
+    setEditDob(member.dob || "");
+    setEditInstitution(member.educationInstitution || "");
+    setEditClassName(member.className || "");
+    setEditClassRoll(member.classRoll || "");
+    setEditNameEnglish(member.nameEnglish || "");
+    setEditFatherName(member.fatherName || "");
+    setEditMotherName(member.motherName || "");
+    setEditCurrVillage(member.currVillage || "");
+    setEditCurrPostOffice(member.currPostOffice || "");
+    setEditCurrUpazila(member.currUpazila || "");
+    setEditCurrDistrict(member.currDistrict || "");
+    setEditPermVillage(member.permVillage || "");
+    setEditPermPostOffice(member.permPostOffice || "");
+    setEditPermUpazila(member.permUpazila || "");
+    setEditPermDistrict(member.permDistrict || "");
+    setEditBloodGroup(member.bloodGroup || "");
+    setEditNidBirthReg(member.nidBirthReg || "");
+    setEditEducationQualification(member.educationQualification || "");
+    setEditProfession(member.profession || "");
+    setEditNationality(member.nationality || "");
+    setEditPhoto(member.photo || "");
+    setEditErr("");
+    setIsEditOpen(true);
+  };
+
+  const handleEditMemberSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEditErr("");
+    if (!editName.trim()) {
+      setEditErr("সদস্যের নাম (বাংলায়) আবশ্যক।");
+      return;
+    }
+    if (!editMobile.trim()) {
+      setEditErr("মোবাইল নাম্বার প্রদান করা আবশ্যক।");
+      return;
+    }
+
+    try {
+      const res = await apiClient.put(`/members/${editFormNum}`, {
+        name: editName.trim(),
+        mobile: editMobile.trim(),
+        address: editAddress.trim(),
+        dob: editDob.trim(),
+        educationInstitution: editInstitution.trim(),
+        className: editClassName.trim(),
+        classRoll: editClassRoll.trim(),
+        nameEnglish: editNameEnglish.trim(),
+        fatherName: editFatherName.trim(),
+        motherName: editMotherName.trim(),
+        currVillage: editCurrVillage.trim(),
+        currPostOffice: editCurrPostOffice.trim(),
+        currUpazila: editCurrUpazila.trim(),
+        currDistrict: editCurrDistrict.trim(),
+        permVillage: editPermVillage.trim(),
+        permPostOffice: editPermPostOffice.trim(),
+        permUpazila: editPermUpazila.trim(),
+        permDistrict: editPermDistrict.trim(),
+        bloodGroup: editBloodGroup.trim(),
+        nidBirthReg: editNidBirthReg.trim(),
+        educationQualification: editEducationQualification.trim(),
+        profession: editProfession.trim(),
+        nationality: editNationality.trim(),
+        photo: editPhoto
+      });
+
+      if (res && !res.error) {
+        setIsEditOpen(false);
+        fetchMembers();
+        onRefreshStats();
+        if (activeProfile && activeProfile.member && activeProfile.member.formNumber === editFormNum) {
+          fetchProfile(editFormNum);
+        }
+      } else {
+        setEditErr(res.error || "সদস্য তথ্য আপডেট করতে ব্যর্থ হয়েছে।");
+      }
+    } catch (err: any) {
+      setEditErr(err.message || "সার্ভার এরর: সদস্য তথ্য আপডেট করতে সমস্যা হয়েছে।");
+    }
+  };
+
   // Searching matching members client-side and status filters
   const filteredList = members.filter(m => {
     const query = searchQuery.toLowerCase();
@@ -382,9 +546,22 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   >
                     <div className="flex justify-between items-start gap-1">
                       <h4 className="font-bold text-[#22242A] text-xs sm:text-sm">{m.name}</h4>
-                      <span className="font-mono text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded shrink-0">
-                        #{m.formNumber}
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(m);
+                          }}
+                          className="text-[10px] bg-white border border-[#E5E5EA] px-2 py-0.5 rounded hover:bg-[#F5F3EF] hover:border-[#22242A] transition-colors flex items-center gap-1 text-[#22242A] font-medium"
+                          title="সম্পাদনা করুন"
+                        >
+                          ✏️ এডিট
+                        </button>
+                        <span className="font-mono text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded">
+                          #{m.formNumber}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex justify-between items-center text-[10px] text-[#6B6B70] mt-1">
                       <div className="flex items-center gap-1.5">
@@ -697,16 +874,24 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
               {/* Slips preview triggers */}
               <div className="pt-4 border-t border-[#E5E5EA] flex flex-col sm:flex-row justify-between items-center gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-[#FF6B6B] px-4 py-2.5 rounded-lg text-[#6B6B70] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
-                >
-                  <Trash2 size={12} />
-                  সদস্য মুছে ফেলুন
-                </button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => openEditModal(activeProfile.member)}
+                    className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#22242A] px-4 py-2.5 rounded-lg text-[#22242A] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  >
+                    ✏️ তথ্য সম্পাদনা
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-[#FF6B6B] px-4 py-2.5 rounded-lg text-[#6B6B70] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  >
+                    <Trash2 size={12} />
+                    সদস্য মুছে ফেলুন
+                  </button>
+                </div>
                 <button
                   onClick={() => onPreviewMemberSlip(activeProfile)}
-                  className="flex items-center gap-1.5 text-xs font-bold bg-[#0e1629] border border-[#E5E5EA] hover:border-[#22242A] px-4 py-2.5 rounded-lg text-[#22242A] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  className="flex items-center gap-1.5 text-xs font-bold bg-[#0e1629] border border-[#E5E5EA] hover:border-[#22242A] px-4 py-2.5 rounded-lg text-white hover:bg-[#1f293d] cursor-pointer transition-colors w-full sm:w-auto justify-center"
                 >
                   <Eye size={12} />
                   গ্রাহক স্লিপ চোখের প্রাকদর্শন ও PDF
@@ -1152,6 +1337,393 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     className="px-5 py-2 bg-[#22242A] text-white rounded-lg text-xs font-bold hover:bg-[#2d2f36] cursor-pointer"
                   >
                     সদস্য যুক্ত করুন
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MANUAL EDIT MEMBER MODAL */}
+      {isEditOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-[#F5F3EF] border border-[#E5E5EA] rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-120 flex flex-col my-8 max-h-[85vh]">
+            {/* Header */}
+            <div className="p-6 border-b border-[#E5E5EA] flex justify-between items-center shrink-0">
+              <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2">
+                ✏️ সদস্য তথ্য সম্পাদনা (ID: #{editFormNum})
+              </h3>
+              <button 
+                onClick={() => setIsEditOpen(false)}
+                className="text-[#6B6B70] hover:text-[#22242A] transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Scrollable Form Area */}
+            <div className="p-6 overflow-y-auto space-y-6">
+              {editErr && (
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-3 rounded-lg text-xs text-[#FF6B6B] flex items-center gap-2">
+                  <AlertCircle size={14} />
+                  <span>{editErr}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleEditMemberSubmit} className="space-y-6">
+                {/* PHOTO UPLOAD BLOCK */}
+                <div className="p-3.5 bg-white rounded-xl border border-[#E5E5EA] flex flex-col sm:flex-row items-center gap-4">
+                  <div className="w-20 h-20 rounded-xl bg-[#F5F3EF] border border-[#E5E5EA] overflow-hidden flex items-center justify-center shrink-0 relative">
+                    {editPhoto ? (
+                      <img src={editPhoto} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-[#6B6B70] flex flex-col items-center gap-1">
+                        <Camera size={20} />
+                        <span className="text-[8px] font-bold">ছবি দিন</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2 flex-1 w-full text-center sm:text-left">
+                    <span className="text-[11px] font-bold text-[#22242A] block">সদস্যের ছবি পরিবর্তন করুন</span>
+                    <p className="text-[10px] text-[#6B6B70] leading-normal">
+                      লাইব্রেরি কার্ড ও ড্যাশবোর্ডের জন্য পাসপোর্ট সাইজের ছবি আপলোড করুন।
+                    </p>
+                    <div className="flex justify-center sm:justify-start gap-2">
+                      <label className="px-3 py-1.5 bg-[#F5F3EF] text-[#22242A] border border-[#E5E5EA] hover:bg-[#F5F3EF] rounded-lg text-[10px] font-extrabold cursor-pointer transition-colors flex items-center gap-1">
+                        <Upload size={12} />
+                        {editPhotoLoading ? "প্রসেস হচ্ছে..." : (editPhoto ? "ছবি পরিবর্তন" : "ছবি বাছাই করুন")}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleEditPhotoChange}
+                          className="hidden"
+                          disabled={editPhotoLoading}
+                        />
+                      </label>
+                      {editPhoto && (
+                        <button
+                          type="button"
+                          onClick={() => setEditPhoto("")}
+                          className="px-2 py-1.5 bg-[#F5F3EF] text-[#FF6B6B] border border-[#E5E5EA] hover:bg-[#F5F3EF] rounded-lg text-[10px] font-extrabold transition-colors"
+                        >
+                          রিসেট
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1. Personal Information */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-black text-[#22242A] border-b border-[#E5E5EA] pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                    ব্যক্তিগত তথ্য (Personal Information)
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">সদস্যের নাম (বাংলায়) *</label>
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="যেমন: আরিফ উদ্দিন আহমেদ"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">সদস্যের নাম (ইংরেজিতে)</label>
+                      <input
+                        type="text"
+                        value={editNameEnglish}
+                        onChange={(e) => setEditNameEnglish(e.target.value)}
+                        placeholder="যেমন: Arif Uddin Ahmed"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">ফরম নম্বর (ID - অপরিবর্তনীয়)</label>
+                      <input
+                        type="text"
+                        value={editFormNum}
+                        disabled
+                        className="w-full text-xs p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-lg text-[#6B6B70] font-mono cursor-not-allowed"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">মোবাইল নম্বর *</label>
+                      <input
+                        type="text"
+                        value={editMobile}
+                        onChange={(e) => setEditMobile(e.target.value)}
+                        placeholder="যেমনঃ 017xxxxxxxx"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">জন্ম তারিখ</label>
+                      <input
+                        type="date"
+                        value={editDob}
+                        onChange={(e) => setEditDob(e.target.value)}
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">পিতার নাম</label>
+                      <input
+                        type="text"
+                        value={editFatherName}
+                        onChange={(e) => setEditFatherName(e.target.value)}
+                        placeholder="পিতার নাম লিখুন"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">মাতার নাম</label>
+                      <input
+                        type="text"
+                        value={editMotherName}
+                        onChange={(e) => setEditMotherName(e.target.value)}
+                        placeholder="মাতার নাম লিখুন"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Address Details */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-black text-[#22242A] border-b border-[#E5E5EA] pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                    ঠিকানা (Address Details)
+                  </h4>
+                  
+                  {/* Present Address */}
+                  <div className="space-y-3 bg-white p-3 rounded-xl border border-[#E5E5EA]">
+                    <span className="text-[10px] font-black text-[#22242A] block">বর্তমান ঠিকানা</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">গ্রাম/মহল্লা</label>
+                        <input
+                          type="text"
+                          value={editCurrVillage}
+                          onChange={(e) => setEditCurrVillage(e.target.value)}
+                          placeholder="গ্রাম/মহল্লা"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">ডাকঘর</label>
+                        <input
+                          type="text"
+                          value={editCurrPostOffice}
+                          onChange={(e) => setEditCurrPostOffice(e.target.value)}
+                          placeholder="ডাকঘর"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">উপজেলা</label>
+                        <input
+                          type="text"
+                          value={editCurrUpazila}
+                          onChange={(e) => setEditCurrUpazila(e.target.value)}
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">জেলা</label>
+                        <input
+                          type="text"
+                          value={editCurrDistrict}
+                          onChange={(e) => setEditCurrDistrict(e.target.value)}
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Permanent Address */}
+                  <div className="space-y-3 bg-white p-3 rounded-xl border border-[#E5E5EA]">
+                    <span className="text-[10px] font-black text-[#22242A] block">স্থায়ী ঠিকানা</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">গ্রাম/মহল্লা</label>
+                        <input
+                          type="text"
+                          value={editPermVillage}
+                          onChange={(e) => setEditPermVillage(e.target.value)}
+                          placeholder="গ্রামের নাম"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">ডাকঘর</label>
+                        <input
+                          type="text"
+                          value={editPermPostOffice}
+                          onChange={(e) => setEditPermPostOffice(e.target.value)}
+                          placeholder="ডাকঘরের নাম"
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">উপজেলা</label>
+                        <input
+                          type="text"
+                          value={editPermUpazila}
+                          onChange={(e) => setEditPermUpazila(e.target.value)}
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-[#6B6B70] mb-1">জেলা</label>
+                        <input
+                          type="text"
+                          value={editPermDistrict}
+                          onChange={(e) => setEditPermDistrict(e.target.value)}
+                          className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Single string address fallback */}
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-[#6B6B70]">অতিরিক্ত বিবরণ/ঠিকানা নোট (ঐচ্ছিক)</label>
+                    <input
+                      type="text"
+                      value={editAddress}
+                      onChange={(e) => setEditAddress(e.target.value)}
+                      placeholder="যেমন: বড়লেখা লাইব্রেরির পাশে"
+                      className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Additional Details */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-black text-[#22242A] border-b border-[#E5E5EA] pb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                    অন্যান্য তথ্য (Additional Information)
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">রক্তের গ্রুপ</label>
+                      <select
+                        value={editBloodGroup}
+                        onChange={(e) => setEditBloodGroup(e.target.value)}
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-sans"
+                      >
+                        <option value="">বাছাই করুন</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">NID অথবা জন্ম নিবন্ধন নং</label>
+                      <input
+                        type="text"
+                        value={editNidBirthReg}
+                        onChange={(e) => setEditNidBirthReg(e.target.value)}
+                        placeholder="NID / Birth Certificate"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">জাতীয়তা</label>
+                      <input
+                        type="text"
+                        value={editNationality}
+                        onChange={(e) => setEditNationality(e.target.value)}
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">সর্বোচ্চ শিক্ষাগত যোগ্যতা</label>
+                      <input
+                        type="text"
+                        value={editEducationQualification}
+                        onChange={(e) => setEditEducationQualification(e.target.value)}
+                        placeholder="যেমন: এস.এস.সি / এইচ.এস.সি / অনার্স"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">পেশা</label>
+                      <input
+                        type="text"
+                        value={editProfession}
+                        onChange={(e) => setEditProfession(e.target.value)}
+                        placeholder="যেমন: ছাত্র / শিক্ষক / ব্যবসায়ী"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-1">
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">শিক্ষা প্রতিষ্ঠান</label>
+                      <input
+                        type="text"
+                        value={editInstitution}
+                        onChange={(e) => setEditInstitution(e.target.value)}
+                        placeholder="যেমন: বড়লেখা কলেজ"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">শ্রেণী</label>
+                      <input
+                        type="text"
+                        value={editClassName}
+                        onChange={(e) => setEditClassName(e.target.value)}
+                        placeholder="শ্রেণী লিখুন"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#6B6B70] mb-1">শ্রেণী রোল</label>
+                      <input
+                        type="text"
+                        value={editClassRoll}
+                        onChange={(e) => setEditClassRoll(e.target.value)}
+                        placeholder="রোল লিখুন"
+                        className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="flex justify-end gap-2 pt-2 border-t border-[#E5E5EA]">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditOpen(false)}
+                    className="px-4 py-2 bg-[#F5F3EF] border border-[#E5E5EA] text-[#6B6B70] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
+                  >
+                    বাতিল
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-[#22242A] text-white rounded-lg text-xs font-bold hover:bg-[#2d2f36] cursor-pointer"
+                  >
+                    পরিবর্তন সংরক্ষণ করুন
                   </button>
                 </div>
               </form>
