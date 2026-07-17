@@ -27,9 +27,10 @@ import {
   ArrowLeft,
   Star,
   Bell,
-  MessageSquare
+  MessageSquare,
+  Home
 } from "lucide-react";
-import JSZip from "jszip";
+// JSZip is dynamically imported where used (handleBulkZipDownload) to reduce initial bundle size
 
 // Inner view components
 import Dashboard from "./components/Dashboard";
@@ -515,6 +516,7 @@ export default function App() {
       // Fetch full backup collections from backend
       const rawData = await apiClient.get("/bulk-raw");
       
+      const { default: JSZip } = await import("jszip");
       const zip = new JSZip();
 
       // Convert Books to Tab separated Spreadsheet CSV
@@ -675,10 +677,15 @@ export default function App() {
     }
   };
 
+  const handleNavigateHome = () => {
+    setActiveTab("home");
+  };
+
   // Dynamic Nav tab buttons mapping
   const navTabs = (() => {
     if (userRole === "admin") {
       return [
+        { id: "home", label: "হোম", icon: Home },
         { id: "dashboard", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
         { id: "books", label: "বই ক্যাটালগ", icon: BookMarked },
         { id: "search-smart", label: "স্মার্ট অনুসন্ধান", icon: SearchCode },
@@ -1240,6 +1247,18 @@ export default function App() {
             {navTabs.map((item) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.id;
+              if (item.id === "home") {
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab("home")}
+                    title={item.label}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                  >
+                    <Icon size={18} />
+                  </button>
+                );
+              }
               return (
                 <button
                   key={item.id}
@@ -1284,6 +1303,21 @@ export default function App() {
                   {navTabs.map((item) => {
                     const Icon = item.icon;
                     const isSelected = activeTab === item.id;
+                    if (item.id === "home") {
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            setActiveTab("home");
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                        >
+                          <Icon size={16} />
+                          <span>{item.label}</span>
+                        </button>
+                      );
+                    }
                     return (
                       <button
                         key={item.id}
@@ -1339,6 +1373,20 @@ export default function App() {
                 memberInfo={loggedInMember}
                 activeTab={activeTab}
                 onNavigate={setActiveTab}
+              />
+            )}
+
+            {userRole === "admin" && activeTab === "home" && (
+              <HomePage
+                onLogin={() => setActiveTab("dashboard")}
+                onMemberLogin={() => setActiveTab("dashboard")}
+                onLibraryMemberLogin={() => setActiveTab("dashboard")}
+                onGuestEntry={() => setActiveTab("dashboard")}
+                logoBase64={logoBase64}
+                onSalesCorner={() => setActiveTab("shop")}
+                onBookSelect={(book) => {
+                  setSelectedPublicBook(book);
+                }}
               />
             )}
 

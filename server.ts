@@ -37,6 +37,8 @@ interface Book {
   imageUrl: string;
   status: "Available" | "Issued";
   group?: string; // e.g., নজরুল কর্নার, রবীন্দ্রনাথ কর্নার, উপন্যাস, গল্প ইত্যাদি
+  pageCount?: number; // পৃষ্ঠা সংখ্যা
+  price?: number; // মূল্য (৳)
 }
 
 interface Member {
@@ -781,7 +783,8 @@ if (process.env.VERCEL) {
       const mapBookRow = (r: any) => ({
         id: String(r.id),
         code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.group_name
+        imageUrl: r.image_url, status: r.status, group: r.group_name,
+        pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined
       });
       const mapped = rows.map(mapBookRow);
 
@@ -839,7 +842,8 @@ if (process.env.VERCEL) {
       const mapBookRow = (r: any) => ({
         id: String(r.id),
         code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.group_name
+        imageUrl: r.image_url, status: r.status, group: r.group_name,
+        pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined
       });
       const mapped = rows.map(mapBookRow);
 
@@ -874,7 +878,7 @@ if (process.env.VERCEL) {
 
   // Add individual book
   app.post("/api/books", authenticateAdmin, async (req, res) => {
-    const { code, name, author, publisher, imageUrl, group, description } = req.body;
+    const { code, name, author, publisher, imageUrl, group, description, pageCount, price } = req.body;
 
     if (!code || !name || !author || !publisher) {
       return res.status(400).json({ error: "বই কোড, নাম, লেখক এবং প্রকাশনা আবশ্যক।" });
@@ -891,15 +895,17 @@ if (process.env.VERCEL) {
       const grp = group || "";
       const desc = description || "";
       const status = "Available";
+      const pCount = pageCount != null && !isNaN(Number(pageCount)) ? Number(pageCount) : null;
+      const pPrice = price != null && !isNaN(Number(price)) ? Number(price) : null;
       
       const [result]: any = await pool.query(
-        "INSERT INTO books (code, name, author, publisher, image_url, status, group_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        [uCode, name, author, publisher, img, status, grp, desc]
+        "INSERT INTO books (code, name, author, publisher, image_url, status, group_name, description, page_count, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [uCode, name, author, publisher, img, status, grp, desc, pCount, pPrice]
       );
       
       const [newBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [result.insertId]);
       const r = newBookRow[0];
-      const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description };
+      const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
 
       addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${grp ? `, গ্রুপ: ${grp}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
 
@@ -913,7 +919,7 @@ if (process.env.VERCEL) {
   // Edit book
   app.put("/api/books/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const { code, name, author, publisher, imageUrl, status, group } = req.body;
+    const { code, name, author, publisher, imageUrl, status, group, pageCount, price } = req.body;
 
     if (!code || !name || !author || !publisher) {
       return res.status(400).json({ error: "বই কোড, নাম, লেখক এবং প্রকাশনা আবশ্যক।" });
@@ -935,15 +941,17 @@ if (process.env.VERCEL) {
       const img = imageUrl || oldBook.image_url;
       const stat = status || oldBook.status;
       const grp = group !== undefined ? group : oldBook.group_name;
+      const pCount = pageCount !== undefined ? (pageCount != null && !isNaN(Number(pageCount)) ? Number(pageCount) : null) : oldBook.page_count;
+      const pPrice = price !== undefined ? (price != null && !isNaN(Number(price)) ? Number(price) : null) : oldBook.price;
 
       await pool.query(
-        "UPDATE books SET code = ?, name = ?, author = ?, publisher = ?, image_url = ?, status = ?, group_name = ? WHERE id = ?",
-        [uCode, name, author, publisher, img, stat, grp, id]
+        "UPDATE books SET code = ?, name = ?, author = ?, publisher = ?, image_url = ?, status = ?, group_name = ?, page_count = ?, price = ? WHERE id = ?",
+        [uCode, name, author, publisher, img, stat, grp, pCount, pPrice, id]
       );
 
       const [updatedBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
       const r = updatedBookRow[0];
-      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name };
+      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
 
       addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
 
@@ -971,7 +979,7 @@ if (process.env.VERCEL) {
 
       await pool.query("DELETE FROM books WHERE id = ?", [id]);
 
-      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name };
+      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
 
       addLog("বই মুছে ফেলা", `বই '${book.name}' (কোড: ${book.code}) সিস্টেম থেকে মুছে ফেলা হয়েছে।`);
 
@@ -1037,16 +1045,24 @@ if (process.env.VERCEL) {
         [likeQ, likeQ, likeQ, likeQ]
       );
 
-      const result = [];
-      for (const bRow of booksRows) {
-        const book = { id: String(bRow.id), code: bRow.code, name: bRow.name, author: bRow.author, publisher: bRow.publisher, imageUrl: bRow.image_url, status: bRow.status, group: bRow.group_name };
-        
-        // Find issue records
-        const [issueRows]: any = await pool.query(
-          "SELECT i.*, b.name as book_name, b.code as book_code, m.name as member_name, m.mobile as member_mobile, m.form_number as member_form_number FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE b.code = ? ORDER BY i.id DESC",
-          [book.code]
+      // Map all matched books
+      const mapBookRow = (bRow: any) => ({
+        id: String(bRow.id), code: bRow.code, name: bRow.name, author: bRow.author, publisher: bRow.publisher,
+        imageUrl: bRow.image_url, status: bRow.status, group: bRow.group_name,
+        pageCount: bRow.page_count ?? undefined, price: bRow.price != null ? Number(bRow.price) : undefined
+      });
+      const books = booksRows.map(mapBookRow);
+
+      // Batch-fetch all issues for matched books in a single query (eliminates N+1)
+      const bookCodes = books.map((b: any) => b.code);
+      let issuesByCode: Record<string, any[]> = {};
+      if (bookCodes.length > 0) {
+        const placeholders = bookCodes.map(() => "?").join(",");
+        const [allIssueRows]: any = await pool.query(
+          `SELECT i.*, b.name as book_name, b.code as book_code, m.name as member_name, m.mobile as member_mobile, m.form_number as member_form_number FROM issues i JOIN books b ON i.book_id = b.id JOIN members m ON i.member_id = m.id WHERE b.code IN (${placeholders}) ORDER BY i.id DESC`,
+          bookCodes
         );
-        
+
         const mapIssue = (r: any) => ({
           id: String(r.id), bookId: String(r.book_id), bookCode: r.book_code, bookName: r.book_name,
           memberId: String(r.member_id), formNumber: r.member_form_number, memberName: r.member_name, memberMobile: r.member_mobile,
@@ -1054,12 +1070,21 @@ if (process.env.VERCEL) {
           status: r.status, fineAmount: r.fine_amount || 0,
           extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
         });
-        
-        const history = issueRows.map(mapIssue);
-        const activeIssue = history.find((i: any) => i.status === "Issued") || null;
-        
-        result.push({ book, activeIssue, history });
+
+        // Group issues by book code
+        for (const row of allIssueRows) {
+          const mapped = mapIssue(row);
+          if (!issuesByCode[row.book_code]) issuesByCode[row.book_code] = [];
+          issuesByCode[row.book_code].push(mapped);
+        }
       }
+
+      // Assemble results
+      const result = books.map((book: any) => {
+        const history = issuesByCode[book.code] || [];
+        const activeIssue = history.find((i: any) => i.status === "Issued") || null;
+        return { book, activeIssue, history };
+      });
       
       res.json(result);
     } catch (err) {
