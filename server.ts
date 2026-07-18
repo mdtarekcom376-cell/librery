@@ -687,6 +687,9 @@ if (process.env.VERCEL) {
       addLog("গেটওয়ে সেটিংস আপডেট", `SMS গেটওয়ে প্রোভাইডার হিসেবে '${provider}' সেট করা হয়েছে।`);
       res.json({ success: true, message: "SMS গেটওয়ে সেটিংস সফলভাবে আপডেট করা হয়েছে।" });
     } catch (err: any) {
+      console.error("POST /api/sms/gateway failed:", err);
+      res.status(500).json({ error: "সার্ভার এরর। গেটওয়ে সেটিংস আপডেট করা যায়নি।" });
+    }
   });
 
   // ---------------- DASHBOARD DATA API ----------------
