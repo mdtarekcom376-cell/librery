@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ShieldCheck, UserCheck, KeyRound, AlertTriangle, CheckCircle2, Lock, Sparkles, RefreshCw, Smartphone, Network, Database, Download, Image as ImageIcon, Palette, BookOpen, Users, History, Printer, FileText, ClipboardList, Store, PhoneCall, Plus, Trash2, Edit2, Save, Check, X } from "lucide-react";
+import { ShieldCheck, UserCheck, KeyRound, AlertTriangle, CheckCircle2, Lock, Sparkles, RefreshCw, Smartphone, Network, Database, Download, Image as ImageIcon, Palette, BookOpen, Users, History, Printer, FileText, ClipboardList, Store, PhoneCall, Plus, Trash2, Edit2, Save, Check, X, Mail, Send } from "lucide-react";
 import { apiClient } from "../api";
 
 interface SettingsProps {
@@ -27,7 +27,6 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
   const [firebaseErrorMsg, setFirebaseErrorMsg] = useState("");
 
 
-  // PDF reports generation states
   const [pdfLoading, setPdfLoading] = useState("");
   const [pdfError, setPdfError] = useState("");
 
@@ -91,6 +90,122 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
       setPdfError(err.message || "অডিট লগ PDF রিপোর্ট তৈরিতে সমস্যা হয়েছে।");
     } finally {
       setPdfLoading("");
+    }
+  };
+
+  // System Maintenance
+  const [maintLoading, setMaintLoading] = useState("");
+  const [maintSuccess, setMaintSuccess] = useState("");
+  const [maintError, setMaintError] = useState("");
+  const [auditLogsPreview, setAuditLogsPreview] = useState<number | null>(null);
+
+  const handleClearTempFiles = async () => {
+    setMaintError("");
+    setMaintSuccess("");
+    setMaintLoading("temp");
+    try {
+      const res = await apiClient.post("/settings/maintenance/clear-temp", {});
+      if (res && res.success) {
+        setMaintSuccess(res.message || "টেম্পোরারি ফাইল সফলভাবে মুছে ফেলা হয়েছে।");
+      }
+    } catch (err: any) {
+      setMaintError(err.message || "টেম্পোরারি ফাইল মুছতে ব্যর্থ।");
+    } finally {
+      setMaintLoading("");
+    }
+  };
+
+  const handlePreviewAuditLogs = async () => {
+    setMaintError("");
+    setMaintSuccess("");
+    setMaintLoading("audit_preview");
+    try {
+      const res = await apiClient.post("/settings/maintenance/clean-audit-logs", { action: 'preview' });
+      if (res && res.success) {
+        setAuditLogsPreview(res.count);
+      }
+    } catch (err: any) {
+      setMaintError(err.message || "অডিট লগ প্রিভিউ করতে ব্যর্থ।");
+    } finally {
+      setMaintLoading("");
+    }
+  };
+
+  const handleCleanAuditLogs = async () => {
+    if (!window.confirm("আপনি কি নিশ্চিত? এটি ৩০ দিনের পুরনো লগ স্থায়ীভাবে মুছে ফেলবে।")) return;
+    setMaintError("");
+    setMaintSuccess("");
+    setMaintLoading("audit_clean");
+    try {
+      const res = await apiClient.post("/settings/maintenance/clean-audit-logs", { action: 'delete' });
+      if (res && res.success) {
+        setMaintSuccess(res.message || "পুরনো অডিট লগ সফলভাবে মুছে ফেলা হয়েছে।");
+        setAuditLogsPreview(null);
+      }
+    } catch (err: any) {
+      setMaintError(err.message || "অডিট লগ মুছতে ব্যর্থ।");
+    } finally {
+      setMaintLoading("");
+    }
+  };
+
+  const handleClearFrontendCache = () => {
+    setMaintError("");
+    setMaintSuccess("");
+    setMaintLoading("cache");
+    try {
+      let count = 0;
+      // Clear non-auth keys if any exist, or just clear the known ones (which are auth-related).
+      // Since all known keys are auth-related, we'll remove them.
+      const keys = ["okkhor_pathagar_token", "okkhor_pathagar_role", "okkhor_pathagar_member"];
+      keys.forEach(key => {
+        if (localStorage.getItem(key)) {
+          localStorage.removeItem(key);
+          count++;
+        }
+      });
+      sessionStorage.clear();
+      setMaintSuccess(`${count}টি ফ্রন্টএন্ড ক্যাশে কী মুছে ফেলা হয়েছে। (পুনরায় লগইন প্রয়োজন হতে পারে)`);
+      // Reload after short delay if auth keys cleared
+      if (count > 0) {
+        setTimeout(() => window.location.reload(), 2000);
+      }
+    } catch (err: any) {
+      setMaintError("ক্যাশে মুছতে সমস্যা হয়েছে।");
+    } finally {
+      setMaintLoading("");
+    }
+  };
+
+  // Newsletter states
+  const [nlSubject, setNlSubject] = useState("");
+  const [nlBody, setNlBody] = useState("");
+  const [nlLoading, setNlLoading] = useState(false);
+  const [nlSuccess, setNlSuccess] = useState("");
+  const [nlError, setNlError] = useState("");
+
+  const handleSendNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nlSubject || !nlBody) {
+      setNlError("বিষয় এবং মেসেজ পূরণ করুন।");
+      return;
+    }
+    setNlLoading(true);
+    setNlError("");
+    setNlSuccess("");
+    try {
+      const res = await apiClient.post("/admin/newsletter-send", { subject: nlSubject, body: nlBody });
+      if (res && res.success) {
+        setNlSuccess(res.message || "নিউজলেটার সফলভাবে পাঠানো হয়েছে!");
+        setNlSubject("");
+        setNlBody("");
+      } else {
+        setNlError("নিউজলেটার পাঠাতে সমস্যা হয়েছে।");
+      }
+    } catch (err: any) {
+      setNlError(err.message || "নিউজলেটার পাঠাতে ব্যর্থ।");
+    } finally {
+      setNlLoading(false);
     }
   };
 
@@ -917,6 +1032,26 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
           }`}
         >
           🔥 ফায়ারবেস সেটিংস
+        </button>
+        <button
+          onClick={() => setActiveSection("system_maintenance")}
+          className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            activeSection === "system_maintenance"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#6B6B70] hover:bg-[#F5F3EF] hover:text-[#22242A]"
+          }`}
+        >
+          🛠️ সিস্টেম মেইনটেন্যান্স
+        </button>
+        <button
+          onClick={() => setActiveSection("newsletter")}
+          className={`flex-1 min-w-[130px] px-3 py-2.5 text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            activeSection === "newsletter"
+              ? "bg-[#22242A] text-white shadow-md shadow-none"
+              : "text-[#6B6B70] hover:bg-[#F5F3EF] hover:text-[#22242A]"
+          }`}
+        >
+          ✉️ নিউজলেটার
         </button>
       </div>
 
@@ -2044,6 +2179,187 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
 
             </div>
 
+          </div>
+        )}
+
+        {/* TAB 8: SYSTEM MAINTENANCE */}
+        {activeSection === "system_maintenance" && (
+          <div className="space-y-6">
+            <div className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
+
+              <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <Database size={16} className="text-[#22242A]" />
+                সিস্টেম মেইনটেন্যান্স
+              </h3>
+
+              <p className="text-xs text-[#22242A] leading-relaxed mb-6">
+                নিচের অপশনগুলো ব্যবহার করে সিস্টেমের ডেটাবেস এবং ক্যাশে পরিষ্কার করতে পারবেন। এই কাজগুলো সম্পূর্ণ পৃথকভাবে করা হয় যাতে কোনো ভুল ডেটা মুছে না যায়।
+              </p>
+
+              {maintSuccess && (
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                  <CheckCircle2 size={15} />
+                  {maintSuccess}
+                </div>
+              )}
+
+              {maintError && (
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                  <AlertTriangle size={15} />
+                  {maintError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 gap-4 relative z-10">
+                {/* Clear Temp Files */}
+                <div className="bg-white hover:bg-[#F5F3EF] p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between space-y-4 transition-all">
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5"><Trash2 size={14}/> টেম্পোরারি ফাইল মুছুন</h4>
+                    <p className="text-[11px] text-[#6B6B70] leading-normal">
+                      uploads/tmp ফোল্ডারের সকল অপ্রয়োজনীয় ফাইল মুছে ফেলবে। এটি একটি নিরাপদ কাজ এবং এতে কোনো কনফার্মেশনের প্রয়োজন নেই।
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleClearTempFiles}
+                    disabled={maintLoading !== ""}
+                    className="self-end px-5 py-2 bg-[#F5F3EF] hover:bg-[#E5E5EA] border border-[#E5E5EA] text-[#22242A] text-[11px] font-bold rounded-lg cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-45"
+                  >
+                    {maintLoading === "temp" ? <RefreshCw className="animate-spin" size={12} /> : <Trash2 size={12} />}
+                    ফাইল মুছুন
+                  </button>
+                </div>
+
+                {/* Clean Audit Logs */}
+                <div className="bg-white hover:bg-[#F5F3EF] p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between space-y-4 transition-all">
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5 text-[#FF6B6B]"><History size={14}/> পুরনো অডিট লগ মুছুন</h4>
+                    <p className="text-[11px] text-[#6B6B70] leading-normal">
+                      ৩০ দিনের পুরনো অডিট লগ মুছে ফেলবে। এটি একটি অপরিবর্তনীয় কাজ। প্রথমে প্রিভিউ দেখুন।
+                    </p>
+                    {auditLogsPreview !== null && (
+                      <p className="text-[11px] font-bold text-[#22242A] mt-2">
+                        প্রিভিউ: {auditLogsPreview} টি পুরনো অডিট লগ পাওয়া গেছে।
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={handlePreviewAuditLogs}
+                      disabled={maintLoading !== ""}
+                      className="px-5 py-2 bg-[#F5F3EF] hover:bg-[#E5E5EA] border border-[#E5E5EA] text-[#22242A] text-[11px] font-bold rounded-lg cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-45"
+                    >
+                      {maintLoading === "audit_preview" ? <RefreshCw className="animate-spin" size={12} /> : <Database size={12} />}
+                      প্রিভিউ দেখুন
+                    </button>
+                    <button
+                      onClick={handleCleanAuditLogs}
+                      disabled={maintLoading !== "" || auditLogsPreview === null || auditLogsPreview === 0}
+                      className="px-5 py-2 bg-[#F5F3EF] hover:bg-white border border-[#E5E5EA] text-[#FF6B6B] text-[11px] font-bold rounded-lg cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-45 disabled:cursor-not-allowed"
+                    >
+                      {maintLoading === "audit_clean" ? <RefreshCw className="animate-spin" size={12} /> : <Trash2 size={12} />}
+                      লগ মুছে ফেলুন
+                    </button>
+                  </div>
+                </div>
+
+                {/* Clear Frontend Cache */}
+                <div className="bg-white hover:bg-[#F5F3EF] p-5 rounded-xl border border-[#E5E5EA] flex flex-col justify-between space-y-4 transition-all">
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5"><Smartphone size={14}/> ফ্রন্টএন্ড ক্যাশে পরিষ্কার করুন</h4>
+                    <p className="text-[11px] text-[#6B6B70] leading-normal">
+                      আপনার ব্রাউজারে সংরক্ষিত অ্যাপের ক্যাশে (localStorage/sessionStorage) মুছে ফেলবে। এটি করার পর আপনাকে পুনরায় লগইন করতে হতে পারে।
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleClearFrontendCache}
+                    disabled={maintLoading !== ""}
+                    className="self-end px-5 py-2 bg-[#F5F3EF] hover:bg-[#E5E5EA] border border-[#E5E5EA] text-[#22242A] text-[11px] font-bold rounded-lg cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-45"
+                  >
+                    {maintLoading === "cache" ? <RefreshCw className="animate-spin" size={12} /> : <RefreshCw size={12} />}
+                    ক্যাশে পরিষ্কার করুন
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 9: NEWSLETTER */}
+        {activeSection === "newsletter" && (
+          <div className="space-y-6">
+            <div className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
+
+              <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-4">
+                <Mail size={16} className="text-[#22242A]" />
+                নিউজলেটার প্রেরণ (Brevo)
+              </h3>
+
+              <p className="text-xs text-[#22242A] leading-relaxed mb-6">
+                এখান থেকে আপনি সকল সাবস্ক্রাইবারদের (Brevo List #3) কাছে নিউজলেটার বা ইমেইল পাঠাতে পারবেন।
+              </p>
+
+              {nlSuccess && (
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#22242A] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                  <CheckCircle2 size={15} />
+                  {nlSuccess}
+                </div>
+              )}
+
+              {nlError && (
+                <div className="p-3.5 mb-5 bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B] rounded-xl flex items-center gap-2 text-xs font-medium animate-in fade-in duration-200">
+                  <AlertTriangle size={15} />
+                  {nlError}
+                </div>
+              )}
+
+              <form onSubmit={handleSendNewsletter} className="space-y-4 relative z-10">
+                <div>
+                  <label className="block text-[11px] font-bold text-[#6B6B70] uppercase tracking-wider mb-2">
+                    ইমেইল বিষয় (Subject)
+                  </label>
+                  <input
+                    type="text"
+                    value={nlSubject}
+                    onChange={(e) => setNlSubject(e.target.value)}
+                    required
+                    placeholder="যেমন: নতুন বইয়ের খবর"
+                    className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-xs text-[#22242A] focus:outline-none focus:border-[#22242A] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-[#6B6B70] uppercase tracking-wider mb-2">
+                    ইমেইল মেসেজ (Message)
+                  </label>
+                  <textarea
+                    value={nlBody}
+                    onChange={(e) => setNlBody(e.target.value)}
+                    required
+                    placeholder="আপনার মেসেজ এখানে লিখুন..."
+                    rows={6}
+                    className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-xs text-[#22242A] focus:outline-none focus:border-[#22242A] transition-colors resize-none"
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={nlLoading}
+                    className="px-6 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-2 transition-all shadow-md disabled:opacity-50"
+                  >
+                    {nlLoading ? (
+                      <RefreshCw className="animate-spin" size={14} />
+                    ) : (
+                      <Send size={14} />
+                    )}
+                    নিউজলেটার পাঠান
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
 

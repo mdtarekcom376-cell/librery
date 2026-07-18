@@ -835,8 +835,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
             </h3>
             
             <p className="text-[11px] text-[#6B6B70] mb-4 shrink-0">
-              নিচে বক্সে নতুন বইয়ের তালিকা পেস্ট করুন। ফরম্যাট হতে হবে: <code className="text-[#22242A] font-mono text-[10px] bg-white px-1 py-0.5 rounded border border-[#E5E5EA]">বই_কোড [Tab বা কমা] বই_নাম [Tab বা কমা] লেখকের_নাম [Tab বা কমা] প্রকাশনী_নাম</code>
-              <br/>লাইন গ্যাপ দিয়ে একাধিক সারি পেস্ট করতে পারবেন (যেমন এক্সেল/সপ্রেডশিট থেকে কপি করে পেস্ট করুন)।
+              নিচে বক্সে নতুন বইয়ের তালিকা পেস্ট করুন। ফরম্যাট হতে হবে: <code className="text-[#22242A] font-mono text-[10px] bg-white px-1 py-0.5 rounded border border-[#E5E5EA]">বই_কোড, বই_নাম, লেখকের_নাম, প্রকাশনী, ছবি_URL, পৃষ্ঠা_সংখ্যা, মূল্য</code>
+              <br/>প্রথম ৩টি কলাম (কোড, নাম, লেখক) আবশ্যক। বাকি কলামগুলো ঐচ্ছিক। Tab বা কমা দিয়ে আলাদা করুন। লাইন গ্যাপ দিয়ে একাধিক সারি পেস্ট করতে পারবেন (যেমন এক্সেল/সপ্রেডশিট থেকে কপি করে পেস্ট করুন)।
             </p>
 
             {bulkError && (

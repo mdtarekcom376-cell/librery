@@ -153,3 +153,9 @@ CREATE TABLE contact_submissions (
   status VARCHAR(50) DEFAULT 'unread',
   created_at DATETIME NOT NULL
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE site_traffic (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  date DATE NOT NULL UNIQUE,
+  view_count INT NOT NULL DEFAULT 0
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

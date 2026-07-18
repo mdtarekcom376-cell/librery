@@ -29,7 +29,8 @@ import {
   Star,
   Bell,
   MessageSquare,
-  Home
+  Home,
+  BarChart3
 } from "lucide-react";
 // JSZip is dynamically imported where used (handleBulkZipDownload) to reduce initial bundle size
 
@@ -51,6 +52,7 @@ import ReviewManager from "./components/ReviewManager";
 import NoticeManager from "./components/NoticeManager";
 import WritingsManager from "./components/WritingsManager";
 import { RegistrationModal } from "./components/RegistrationModal";
+import Analytics from "./components/Analytics";
 import HomePage from "./components/HomePage";
 import PublicSalesPage from "./components/PublicSalesPage";
 import PublicBookDetailsPage from "./components/PublicBookDetailsPage";
@@ -264,6 +266,16 @@ export default function App() {
         // Filter out duplicates if any
         const uniqueBorns = activeBorns.filter((v: any, i: any, a: any) => a.findIndex((t: any) => t.id === v.id) === i);
         setActiveIssues(uniqueBorns);
+
+        // Fetch due-today notification count
+        try {
+          const notifRes = await apiClient.get("/admin/notifications");
+          if (notifRes && notifRes.success) {
+            setDueTodayCount(notifRes.count || 0);
+          }
+        } catch (e) {
+          // Silent fail for notification count
+        }
       }
 
     } catch (err: any) {
@@ -701,6 +713,7 @@ export default function App() {
         { id: "notices", label: "নটিশ বোর্ড", icon: Bell },
         { id: "writings", label: "লেখা ও অভিযোগ", icon: MessageSquare },
         { id: "shop", label: "বিক্রয় কর্নার", icon: Store },
+        { id: "analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
         { id: "settings", label: "সেটিংস", icon: Sliders }
       ];
     } else if (userRole === "member") {
@@ -730,6 +743,7 @@ export default function App() {
   // Home page vs login form toggle for unauthenticated users
   // When true, shows the marketing landing page. When false, shows the login form.
   const [showHomePage, setShowHomePage] = useState(true);
+  const [dueTodayCount, setDueTodayCount] = useState(0);
   const [showSalesPage, setShowSalesPage] = useState(false);
   const [selectedPublicBook, setSelectedPublicBook] = useState<any | null>(null);
   const [selectedShopItem, setSelectedShopItem] = useState<any | null>(null);
@@ -1183,6 +1197,22 @@ export default function App() {
             ZIP ব্যাকআপ
           </button>
 
+          {/* Notification bell for due-today books */}
+          {userRole === "admin" && (
+            <button
+              onClick={() => setActiveTab("sms")}
+              className="relative p-1.5 hover:bg-orange-50 text-[#6B6B70] hover:text-orange-500 border border-[#E5E5EA] rounded-full cursor-pointer transition-colors shrink-0"
+              title="আজকের জমাদেয়ার বই"
+            >
+              <Bell size={14} />
+              {dueTodayCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center px-1 text-[9px] font-bold text-white bg-red-500 rounded-full animate-pulse">
+                  {dueTodayCount}
+                </span>
+              )}
+            </button>
+          )}
+
           {/* User profile identifier badge */}
           <div className="hidden md:flex bg-white border border-[#E5E5EA] p-1 px-3 rounded-full items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] shrink-0">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
@@ -1426,6 +1456,10 @@ export default function App() {
 
             {userRole === "admin" && activeTab === "writings" && (
               <WritingsManager onRefreshStats={handleRefreshStats} />
+            )}
+
+            {userRole === "admin" && activeTab === "analytics" && (
+              <Analytics />
             )}
 
             {userRole === "admin" && activeTab === "settings" && (

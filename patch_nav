@@ -1,0 +1,14 @@
+const fs = require('fs');
+const lines = fs.readFileSync('src/App.tsx', 'utf8').split('\n');
+
+const result = [];
+for (let i = 0; i < lines.length; i++) {
+  const line = lines[i];
+  if (line.includes('"settings"') && line.includes('Sliders') && i > 0 && lines[i-1].includes('"shop"') && lines[i-1].includes('Store')) {
+    result.push('        { id: "analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },');
+  }
+  result.push(line);
+}
+
+fs.writeFileSync('src/App.tsx', result.join('\n'), 'utf8');
+console.log('Nav tab inserted successfully');

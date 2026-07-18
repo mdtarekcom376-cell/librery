@@ -1,0 +1,17 @@
+import fs from 'fs';
+const lines = fs.readFileSync('src/App.tsx', 'utf8').split('\n');
+
+// Find the line with '{ id: "settings", label: "সেটিংস", icon: Sliders }' in the admin nav
+// and insert the analytics line before it
+const result = [];
+for (let i = 0; i < lines.length; i++) {
+  const line = lines[i];
+  // Insert analytics tab before settings in the admin nav array
+  if (line.includes('"settings"') && line.includes('Sliders') && i > 0 && lines[i-1].includes('"shop"') && lines[i-1].includes('Store')) {
+    result.push('        { id: "analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },');
+  }
+  result.push(line);
+}
+
+fs.writeFileSync('src/App.tsx', result.join('\n'), 'utf8');
+console.log('Nav tab inserted successfully');
