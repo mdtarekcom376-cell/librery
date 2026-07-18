@@ -58,6 +58,11 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
 
   const [isProcessingImage, setIsProcessingImage] = useState(false);
 
+  // Bulk Group Assign states
+  const [selectedBookIds, setSelectedBookIds] = useState<Set<string>>(new Set());
+  const [bulkAssignGroup, setBulkAssignGroup] = useState<string>("");
+  const [isAssigning, setIsAssigning] = useState(false);
+
   const [formErr, setFormErr] = useState("");
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
   const [deleteConfirmError, setDeleteConfirmError] = useState("");
@@ -184,6 +189,27 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     }
   };
 
+  // Handle Bulk Group Assign
+  const handleBulkGroupAssign = async () => {
+    if (selectedBookIds.size === 0) return;
+    setIsAssigning(true);
+    try {
+      const res = await apiClient.put("/books/bulk-group", {
+        bookIds: Array.from(selectedBookIds),
+        groupName: bulkAssignGroup
+      });
+      if (res && res.success) {
+        setSelectedBookIds(new Set());
+        setBulkAssignGroup("");
+        window.dispatchEvent(new Event("data-imported")); // Refresh data globally
+      }
+    } catch (err: any) {
+      alert("গ্রুপ অ্যাসাইন করতে সমস্যা হয়েছে।");
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
   // Parse bulk text block copy-paste helper
   const handleBulkSubmit = async () => {
     setBulkError("");
@@ -194,7 +220,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     }
 
     // Parse logic: Supports CSV (comma separated) or Tab Separated formats
-    // Format expected: BookCode, BookName, Author, Publisher, ImageUrl (optional), PageCount (optional), Price (optional)
+    // Format expected: BookCode, BookName, Author, Publisher, Group (optional), ImageUrl (optional), PageCount (optional), Price (optional)
     const lines = bulkInput.split("\n");
     const parsedList: any[] = [];
 
@@ -211,12 +237,13 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       const name = cols[1]?.trim();
       const author = cols[2]?.trim();
       const publisher = cols[3]?.trim() || "অজ্ঞাত প্রকাশনা";
-      const imageUrl = cols[4]?.trim() || "";
-      const pageCount = cols[5]?.trim() ? Number(cols[5].trim()) : undefined;
-      const price = cols[6]?.trim() ? Number(cols[6].trim()) : undefined;
+      const group = cols[4]?.trim() || "";
+      const imageUrl = cols[5]?.trim() || "";
+      const pageCount = cols[6]?.trim() ? Number(cols[6].trim()) : undefined;
+      const price = cols[7]?.trim() ? Number(cols[7].trim()) : undefined;
 
       if (code && name && author) {
-        parsedList.push({ code, name, author, publisher, imageUrl, pageCount: isNaN(pageCount as number) ? undefined : pageCount, price: isNaN(price as number) ? undefined : price });
+        parsedList.push({ code, name, author, publisher, group, imageUrl, pageCount: isNaN(pageCount as number) ? undefined : pageCount, price: isNaN(price as number) ? undefined : price });
       }
     });
 
@@ -361,6 +388,33 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
         )}
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedBookIds.size > 0 && (
+        <div className="bg-white p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 animate-in fade-in slide-in-from-top-2">
+          <div className="text-sm font-bold text-[#22242A]">
+            {selectedBookIds.size} টি বই নির্বাচিত
+            <button onClick={() => setSelectedBookIds(new Set())} className="ml-3 text-xs text-[#6B6B70] hover:text-[#FF6B6B] underline cursor-pointer">নির্বাচন বাতিল করুন</button>
+          </div>
+          <div className="flex gap-2 items-center flex-wrap">
+            <select
+              value={bulkAssignGroup}
+              onChange={(e) => setBulkAssignGroup(e.target.value)}
+              className="text-xs px-3 py-2 bg-[#F5F3EF] border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]/40"
+            >
+              <option value="">কোনো গ্রুপ নেই (খালি করুন)</option>
+              {groups.map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
+            <button
+              onClick={handleBulkGroupAssign}
+              disabled={isAssigning}
+              className="px-4 py-2 bg-[#22242A] text-[#FACC15] text-xs font-bold rounded-lg hover:bg-[#2d2f36] cursor-pointer shadow-md disabled:opacity-50"
+            >
+              {isAssigning ? "অপেক্ষা করুন..." : "নির্বাচিত বইগুলোতে অ্যাপ্লাই করুন"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Books Table Cards Layout */}
       {filteredBooks.length === 0 ? (
         <div className="glass-panel p-10 text-center rounded-2xl">
@@ -371,8 +425,21 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
           {filteredBooks.map((book) => (
             <div
               key={book.id}
-              className="glass-panel p-4 flex gap-4 hover:border-[#22242A]/30 duration-200 hover:-translate-y-0.5 shadow-[0_4px_24px_rgba(0,0,0,0.04)]"
+              className="glass-panel p-4 flex gap-4 hover:border-[#22242A]/30 duration-200 hover:-translate-y-0.5 shadow-[0_4px_24px_rgba(0,0,0,0.04)] relative"
             >
+              <div className="absolute top-3 left-3 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm">
+                <input
+                  type="checkbox"
+                  checked={selectedBookIds.has(book.id)}
+                  onChange={(e) => {
+                    const newSet = new Set(selectedBookIds);
+                    if (e.target.checked) newSet.add(book.id);
+                    else newSet.delete(book.id);
+                    setSelectedBookIds(newSet);
+                  }}
+                  className="w-4 h-4 m-1 cursor-pointer accent-[#22242A]"
+                />
+              </div>
               <div className="w-20 h-28 rounded bg-[#F5F3EF] overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0">
                 <img 
                   src={book.imageUrl && book.imageUrl.trim() ? book.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
