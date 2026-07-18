@@ -969,6 +969,30 @@ if (process.env.VERCEL) {
     }
   });
 
+  // Bulk Assign Group (Must be defined before /api/books/:id)
+  app.put("/api/books/bulk-group", authenticateAdmin, async (req, res) => {
+    const { bookIds, groupName } = req.body;
+
+    if (!Array.isArray(bookIds) || bookIds.length === 0) {
+      return res.status(400).json({ error: "কোনো বই নির্বাচন করা হয়নি।" });
+    }
+
+    try {
+      const placeholders = bookIds.map(() => '?').join(',');
+      await pool.query(
+        `UPDATE books SET group_name = ? WHERE id IN (${placeholders})`,
+        [groupName || "", ...bookIds]
+      );
+
+      addLog("বই গ্রুপ আপডেট", `${bookIds.length} টি বইয়ের গ্রুপ '${groupName || 'খালি'}' আপডেট করা হয়েছে।`);
+
+      res.json({ success: true, updatedCount: bookIds.length });
+    } catch (err: any) {
+      console.error("Bulk group assign error:", err);
+      res.status(500).json({ error: `বইয়ের গ্রুপ আপডেট করতে সমস্যা: ${err.sqlMessage || err.message || "সার্ভার এরর"}` });
+    }
+  });
+
   // Edit book
   app.put("/api/books/:id", authenticateAdmin, async (req, res) => {
     const { id } = req.params;
@@ -1082,30 +1106,6 @@ if (process.env.VERCEL) {
     } catch (err: any) {
       console.error("Bulk import error:", err);
       res.status(500).json({ error: `বাল্ক ইম্পোর্ট সমস্যা: ${err.sqlMessage || err.message || "সার্ভার এরর"}` });
-    }
-  });
-
-  // Bulk Assign Group
-  app.put("/api/books/bulk-group", authenticateAdmin, async (req, res) => {
-    const { bookIds, groupName } = req.body;
-
-    if (!Array.isArray(bookIds) || bookIds.length === 0) {
-      return res.status(400).json({ error: "কোনো বই নির্বাচন করা হয়নি।" });
-    }
-
-    try {
-      const placeholders = bookIds.map(() => '?').join(',');
-      await pool.query(
-        `UPDATE books SET group_name = ? WHERE id IN (${placeholders})`,
-        [groupName || "", ...bookIds]
-      );
-
-      addLog("বই গ্রুপ আপডেট", `${bookIds.length} টি বইয়ের গ্রুপ '${groupName || 'খালি'}' আপডেট করা হয়েছে।`);
-
-      res.json({ success: true, updatedCount: bookIds.length });
-    } catch (err: any) {
-      console.error("Bulk group assign error:", err);
-      res.status(500).json({ error: `বইয়ের গ্রুপ আপডেট করতে সমস্যা: ${err.sqlMessage || err.message || "সার্ভার এরর"}` });
     }
   });
 
