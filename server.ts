@@ -3685,14 +3685,40 @@ if (process.env.VERCEL) {
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
           email VARCHAR(255) NOT NULL,
-          subject VARCHAR(255) NOT NULL,
-          category VARCHAR(100) NOT NULL,
+          phone VARCHAR(255),
+          subject VARCHAR(255),
+          category VARCHAR(100),
           message TEXT NOT NULL,
           attachment_path VARCHAR(500),
           status VARCHAR(50) NOT NULL DEFAULT 'pending',
           created_at DATETIME NOT NULL
         );
       `);
+
+      // Auto-migrate: ensure contact_submissions has all required columns
+      try {
+        const [cols]: any = await connection.query("SHOW COLUMNS FROM contact_submissions LIKE 'phone'");
+        if (cols.length === 0) {
+          await connection.query("ALTER TABLE contact_submissions ADD COLUMN phone VARCHAR(255) AFTER email");
+          console.log("Migration: Added phone column to contact_submissions table.");
+        }
+      } catch (migErr) { console.warn("contact_submissions phone migration:", migErr); }
+
+      try {
+        const [cols]: any = await connection.query("SHOW COLUMNS FROM contact_submissions LIKE 'category'");
+        if (cols.length === 0) {
+          await connection.query("ALTER TABLE contact_submissions ADD COLUMN category VARCHAR(100) AFTER subject");
+          console.log("Migration: Added category column to contact_submissions table.");
+        }
+      } catch (migErr) { console.warn("contact_submissions category migration:", migErr); }
+
+      try {
+        const [cols]: any = await connection.query("SHOW COLUMNS FROM contact_submissions LIKE 'attachment_path'");
+        if (cols.length === 0) {
+          await connection.query("ALTER TABLE contact_submissions ADD COLUMN attachment_path VARCHAR(500) AFTER message");
+          console.log("Migration: Added attachment_path column to contact_submissions table.");
+        }
+      } catch (migErr) { console.warn("contact_submissions attachment_path migration:", migErr); }
 
       // Auto-migrate: ensure books table has page_count and price columns
       try {
