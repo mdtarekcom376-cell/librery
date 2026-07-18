@@ -63,6 +63,7 @@ import { apiClient } from "./api";
 import { Book, WishlistItem, Note, AuditLog, ShopItem } from "./types";
 import akkhorLogo from "./assets/images/akkhor_logo_1781456142605.jpg";
 import { initFirebase, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "./lib/firebase";
+import { useScrollRestoration } from "./hooks/useScrollRestoration";
 
 export default function App() {
   const navigate = useNavigate();
@@ -76,6 +77,10 @@ export default function App() {
     if (role === "guest") return "stats";
     return "dashboard";
   });
+
+  // Automatically restore scroll position on navigation or tab changes
+  useScrollRestoration(activeTab);
+
   const [username, setUsername] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -1370,7 +1375,7 @@ export default function App() {
         )}
 
         {/* 3. Main Pages Container Canvas */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto overflow-y-auto max-h-[calc(100vh-65px)]">
+        <main id="main-scroll-container" className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto overflow-y-auto max-h-[calc(100vh-65px)]">
           <div>
             
             {userRole !== "admin" && userRole && (

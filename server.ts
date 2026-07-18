@@ -754,36 +754,36 @@ if (process.env.VERCEL) {
 
       // 2. Most Popular Books (with author, group, image)
       const [popularBooksRows]: any = await pool.query(`
-        SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS count
+        SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS issue_count
         FROM issues i
         JOIN books b ON i.book_id = b.id
         GROUP BY b.id, b.code, b.name, b.author, b.group_name, b.image_url
-        ORDER BY count DESC
+        ORDER BY issue_count DESC
         LIMIT 5
       `);
       const popularBooks = popularBooksRows.map((r: any) => ({
-        code: r.code,
-        name: r.name,
+        code: r.code || '',
+        name: r.name || '',
         author: r.author || '',
         group: r.group_name || '',
         imageUrl: r.image_url || '',
-        count: Number(r.count)
+        count: Number(r.issue_count) || 0
       }));
 
       // 3. Most Active Members (with mobile)
       const [activeMembersRows]: any = await pool.query(`
-        SELECT m.form_number, m.name, m.mobile, COUNT(i.id) AS count
+        SELECT m.form_number, m.name, m.mobile, COUNT(i.id) AS issue_count
         FROM issues i
         JOIN members m ON i.member_id = m.id
         GROUP BY m.id, m.form_number, m.name, m.mobile
-        ORDER BY count DESC
+        ORDER BY issue_count DESC
         LIMIT 5
       `);
       const activeMembers = activeMembersRows.map((r: any) => ({
-        formNumber: r.form_number,
-        name: r.name,
+        formNumber: r.form_number || '',
+        name: r.name || '',
         mobile: r.mobile || '',
-        count: Number(r.count)
+        count: Number(r.issue_count) || 0
       }));
       // Late return reports list
       const [lateReportLoansRows]: any = await pool.query(`
@@ -812,6 +812,10 @@ if (process.env.VERCEL) {
         comments: typeof r.comments === "string" ? JSON.parse(r.comments) : (r.comments || []),
         returnedAt: r.returned_at
       }));
+
+      console.log(`[Dashboard API] popularBooks: ${popularBooks.length} items, activeMembers: ${activeMembers.length} items`);
+      if (popularBooks.length > 0) console.log("[Dashboard API] Sample book:", JSON.stringify(popularBooks[0]));
+      if (activeMembers.length > 0) console.log("[Dashboard API] Sample member:", JSON.stringify(activeMembers[0]));
 
       res.json({
         stats: {
@@ -1821,18 +1825,29 @@ if (process.env.VERCEL) {
         ORDER BY i.return_date ASC
       `);
 
+      // MySQL2 returns DATETIME columns as JS Date objects which serialize to UTC ISO strings.
+      // We must convert them to YYYY-MM-DD strings in Bangladesh timezone (UTC+6) so that:
+      // (a) dates display correctly in the UI, and
+      // (b) the frontend overdue calculation uses the correct local date (not UTC offset date).
+      const toDateStr = (val: any): string => {
+        if (!val) return "";
+        const d = val instanceof Date ? val : new Date(val);
+        if (isNaN(d.getTime())) return String(val).split("T")[0];
+        return getBangladeshDateString(d);
+      };
+
       const activeIssues = issueRows.map((r: any) => ({
         id: String(r.id),
         bookCode: r.book_code,
         bookName: r.book_name,
         author: r.author,
-        group: r.group_name,
-        imageUrl: r.image_url,
+        group: r.group_name || "",
+        imageUrl: r.image_url || "",
         memberName: r.member_name,
         formNumber: r.form_number,
         mobile: r.mobile,
-        issueDate: r.issue_date,
-        returnDate: r.return_date,
+        issueDate: toDateStr(r.issue_date),
+        returnDate: toDateStr(r.return_date),
         status: r.status,
         extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
       }));

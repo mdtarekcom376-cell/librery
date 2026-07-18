@@ -21,13 +21,23 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
 
   const { stats, charts } = data;
 
+  // Defensive: ensure arrays exist even if API response is malformed
+  const safeCharts = {
+    monthlyReport: charts?.monthlyReport || [],
+    popularBooks: charts?.popularBooks || [],
+    activeMembers: charts?.activeMembers || [],
+    lateReportLoans: charts?.lateReportLoans || [],
+  };
+
   // Maximum issues for normalizer mapping
-  const maxIssuesInChart = Math.max(...charts.monthlyReport.map(item => Math.max(item.issues, item.returns, 1)));
+  const maxIssuesInChart = safeCharts.monthlyReport.length > 0
+    ? Math.max(...safeCharts.monthlyReport.map(item => Math.max(item.issues, item.returns, 1)))
+    : 1;
 
   // SVG Chart calculation parameters
   const chartHeight = 160;
   const paddingBottom = 25;
-  const listCount = charts.monthlyReport.length;
+  const listCount = safeCharts.monthlyReport.length;
 
   return (
     <div className="space-y-6">
@@ -176,7 +186,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
           </div>
 
           <div className="w-full relative py-2">
-            {charts.monthlyReport.length === 0 ? (
+            {safeCharts.monthlyReport.length === 0 ? (
               <div className="h-40 flex items-center justify-center text-[#52525B] text-xs">কোনো ডাটা পাওয়া যায়নি।</div>
             ) : (
               <div className="overflow-x-auto">
@@ -196,7 +206,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                     })}
 
                     {/* Rendering double bars side by side */}
-                    {charts.monthlyReport.map((item, idx) => {
+                    {safeCharts.monthlyReport.map((item, idx) => {
                       const colWidth = 440 / listCount;
                       const xBase = 50 + idx * colWidth + colWidth / 4;
                       
@@ -257,7 +267,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                 <Award size={16} className="text-[#D97706]" />
                 সবচেয়ে জনপ্রিয় বইসমূহ
               </h3>
-              {charts.popularBooks.length === 0 ? (
+              {safeCharts.popularBooks.length === 0 ? (
                 <p className="text-[11px] text-[#52525B] py-6">কোনো বুক ট্রানজেকশন হিস্ট্রি নেই।</p>
               ) : (
                 <>
@@ -266,9 +276,9 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                     <svg viewBox="0 0 500 120" className="w-full h-24 overflow-visible font-sans">
                       <line x1="20" y1="20" x2="480" y2="20" stroke="#E5E5EA" strokeDasharray="3,3" strokeWidth="1" />
                       <line x1="20" y1="100" x2="480" y2="100" stroke="#E5E5EA" strokeWidth="1" />
-                      {charts.popularBooks.map((item, idx) => {
-                        const topCount = charts.popularBooks[0]?.count || 1;
-                        const colWidth = 460 / charts.popularBooks.length;
+                      {safeCharts.popularBooks.map((item, idx) => {
+                        const topCount = safeCharts.popularBooks[0]?.count || 1;
+                        const colWidth = 460 / safeCharts.popularBooks.length;
                         const xBase = 20 + idx * colWidth + colWidth / 2;
                         const height = (item.count / topCount) * 80;
                         const y = 100 - height;
@@ -283,7 +293,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                     </svg>
                   </div>
                   <div className="space-y-3">
-                    {charts.popularBooks.map((item, i) => (
+                    {safeCharts.popularBooks.map((item, i) => (
                       <div key={item.code} className="w-full text-left group block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors">
                         <div className="flex gap-3 items-start">
                           {/* Cover thumbnail */}
@@ -328,7 +338,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                 <Users size={16} className="text-[#D97706]" />
                 সবচেয়ে সক্রিয় পাঠক সদস্য
               </h3>
-              {charts.activeMembers.length === 0 ? (
+              {safeCharts.activeMembers.length === 0 ? (
                 <p className="text-[11px] text-[#52525B] py-6">কোনো সদস্য লিজ ইতিহাস পাওয়া যায়নি।</p>
               ) : (
                 <>
@@ -337,9 +347,9 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                     <svg viewBox="0 0 500 120" className="w-full h-24 overflow-visible font-sans">
                       <line x1="20" y1="20" x2="480" y2="20" stroke="#E5E5EA" strokeDasharray="3,3" strokeWidth="1" />
                       <line x1="20" y1="100" x2="480" y2="100" stroke="#E5E5EA" strokeWidth="1" />
-                      {charts.activeMembers.map((item, idx) => {
-                        const topCount = charts.activeMembers[0]?.count || 1;
-                        const colWidth = 460 / charts.activeMembers.length;
+                      {safeCharts.activeMembers.map((item, idx) => {
+                        const topCount = safeCharts.activeMembers[0]?.count || 1;
+                        const colWidth = 460 / safeCharts.activeMembers.length;
                         const xBase = 20 + idx * colWidth + colWidth / 2;
                         const height = (item.count / topCount) * 80;
                         const y = 100 - height;
@@ -354,7 +364,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                     </svg>
                   </div>
                   <div className="space-y-3">
-                    {charts.activeMembers.map((item, i) => (
+                    {safeCharts.activeMembers.map((item, i) => (
                       <div key={item.formNumber} className="w-full text-left group block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
@@ -398,7 +408,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
           </button>
         </div>
 
-        {charts.lateReportLoans.length === 0 ? (
+        {safeCharts.lateReportLoans.length === 0 ? (
           <div className="p-6 text-center text-xs text-[#52525B]">অসাধারণ! বর্তমানে কোনো মেয়াদোত্তীর্ণ বই পেন্ডিং নেই।</div>
         ) : (
           <div className="overflow-x-auto">
@@ -413,7 +423,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5E5EA]">
-                {charts.lateReportLoans.map(item => (
+                {safeCharts.lateReportLoans.map(item => (
                   <tr key={item.id} className="hover:bg-[#F5F3EF] duration-150">
                     <td className="py-3">
                       <p className="font-bold text-[#22242A]">{item.bookName}</p>

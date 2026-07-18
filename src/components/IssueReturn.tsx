@@ -50,6 +50,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
   // --- ACTIVE ISSUES LIST STATE ---
   const [activeDetailedIssues, setActiveDetailedIssues] = useState<any[]>([]);
   const [activeIssuesLoading, setActiveIssuesLoading] = useState(false);
+  const [activeIssuesError, setActiveIssuesError] = useState("");
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
 
   // Fetch active detailed issues when tab changes
@@ -61,11 +62,13 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
   const fetchActiveDetailedIssues = async () => {
     setActiveIssuesLoading(true);
+    setActiveIssuesError("");
     try {
       const data = await apiClient.get("/issues/active-detailed");
-      setActiveDetailedIssues(data);
-    } catch (err) {
-      console.error(err);
+      setActiveDetailedIssues(Array.isArray(data) ? data : []);
+    } catch (err: any) {
+      console.error("ইস্যুকৃত বইসমূহ লোড ব্যর্থ:", err);
+      setActiveIssuesError(err.message || "তালিকা লোড করতে সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।");
     } finally {
       setActiveIssuesLoading(false);
     }
@@ -674,10 +677,21 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             <div className="flex justify-center items-center py-12">
               <RefreshCw className="animate-spin text-[#6B6B70]" size={24} />
             </div>
+          ) : activeIssuesError ? (
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <AlertTriangle size={28} className="text-[#FF6B6B]" />
+              <p className="text-sm text-[#FF6B6B] font-semibold">{activeIssuesError}</p>
+              <button
+                onClick={fetchActiveDetailedIssues}
+                className="px-4 py-2 bg-[#22242A] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-[#2d2f36]"
+              >
+                <RefreshCw size={13} /> পুনরায় লোড করুন
+              </button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {activeDetailedIssues
-                .filter(issue => {
+              {(() => {
+                const filtered = activeDetailedIssues.filter(issue => {
                   const q = activeSearchQuery.toLowerCase();
                   return (
                     (issue.bookName || "").toLowerCase().includes(q) ||
@@ -686,8 +700,25 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                     (issue.mobile || "").toLowerCase().includes(q) ||
                     (issue.formNumber || "").toLowerCase().includes(q)
                   );
-                })
-                .map((issue) => {
+                });
+
+                if (filtered.length === 0 && activeDetailedIssues.length > 0) {
+                  return (
+                    <div className="col-span-1 md:col-span-2 py-10 text-center text-[#6B6B70] text-sm">
+                      "{activeSearchQuery}" এর জন্য কোনো ফলাফল পাওয়া যায়নি।
+                    </div>
+                  );
+                }
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="col-span-1 md:col-span-2 py-10 text-center text-[#6B6B70] text-sm">
+                      বর্তমানে কোনো ইস্যুকৃত বই নেই।
+                    </div>
+                  );
+                }
+
+                return filtered.map((issue) => {
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
                   const target = new Date(issue.returnDate);
@@ -749,13 +780,8 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                       </div>
                     </div>
                   );
-                })}
-              
-              {!activeIssuesLoading && activeDetailedIssues.length === 0 && (
-                <div className="col-span-1 md:col-span-2 py-10 text-center text-[#6B6B70] text-sm">
-                  বর্তমানে কোনো ইস্যুকৃত বই নেই।
-                </div>
-              )}
+                });
+              })()}
             </div>
           )}
         </div>
