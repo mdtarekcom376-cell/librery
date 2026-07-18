@@ -1157,57 +1157,189 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       </section>
 
       {/* ======================================
-          §4.7 ABOUT
+          §4.7 ABOUT — আমাদের গল্প
           ====================================== */}
-      <section id="about" className="section-tint py-16 md:py-24 px-4">
+      <section id="about" className="section-tint py-16 md:py-24 px-4 overflow-hidden" style={{ background: "#F8FAFC" }}>
+        <style>{`
+          .about-p::before {
+            content: "";
+            position: absolute; left: -38px; top: 0.55em;
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #FFFFFF;
+            border: 2px solid #F97316;
+            transform: scale(1);
+          }
+          @media(max-width:880px) { .about-p::before { left: -26px; } }
+          
+          .about-mark {
+            position: relative;
+            background: none;
+            font-weight: 700;
+            background-image: linear-gradient(90deg, #F97316, #F43F5E);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            padding-bottom: 2px;
+          }
+          .about-mark::after {
+            content: "";
+            position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%;
+            background: linear-gradient(90deg, #F97316, #F43F5E);
+          }
+        `}</style>
+
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="কেন শুরু হলো অক্ষর পাঠাগার?" heading="আমাদের গল্প" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
-            {/* Left: Founder Image */}
-            <motion.div
-              className="flex justify-center"
-              initial={{ opacity: 0, x: -24 }}
-              whileInView={{ opacity: 1, x: 0 }}
+          {/* Custom Header using the new styling */}
+          <div className="text-center mb-16">
+            <motion.span 
+              className="inline-block font-semibold text-[0.95rem] text-[#F97316] mb-3.5"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.7, delay: 0.05 }}
             >
-              <div className="relative flex flex-col items-center">
-                <img 
-                  src={karyonirbahiImg} 
-                  alt="কার্যনির্বাহী পরিষদ" 
-                  className="w-full max-w-sm rounded-2xl object-cover shadow-lg border border-[#E5E5EA]"
-                />
-                <div className="mt-4 px-6 py-2 rounded-full bg-white shadow-sm border border-[#E5E5EA]">
-                  <p className="font-display-bn text-sm font-bold text-[#64748b] tracking-wide uppercase">
-                    কার্যনির্বাহী পরিষদ
-                  </p>
-                </div>
+              কেন শুরু হলো অক্ষর পাঠাগার?
+            </motion.span>
+            <motion.h2 
+              className="font-display-bn font-extrabold text-[#0F172A]"
+              style={{ fontSize: "clamp(1.9rem, 4vw, 2.7rem)", fontFamily: "'Baloo Da 2', 'Tiro Bangla', serif" }}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.8, delay: 0.18 }}
+            >
+              আমাদের গল্প
+            </motion.h2>
+            <motion.div 
+              className="w-[70px] h-1 rounded-sm mx-auto mt-4"
+              style={{ background: "linear-gradient(90deg, #F97316, #F97316, #F43F5E)" }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.7, delay: 0.6 }}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-14 lg:gap-[70px] items-center max-w-6xl mx-auto">
+            {/* Left: Card Col */}
+            <motion.div 
+              className="flex flex-col items-center relative"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.9, delay: 0.3 }}
+            >
+              <div 
+                className="w-full bg-white rounded-3xl p-2.5 flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+                style={{ boxShadow: "0 20px 50px rgba(15,23,42,0.10)" }}
+              >
+                <img src={karyonirbahiImg} alt="কার্যনির্বাহী পরিষদ" className="w-full rounded-2xl block object-cover" />
               </div>
+
             </motion.div>
 
-            {/* Right: Story */}
-            <motion.div
-              initial={{ opacity: 0, x: 24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.5 }}
-            >
-              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
+            {/* Right: Text Col */}
+            <div className="relative pl-7 md:pl-10">
+              {/* Progress track */}
+              <div className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full" style={{ background: "rgba(15,23,42,0.10)" }}>
+                <motion.div 
+                  className="absolute left-0 top-0 w-full rounded-full"
+                  style={{ 
+                    background: "linear-gradient(180deg, #F97316, #F97316, #F43F5E)",
+                    boxShadow: "0 0 12px rgba(249,115,22,0.5)"
+                  }}
+                  initial={{ height: "0%" }}
+                  whileInView={{ height: "100%" }}
+                  viewport={{ once: true, margin: "-10%" }}
+                  transition={{ duration: 1.5, ease: "linear" }}
+                />
+              </div>
+
+              {/* Quote Mark */}
+              <motion.div 
+                className="relative w-16 h-16 flex items-center justify-center mb-5"
+                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <div 
+                  className="absolute -inset-3.5 rounded-full blur-md"
+                  style={{ background: "radial-gradient(circle, rgba(249,115,22,0.30), rgba(244,63,94,0.18) 55%, transparent 75%)", animation: "pulse 3s infinite" }}
+                />
+                <svg viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" className="relative w-10 h-10 z-10">
+                  <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+                  <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25-.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+                </svg>
+              </motion.div>
+
+              {/* Lead Text */}
+              <motion.p 
+                className="font-display-bn text-[#0F172A] text-xl md:text-[1.34rem] font-normal leading-relaxed mb-8"
+                style={{ fontFamily: "'Tiro Bangla', serif", lineHeight: 1.85 }}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.7, delay: 0.5 }}
+              >
                 একটি বই বদলে দিতে পারে একজন মানুষকে, একজন মানুষ বদলে দিতে পারে একটি সমাজ, আর একটি পাঠাগার বদলে দিতে পারে গোটা একটি জাতিকে।
-              </p>
-              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
-                বই শুধু জ্ঞানের উৎস নয়; এটি একটি উন্নত, সচেতন ও মানবিক সমাজ গঠনের অন্যতম ভিত্তি। সেই জ্ঞানের আলো সবার কাছে—বিশেষ করে বিনামূল্যে বই পড়ার সুযোগের মাধ্যমে—পৌঁছে দিতেই অক্ষর পাঠাগারের পথচলা।
-              </p>
-              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
-                সমাজে জ্ঞানের আলো ছড়িয়ে দেওয়ার দৃঢ় প্রত্যয় নিয়ে আমরা কয়েকজন উদ্যমী মানুষ হাতে হাত মিলিয়ে গড়ে তুলেছি একটি উন্মুক্ত পাঠাগার, যেখানে জ্ঞানের দুয়ার সবার জন্য সমানভাবে উন্মুক্ত।
-              </p>
-              <p className="font-body-bn text-base leading-relaxed mb-4" style={{ color: "#475569" }}>
+              </motion.p>
+
+              {/* Content text */}
+              <motion.p 
+                className="relative text-[#334155] text-[1.02rem] leading-[1.95] tracking-[.002em] mb-6 about-p"
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.7, delay: 0.6 }}
+              >
+                বই শুধু জ্ঞানের উৎস নয়; এটি একটি <span className="about-mark">উন্নত, সচেতন ও মানবিক সমাজ</span> গঠনের অন্যতম ভিত্তি। সেই জ্ঞানের আলো সবার কাছে—বিশেষ করে বিনামূল্যে বই পড়ার সুযোগের মাধ্যমে—পৌঁছে দিতেই <b>অক্ষর পাঠাগারের পথচলা।</b>
+              </motion.p>
+
+              {/* Divider */}
+              <motion.div 
+                className="flex items-center gap-3 my-7"
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.7, delay: 0.7 }}
+              >
+                <span className="text-[0.8rem] font-bold tracking-[.12em] text-[#F97316] whitespace-nowrap px-3.5 py-1.5 rounded-full border border-orange-500/20"
+                  style={{ background: "linear-gradient(90deg, rgba(249,115,22,0.10), rgba(244,63,94,0.08))" }}
+                >
+                  লক্ষ্য ও উদ্দেশ্য
+                </span>
+                <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(15,23,42,0.10), transparent)" }} />
+              </motion.div>
+
+              <motion.p 
+                className="relative text-[#334155] text-[1.02rem] leading-[1.95] tracking-[.002em] mb-6 about-p"
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.7, delay: 0.8 }}
+              >
+                সমাজে জ্ঞানের আলো ছড়িয়ে দেওয়ার দৃঢ় প্রত্যয় নিয়ে আমরা কয়েকজন উদ্যমী মানুষ হাতে হাত মিলিয়ে গড়ে তুলেছি একটি <b>উন্মুক্ত পাঠাগার</b>, যেখানে জ্ঞানের দুয়ার সবার জন্য সমানভাবে উন্মুক্ত।
+              </motion.p>
+
+              <motion.p 
+                className="relative text-[#334155] text-[1.02rem] leading-[1.95] tracking-[.002em] mb-6 about-p"
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.7, delay: 0.9 }}
+              >
                 আমরা সুবিধাবঞ্চিত, অবহেলিত ও মেধাবী শিক্ষার্থীদের নৈতিক, জ্ঞানভিত্তিক ও মূল্যবোধনির্ভর শিক্ষায় উদ্বুদ্ধ করতে, শিশু ও প্রাপ্তবয়স্ক শিক্ষার মাধ্যমে নিরক্ষরতা হ্রাসে ভূমিকা রাখতে এবং বইকে মানুষের নিত্যসঙ্গী করে তুলতে নিরলসভাবে কাজ করে যাচ্ছি।
-              </p>
-              <p className="font-body-bn text-base leading-relaxed mb-6" style={{ color: "#475569" }}>
-                আমাদের বিশ্বাস, প্রতিটি মানুষের হাতে একটি বই এবং প্রতিটি এলাকায় একটি কার্যকর পাঠাগার গড়ে উঠলে জ্ঞানের আলো পৌঁছে যাবে প্রতিটি হৃদয়ে; গড়ে উঠবে একটি আলোকিত, নৈতিক, মানবিক ও সমৃদ্ধ সমাজ।
-              </p>
-            </motion.div>
+              </motion.p>
+
+              <motion.p 
+                className="relative text-[#334155] text-[1.02rem] leading-[1.95] tracking-[.002em] mb-6 about-p"
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.7, delay: 1.0 }}
+              >
+                আমাদের বিশ্বাস, প্রতিটি মানুষের হাতে একটি বই এবং প্রতিটি এলাকায় একটি কার্যকর পাঠাগার গড়ে উঠলে জ্ঞানের আলো পৌঁছে যাবে প্রতিটি হৃদয়ে; গড়ে উঠবে একটি <span className="about-mark">আলোকিত, নৈতিক, মানবিক ও সমৃদ্ধ সমাজ।</span>
+              </motion.p>
+            </div>
           </div>
         </div>
       </section>
@@ -1932,7 +2064,7 @@ function StatsSection({ stats = DEMO_STATS }: { stats?: typeof DEMO_STATS }) {
   );
 }
 
-function StatCard({ stat, index, inView }: { stat: { label: string; value: number; suffix: string; icon?: React.ElementType }; index: number; inView: boolean }) {
+const StatCard: React.FC<{ stat: { label: string; value: number; suffix: string; icon?: React.ElementType }; index: number; inView: boolean }> = ({ stat, index, inView }) => {
   const displayValue = useCountUp(stat.value, inView);
   const Icon = stat.icon;
 
