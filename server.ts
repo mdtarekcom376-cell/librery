@@ -276,6 +276,26 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
+  // ----------- SITE TRAFFIC TRACKING MIDDLEWARE -----------
+  // Must run BEFORE Vercel URL normalization so it sees the original request path.
+  // Tracks actual page visits (non-API GET requests), not API calls.
+  app.use(async (req, res, next) => {
+    try {
+      // Only track GET requests that are NOT API calls (i.e., actual page loads / SPA navigation)
+      if (req.method === "GET" && !req.url.startsWith("/api/") && !req.url.startsWith("/uploads/") && !req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|json)$/i)) {
+        const todayStr = getBangladeshDateString();
+        await pool.query(
+          `INSERT INTO site_traffic (date, view_count) VALUES (?, 1)
+           ON DUPLICATE KEY UPDATE view_count = view_count + 1`,
+          [todayStr]
+        );
+      }
+    } catch (err) {
+      // Silently ignore tracking errors — they should never block the request
+    }
+    next();
+  });
+
 // Normalize request URL for serverless/Vercel environments where the '/api' prefix might be stripped in rewrites
 if (process.env.VERCEL) {
   app.use((req, res, next) => {
@@ -294,25 +314,6 @@ if (process.env.VERCEL) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    next();
-  });
-
-  // ----------- SITE TRAFFIC TRACKING MIDDLEWARE -----------
-  // Only tracks actual page visits (non-API GET requests), not API calls
-  app.use(async (req, res, next) => {
-    try {
-      // Only track GET requests that are NOT API calls (i.e., actual page loads / SPA navigation)
-      if (req.method === "GET" && !req.url.startsWith("/api/") && !req.url.startsWith("/uploads/") && !req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|json)$/i)) {
-        const todayStr = getBangladeshDateString();
-        await pool.query(
-          `INSERT INTO site_traffic (date, view_count) VALUES (?, 1)
-           ON DUPLICATE KEY UPDATE view_count = view_count + 1`,
-          [todayStr]
-        );
-      }
-    } catch (err) {
-      // Silently ignore tracking errors — they should never block the request
-    }
     next();
   });
 
@@ -438,6 +439,23 @@ if (process.env.VERCEL) {
     addLog("অ্যাডমিন পরিবর্তন", `ইউজারনেম বা পাসওয়ার্ড পরিবর্তন করা হয়েছে। নতুন ইউজারনেম: ${newUsername}`);
 
     res.json({ success: true, message: "অ্যাডমিন ক্রেডেনশিয়াল সফলভাবে পরিবর্তিত হয়েছে।" });
+  });
+
+  // POST Track Page View (Public - called from frontend on load/navigation)
+  // This supplements the middleware tracking for SPA pages.
+  app.post("/api/public/track-pageview", async (req, res) => {
+    try {
+      const todayStr = getBangladeshDateString();
+      await pool.query(
+        `INSERT INTO site_traffic (date, view_count) VALUES (?, 1)
+         ON DUPLICATE KEY UPDATE view_count = view_count + 1`,
+        [todayStr]
+      );
+      res.json({ success: true });
+    } catch (err) {
+      // Silently ignore tracking errors
+      res.json({ success: false });
+    }
   });
 
   // GET Firebase Config (Public - so frontend can initialize Firebase)
@@ -734,25 +752,43 @@ if (process.env.VERCEL) {
         returns: returnsByMonthMap[mName] || 0,
       }));
 
-      // 2. Most Popular Books
+      // 2. Most Popular Books (with author, group, image)
       const [popularBooksRows]: any = await pool.query(`
-        SELECT book_code AS code, book_name AS name, COUNT(*) AS count 
-        FROM issues 
-        GROUP BY book_code, book_name 
-        ORDER BY count DESC 
+        SELECT i.book_code AS code, i.book_name AS name,
+               b.author, b.group_name AS \`group\`, b.image_url AS imageUrl,
+               COUNT(*) AS count
+        FROM issues i
+        LEFT JOIN books b ON i.book_code = b.code
+        GROUP BY i.book_code, i.book_name
+        ORDER BY count DESC
         LIMIT 5
       `);
-      const popularBooks = popularBooksRows.map((r: any) => ({ code: r.code, name: r.name, count: Number(r.count) }));
+      const popularBooks = popularBooksRows.map((r: any) => ({
+        code: r.code,
+        name: r.name,
+        author: r.author || '',
+        group: r.group || '',
+        imageUrl: r.imageUrl || '',
+        count: Number(r.count)
+      }));
 
-      // 3. Most Active Members
+      // 3. Most Active Members (with mobile)
       const [activeMembersRows]: any = await pool.query(`
-        SELECT form_number AS formNumber, member_name AS name, COUNT(*) AS count 
-        FROM issues 
-        GROUP BY form_number, member_name 
-        ORDER BY count DESC 
+        SELECT i.form_number AS formNumber, i.member_name AS name,
+               m.mobile,
+               COUNT(*) AS count
+        FROM issues i
+        LEFT JOIN members m ON i.form_number = m.form_number
+        GROUP BY i.form_number, i.member_name
+        ORDER BY count DESC
         LIMIT 5
       `);
-      const activeMembers = activeMembersRows.map((r: any) => ({ formNumber: r.formNumber, name: r.name, count: Number(r.count) }));
+      const activeMembers = activeMembersRows.map((r: any) => ({
+        formNumber: r.formNumber,
+        name: r.name,
+        mobile: r.mobile || '',
+        count: Number(r.count)
+      }));
 
       // Late return reports list
       const [lateReportLoansRows]: any = await pool.query("SELECT * FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]);
@@ -3462,20 +3498,21 @@ if (process.env.VERCEL) {
   // Admin: Create a notice (immediately published)
   app.post("/api/notices", authenticateAdmin, async (req, res) => {
     try {
-      const { subject, content } = req.body;
+      const { subject, content, image } = req.body;
       if (!subject || !content) {
         return res.status(400).json({ error: "বিষয় এবং বিস্তারিত উভয়ই পূরণ করুন।" });
       }
       
       const [resInsert]: any = await pool.query(
-        "INSERT INTO notices (subject, content, created_at) VALUES (?, ?, ?)",
-        [subject, content, formatCurrentDateTime()]
+        "INSERT INTO notices (subject, content, image, created_at) VALUES (?, ?, ?, ?)",
+        [subject, content, image || null, formatCurrentDateTime()]
       );
 
       const newNotice = {
         id: String(resInsert.insertId),
         subject,
         content,
+        image: image || null,
         createdAt: formatCurrentDateTime(),
       };
       
@@ -3494,6 +3531,7 @@ if (process.env.VERCEL) {
         id: String(r.id),
         subject: r.subject,
         content: r.content,
+        image: r.image || null,
         createdAt: r.created_at
       }));
       res.json(notices);
@@ -3524,6 +3562,7 @@ if (process.env.VERCEL) {
         id: String(r.id),
         subject: r.subject,
         content: r.content,
+        image: r.image || null,
         createdAt: r.created_at
       }));
       res.json(notices);

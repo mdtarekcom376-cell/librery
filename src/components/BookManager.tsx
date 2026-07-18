@@ -237,10 +237,10 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       const name = cols[1]?.trim();
       const author = cols[2]?.trim();
       const publisher = cols[3]?.trim() || "অজ্ঞাত প্রকাশনা";
-      const group = cols[4]?.trim() || "";
-      const imageUrl = cols[5]?.trim() || "";
-      const pageCount = cols[6]?.trim() ? Number(cols[6].trim()) : undefined;
-      const price = cols[7]?.trim() ? Number(cols[7].trim()) : undefined;
+      const imageUrl = cols[4]?.trim() || "";
+      const pageCount = cols[5]?.trim() ? Number(cols[5].trim()) : undefined;
+      const price = cols[6]?.trim() ? Number(cols[6].trim()) : undefined;
+      const group = "";
 
       if (code && name && author) {
         parsedList.push({ code, name, author, publisher, group, imageUrl, pageCount: isNaN(pageCount as number) ? undefined : pageCount, price: isNaN(price as number) ? undefined : price });

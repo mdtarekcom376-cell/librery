@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Send, Trash2, RefreshCw, Megaphone, Calendar } from "lucide-react";
+import { Send, Trash2, RefreshCw, Megaphone, Calendar, ImageIcon, X } from "lucide-react";
 import { apiClient } from "../api";
 import type { Notice } from "../types";
+import { compressImage } from "../lib/imageCompressor";
 
 export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () => void }) {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
@@ -26,15 +31,40 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
 
   useEffect(() => { loadNotices(); }, []);
 
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    try {
+      const compressed = await compressImage(file, 1200);
+      setImage(compressed);
+      setImageFile(file);
+      setImagePreview(compressed);
+    } catch (err) {
+      console.error("Image compress error:", err);
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  const clearImage = () => {
+    setImage(null);
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subject.trim() || !content.trim()) return;
     setSubmitting(true);
     setSuccessMsg("");
     try {
-      await apiClient.post("/notices", { subject: subject.trim(), content: content.trim() });
+      await apiClient.post("/notices", { subject: subject.trim(), content: content.trim(), image: image });
       setSubject("");
       setContent("");
+      setImage(null);
+      setImageFile(null);
+      setImagePreview(null);
       setSuccessMsg("✅ নটিশ সফলভাবে প্রকাশিত হয়েছে!");
       setTimeout(() => setSuccessMsg(""), 4000);
       await loadNotices();
@@ -108,6 +138,35 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
           />
         </div>
 
+        {/* Image upload */}
+        <div>
+          <label className="block text-[10px] uppercase font-bold tracking-wider text-[#6B6B70] mb-1.5">ছবি (ঐচ্ছিক)</label>
+          {imagePreview ? (
+            <div className="relative inline-block">
+              <img src={imagePreview} alt="Preview" className="max-h-40 rounded-xl border border-[#E5E5EA]" />
+              <button
+                type="button"
+                onClick={clearImage}
+                className="absolute -top-2 -right-2 p-1 bg-[#22242A] text-white rounded-full shadow-md hover:bg-[#DC2626] transition-colors cursor-pointer"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <label className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl cursor-pointer hover:bg-[#F5F3EF]/80 transition-colors text-sm text-[#6B6B70]">
+              <ImageIcon size={18} className="text-[#22242A]" />
+              <span>{imageUploading ? 'সংকুচিত হচ্ছে...' : 'ছবি নির্বাচন করুন (webp/jpeg)'}</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+                disabled={imageUploading}
+              />
+            </label>
+          )}
+        </div>
+
         {successMsg && (
           <p className="text-xs text-[#22242A] font-bold bg-[#E5E5EA]/30 border border-[#E5E5EA] px-3 py-2 rounded-lg">
             {successMsg}
@@ -153,6 +212,14 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
                       <Calendar size={10} />
                       {notice.createdAt}
                     </div>
+                    {notice.image && (
+                      <img
+                        src={notice.image}
+                        alt="Notice"
+                        className="max-h-48 w-full object-contain rounded-xl mb-3 border border-[#E5E5EA]"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
                     <p className="text-sm text-[#22242A] leading-relaxed whitespace-pre-wrap">
                       {notice.content}
                     </p>

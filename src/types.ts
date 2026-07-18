@@ -115,12 +115,28 @@ export interface DashboardStats {
   totalMembers: number;
 }
 
+export interface DashboardPopularBook {
+  code: string;
+  name: string;
+  author: string;
+  group: string;
+  imageUrl: string;
+  count: number;
+}
+
+export interface DashboardActiveMember {
+  formNumber: string;
+  name: string;
+  mobile: string;
+  count: number;
+}
+
 export interface DashboardData {
   stats: DashboardStats;
   charts: {
     monthlyReport: Array<{ month: string; issues: number; returns: number }>;
-    popularBooks: Array<{ code: string; name: string; count: number }>;
-    activeMembers: Array<{ formNumber: string; name: string; count: number }>;
+    popularBooks: DashboardPopularBook[];
+    activeMembers: DashboardActiveMember[];
     lateReportLoans: IssueRecord[];
   };
 }
@@ -151,6 +167,7 @@ export interface Notice {
   id: string;
   subject: string;
   content: string;
+  image?: string;
   createdAt: string;
 }
 

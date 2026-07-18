@@ -780,7 +780,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               </div>
 
               {/* Declaration Statement */}
-              <div className="p-3.5 bg-[#0a1420] border border-[#E5E5EA] rounded-xl space-y-2">
+              <div className="p-3.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl space-y-2">
                 <span className="text-[11px] font-black text-[#22242A] flex items-center gap-1">
                   ✍️ অঙ্গীকার নামা ও সম্মতিপত্র
                 </span>

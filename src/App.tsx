@@ -197,6 +197,9 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Track page view for analytics (fire-and-forget)
+    fetch("/api/public/track-pageview", { method: "POST", headers: { "Content-Type": "application/json" } }).catch(() => {});
+
     checkSession();
     loadLogo();
     loadLoginFlowSetting();

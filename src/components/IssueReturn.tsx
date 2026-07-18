@@ -301,7 +301,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                         </span>
                       </div>
                     ))}
-                    <div className="p-1 px-2 text-[9px] text-[#22242A] text-right bg-slate-930">
+                    <div className="p-1 px-2 text-[9px] text-[#22242A] text-right bg-[#F5F3EF]">
                       মিল থাকলে ক্লিক করুন, না থাকলে টাইপ শেষ করুন (স্বয়ংক্রিয় নতুন মেম্বার তৈরি হবে)
                     </div>
                   </div>
@@ -557,7 +557,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
               >
                 <option value="">নির্ধারিত লিজ একাউন্ট নির্বাচন করুন...</option>
                 {activeIssues.map(issue => (
-                  <option key={issue.id} value={issue.id} className="bg-[#0f172a]">
+                  <option key={issue.id} value={issue.id} className="bg-white">
                     {issue.bookName} ({issue.bookCode}) - {issue.memberName} (রিটার্ন তারিখ: {issue.returnDate})
                   </option>
                 ))}

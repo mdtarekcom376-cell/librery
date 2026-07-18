@@ -260,21 +260,40 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
               {charts.popularBooks.length === 0 ? (
                 <p className="text-[11px] text-[#52525B] py-6">কোনো বুক ট্রানজেকশন হিস্ট্রি নেই।</p>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {charts.popularBooks.map((item, i) => {
                     const topCount = charts.popularBooks[0]?.count || 1;
                     const pct = (item.count / topCount) * 100;
                     return (
-                      <button type="button" key={item.code} className="w-full text-left group cursor-pointer block" onClick={() => onNavigate("search-smart")}>
-                        <div className="flex justify-between text-xs mb-1.5">
-                          <span className="font-medium text-[#22242A] truncate max-w-[120px]">{item.name}</span>
-                          <span className="text-[#3F3F46] font-bold font-mono">{item.count} বার</span>
+                      <button type="button" key={item.code} className="w-full text-left group cursor-pointer block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors" onClick={() => onNavigate("search-smart")}>
+                        <div className="flex gap-3 items-start">
+                          {/* Cover thumbnail */}
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="w-10 h-14 rounded-lg object-cover flex-shrink-0 shadow-sm"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            />
+                          ) : (
+                            <div className="w-10 h-14 rounded-lg bg-[#E5E5EA] flex items-center justify-center flex-shrink-0 text-[#52525B] text-[10px] font-bold">
+                              {item.code.slice(0, 3)}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start gap-2">
+                              <span className="text-xs font-bold text-[#22242A] truncate">{item.name}</span>
+                              <span className="text-[10px] text-[#3F3F46] font-bold font-mono flex-shrink-0">{item.count} বার</span>
+                            </div>
+                            <p className="text-[10px] text-[#52525B] mt-0.5 truncate">{item.author}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[9px] font-mono text-[#6B6B70] bg-[#F5F3EF] px-1.5 py-0.5 rounded">{item.code}</span>
+                              {item.group && <span className="text-[9px] text-[#6B6B70] truncate">{item.group}</span>}
+                            </div>
+                          </div>
                         </div>
-                        <div className="w-full h-1.5 bg-[#D4D4D8] rounded-full overflow-hidden">
-                          <div
-                            className="bg-[#22242A] h-full rounded-full transition-all duration-500"
-                            style={{ width: `${pct}%` }}
-                          ></div>
+                        <div className="w-full h-1 bg-[#D4D4D8] rounded-full overflow-hidden mt-2">
+                          <div className="bg-[#22242A] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }}></div>
                         </div>
                       </button>
                     );
@@ -294,21 +313,24 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
               {charts.activeMembers.length === 0 ? (
                 <p className="text-[11px] text-[#52525B] py-6">কোনো সদস্য লিজ ইতিহাস পাওয়া যায়নি।</p>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {charts.activeMembers.map((item, i) => {
                     const topCount = charts.activeMembers[0]?.count || 1;
                     const pct = (item.count / topCount) * 100;
                     return (
-                      <button type="button" key={item.formNumber} className="w-full text-left group cursor-pointer hover:bg-black/5 p-1 -mx-1 rounded block" onClick={() => onNavigate("members")}>
-                        <div className="flex justify-between text-xs mb-1.5">
-                          <span className="font-medium text-[#22242A] truncate max-w-[120px]">{item.name}</span>
-                          <span className="text-[#3F3F46] font-bold font-mono">#{item.formNumber} ({item.count})</span>
+                      <button type="button" key={item.formNumber} className="w-full text-left group cursor-pointer block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors" onClick={() => onNavigate("members")}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-[#22242A] truncate">{item.name}</span>
+                              <span className="text-[9px] font-mono text-[#6B6B70] bg-[#F5F3EF] px-1.5 py-0.5 rounded flex-shrink-0">#{item.formNumber}</span>
+                            </div>
+                            <p className="text-[10px] text-[#52525B] mt-0.5">{item.mobile}</p>
+                          </div>
+                          <span className="text-[11px] text-[#3F3F46] font-bold font-mono flex-shrink-0">{item.count} টি</span>
                         </div>
-                        <div className="w-full h-1.5 bg-[#D4D4D8] rounded-full overflow-hidden">
-                          <div
-                            className="bg-[#22242A] h-full rounded-full transition-all duration-500"
-                            style={{ width: `${pct}%` }}
-                          ></div>
+                        <div className="w-full h-1 bg-[#D4D4D8] rounded-full overflow-hidden mt-2">
+                          <div className="bg-[#22242A] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }}></div>
                         </div>
                       </button>
                     );

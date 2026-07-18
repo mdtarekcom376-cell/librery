@@ -1643,6 +1643,14 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                     {news.createdAt || news.date}
                   </span>
                 </div>
+                {news.image && (
+                  <img
+                    src={news.image}
+                    alt="Notice"
+                    className="w-full h-40 object-cover rounded-xl mb-3 border border-gray-200"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                )}
                 <h4 className="font-display-bn text-lg font-bold mb-2" style={{ color: "var(--ink-navy)" }}>
                   {news.subject || news.title}
                 </h4>
