@@ -1,0 +1,10 @@
+# robots.txt — অক্ষর পাঠাগার
+User-agent: *
+Allow: /
+
+# Disallow admin & private routes
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://www.okkhorpathagar.org/sitemap.xml

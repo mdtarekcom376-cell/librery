@@ -534,7 +534,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const logoSrc = logoBase64 || akkhorLogo;
 
   // Hero headline words for staggered animation
-  const heroWords = "অক্ষরে অক্ষরে জ্ঞানের পথে".split(" ");
+  const heroWords = "জ্ঞান হোক সবার জন্য, পরিবর্তন শুরু হোক শিক্ষা দিয়ে".split(" ");
 
   return (
     <div className="homepage">
@@ -693,7 +693,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              বইয়ের আলোয় আলোকিত হোক জীবন
+              জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের এক নিরবচ্ছিন্ন কেন্দ্র
             </motion.p>
 
             {/* Headline — word by word reveal */}
@@ -719,7 +719,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
             >
-              আপনার পছন্দের বই খুঁজে পেতে এবং পাঠাগার এর সাথে যুক্ত থাকতে ভিজিট করুন অক্ষর পাঠাগার।
+              অক্ষর পাঠাগার একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। আমাদের লক্ষ্য জ্ঞানচর্চার প্রসার, পাঠাভ্যাস গড়ে তোলা, মানবিক মূল্যবোধের বিকাশ এবং শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে দাঁড়িয়ে একটি আলোকিত সমাজ গড়ে তোলা।
             </motion.p>
 
             {/* CTA row */}
@@ -824,7 +824,11 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               </h2>
               <p className="text-[#94a3b8] text-lg md:text-xl font-display-lat italic">
                 Just a <span className="relative inline-block">
-                  <span className="relative z-10 text-white">public library?</span>
+                  <span className="relative z-10 text-white">PDF library?</span>
+                  <span className="absolute bottom-1 left-0 w-full h-[3px] rounded-full bg-[#38BDF8]/60 z-0" />
+                </span>
+                {" "}No — <span className="relative inline-block">
+                  <span className="relative z-10 text-white">a knowledge center.</span>
                   <span className="absolute bottom-1 left-0 w-full h-[3px] rounded-full bg-[#38BDF8]/60 z-0" />
                 </span>
               </p>
@@ -845,13 +849,16 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
               <p className="font-body-bn text-xl md:text-[22px] leading-relaxed mx-auto mb-8 text-left" style={{ color: "var(--ink-navy)", maxWidth: "700px" }}>
                 <span className="font-bold text-2xl md:text-3xl block mb-6 leading-tight" style={{ color: "var(--book-blue)" }}>
-                  <span style={{ color: "var(--flame-orange)" }}>*</span> অক্ষর পাঠাগার জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র!
+                  <span style={{ color: "var(--flame-orange)" }}>*</span> জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের এক নিরবচ্ছিন্ন কেন্দ্র
                 </span>
                 <span className="block mb-5 text-[#334155]">
                   "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত, বেসর/লাই নং-০৪।
                 </span>
+                <span className="block mb-5 text-[#334155] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
+                  আমাদের লক্ষ্য জ্ঞানচর্চার প্রসার, পাঠাভ্যাস গড়ে তোলা, মানবিক মূল্যবোধের বিকাশ এবং শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে দাঁড়িয়ে একটি আলোকিত সমাজ গড়ে তোলা।
+                </span>
                 <span className="block text-[#475569] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
-                  আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
+                  আমাদের ডিজিটাল প্ল্যাটফর্মে বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই, গবেষণামূলক প্রকাশনা, জ্ঞানভিত্তিক রিসোর্স এবং অন্যান্য শিক্ষাসামগ্রী সহজে খুঁজে পাওয়ার সুযোগ রয়েছে।
                 </span>
               </p>
             </div>
@@ -860,7 +867,116 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       </section>
 
       {/* ======================================
-          §4.4 CORNERS (ACCORDION)
+          §4.4 OUR MISSION
+          ====================================== */}
+      <section id="mission" className="section-warm py-16 md:py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl mx-auto">
+            <SectionHeader eyebrow="আমাদের লক্ষ্য" heading="জ্ঞানভিত্তিক সমাজ গড়ার অঙ্গীকার" />
+
+            <motion.div
+              className="bg-white rounded-2xl p-8 md:p-12 shadow-xl border border-[#E2E8F0] relative overflow-hidden"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Decorative accent */}
+              <div className="absolute top-0 left-0 w-1.5 h-full" style={{ background: "var(--flame-gradient)" }} />
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sky-tint)" }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--book-blue)" strokeWidth="2" className="w-6 h-6">
+                    <path d="M12 6v12M6 12h12" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-display-bn text-xl md:text-2xl font-bold" style={{ color: "var(--ink-navy)" }}>
+                    একটি জ্ঞানভিত্তিক সমাজ গড়ার লক্ষ্যে
+                  </h3>
+                </div>
+              </div>
+
+              <p className="font-body-bn text-base md:text-lg leading-relaxed mb-6" style={{ color: "#334155" }}>
+                আমাদের লক্ষ্য এমন একটি জ্ঞানভিত্তিক সমাজ গড়ে তোলা, যেখানে শিক্ষা, বই, গবেষণা, নৈতিকতা ও মানবিক মূল্যবোধ সকলের কাছে সমানভাবে পৌঁছে যায়। প্রযুক্তিকে কাজে লাগিয়ে আমরা জ্ঞানকে আরও সহজলভ্য, সংগঠিত এবং সবার জন্য উন্মুক্ত করার চেষ্টা করছি।
+              </p>
+
+              {/* Stats row */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                {[
+                  { value: "শিক্ষা", desc: "জ্ঞানচর্চার প্রসার" },
+                  { value: "মানবিকতা", desc: "সামাজিক দায়বদ্ধতা" },
+                  { value: "গবেষণা", desc: "তথ্যভিত্তিক জ্ঞান" },
+                  { value: "প্রযুক্তি", desc: "জ্ঞানের সহজলভ্যতা" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={item.value}
+                    className="text-center p-4 rounded-xl"
+                    style={{ background: "#F8FAFC" }}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-10%" }}
+                    transition={{ duration: 0.3, delay: i * 0.08 }}
+                  >
+                    <p className="font-display-bn text-sm font-bold mb-1" style={{ color: "var(--book-blue)" }}>
+                      {item.value}
+                    </p>
+                    <p className="font-body-bn text-xs" style={{ color: "#64748b" }}>
+                      {item.desc}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================
+          §4.5 WHAT WE DO
+          ====================================== */}
+      <section id="what-we-do" className="section-tint py-16 md:py-24 px-4" style={{ background: "#F8FAFC" }}>
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader eyebrow="আমরা যা করি" heading="জ্ঞান ও মানবিকতার জন্য আমাদের উদ্যোগ" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+            {[
+              { icon: BookOpen, title: "জ্ঞানচর্চা ও পাঠাভ্যাস", desc: "বই পড়ার অভ্যাস গড়ে তোলা এবং জ্ঞানচর্চায় উৎসাহ প্রদান করা আমাদের প্রধান লক্ষ্য।" },
+              { icon: Users, title: "শিক্ষামূলক উদ্যোগ", desc: "শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত শিশু-কিশোরদের জন্য শিক্ষামূলক কার্যক্রম ও কর্মশালা পরিচালনা।" },
+              { icon: Heart, title: "মানবিক ও সামাজিক কার্যক্রম", desc: "দুর্যোগকালীন সহায়তা, অসহায় মানুষের পাশে দাঁড়ানো ও সমাজসেবামূলক প্রকল্প বাস্তবায়ন।" },
+              { icon: Book, title: "বই ও জ্ঞানসম্পদের ডিজিটাল সংরক্ষণ", desc: "বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই ও গবেষণাপত্র ডিজিটাল আকারে সংরক্ষণ ও সহজলভ্যকরণ।" },
+              { icon: FileSpreadsheet, title: "বাংলায় শিক্ষামূলক রিসোর্স তৈরি", desc: "বাংলা ভাষায় জ্ঞানভিত্তিক কনটেন্ট, শিক্ষামূলক উপকরণ ও রিসোর্স তৈরি ও প্রকাশ।" },
+              { icon: ClipboardList, title: "গবেষণা ও তথ্যভিত্তিক শিক্ষা", desc: "গবেষণামূলক প্রকাশনা, তথ্যভিত্তিক শিক্ষা ও জ্ঞানচর্চাকে উৎসাহিত করা এবং প্রাসঙ্গিক তথ্য সরবরাহ।" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                className="hp-card p-6 group cursor-default"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.3, delay: i * 0.06 }}
+                whileHover={{ y: -4 }}
+              >
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all"
+                  style={{ background: "var(--sky-tint)" }}
+                >
+                  <item.icon size={24} style={{ color: "var(--book-blue)" }} />
+                </div>
+                <h4 className="font-display-bn text-base font-bold mb-2" style={{ color: "var(--ink-navy)" }}>
+                  {item.title}
+                </h4>
+                <p className="font-body-bn text-sm leading-relaxed" style={{ color: "#64748b" }}>
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================
+          §4.6 CORNERS (ACCORDION)
           ====================================== */}
       <section id="corners" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
@@ -1367,7 +1483,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           ====================================== */}
       <section id="sales" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="বিক্রয় কর্নার" heading="লাইব্রেরির নিজস্ব শপ" />
+          <SectionHeader eyebrow="" heading="বিক্রয় কর্নার" />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
             {hotSalesItems.length > 0 
               ? hotSalesItems.map((item, i) => (
@@ -1900,14 +2016,14 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 <span className="font-display-bn text-lg font-bold">অক্ষর পাঠাগার</span>
               </div>
               <p className="font-body-bn text-sm leading-relaxed mb-6" style={{ color: "#94a3b8" }}>
-                বাংলায় তৈরি স্মার্ট লাইব্রেরি ম্যানেজমেন্ট সিস্টেম। প্রতিটি বই, প্রতিটি সদস্য — এক জায়গায়।
+                অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের বিকাশে নিয়োজিত।
               </p>
               
               {/* Donate CTA */}
               <div className="bg-gradient-to-r from-[#F7941D]/10 to-[#EC2C7B]/10 p-5 rounded-xl border border-[#F7941D]/30 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-white opacity-5 mix-blend-overlay"></div>
                 <h4 className="font-display-bn text-sm font-bold text-white mb-3 relative z-10">
-                  আলো ছড়ানোর মিছিলে যুক্ত হোন
+                  আলো ছড়ানোর মিছিলে যোগাযোগ করুন
                 </h4>
                 <a 
                   href="http://donat.okkhorpathagar.com/" 
@@ -1966,7 +2082,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 </a>
                 <span className="flex items-center gap-2 px-2 mt-1">
                   <Phone size={14} className="text-[#64748b]" />
-                  01642816737, 01798084404
+                  01642-816737, 01798-084404
                 </span>
                 <span className="flex items-center gap-2 px-2 py-1 bg-white/5 rounded-md border border-white/5 w-fit mt-1">
                   <Mail size={14} className="text-[#38BDF8]" />
