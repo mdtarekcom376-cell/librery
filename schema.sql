@@ -118,6 +118,7 @@ CREATE TABLE notices (
   id INT AUTO_INCREMENT PRIMARY KEY,
   subject VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
+  image LONGTEXT DEFAULT NULL,
   created_at DATETIME NOT NULL
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

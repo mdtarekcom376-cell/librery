@@ -484,3 +484,31 @@ body {
   box-shadow: -4px 0 30px rgba(22, 35, 63, 0.15);
   overflow-y: auto;
 }
+
+/* Marquee Animation for Reviews */
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-container {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.marquee-content {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 20s linear infinite;
+}
+
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  width: 320px;
+  flex-shrink: 0;
+  margin-right: 1.5rem;
+}

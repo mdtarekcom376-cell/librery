@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowLeft, Store, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import PublicShopView from "./PublicShopView";
+import DonationCTA from "./DonationCTA";
 
 import { ShopItem } from "../types";
 
@@ -118,12 +119,20 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
 
       {/* Main Content - PublicShopView Component */}
       <motion.main
-        className="py-8 md:py-12"
+        className="py-8 md:py-12 flex flex-col"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <PublicShopView onItemSelect={onItemSelect} />
+        
+        <div className="max-w-2xl mx-auto px-4 mt-12 w-full">
+          <DonationCTA 
+            title="❤️ জ্ঞানচর্চার এই উদ্যোগে পাশে থাকুন"
+            description="আপনার অনুদান বইভিত্তিক কার্যক্রম, শিক্ষামূলক উদ্যোগ এবং মানবিক সেবাকে আরও মানুষের কাছে পৌঁছে দিতে সহায়তা করে।"
+            buttonLabel="অনুদান করুন"
+          />
+        </div>
       </motion.main>
 
       {/* Footer */}

@@ -23,7 +23,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
       const data = await apiClient.get("/notices");
       setNotices(data);
     } catch (err) {
-      console.error("নটিশ লোড করতে ব্যর্থ:", err);
+      console.error("নোটিশ লোড করতে ব্যর্থ:", err);
     } finally {
       setLoading(false);
     }
@@ -65,19 +65,19 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
       setImage(null);
       setImageFile(null);
       setImagePreview(null);
-      setSuccessMsg("✅ নটিশ সফলভাবে প্রকাশিত হয়েছে!");
+      setSuccessMsg("✅ নোটিশ সফলভাবে প্রকাশিত হয়েছে!");
       setTimeout(() => setSuccessMsg(""), 4000);
       await loadNotices();
       onRefreshStats?.();
     } catch (err: any) {
-      alert(err.message || "নটিশ প্রকাশ করতে ব্যর্থ।");
+      alert(err.message || "নোটিশ প্রকাশ করতে ব্যর্থ।");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("এই নটিশটি স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+    if (!confirm("এই নোটিশটি স্থায়ীভাবে মুছে ফেলতে চান?")) return;
     setDeleteLoading(id);
     try {
       await apiClient.delete(`/notices/${id}`);
@@ -95,8 +95,8 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold">📢 নটিশ বোর্ড ম্যানেজমেন্ট</h2>
-          <p className="text-xs text-[#6B6B70] mt-1">নতুন নটিশ প্রকাশ করুন — তাৎক্ষণিকভাবে পাবলিক পেজে দেখা যাবে</p>
+          <h2 className="text-lg sm:text-xl font-bold">📢 নোটিশ বোর্ড ম্যানেজমেন্ট</h2>
+          <p className="text-xs text-[#6B6B70] mt-1">নতুন নোটিশ প্রকাশ করুন — তাৎক্ষণিকভাবে পাবলিক পেজে দেখা যাবে</p>
         </div>
         <button
           onClick={loadNotices}
@@ -111,7 +111,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
       <form onSubmit={handleSubmit} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <Megaphone size={18} className="text-[#22242A]" />
-          <h3 className="text-sm font-bold text-[#22242A]">নতুন নটিশ প্রকাশ করুন</h3>
+          <h3 className="text-sm font-bold text-[#22242A]">নতুন নোটিশ প্রকাশ করুন</h3>
         </div>
 
         <div>
@@ -120,7 +120,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
             type="text"
             value={subject}
             onChange={e => setSubject(e.target.value)}
-            placeholder="নটিশের বিষয় লিখুন..."
+            placeholder="নোটিশের বিষয় লিখুন..."
             className="w-full px-4 py-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-sm focus:outline-none focus:border-[#22242A] focus:ring-1 focus:ring-[#FACC15]/20"
             required
           />
@@ -131,7 +131,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
           <textarea
             value={content}
             onChange={e => setContent(e.target.value)}
-            placeholder="নটিশের বিস্তারিত বর্ণনা লিখুন..."
+            placeholder="নোটিশের বিস্তারিত বর্ণনা লিখুন..."
             rows={5}
             className="w-full px-4 py-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl text-[#22242A] text-sm focus:outline-none focus:border-[#22242A] focus:ring-1 focus:ring-[#FACC15]/20 resize-y"
             required
@@ -186,7 +186,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
       {/* Existing Notices */}
       <div>
         <h3 className="text-sm font-bold text-[#22242A] mb-3">
-          প্রকাশিত নটিশ ({notices.length})
+          প্রকাশিত নোটিশ ({notices.length})
         </h3>
 
         {loading ? (
@@ -196,7 +196,7 @@ export default function NoticeManager({ onRefreshStats }: { onRefreshStats?: () 
           </div>
         ) : notices.length === 0 ? (
           <div className="text-center py-12 bg-white/[0.02] border border-[#E5E5EA] rounded-2xl">
-            <p className="text-sm text-[#6B6B70]">কোনো নটিশ প্রকাশিত হয়নি</p>
+            <p className="text-sm text-[#6B6B70]">কোনো নোটিশ প্রকাশিত হয়নি</p>
           </div>
         ) : (
           <div className="space-y-3">

@@ -260,11 +260,30 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
               {charts.popularBooks.length === 0 ? (
                 <p className="text-[11px] text-[#52525B] py-6">কোনো বুক ট্রানজেকশন হিস্ট্রি নেই।</p>
               ) : (
-                <div className="space-y-3">
-                  {charts.popularBooks.map((item, i) => {
-                    const topCount = charts.popularBooks[0]?.count || 1;
-                    const pct = (item.count / topCount) * 100;
-                    return (
+                <>
+                  {/* SVG Bar Chart for Top 5 Books */}
+                  <div className="w-full relative mb-6">
+                    <svg viewBox="0 0 500 120" className="w-full h-24 overflow-visible font-sans">
+                      <line x1="20" y1="20" x2="480" y2="20" stroke="#E5E5EA" strokeDasharray="3,3" strokeWidth="1" />
+                      <line x1="20" y1="100" x2="480" y2="100" stroke="#E5E5EA" strokeWidth="1" />
+                      {charts.popularBooks.map((item, idx) => {
+                        const topCount = charts.popularBooks[0]?.count || 1;
+                        const colWidth = 460 / charts.popularBooks.length;
+                        const xBase = 20 + idx * colWidth + colWidth / 2;
+                        const height = (item.count / topCount) * 80;
+                        const y = 100 - height;
+                        return (
+                          <g key={item.code} className="group cursor-pointer">
+                            <rect x={xBase - 16} y={y} width="32" height={Math.max(height, 4)} fill="#22242A" rx="4" className="transition-all hover:opacity-80" />
+                            <text x={xBase} y={y - 8} fill="#22242A" fontSize="12" textAnchor="middle" fontWeight="bold">{item.count}</text>
+                            <text x={xBase} y="115" fill="#6B6B70" fontSize="11" textAnchor="middle">#{idx + 1}</text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                  <div className="space-y-3">
+                    {charts.popularBooks.map((item, i) => (
                       <button type="button" key={item.code} className="w-full text-left group cursor-pointer block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors" onClick={() => onNavigate("search-smart")}>
                         <div className="flex gap-3 items-start">
                           {/* Cover thumbnail */}
@@ -282,7 +301,9 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
-                              <span className="text-xs font-bold text-[#22242A] truncate">{item.name}</span>
+                              <span className="text-xs font-bold text-[#22242A] truncate">
+                                <span className="text-[#D97706] mr-1">#{i + 1}</span> {item.name}
+                              </span>
                               <span className="text-[10px] text-[#3F3F46] font-bold font-mono flex-shrink-0">{item.count} বার</span>
                             </div>
                             <p className="text-[10px] text-[#52525B] mt-0.5 truncate">{item.author}</p>
@@ -292,13 +313,10 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                             </div>
                           </div>
                         </div>
-                        <div className="w-full h-1 bg-[#D4D4D8] rounded-full overflow-hidden mt-2">
-                          <div className="bg-[#22242A] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }}></div>
-                        </div>
                       </button>
-                    );
-                  })}
-                </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -313,29 +331,47 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
               {charts.activeMembers.length === 0 ? (
                 <p className="text-[11px] text-[#52525B] py-6">কোনো সদস্য লিজ ইতিহাস পাওয়া যায়নি।</p>
               ) : (
-                <div className="space-y-3">
-                  {charts.activeMembers.map((item, i) => {
-                    const topCount = charts.activeMembers[0]?.count || 1;
-                    const pct = (item.count / topCount) * 100;
-                    return (
+                <>
+                  {/* SVG Bar Chart for Top 5 Members */}
+                  <div className="w-full relative mb-6">
+                    <svg viewBox="0 0 500 120" className="w-full h-24 overflow-visible font-sans">
+                      <line x1="20" y1="20" x2="480" y2="20" stroke="#E5E5EA" strokeDasharray="3,3" strokeWidth="1" />
+                      <line x1="20" y1="100" x2="480" y2="100" stroke="#E5E5EA" strokeWidth="1" />
+                      {charts.activeMembers.map((item, idx) => {
+                        const topCount = charts.activeMembers[0]?.count || 1;
+                        const colWidth = 460 / charts.activeMembers.length;
+                        const xBase = 20 + idx * colWidth + colWidth / 2;
+                        const height = (item.count / topCount) * 80;
+                        const y = 100 - height;
+                        return (
+                          <g key={item.formNumber} className="group cursor-pointer">
+                            <rect x={xBase - 16} y={y} width="32" height={Math.max(height, 4)} fill="#22242A" rx="4" className="transition-all hover:opacity-80" />
+                            <text x={xBase} y={y - 8} fill="#22242A" fontSize="12" textAnchor="middle" fontWeight="bold">{item.count}</text>
+                            <text x={xBase} y="115" fill="#6B6B70" fontSize="11" textAnchor="middle">#{idx + 1}</text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                  <div className="space-y-3">
+                    {charts.activeMembers.map((item, i) => (
                       <button type="button" key={item.formNumber} className="w-full text-left group cursor-pointer block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors" onClick={() => onNavigate("members")}>
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-[#22242A] truncate">{item.name}</span>
+                              <span className="text-xs font-bold text-[#22242A] truncate">
+                                <span className="text-[#D97706] mr-1">#{i + 1}</span> {item.name}
+                              </span>
                               <span className="text-[9px] font-mono text-[#6B6B70] bg-[#F5F3EF] px-1.5 py-0.5 rounded flex-shrink-0">#{item.formNumber}</span>
                             </div>
                             <p className="text-[10px] text-[#52525B] mt-0.5">{item.mobile}</p>
                           </div>
                           <span className="text-[11px] text-[#3F3F46] font-bold font-mono flex-shrink-0">{item.count} টি</span>
                         </div>
-                        <div className="w-full h-1 bg-[#D4D4D8] rounded-full overflow-hidden mt-2">
-                          <div className="bg-[#22242A] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }}></div>
-                        </div>
                       </button>
-                    );
-                  })}
-                </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import DonationCTA from "./DonationCTA";
 import {
   motion,
   AnimatePresence,
@@ -327,9 +328,10 @@ interface HomePageProps {
   logoBase64?: string;         // Dynamic logo from server
   onSalesCorner?: () => void;  // Navigate to dedicated sales page
   onBookSelect?: (book: any) => void; // Show book details
+  onNoticeSelect?: (notice: any) => void; // Show notice details
 }
 
-export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect }: HomePageProps) {
+export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect, onNoticeSelect }: HomePageProps) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openCorner, setOpenCorner] = useState<string | null>("নজরুল কর্নার");
@@ -349,6 +351,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [realBooks, setRealBooks] = useState<any[]>([]);
   const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
   const [liveReviews, setLiveReviews] = useState<any[]>([]);
+  const [allReviews, setAllReviews] = useState<any[]>([]);
+  const [showAllReviewsModal, setShowAllReviewsModal] = useState(false);
   const [liveNotices, setLiveNotices] = useState<any[]>([]);
   const [liveStats, setLiveStats] = useState(DEMO_STATS);
   const [liveCorners, setLiveCorners] = useState<{name: string; bookCount: number; topBooks: {id: string; code: string; title: string; author: string; imageUrl: string; reads: number}[]}[]>([]);
@@ -391,7 +395,10 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
         ]);
         if (reviewsRes.ok) {
           const r = await reviewsRes.json();
-          if (Array.isArray(r)) setLiveReviews(r.slice(0, 3));
+          if (Array.isArray(r)) {
+            setAllReviews(r);
+            setLiveReviews(r.slice(0, 3));
+          }
         }
         if (noticesRes.ok) {
           const n = await noticesRes.json();
@@ -738,7 +745,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               </button>
               <button
                 onClick={onLibraryMemberLogin}
-                className="btn-flame px-6 py-3 text-sm md:text-base font-ui"
+                className="btn-blue px-6 py-3 text-sm md:text-base font-ui"
                 id="hero-cta-member-login"
               >
                 পাঠাগারের সদস্য লগইন
@@ -1350,7 +1357,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           <div className="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-14 lg:gap-[70px] items-center max-w-6xl mx-auto">
             {/* Left: Card Col */}
             <motion.div 
-              className="flex flex-col items-center relative"
+              className="flex flex-col items-center relative order-2 lg:order-1"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-10%" }}
@@ -1366,7 +1373,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             </motion.div>
 
             {/* Right: Text Col */}
-            <div className="relative pl-7 md:pl-10">
+            <div className="relative pl-7 md:pl-10 order-1 lg:order-2">
               {/* Progress track */}
               <div className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full" style={{ background: "rgba(15,23,42,0.10)" }}>
                 <motion.div 
@@ -1484,6 +1491,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       <section id="sales" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="" heading="বিক্রয় কর্নার" />
+          
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
             {hotSalesItems.length > 0 
               ? hotSalesItems.map((item, i) => (
@@ -1552,6 +1560,13 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             }
           </div>
           
+          <DonationCTA 
+            title="❤️ জ্ঞানচর্চার এই উদ্যোগে পাশে থাকুন"
+            description="আপনার অনুদান বইভিত্তিক কার্যক্রম, শিক্ষামূলক উদ্যোগ এবং মানবিক সেবাকে আরও মানুষের কাছে পৌঁছে দিতে সহায়তা করে।"
+            buttonLabel="অনুদান করুন"
+            className="mt-12 max-w-2xl mx-auto"
+          />
+
           <div className="mt-10 flex justify-center">
             <button
               onClick={() => {
@@ -1572,51 +1587,67 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       <section id="testimonials" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="মতামত" heading="সদস্যদের রিভিউ" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Reviews list */}
-            {(liveReviews.length > 0 ? liveReviews : DEMO_MEMBERS).map((member, i) => (
-              <motion.div
-                key={member.id || i}
-                className="hp-card p-6"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-10%" }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-              >
-                {/* Stars */}
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, starIdx) => (
-                      <Star
-                        key={starIdx}
-                        size={16}
-                        fill={starIdx < member.rating ? "#F7941D" : "none"}
-                        stroke={starIdx < member.rating ? "#F7941D" : "#cbd5e1"}
-                      />
-                    ))}
+          <div className="marquee-container max-w-5xl mx-auto pt-6 pb-6">
+            <div className="marquee-content">
+              {/* Reviews list */}
+              {[...(liveReviews.length > 0 ? liveReviews : DEMO_MEMBERS), ...(liveReviews.length > 0 ? liveReviews : DEMO_MEMBERS)].map((member, i) => (
+                <div
+                  key={`${member.id || 'demo'}-${i}`}
+                  className="hp-card p-6 marquee-item"
+                >
+                  {/* Stars */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: 5 }).map((_, starIdx) => (
+                        <Star
+                          key={starIdx}
+                          size={16}
+                          fill={starIdx < member.rating ? "#F7941D" : "none"}
+                          stroke={starIdx < member.rating ? "#F7941D" : "#cbd5e1"}
+                        />
+                      ))}
+                    </div>
+                    {member.subject && (
+                      <span className="text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded-full line-clamp-1 max-w-[120px]" title={member.subject}>
+                        {member.subject}
+                      </span>
+                    )}
                   </div>
-                  {member.subject && (
-                    <span className="text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded-full line-clamp-1 max-w-[120px]" title={member.subject}>
-                      {member.subject}
-                    </span>
-                  )}
-                </div>
-                <p className="font-body-bn text-sm leading-relaxed mb-5" style={{ color: "#475569" }}>
-                  "{member.content || member.quote}"
-                </p>
-                <div className="flex items-center gap-3">
-                  <InitialsAvatar initials={member.initials || member.memberName?.substring(0, 2) || "স."} />
-                  <div>
-                    <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
-                      {member.memberName || member.name}
-                    </p>
-                    <p className="text-xs font-body-bn" style={{ color: "#94a3b8" }}>
-                      সদস্য {member.memberFormNumber ? `(ফরম: ${member.memberFormNumber})` : "[DEMO]"}
-                    </p>
+                  <p 
+                    className="font-body-bn text-sm leading-relaxed mb-5" 
+                    style={{ 
+                      color: "#475569",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden"
+                    }}
+                  >
+                    "{member.content || member.quote}"
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <InitialsAvatar initials={member.initials || member.memberName?.substring(0, 2) || "স."} />
+                    <div>
+                      <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
+                        {member.memberName || member.name}
+                      </p>
+                      <p className="text-xs font-body-bn" style={{ color: "#94a3b8" }}>
+                        সদস্য {member.memberFormNumber ? `(ফরম: ${member.memberFormNumber})` : "[DEMO]"}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => setShowAllReviewsModal(true)}
+              className="btn-ghost px-6 py-3 text-sm md:text-base font-ui flex items-center gap-2 group cursor-pointer"
+            >
+              সকল মতামত দেখুন
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </button>
           </div>
         </div>
       </section>
@@ -1626,16 +1657,21 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           ====================================== */}
       <section id="news" className="section-tint py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="সর্বশেষ" heading="পাঠাগারের নটিশ বোর্ড" />
+          <SectionHeader eyebrow="সর্বশেষ" heading="পাঠাগারের নোটিশ বোর্ড" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {(liveNotices.length > 0 ? liveNotices : DEMO_NEWS).map((news, i) => (
               <motion.div
                 key={news.id}
-                className="hp-card p-6"
+                className="hp-card p-6 cursor-pointer group/card"
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-10%" }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
+                onClick={() => {
+                  if (onNoticeSelect) {
+                    onNoticeSelect(news);
+                  }
+                }}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar size={14} style={{ color: "var(--flame-orange)" }} />
@@ -1647,20 +1683,25 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   <img
                     src={news.image}
                     alt="Notice"
-                    className="w-full h-40 object-cover rounded-xl mb-3 border border-gray-200"
+                    className="w-full h-40 object-cover rounded-xl mb-3 border border-gray-200 group-hover/card:shadow-md transition-shadow"
+                    loading="lazy"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                   />
                 )}
-                <h4 className="font-display-bn text-lg font-bold mb-2" style={{ color: "var(--ink-navy)" }}>
+                <h4 className="font-display-bn text-lg font-bold mb-2 group-hover/card:text-[#F25A29] transition-colors" style={{ color: "var(--ink-navy)" }}>
                   {news.subject || news.title}
                 </h4>
                 <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>
                   {news.content || news.summary}
                 </p>
-                {news.summary && (
+                {(news.summary || news.content) && (
                   <button
                     className="mt-4 text-sm font-ui font-bold flex items-center gap-1 cursor-pointer bg-transparent border-none"
                     style={{ color: "var(--book-blue)" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onNoticeSelect) onNoticeSelect(news);
+                    }}
                   >
                     বিস্তারিত <ChevronRight size={14} />
                   </button>
@@ -2027,23 +2068,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের বিকাশে নিয়োজিত।
               </p>
               
-              {/* Donate CTA */}
-              <div className="bg-gradient-to-r from-[#F7941D]/10 to-[#EC2C7B]/10 p-5 rounded-xl border border-[#F7941D]/30 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-white opacity-5 mix-blend-overlay"></div>
-                <h4 className="font-display-bn text-sm font-bold text-white mb-3 relative z-10">
-                  আলো ছড়ানোর মিছিলে যোগাযোগ করুন
-                </h4>
-                <a 
-                  href="http://donat.okkhorpathagar.com/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="relative z-10 flex items-center justify-center gap-2 bg-gradient-to-r from-[#F7941D] to-[#EC2C7B] text-white px-5 py-2.5 rounded-lg font-ui text-sm font-bold shadow-lg shadow-[#F7941D]/20 group-hover:shadow-xl group-hover:shadow-[#F7941D]/40 group-hover:-translate-y-0.5 transition-all w-full text-center"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <Heart size={16} className="text-white fill-white/80" strokeWidth={2} />
-                  ডোনেট করুন
-                </a>
-              </div>
+              {/* Donate CTA — Premium Redesign (Reused Component) */}
+              <DonationCTA title="আলো ছড়ানোর মিছিলে যোগাযোগ করুন" />
             </div>
 
             {/* Quick links */}
@@ -2192,6 +2218,76 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           </div>
         </div>
       </footer>
+
+      {/* All Reviews Modal */}
+      <AnimatePresence>
+        {showAllReviewsModal && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAllReviewsModal(false)}
+            />
+            <motion.div
+              className="fixed inset-4 md:inset-10 lg:inset-x-24 lg:inset-y-12 bg-white rounded-3xl z-[100] shadow-2xl flex flex-col overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            >
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-slate-50 shrink-0">
+                <h2 className="font-display-bn text-xl md:text-2xl font-bold text-[#16233F]">
+                  সদস্যদের সকল মতামত
+                </h2>
+                <button
+                  onClick={() => setShowAllReviewsModal(false)}
+                  className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer text-gray-500 hover:text-gray-900 shadow-sm"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto bg-slate-50/50 flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
+                {(allReviews.length > 0 ? allReviews : DEMO_MEMBERS).map((member, i) => (
+                  <div key={member.id || i} className="hp-card p-6 h-full flex flex-col bg-white">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, starIdx) => (
+                          <Star
+                            key={starIdx}
+                            size={16}
+                            fill={starIdx < member.rating ? "#F7941D" : "none"}
+                            stroke={starIdx < member.rating ? "#F7941D" : "#cbd5e1"}
+                          />
+                        ))}
+                      </div>
+                      {member.subject && (
+                        <span className="text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded-full line-clamp-1 max-w-[120px]" title={member.subject}>
+                          {member.subject}
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-body-bn text-sm leading-relaxed mb-5 flex-1" style={{ color: "#475569" }}>
+                      "{member.content || member.quote}"
+                    </p>
+                    <div className="flex items-center gap-3 mt-auto">
+                      <InitialsAvatar initials={member.initials || member.memberName?.substring(0, 2) || "স."} />
+                      <div>
+                        <p className="font-display-bn text-sm font-bold" style={{ color: "var(--ink-navy)" }}>
+                          {member.memberName || member.name}
+                        </p>
+                        <p className="text-xs font-body-bn" style={{ color: "#94a3b8" }}>
+                          সদস্য {member.memberFormNumber ? `(ফরম: ${member.memberFormNumber})` : "[DEMO]"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Newsletter Popup — appears 4s after mount, suppressed for 7 days after dismiss */}
       <NewsletterPopup />

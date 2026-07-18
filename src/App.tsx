@@ -57,6 +57,7 @@ import HomePage from "./components/HomePage";
 import PublicSalesPage from "./components/PublicSalesPage";
 import PublicBookDetailsPage from "./components/PublicBookDetailsPage";
 import PublicShopItemDetailsPage from "./components/PublicShopItemDetailsPage";
+import PublicNoticeDetailsPage from "./components/PublicNoticeDetailsPage";
 
 import { apiClient } from "./api";
 import { Book, WishlistItem, Note, AuditLog, ShopItem } from "./types";
@@ -713,7 +714,7 @@ export default function App() {
         { id: "history", label: "অডিট লগ ইতিহাস", icon: History },
         { id: "sms", label: "রিমাইন্ডার ও এসএমএস", icon: MailWarning },
         { id: "reviews", label: "রিভিউ ম্যানেজমেন্ট", icon: Star },
-        { id: "notices", label: "নটিশ বোর্ড", icon: Bell },
+        { id: "notices", label: "নোটিশ বোর্ড", icon: Bell },
         { id: "writings", label: "লেখা ও অভিযোগ", icon: MessageSquare },
         { id: "shop", label: "বিক্রয় কর্নার", icon: Store },
         { id: "analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
@@ -750,6 +751,7 @@ export default function App() {
   const [showSalesPage, setShowSalesPage] = useState(false);
   const [selectedPublicBook, setSelectedPublicBook] = useState<any | null>(null);
   const [selectedShopItem, setSelectedShopItem] = useState<any | null>(null);
+  const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
 
   const publicHomeRender = (
     <>
@@ -782,6 +784,10 @@ export default function App() {
         onBookSelect={(book) => {
           setSelectedPublicBook(book);
           navigate("/book/view");
+        }}
+        onNoticeSelect={(notice) => {
+          setSelectedNotice(notice);
+          navigate("/notice/view");
         }}
       />
       <RegistrationModal
@@ -1529,6 +1535,18 @@ export default function App() {
           <PublicBookDetailsPage
             book={selectedPublicBook}
             onBack={() => { setSelectedPublicBook(null); navigate("/"); }}
+            logoBase64={logoBase64}
+          />
+        ) : (
+          <Navigate to="/" replace />
+        )
+      } />
+
+      <Route path="/notice/view" element={
+        selectedNotice ? (
+          <PublicNoticeDetailsPage
+            notice={selectedNotice}
+            onBack={() => { setSelectedNotice(null); navigate("/"); }}
             logoBase64={logoBase64}
           />
         ) : (

@@ -46,17 +46,30 @@ export default function NewsletterPopup() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const autoCloseTimerRef = React.useRef<any>(null);
 
-  // Show popup after 4 seconds if not recently dismissed
+  // Show popup immediately, auto-close after 4 seconds
   useEffect(() => {
     if (!shouldShowPopup()) return;
 
-    const timer = setTimeout(() => {
-      setVisible(true);
+    setVisible(true);
+
+    autoCloseTimerRef.current = setTimeout(() => {
+      setVisible(false);
+      markDismissed();
     }, 4000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (autoCloseTimerRef.current) clearTimeout(autoCloseTimerRef.current);
+    };
   }, []);
+
+  const handleInteract = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+  };
 
   const handleClose = () => {
     setVisible(false);
@@ -109,6 +122,9 @@ export default function NewsletterPopup() {
             animate={{ opacity: 1, y: "-50%", x: "-50%" }}
             exit={{ opacity: 0, y: "-30%", x: "-50%" }}
             transition={{ type: "spring", damping: 22, stiffness: 260 }}
+            onMouseEnter={handleInteract}
+            onTouchStart={handleInteract}
+            onFocus={handleInteract}
           >
             <div
               className="relative rounded-2xl overflow-hidden shadow-2xl border"

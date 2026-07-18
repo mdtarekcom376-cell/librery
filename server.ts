@@ -754,12 +754,12 @@ if (process.env.VERCEL) {
 
       // 2. Most Popular Books (with author, group, image)
       const [popularBooksRows]: any = await pool.query(`
-        SELECT i.book_code AS code, i.book_name AS name,
+        SELECT b.code AS code, b.name AS name,
                b.author, b.group_name AS \`group\`, b.image_url AS imageUrl,
-               COUNT(*) AS count
+               COUNT(i.id) AS count
         FROM issues i
-        LEFT JOIN books b ON i.book_code = b.code
-        GROUP BY i.book_code, i.book_name
+        JOIN books b ON i.book_id = b.id
+        GROUP BY b.id
         ORDER BY count DESC
         LIMIT 5
       `);
@@ -774,12 +774,12 @@ if (process.env.VERCEL) {
 
       // 3. Most Active Members (with mobile)
       const [activeMembersRows]: any = await pool.query(`
-        SELECT i.form_number AS formNumber, i.member_name AS name,
+        SELECT m.form_number AS formNumber, m.name AS name,
                m.mobile,
-               COUNT(*) AS count
+               COUNT(i.id) AS count
         FROM issues i
-        LEFT JOIN members m ON i.form_number = m.form_number
-        GROUP BY i.form_number, i.member_name
+        JOIN members m ON i.member_id = m.id
+        GROUP BY m.id
         ORDER BY count DESC
         LIMIT 5
       `);
@@ -3516,10 +3516,10 @@ if (process.env.VERCEL) {
         createdAt: formatCurrentDateTime(),
       };
       
-      addLog("নটিশ প্রকাশ", `নতুন নটিশ প্রকাশিত: "${subject}"`);
+      addLog("নোটিশ প্রকাশ", `নতুন নোটিশ প্রকাশিত: "${subject}"`);
       res.json({ success: true, notice: newNotice });
     } catch (err: any) {
-      res.status(500).json({ error: "নটিশ প্রকাশ করতে ব্যর্থ।" });
+      res.status(500).json({ error: "নোটিশ প্রকাশ করতে ব্যর্থ।" });
     }
   });
 
@@ -3536,7 +3536,7 @@ if (process.env.VERCEL) {
       }));
       res.json(notices);
     } catch (err: any) {
-      res.status(500).json({ error: "নটিশ লোড করতে ব্যর্থ।" });
+      res.status(500).json({ error: "নোটিশ লোড করতে ব্যর্থ।" });
     }
   });
 
@@ -3545,13 +3545,13 @@ if (process.env.VERCEL) {
     try {
       const { id } = req.params;
       const [rows]: any = await pool.query("SELECT subject FROM notices WHERE id = ?", [id]);
-      if (rows.length === 0) return res.status(404).json({ error: "নটিশ পাওয়া যায়নি।" });
+      if (rows.length === 0) return res.status(404).json({ error: "নোটিশ পাওয়া যায়নি।" });
       
       await pool.query("DELETE FROM notices WHERE id = ?", [id]);
-      addLog("নটিশ মুছে ফেলা", `নটিশ মুছে ফেলা হয়েছে: "${rows[0].subject}"`);
+      addLog("নোটিশ মুছে ফেলা", `নোটিশ মুছে ফেলা হয়েছে: "${rows[0].subject}"`);
       res.json({ success: true });
     } catch (err: any) {
-      res.status(500).json({ error: "নটিশ মুছতে ব্যর্থ।" });
+      res.status(500).json({ error: "নোটিশ মুছতে ব্যর্থ।" });
     }
   });
 
@@ -3567,7 +3567,7 @@ if (process.env.VERCEL) {
       }));
       res.json(notices);
     } catch (err: any) {
-      res.status(500).json({ error: "নটিশ লোড করতে ব্যর্থ।" });
+      res.status(500).json({ error: "নোটিশ লোড করতে ব্যর্থ।" });
     }
   });
 
