@@ -129,53 +129,21 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     }
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setPhotoLoading(true);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new window.Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const MAX_WIDTH = 250;
-        const MAX_HEIGHT = 250;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressed = canvas.toDataURL("image/jpeg", 0.7);
-          setPhoto(compressed);
-        } else {
-          setPhoto(event.target?.result as string);
-        }
-        setPhotoLoading(false);
-      };
-      img.onerror = () => {
-        setPhotoLoading(false);
-      };
-    };
-    reader.onerror = () => {
+    try {
+      const { compressImage } = await import("../lib/imageCompressor");
+      const compressedDataUrl = await compressImage(file, 800);
+      setPhoto(compressedDataUrl);
+    } catch (err) {
+      console.error("Photo compression error:", err);
+      alert("ছবি প্রসেস করতে সমস্যা হয়েছে।");
+    } finally {
       setPhotoLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

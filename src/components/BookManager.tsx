@@ -56,6 +56,8 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
   const [bulkError, setBulkError] = useState("");
   const [bulkSuccessMsg, setBulkSuccessMsg] = useState("");
 
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+
   const [formErr, setFormErr] = useState("");
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
   const [deleteConfirmError, setDeleteConfirmError] = useState("");
@@ -78,20 +80,25 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
   });
 
   // Open Edit Dialog
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       alert("অনুগ্রহ করে একটি ছবি ফাইল সিলেক্ট করুন।");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setBookImageUrl(event.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+    
+    setIsProcessingImage(true);
+    try {
+      const { compressImage } = await import("../lib/imageCompressor");
+      const compressedDataUrl = await compressImage(file, 1200);
+      setBookImageUrl(compressedDataUrl);
+    } catch (err) {
+      console.error("Image compression error:", err);
+      alert("ছবি প্রসেস করতে সমস্যা হয়েছে।");
+    } finally {
+      setIsProcessingImage(false);
+    }
   };
 
   const openEdit = (book: Book) => {
@@ -187,7 +194,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
     }
 
     // Parse logic: Supports CSV (comma separated) or Tab Separated formats
-    // Format expected: BookCode, BookName, Author, Publisher, ImageUrl (optional)
+    // Format expected: BookCode, BookName, Author, Publisher, ImageUrl (optional), PageCount (optional), Price (optional)
     const lines = bulkInput.split("\n");
     const parsedList: any[] = [];
 
@@ -205,9 +212,11 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
       const author = cols[2]?.trim();
       const publisher = cols[3]?.trim() || "অজ্ঞাত প্রকাশনা";
       const imageUrl = cols[4]?.trim() || "";
+      const pageCount = cols[5]?.trim() ? Number(cols[5].trim()) : undefined;
+      const price = cols[6]?.trim() ? Number(cols[6].trim()) : undefined;
 
       if (code && name && author) {
-        parsedList.push({ code, name, author, publisher, imageUrl });
+        parsedList.push({ code, name, author, publisher, imageUrl, pageCount: isNaN(pageCount as number) ? undefined : pageCount, price: isNaN(price as number) ? undefined : price });
       }
     });
 
@@ -584,9 +593,11 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                       />
                       <div className="space-y-0.5">
                         <p className="text-xs text-[#22242A] font-bold">
-                          গ্যালারি থেকে ছবি আপলোড করুন
+                          {isProcessingImage ? "প্রসেসিং হচ্ছে..." : "গ্যালারি থেকে ছবি আপলোড করুন"}
                         </p>
-                        <p className="text-[10px] text-[#6B6B70]">মোবাইল ক্যামেরা বা গ্যালারি থেকে ছবি সিলেক্ট করুন</p>
+                        <p className="text-[10px] text-[#6B6B70]">
+                          {isProcessingImage ? "দয়া করে অপেক্ষা করুন" : "মোবাইল ক্যামেরা বা গ্যালারি থেকে ছবি সিলেক্ট করুন"}
+                        </p>
                       </div>
                     </div>
                     
@@ -771,9 +782,11 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
                       />
                       <div className="space-y-0.5">
                         <p className="text-xs text-[#22242A] font-bold">
-                          গ্যালারি থেকে নতুন ছবি আপলোড করুন
+                          {isProcessingImage ? "প্রসেসিং হচ্ছে..." : "গ্যালারি থেকে নতুন ছবি আপলোড করুন"}
                         </p>
-                        <p className="text-[10px] text-[#6B6B70]">মোবাইল ক্যামেরা বা গ্যালারি থেকে নতুন ছবি সিলেক্ট করুন</p>
+                        <p className="text-[10px] text-[#6B6B70]">
+                          {isProcessingImage ? "দয়া করে অপেক্ষা করুন" : "মোবাইল ক্যামেরা বা গ্যালারি থেকে নতুন ছবি সিলেক্ট করুন"}
+                        </p>
                       </div>
                     </div>
                     
@@ -844,7 +857,7 @@ export default function BookManager({ books, onAddBook, onEditBook, onDeleteBook
               <textarea
                 value={bulkInput}
                 onChange={(e) => setBulkInput(e.target.value)}
-                placeholder="BOK-201, দেবদাস, শরৎচন্দ্র চট্টোপাধ্যায়, দেব সাহিত্য কুটির&#10;BOK-202, নৌকাডুবি, রবীন্দ্রনাথ ঠাকুর, বেঙ্গল পাবলিশার্স"
+                placeholder="BOK-201, দেবদাস, শরৎচন্দ্র চট্টোপাধ্যায়, দেব সাহিত্য কুটির, , 250, 350&#10;BOK-202, নৌকাডুবি, রবীন্দ্রনাথ ঠাকুর, বেঙ্গল পাবলিশার্স, , 180, 280"
                 className="w-full h-64 p-3 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] font-mono text-xs focus:outline-none focus:border-[#22242A]/40 resize-none"
               />
             </div>

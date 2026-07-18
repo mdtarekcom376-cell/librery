@@ -924,9 +924,9 @@ if (process.env.VERCEL) {
       addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${grp ? `, গ্রুপ: ${grp}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
 
       res.status(201).json(newBook);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "সার্ভার এরর" });
+    } catch (err: any) {
+      console.error("Book create error:", err);
+      res.status(500).json({ error: `বই যোগ করতে সমস্যা: ${err.sqlMessage || err.message || "সার্ভার এরর"}` });
     }
   });
 
@@ -970,9 +970,9 @@ if (process.env.VERCEL) {
       addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
 
       res.json(updatedBook);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "সার্ভার এরর" });
+    } catch (err: any) {
+      console.error("Book update error:", err);
+      res.status(500).json({ error: `বই আপডেট করতে সমস্যা: ${err.sqlMessage || err.message || "সার্ভার এরর"}` });
     }
   });
 
@@ -1017,16 +1017,18 @@ if (process.env.VERCEL) {
 
     try {
       for (const bookItem of booksList) {
-        const { code, name, author, publisher, imageUrl } = bookItem;
+        const { code, name, author, publisher, imageUrl, pageCount, price } = bookItem;
         if (code && name && author) {
           const uCode = code.toUpperCase();
           const [existing]: any = await pool.query("SELECT id FROM books WHERE code = ?", [uCode]);
           if (existing.length === 0) {
             const img = imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
             const pub = publisher || "অজ্ঞাত প্রকাশনা";
+            const pCount = pageCount != null && !isNaN(Number(pageCount)) ? Number(pageCount) : null;
+            const pPrice = price != null && !isNaN(Number(price)) ? Number(price) : null;
             await pool.query(
-              "INSERT INTO books (code, name, author, publisher, image_url, status, group_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
-              [uCode, name, author, pub, img, "Available", ""]
+              "INSERT INTO books (code, name, author, publisher, image_url, status, group_name, page_count, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              [uCode, name, author, pub, img, "Available", "", pCount, pPrice]
             );
             importedCount++;
           } else {
@@ -1037,9 +1039,9 @@ if (process.env.VERCEL) {
 
       addLog("বই বাল্ক ইম্পোর্ট", `${importedCount} টি বই বাল্ক ইম্পোর্ট করা হয়েছে। ডুপ্লিকেট বাদ পড়েছে: ${duplicatesCount} টি।`);
       res.json({ success: true, importedCount, duplicatesCount });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "সার্ভার এরর" });
+    } catch (err: any) {
+      console.error("Bulk import error:", err);
+      res.status(500).json({ error: `বাল্ক ইম্পোর্ট সমস্যা: ${err.sqlMessage || err.message || "সার্ভার এরর"}` });
     }
   });
 
@@ -3303,6 +3305,33 @@ if (process.env.VERCEL) {
           created_at DATETIME NOT NULL
         );
       `);
+
+      // Auto-migrate: ensure books table has page_count and price columns
+      try {
+        const [cols]: any = await connection.query("SHOW COLUMNS FROM books LIKE 'page_count'");
+        if (cols.length === 0) {
+          await connection.query("ALTER TABLE books ADD COLUMN page_count INT DEFAULT NULL");
+          console.log("Migration: Added page_count column to books table.");
+        }
+      } catch (migErr) { console.warn("page_count migration check:", migErr); }
+
+      try {
+        const [cols]: any = await connection.query("SHOW COLUMNS FROM books LIKE 'price'");
+        if (cols.length === 0) {
+          await connection.query("ALTER TABLE books ADD COLUMN price DECIMAL(10,2) DEFAULT NULL");
+          console.log("Migration: Added price column to books table.");
+        }
+      } catch (migErr) { console.warn("price migration check:", migErr); }
+
+      // Auto-migrate: ensure image_url is LONGTEXT (not TEXT)
+      try {
+        const [cols]: any = await connection.query("SHOW COLUMNS FROM books LIKE 'image_url'");
+        if (cols.length > 0 && cols[0].Type && !cols[0].Type.toLowerCase().includes("longtext")) {
+          await connection.query("ALTER TABLE books MODIFY COLUMN image_url LONGTEXT");
+          console.log("Migration: Upgraded image_url column to LONGTEXT.");
+        }
+      } catch (migErr) { console.warn("image_url migration check:", migErr); }
+
       connection.release();
       console.log("Database initialized successfully.");
     } catch (e) {

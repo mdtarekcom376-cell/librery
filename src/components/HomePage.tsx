@@ -405,11 +405,11 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           const data = await res.json();
           if (data.success) {
             setLiveStats({
-              totalBooks: data.totalBooks || DEMO_STATS.totalBooks,
-              activeMembers: data.activeMembers || DEMO_STATS.activeMembers,
-              issuedBooks: data.issuedBooks || DEMO_STATS.issuedBooks,
-              activeCorners: data.activeCorners || DEMO_STATS.activeCorners,
-              yearsRunning: data.yearsRunning || DEMO_STATS.yearsRunning,
+              totalBooks: data.totalBooks ?? 0,
+              activeMembers: data.activeMembers ?? 0,
+              issuedBooks: data.issuedBooks ?? 0,
+              activeCorners: data.activeCorners ?? 0,
+              yearsRunning: data.yearsRunning ?? 1,
             });
           }
         }

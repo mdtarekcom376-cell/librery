@@ -147,53 +147,21 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
     }
   };
 
-  const handleAddPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAddPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setAddPhotoLoading(true);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new window.Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const MAX_WIDTH = 250;
-        const MAX_HEIGHT = 250;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressed = canvas.toDataURL("image/jpeg", 0.7);
-          setAddPhoto(compressed);
-        } else {
-          setAddPhoto(event.target?.result as string);
-        }
-        setAddPhotoLoading(false);
-      };
-      img.onerror = () => {
-        setAddPhotoLoading(false);
-      };
-    };
-    reader.onerror = () => {
+    try {
+      const { compressImage } = await import("../lib/imageCompressor");
+      const compressedDataUrl = await compressImage(file, 800);
+      setAddPhoto(compressedDataUrl);
+    } catch (err) {
+      console.error("Photo compression error:", err);
+      alert("ছবি প্রসেস করতে সমস্যা হয়েছে।");
+    } finally {
       setAddPhotoLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const resetAddFormStates = () => {
@@ -288,53 +256,21 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
     }
   };
 
-  const handleEditPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setEditPhotoLoading(true);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new window.Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const MAX_WIDTH = 250;
-        const MAX_HEIGHT = 250;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressed = canvas.toDataURL("image/jpeg", 0.7);
-          setEditPhoto(compressed);
-        } else {
-          setEditPhoto(event.target?.result as string);
-        }
-        setEditPhotoLoading(false);
-      };
-      img.onerror = () => {
-        setEditPhotoLoading(false);
-      };
-    };
-    reader.onerror = () => {
+    try {
+      const { compressImage } = await import("../lib/imageCompressor");
+      const compressedDataUrl = await compressImage(file, 800);
+      setEditPhoto(compressedDataUrl);
+    } catch (err) {
+      console.error("Photo compression error:", err);
+      alert("ছবি প্রসেস করতে সমস্যা হয়েছে।");
+    } finally {
       setEditPhotoLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const openEditModal = (member: any) => {
