@@ -2651,6 +2651,52 @@ if (process.env.VERCEL) {
     }
   });
 
+  // 6.2. Public Corners (Book Groups with counts + top books)
+  app.get("/api/public/corners", async (req, res) => {
+    try {
+      // Get all distinct group_names with their book counts
+      const [groupRows]: any = await pool.query(
+        `SELECT group_name, COUNT(*) as book_count 
+         FROM books 
+         WHERE group_name IS NOT NULL AND group_name != '' 
+         GROUP BY group_name 
+         ORDER BY book_count DESC`
+      );
+
+      // For each corner, get the top 5 most-issued books
+      const corners = [];
+      for (const row of groupRows) {
+        const [topBooks]: any = await pool.query(
+          `SELECT b.id, b.code, b.name, b.author, b.image_url,
+                  (SELECT COUNT(*) FROM issues i WHERE i.book_code = b.code) as issue_count
+           FROM books b
+           WHERE b.group_name = ?
+           ORDER BY issue_count DESC, b.id DESC
+           LIMIT 5`,
+          [row.group_name]
+        );
+
+        corners.push({
+          name: row.group_name,
+          bookCount: row.book_count,
+          topBooks: topBooks.map((b: any) => ({
+            id: String(b.id),
+            code: b.code,
+            title: b.name,
+            author: b.author,
+            imageUrl: b.image_url,
+            reads: b.issue_count || 0
+          }))
+        });
+      }
+
+      res.json({ success: true, corners });
+    } catch (err: any) {
+      console.error("GET /api/public/corners error:", err);
+      res.status(500).json({ error: "কর্নার তালিকা লোড করা যায়নি।" });
+    }
+  });
+
   // 6.5. Public Contact Submission
   app.post("/api/public/contact", async (req, res) => {
     try {
@@ -2663,6 +2709,41 @@ if (process.env.VERCEL) {
         "INSERT INTO contact_submissions (name, email, phone, subject, message, created_at) VALUES (?, ?, ?, ?, ?, ?)",
         [name.trim(), email.trim(), (phone || "").trim(), (subject || "").trim(), message.trim(), formatCurrentDateTime()]
       );
+
+      const apiKey = process.env.BREVO_API_KEY;
+      if (apiKey) {
+        const htmlContent = `
+          <h2>নতুন যোগাযোগ ফরম সাবমিশন</h2>
+          <p><strong>নাম:</strong> ${name}</p>
+          <p><strong>ইমেইল:</strong> ${email}</p>
+          <p><strong>ফোন:</strong> ${phone || "প্রদান করা হয়নি"}</p>
+          <p><strong>বিষয়:</strong> ${subject || "নেই"}</p>
+          <p><strong>বার্তা:</strong><br/> ${message.replace(/\n/g, '<br/>')}</p>
+        `;
+        
+        try {
+          const emailRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+              "api-key": apiKey,
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              sender: { name: "অক্ষর পাঠাগার", email: "hello@okkhorpathagar.com" },
+              to: [{ email: "okkhorpathagar@gmail.com", name: "Admin" }],
+              subject: "নতুন যোগাযোগ ফরম সাবমিশন - " + (subject || "No Subject"),
+              htmlContent: htmlContent
+            })
+          });
+
+          if (!emailRes.ok) {
+            const errorData = await emailRes.json();
+            console.warn("Brevo Email Notification warning:", errorData);
+          }
+        } catch (emailErr) {
+          console.error("Failed to send Brevo email notification:", emailErr);
+        }
+      }
 
       res.status(201).json({ success: true, id: resInsert.insertId });
     } catch (err: any) {
@@ -3473,6 +3554,46 @@ if (process.env.VERCEL) {
         "INSERT INTO contact_submissions (name, email, subject, category, message, attachment_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [name, email, subject, category, message, attachmentPath, "pending", formatCurrentDateTime()]
       );
+
+      // Send email notification via Brevo
+      const apiKey = process.env.BREVO_API_KEY;
+      if (apiKey) {
+        const attachmentNote = attachmentPath
+          ? `<p><strong>সংযুক্তি:</strong> একটি ফাইল সংযুক্ত করা হয়েছে (${req.file?.originalname || 'fayl'})</p>`
+          : '';
+        const htmlContent = `
+          <h2>নতুন "আমাদের লিখুন" সাবমিশন</h2>
+          <p><strong>নাম:</strong> ${name}</p>
+          <p><strong>ইমেইল:</strong> ${email}</p>
+          <p><strong>বিষয়:</strong> ${subject}</p>
+          <p><strong>বিভাগ:</strong> ${category}</p>
+          <p><strong>বার্তা:</strong><br/> ${message.replace(/\n/g, '<br/>')}</p>
+          ${attachmentNote}
+        `;
+
+        try {
+          const emailRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+              "api-key": apiKey,
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              sender: { name: "অক্ষর পাঠাগার", email: "hello@okkhorpathagar.com" },
+              to: [{ email: "okkhorpathagar@gmail.com", name: "Admin" }],
+              subject: "নতুন 'আমাদের লিখুন' সাবমিশন - " + subject,
+              htmlContent: htmlContent
+            })
+          });
+
+          if (!emailRes.ok) {
+            const errorData = await emailRes.json();
+            console.warn("Brevo Email Notification warning:", errorData);
+          }
+        } catch (emailErr) {
+          console.error("Failed to send Brevo email notification:", emailErr);
+        }
+      }
 
       res.json({ success: true, submissionId: String(resInsert.insertId) });
     } catch (err: any) {

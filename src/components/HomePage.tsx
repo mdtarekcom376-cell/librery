@@ -351,6 +351,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [liveReviews, setLiveReviews] = useState<any[]>([]);
   const [liveNotices, setLiveNotices] = useState<any[]>([]);
   const [liveStats, setLiveStats] = useState(DEMO_STATS);
+  const [liveCorners, setLiveCorners] = useState<{name: string; bookCount: number; topBooks: {id: string; code: string; title: string; author: string; imageUrl: string; reads: number}[]}[]>([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -421,10 +422,25 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       }
     };
 
+    const fetchCorners = async () => {
+      try {
+        const res = await fetch("/api/public/corners");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.corners) && data.corners.length > 0) {
+            setLiveCorners(data.corners);
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load corners", e);
+      }
+    };
+
     fetchBooks();
     fetchSales();
     fetchReviewsAndNotices();
     fetchStats();
+    fetchCorners();
   }, []);
 
   const displayBooks = realBooks.length >= 5 ? realBooks : [...realBooks, ...DEMO_BOOKS];
@@ -523,32 +539,27 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   return (
     <div className="homepage">
       {/* ======================================
-          §4.1 HEADER / NAVIGATION
+          §4.1 HEADER / NAVIGATION — Floating Pill
           ====================================== */}
       <header
-        className={`hp-header fixed top-0 left-0 right-0 z-50 ${headerScrolled ? "scrolled" : ""}`}
-        style={!headerScrolled ? { backgroundColor: "transparent" } : undefined}
+        className={`hp-header fixed top-0 left-0 right-0 z-50 px-4 md:px-6 pt-3 md:pt-4 ${headerScrolled ? "scrolled" : ""}`}
+        style={{ backgroundColor: "transparent", pointerEvents: "none" }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 py-3">
+        <div className="hp-header-pill" style={{ pointerEvents: "auto" }}>
           {/* Logo + Wordmark */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 shrink-0">
             <img
               src={logoSrc}
               alt="অক্ষর পাঠাগার লোগো"
-              className="w-9 h-9 md:w-11 md:h-11 rounded-xl object-contain bg-white border border-[#1C8FE0]/20 p-0.5"
+              className="w-8 h-8 md:w-9 md:h-9 rounded-full object-contain bg-white border border-[#1C8FE0]/15 p-0.5"
             />
-            <div>
-              <h1 className="font-display-bn text-base md:text-lg font-bold" style={{ color: "var(--ink-navy)" }}>
-                অক্ষর পাঠাগার
-              </h1>
-              <p className="text-[10px] font-display-lat hidden sm:block" style={{ color: "#64748b" }}>
-                Akkhor Pathagar
-              </p>
-            </div>
+            <span className="font-display-bn text-sm md:text-base font-bold" style={{ color: "var(--ink-navy)" }}>
+              অক্ষর পাঠাগার
+            </span>
           </div>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-6" id="homepage-desktop-nav">
+          {/* Desktop Nav — center links */}
+          <nav className="hidden lg:flex items-center gap-1 mx-4" id="homepage-desktop-nav">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.href}
@@ -559,26 +570,26 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                     scrollTo(link.href);
                   }
                 }}
-                className="nav-flame-link font-body-bn text-sm cursor-pointer bg-transparent border-none"
-                style={{ color: "var(--ink-navy)" }}
+                className="pill-nav-link font-body-bn"
               >
                 {link.label}
               </button>
             ))}
           </nav>
 
-          {/* Right buttons */}
-          <div className="flex items-center gap-2">
+          {/* Right side — login + CTA + mobile toggle */}
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={onLogin}
-              className="btn-ghost px-4 py-2 text-xs md:text-sm hidden sm:inline-flex font-ui"
+              className="pill-login-link font-ui hidden sm:inline-flex"
               id="homepage-login-btn"
             >
               লগইন
             </button>
+            <span className="pill-divider hidden sm:block" />
             <button
               onClick={onMemberLogin}
-              className="btn-flame px-4 py-2 text-xs md:text-sm font-ui"
+              className="pill-cta font-ui"
               id="homepage-member-btn"
             >
               সদস্য হোন
@@ -586,11 +597,10 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 cursor-pointer bg-transparent border-none"
-              style={{ color: "var(--ink-navy)" }}
+              className="pill-mobile-toggle lg:hidden"
               aria-label="মোবাইল মেনু খুলুন"
             >
-              <Menu size={22} />
+              <Menu size={20} />
             </button>
           </div>
         </div>
@@ -880,11 +890,11 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
             {/* Right: Accordion */}
             <div className="space-y-3">
-              {Object.entries(DEMO_CORNER_COUNTS).map(([corner, count], i) => {
-                const isOpen = openCorner === corner;
+              {(liveCorners.length > 0 ? liveCorners : Object.entries(DEMO_CORNER_COUNTS).map(([name, bookCount]) => ({ name, bookCount, topBooks: DEMO_BOOKS.filter(b => b.corner === name).sort((a, b) => (b.reads || 0) - (a.reads || 0)).slice(0, 5).map(b => ({ id: b.id, code: '', title: b.title, author: b.author, imageUrl: '', reads: b.reads || 0 })) }))).map((cornerData, i) => {
+                const isOpen = openCorner === cornerData.name;
                 return (
                   <motion.div
-                    key={corner}
+                    key={cornerData.name}
                     className="corner-tab hp-card overflow-hidden"
                     initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -892,17 +902,16 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                     transition={{ duration: 0.3, delay: i * 0.06 }}
                   >
                     <button
-                      onClick={() => setOpenCorner(isOpen ? null : corner)}
+                      onClick={() => setOpenCorner(isOpen ? null : cornerData.name)}
                       className="w-full flex items-center justify-between px-5 py-4 cursor-pointer bg-transparent border-none text-left"
                       aria-expanded={isOpen}
                     >
                       <span className="font-display-bn text-base font-bold" style={{ color: "var(--ink-navy)" }}>
-                        {corner}
+                        {cornerData.name}
                       </span>
                       <div className="flex items-center gap-3">
-                        {/* DEMO_CORNER_COUNTS marker */}
                         <span className="font-display-lat text-xs px-2.5 py-0.5 rounded-full" style={{ background: "var(--sky-tint)", color: "var(--book-blue)" }}>
-                          {count}টি বই
+                          {cornerData.bookCount}টি বই
                         </span>
                         <motion.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
@@ -925,45 +934,46 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                             <div className="flex items-center gap-2 mb-4 pb-3" style={{ borderBottom: '1px solid #e2e8f0' }}>
                               <Book size={16} style={{ color: "var(--book-blue)" }} />
                               <p className="font-body-bn text-sm" style={{ color: "#64748b" }}>
-                                এই কর্নারে মোট <strong style={{ color: "var(--ink-navy)", fontSize: '1.1em' }}>{count}টি</strong> বই সংরক্ষিত আছে
+                                এই কর্নারে মোট <strong style={{ color: "var(--ink-navy)", fontSize: '1.1em' }}>{cornerData.bookCount}টি</strong> বই সংরক্ষিত আছে
                               </p>
                             </div>
-                            <p className="font-body-bn text-xs font-bold uppercase tracking-wider mb-3" style={{ color: "var(--book-blue)" }}>
-                              🔥 সর্বাধিক পঠিত বই
-                            </p>
-                            <div className="space-y-2">
-                              {DEMO_BOOKS.filter((b) => b.corner === corner)
-                                .sort((a, b) => (b.reads || 0) - (a.reads || 0))
-                                .slice(0, 5)
-                                .map((book, idx) => (
-                                  <div
-                                    key={book.id}
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
-                                    style={{ background: idx === 0 ? 'var(--sky-tint)' : 'transparent' }}
-                                  >
-                                    <span
-                                      className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-display-lat text-xs font-bold"
-                                      style={{
-                                        background: idx < 3 ? 'var(--flame-gradient)' : '#e2e8f0',
-                                        color: idx < 3 ? 'white' : '#64748b',
-                                      }}
+                            {cornerData.topBooks.length > 0 && (
+                              <>
+                                <p className="font-body-bn text-xs font-bold uppercase tracking-wider mb-3" style={{ color: "var(--book-blue)" }}>
+                                  🔥 সর্বাধিক পঠিত বই
+                                </p>
+                                <div className="space-y-2">
+                                  {cornerData.topBooks.map((book, idx) => (
+                                    <div
+                                      key={book.id}
+                                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+                                      style={{ background: idx === 0 ? 'var(--sky-tint)' : 'transparent' }}
                                     >
-                                      {idx + 1}
-                                    </span>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-body-bn text-sm font-semibold truncate" style={{ color: 'var(--ink-navy)' }}>
-                                        {book.title}
-                                      </p>
-                                      <p className="font-body-bn text-xs truncate" style={{ color: '#94a3b8' }}>
-                                        {book.author}
-                                      </p>
+                                      <span
+                                        className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-display-lat text-xs font-bold"
+                                        style={{
+                                          background: idx < 3 ? 'var(--flame-gradient)' : '#e2e8f0',
+                                          color: idx < 3 ? 'white' : '#64748b',
+                                        }}
+                                      >
+                                        {idx + 1}
+                                      </span>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-body-bn text-sm font-semibold truncate" style={{ color: 'var(--ink-navy)' }}>
+                                          {book.title}
+                                        </p>
+                                        <p className="font-body-bn text-xs truncate" style={{ color: '#94a3b8' }}>
+                                          {book.author}
+                                        </p>
+                                      </div>
+                                      <span className="flex-shrink-0 font-display-lat text-xs px-2 py-0.5 rounded-full" style={{ background: '#f1f5f9', color: '#64748b' }}>
+                                        {book.reads} বার
+                                      </span>
                                     </div>
-                                    <span className="flex-shrink-0 font-display-lat text-xs px-2 py-0.5 rounded-full" style={{ background: '#f1f5f9', color: '#64748b' }}>
-                                      {book.reads} বার
-                                    </span>
-                                  </div>
-                                ))}
-                            </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
                           </div>
                         </motion.div>
                       )}
@@ -1542,26 +1552,19 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           ====================================== */}
       <section id="contact" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          {contactTab === 'contact' ? (
-            <SectionHeader eyebrow="যোগাযোগ" heading="যোগাযোগ করুন" />
-          ) : (
-            <div className="text-center mb-12 md:mb-16">
-              <span className="font-display-lat text-sm md:text-base tracking-wide" style={{ color: "var(--flame-orange)" }}>
-                আমাদের লিখুন
-              </span>
-              <h2 className="font-display-bn text-2xl md:text-4xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
-                আমাদের লিখুন
-              </h2>
-              <motion.div
-                className="mx-auto mt-4"
-                style={{ maxWidth: 80, height: 3, background: "linear-gradient(90deg, #F7941D, #EC2C7B)", borderRadius: 2 }}
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true, margin: "-10%" }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              />
-            </div>
-          )}
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="font-display-bn text-2xl md:text-4xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
+              Form
+            </h2>
+            <motion.div
+              className="mx-auto mt-4"
+              style={{ maxWidth: 80, height: 3, background: "linear-gradient(90deg, #F7941D, #EC2C7B)", borderRadius: 2 }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            />
+          </div>
 
           {/* Toggle Buttons */}
           <div className="flex justify-center mb-10">
