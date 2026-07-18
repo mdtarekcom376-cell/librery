@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, UserCheck, CalendarDays, RefreshCw, CheckCircle2, ArrowRightLeft, Clock, MessageSquare, AlertTriangle } from "lucide-react";
+import { BookOpen, UserCheck, CalendarDays, RefreshCw, CheckCircle2, ArrowRightLeft, Clock, MessageSquare, AlertTriangle, List, Search, AlertCircle, Info, Calendar } from "lucide-react";
 import { apiClient } from "../api";
 
 interface IssueReturnProps {
@@ -12,7 +12,7 @@ interface IssueReturnProps {
 
 export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, activeIssues, onRefreshAll }: IssueReturnProps) {
   // Navigation tabs Inside Issue Page
-  const [activeSubTab, setActiveSubTab] = useState<"issue" | "return" | "time">("issue");
+  const [activeSubTab, setActiveSubTab] = useState<"issue" | "return" | "time" | "active">("issue");
 
   // --- ISSUE STATE ---
   const [issueBookCode, setIssueBookCode] = useState("");
@@ -46,6 +46,30 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
   const [opLoading, setOpLoading] = useState(false);
   const [opSuccess, setOpSuccess] = useState("");
   const [opError, setOpError] = useState("");
+
+  // --- ACTIVE ISSUES LIST STATE ---
+  const [activeDetailedIssues, setActiveDetailedIssues] = useState<any[]>([]);
+  const [activeIssuesLoading, setActiveIssuesLoading] = useState(false);
+  const [activeSearchQuery, setActiveSearchQuery] = useState("");
+
+  // Fetch active detailed issues when tab changes
+  useEffect(() => {
+    if (activeSubTab === "active") {
+      fetchActiveDetailedIssues();
+    }
+  }, [activeSubTab]);
+
+  const fetchActiveDetailedIssues = async () => {
+    setActiveIssuesLoading(true);
+    try {
+      const data = await apiClient.get("/issues/active-detailed");
+      setActiveDetailedIssues(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setActiveIssuesLoading(false);
+    }
+  };
 
   // --- REAL-TIME AUTOSUGGEST LOOPS ---
   useEffect(() => {
@@ -202,14 +226,14 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
     <div className="space-y-6">
       
       {/* Tab Select Block */}
-      <div className="flex border-b border-[#E5E5EA]">
+      <div className="flex flex-wrap border-b border-[#E5E5EA]">
         <button
           onClick={() => {
             setActiveSubTab("issue");
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "issue" ? "border-[#E5E5EA] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "issue" ? "border-[#E5E5EA] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
         >
           <BookOpen size={16} />
           বই ইস্যু করুন (Checkout)
@@ -221,7 +245,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "return" ? "border-[#22242A] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "return" ? "border-[#22242A] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
         >
           <CheckCircle2 size={16} />
           বই রিটার্ন গ্রহণ (Checkin)
@@ -233,10 +257,22 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "time" ? "border-[#E5E5EA] text-[#FACC15] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "time" ? "border-[#E5E5EA] text-[#FACC15] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
         >
           <ArrowRightLeft size={16} />
-          সময় বৃদ্ধি ও হ্রাস (Time Offset)
+          সময় বৃদ্ধি ও হ্রাস
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveSubTab("active");
+            setOpError("");
+            setOpSuccess("");
+          }}
+          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "active" ? "border-[#E5E5EA] text-[#2266FF] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+        >
+          <List size={16} />
+          ইস্যুকৃত বইসমূহ (Issued Books)
         </button>
       </div>
 
@@ -611,6 +647,118 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             </button>
           </div>
         </form>
+      )}
+
+      {/* --- FORM SUBTAB D: ACTIVE ISSUES LIST --- */}
+      {activeSubTab === "active" && (
+        <div className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E5EA] pb-3">
+            <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2">
+              <List size={18} className="text-[#2266FF]" />
+              বর্তমানে ইস্যুকৃত সকল বইয়ের তালিকা
+            </h3>
+            
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" size={14} />
+              <input
+                type="text"
+                placeholder="বই, কোড, মেম্বার বা মোবাইল..."
+                value={activeSearchQuery}
+                onChange={(e) => setActiveSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E5EA] rounded-xl focus:outline-none focus:border-[#2266FF] transition-colors"
+              />
+            </div>
+          </div>
+
+          {activeIssuesLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <RefreshCw className="animate-spin text-[#6B6B70]" size={24} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeDetailedIssues
+                .filter(issue => {
+                  const q = activeSearchQuery.toLowerCase();
+                  return (
+                    (issue.bookName || "").toLowerCase().includes(q) ||
+                    (issue.bookCode || "").toLowerCase().includes(q) ||
+                    (issue.memberName || "").toLowerCase().includes(q) ||
+                    (issue.mobile || "").toLowerCase().includes(q) ||
+                    (issue.formNumber || "").toLowerCase().includes(q)
+                  );
+                })
+                .map((issue) => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const target = new Date(issue.returnDate);
+                  target.setHours(0, 0, 0, 0);
+                  const diffTime = target.getTime() - today.getTime();
+                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                  const isOverdue = diffDays < 0;
+
+                  return (
+                    <div key={issue.id} className="bg-white border border-[#E5E5EA] rounded-xl p-4 flex gap-4 hover:shadow-md transition-shadow relative overflow-hidden">
+                      {isOverdue && (
+                        <div className="absolute top-0 right-0 bg-[#F43F5E] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm z-10 flex items-center gap-1">
+                          <AlertCircle size={10} /> {Math.abs(diffDays)} দিন ওভারডিউ
+                        </div>
+                      )}
+                      
+                      {/* Book Thumbnail */}
+                      <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden border border-[#E5E5EA] bg-gray-50 flex items-center justify-center">
+                        {issue.imageUrl ? (
+                          <img src={issue.imageUrl} alt={issue.bookName} className="w-full h-full object-cover" />
+                        ) : (
+                          <BookOpen className="text-gray-300" size={32} />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col flex-1 min-w-0">
+                        {/* Book Info */}
+                        <div className="mb-2">
+                          <h4 className="text-sm font-bold text-[#22242A] truncate" title={issue.bookName}>{issue.bookName}</h4>
+                          <div className="text-[10px] text-[#6B6B70] flex items-center gap-2 mt-1">
+                            <span className="font-mono bg-[#F5F3EF] px-1.5 py-0.5 rounded text-[#22242A]">{issue.bookCode}</span>
+                            <span className="truncate" title={issue.author}>{issue.author}</span>
+                          </div>
+                        </div>
+
+                        {/* Member Info */}
+                        <div className="bg-[#F5F3EF]/50 p-2 rounded-lg mb-2">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#22242A] truncate">
+                            <UserCheck size={12} className="text-[#2266FF]" />
+                            {issue.memberName}
+                            <span className="text-[10px] text-[#6B6B70] font-normal">(ফরম: {issue.formNumber})</span>
+                          </div>
+                          <div className="text-[10px] text-[#6B6B70] mt-0.5 ml-4.5">
+                            মোবাইল: {issue.mobile}
+                          </div>
+                        </div>
+
+                        {/* Dates Info */}
+                        <div className="mt-auto flex items-center justify-between text-[10px]">
+                          <div className="flex items-center gap-1 text-[#6B6B70]">
+                            <Calendar size={12} />
+                            ইস্যু: {issue.issueDate}
+                          </div>
+                          <div className={`flex items-center gap-1 font-bold ${isOverdue ? "text-[#F43F5E]" : "text-[#10B981]"}`}>
+                            <CalendarDays size={12} />
+                            রিটার্ন: {issue.returnDate}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              
+              {!activeIssuesLoading && activeDetailedIssues.length === 0 && (
+                <div className="col-span-1 md:col-span-2 py-10 text-center text-[#6B6B70] text-sm">
+                  বর্তমানে কোনো ইস্যুকৃত বই নেই।
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
     </div>

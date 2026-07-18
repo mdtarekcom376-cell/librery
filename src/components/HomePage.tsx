@@ -30,9 +30,9 @@ import {
   StickyNote,
   Package,
   Facebook,
-  Twitter,
-  Linkedin,
   Instagram,
+  MessageCircle,
+  Music2,
   Mail,
   Phone,
   MapPin,
@@ -541,7 +541,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const logoSrc = logoBase64 || akkhorLogo;
 
   // Hero headline words for staggered animation
-  const heroWords = "জ্ঞান হোক সবার জন্য, পরিবর্তন শুরু হোক শিক্ষা দিয়ে".split(" ");
+  const heroWords = "অক্ষরে অক্ষরে জ্ঞানের পথে".split(" ");
 
   return (
     <div className="homepage">
@@ -700,7 +700,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের এক নিরবচ্ছিন্ন কেন্দ্র
+              জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র
             </motion.p>
 
             {/* Headline — word by word reveal */}
@@ -726,7 +726,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
             >
-              অক্ষর পাঠাগার একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। আমাদের লক্ষ্য জ্ঞানচর্চার প্রসার, পাঠাভ্যাস গড়ে তোলা, মানবিক মূল্যবোধের বিকাশ এবং শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে দাঁড়িয়ে একটি আলোকিত সমাজ গড়ে তোলা।
+              আপনার পছন্দের বই খুঁজে পেতে এবং পাঠাগারের সাথে যুক্ত থেকে আমাদের সকল সেবা উপভোগ করতে ভিজিট করুন অক্ষর পাঠাগার।
             </motion.p>
 
             {/* CTA row */}
@@ -856,16 +856,18 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
               <p className="font-body-bn text-xl md:text-[22px] leading-relaxed mx-auto mb-8 text-left" style={{ color: "var(--ink-navy)", maxWidth: "700px" }}>
                 <span className="font-bold text-2xl md:text-3xl block mb-6 leading-tight" style={{ color: "var(--book-blue)" }}>
-                  <span style={{ color: "var(--flame-orange)" }}>*</span> জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের এক নিরবচ্ছিন্ন কেন্দ্র
+                  <span style={{ color: "var(--flame-orange)" }}>★</span> জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র
                 </span>
                 <span className="block mb-5 text-[#334155]">
-                  "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। যা গণগ্রন্থাগার অধিদপ্তর থেকে বেসরকারি লাইব্রেরী নিবন্ধন তালিকাভুক্ত, বেসর/লাই নং-০৪।
+                  "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন।
+                  যা গণগ্রন্থাগার অধিদপ্তরে সরকারি সীলমোহরে সনদ-প্রাপ্ত বেসরকারি গণ-পাঠাগার।
+                  নিবন্ধন নং—"বরগুনা বেসর/লাই নং-০৪"।
                 </span>
                 <span className="block mb-5 text-[#334155] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
-                  আমাদের লক্ষ্য জ্ঞানচর্চার প্রসার, পাঠাভ্যাস গড়ে তোলা, মানবিক মূল্যবোধের বিকাশ এবং শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে দাঁড়িয়ে একটি আলোকিত সমাজ গড়ে তোলা।
+                  আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
                 </span>
                 <span className="block text-[#475569] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
-                  আমাদের ডিজিটাল প্ল্যাটফর্মে বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই, গবেষণামূলক প্রকাশনা, জ্ঞানভিত্তিক রিসোর্স এবং অন্যান্য শিক্ষাসামগ্রী সহজে খুঁজে পাওয়ার সুযোগ রয়েছে।
+                  অক্ষর পাঠাগারের ডিজিটাল প্ল্যাটফর্মে বিভিন্ন বিষয়ভিত্তিক বই, শিক্ষামূলক উপকরণ এবং নির্ভরযোগ্য ডিজিটাল জ্ঞানসম্পদ সুসংগঠিতভাবে উপস্থাপন করা হয়েছে। বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই, শিশু-কিশোর কর্নারসহ বিভিন্ন ক্যাটাগরির সমৃদ্ধ সংগ্রহের পাশাপাশি পাঠকরা সহজেই প্রয়োজনীয় বই খুঁজে নিতে, নতুন বই সম্পর্কে জানতে এবং জ্ঞানচর্চার নতুন দিগন্তে যুক্ত হতে পারবেন।
                 </span>
               </p>
             </div>
@@ -879,7 +881,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       <section id="mission" className="section-warm py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-4xl mx-auto">
-            <SectionHeader eyebrow="আমাদের লক্ষ্য" heading="জ্ঞানভিত্তিক সমাজ গড়ার অঙ্গীকার" />
+            <SectionHeader eyebrow="আমাদের লক্ষ্য" heading="একটি জ্ঞানভিত্তিক সমাজ গড়ার অঙ্গীকার" />
 
             <motion.div
               className="bg-white rounded-2xl p-8 md:p-12 shadow-xl border border-[#E2E8F0] relative overflow-hidden"
@@ -948,12 +950,12 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {[
-              { icon: BookOpen, title: "জ্ঞানচর্চা ও পাঠাভ্যাস", desc: "বই পড়ার অভ্যাস গড়ে তোলা এবং জ্ঞানচর্চায় উৎসাহ প্রদান করা আমাদের প্রধান লক্ষ্য।" },
-              { icon: Users, title: "শিক্ষামূলক উদ্যোগ", desc: "শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত শিশু-কিশোরদের জন্য শিক্ষামূলক কার্যক্রম ও কর্মশালা পরিচালনা।" },
+              { icon: BookOpen, title: "জ্ঞানচর্চা ও পাঠাভ্যাসে উৎসাহ প্রদান", desc: "বই পড়ার অভ্যাস গড়ে তোলা এবং জ্ঞানচর্চায় উৎসাহ প্রদান করা আমাদের প্রধান লক্ষ্য।" },
+              { icon: Users, title: "শিক্ষামূলক উদ্যোগ পরিচালনা", desc: "শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত শিশু-কিশোরদের জন্য শিক্ষামূলক কার্যক্রম ও কর্মশালা পরিচালনা।" },
               { icon: Heart, title: "মানবিক ও সামাজিক কার্যক্রম", desc: "দুর্যোগকালীন সহায়তা, অসহায় মানুষের পাশে দাঁড়ানো ও সমাজসেবামূলক প্রকল্প বাস্তবায়ন।" },
               { icon: Book, title: "বই ও জ্ঞানসম্পদের ডিজিটাল সংরক্ষণ", desc: "বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই ও গবেষণাপত্র ডিজিটাল আকারে সংরক্ষণ ও সহজলভ্যকরণ।" },
-              { icon: FileSpreadsheet, title: "বাংলায় শিক্ষামূলক রিসোর্স তৈরি", desc: "বাংলা ভাষায় জ্ঞানভিত্তিক কনটেন্ট, শিক্ষামূলক উপকরণ ও রিসোর্স তৈরি ও প্রকাশ।" },
-              { icon: ClipboardList, title: "গবেষণা ও তথ্যভিত্তিক শিক্ষা", desc: "গবেষণামূলক প্রকাশনা, তথ্যভিত্তিক শিক্ষা ও জ্ঞানচর্চাকে উৎসাহিত করা এবং প্রাসঙ্গিক তথ্য সরবরাহ।" },
+              { icon: FileSpreadsheet, title: "বাংলা ভাষায় শিক্ষামূলক রিসোর্স তৈরি", desc: "বাংলা ভাষায় জ্ঞানভিত্তিক কনটেন্ট, শিক্ষামূলক উপকরণ ও রিসোর্স তৈরি ও প্রকাশ।" },
+              { icon: ClipboardList, title: "গবেষণা ও তথ্যভিত্তিক শিক্ষাকে উৎসাহিত করা", desc: "গবেষণামূলক প্রকাশনা, তথ্যভিত্তিক শিক্ষা ও জ্ঞানচর্চাকে উৎসাহিত করা এবং প্রাসঙ্গিক তথ্য সরবরাহ।" },
             ].map((item, i) => (
               <motion.div
                 key={item.title}
@@ -1189,11 +1191,11 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>শুধু ব্রাউজ করুন</p>
               <ul className="space-y-2.5 mb-8 flex-1">
                 {[
-                  { text: "বইয়ের তালিকা দেখুন", included: true },
-                  { text: "পরিসংখ্যান দেখুন", included: true },
-                  { text: "লিডারবোর্ড দেখুন", included: true },
-                  { text: "বই ইস্যু করুন", included: false },
-                  { text: "রিজার্ভেশন", included: false },
+                  { text: "বইয়ের তালিকা ব্রাউজ", included: true },
+                  { text: "লাইব্রেরি পরিসংখ্যান", included: true },
+                  { text: "পাঠক লিডারবোর্ড", included: true },
+                  { text: "বই ইস্যু ও বুকিং", included: false },
+                  { text: "রিমাইন্ডার", included: false },
                   { text: "SMS রিমাইন্ডার", included: false },
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 font-body-bn text-sm" style={{ color: item.included ? "var(--ink-navy)" : "#94a3b8" }}>
@@ -1227,17 +1229,17 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               </span>
               <h3 className="font-display-bn text-xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>সদস্য</h3>
               <p className="font-display-lat text-3xl font-bold mt-2" style={{ color: "var(--ink-navy)" }}>
-                ১০০ BDT<span className="text-base font-normal">/মাস</span>
+                ১০০ <span className="text-base font-normal font-body-bn text-[#64748b]">টাকা</span>
               </p>
-              <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>পূর্ণাঙ্গ সদস্যপদ</p>
+              <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#94a3b8" }}>#পূর্ণাঙ্গ সদস্যপদ</p>
               <ul className="space-y-2.5 mb-8 flex-1">
                 {[
-                  { text: "বইয়ের তালিকা দেখুন", included: true },
-                  { text: "বই ইস্যু করুন", included: true },
-                  { text: "রিজার্ভেশন", included: true },
-                  { text: "SMS রিমাইন্ডার", included: true },
-                  { text: "উইশলিস্ট", included: true },
-                  { text: "বর্ধিত মেয়াদ", included: false },
+                  { text: "গেস্ট প্যানেলের সব সুবিধা", included: true },
+                  { text: "সরাসরি বই ইস্যু করুন", included: true },
+                  { text: "অগ্রিম বই বুকিং (রিজার্ভেশন)", included: true },
+                  { text: "SMS ও ইমেইল রিমাইন্ডার", included: true },
+                  { text: "উইশলিস্ট (পছন্দের তালিকা)", included: true },
+                  { text: "আজীবন সুবিধা", included: false },
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 font-body-bn text-sm" style={{ color: item.included ? "var(--ink-navy)" : "#94a3b8" }}>
                     {item.included
@@ -1268,12 +1270,11 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <p className="font-body-bn text-sm mt-1 mb-6" style={{ color: "#64748b" }}>অগ্রাধিকার সুবিধা</p>
               <ul className="space-y-2.5 mb-8 flex-1">
                 {[
-                  { text: "সদস্যের সব সুবিধা", included: true },
-                  { text: "অগ্রাধিকার রিজার্ভেশন", included: true },
-                  { text: "বর্ধিত মেয়াদ", included: true },
-                  { text: "বিশেষ ইভেন্ট অ্যাক্সেস", included: true },
-                  { text: "SMS রিমাইন্ডার", included: true },
-                  { text: "আজীবন সদস্য ব্যাজ", included: true },
+                  { text: "সদস্য প্যানেলের সব সুবিধা", included: true },
+                  { text: "বই বুকিংয়ে অগ্রাধিকার", included: true },
+                  { text: "বিশেষ ইভেন্টে ফ্রি অ্যাক্সেস", included: true },
+                  { text: "প্রোফাইলে 'আজীবন সদস্য' ব্যাজ", included: true },
+                  { text: "মাসিক রিনিউয়াল ফি", included: false },
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 font-body-bn text-sm" style={{ color: item.included ? "var(--ink-navy)" : "#94a3b8" }}>
                     {item.included
@@ -2029,22 +2030,22 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   <Instagram size={18} />
                 </a>
                 <a
-                  href="#"
+                  href="https://whatsapp.com/channel/0029Vb89Am6F6sn6D8KP6N0H"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none transition-colors"
                   style={{ background: "var(--sky-tint)", color: "var(--book-blue)", textDecoration: "none" }}
                 >
-                  <Twitter size={18} />
+                  <MessageCircle size={18} />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.tiktok.com/@okkhor.pathagar?_r=1&_t=ZS-988vW6L9Tef"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none transition-colors"
                   style={{ background: "var(--sky-tint)", color: "var(--book-blue)", textDecoration: "none" }}
                 >
-                  <Linkedin size={18} />
+                  <Music2 size={18} />
                 </a>
               </div>
             </motion.div>

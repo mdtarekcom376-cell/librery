@@ -687,9 +687,6 @@ if (process.env.VERCEL) {
       addLog("গেটওয়ে সেটিংস আপডেট", `SMS গেটওয়ে প্রোভাইডার হিসেবে '${provider}' সেট করা হয়েছে।`);
       res.json({ success: true, message: "SMS গেটওয়ে সেটিংস সফলভাবে আপডেট করা হয়েছে।" });
     } catch (err: any) {
-      console.error("POST /api/sms/gateway failed:", err);
-      res.status(500).json({ error: "সার্ভারে গেটওয়ে সেভ করার সময় সমস্যা হয়েছে।" });
-    }
   });
 
   // ---------------- DASHBOARD DATA API ----------------
@@ -754,12 +751,10 @@ if (process.env.VERCEL) {
 
       // 2. Most Popular Books (with author, group, image)
       const [popularBooksRows]: any = await pool.query(`
-        SELECT b.code AS code, b.name AS name,
-               b.author, b.group_name AS \`group\`, b.image_url AS imageUrl,
-               COUNT(i.id) AS count
+        SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS count
         FROM issues i
         JOIN books b ON i.book_id = b.id
-        GROUP BY b.id
+        GROUP BY b.id, b.code, b.name, b.author, b.group_name, b.image_url
         ORDER BY count DESC
         LIMIT 5
       `);
@@ -767,31 +762,36 @@ if (process.env.VERCEL) {
         code: r.code,
         name: r.name,
         author: r.author || '',
-        group: r.group || '',
-        imageUrl: r.imageUrl || '',
+        group: r.group_name || '',
+        imageUrl: r.image_url || '',
         count: Number(r.count)
       }));
 
       // 3. Most Active Members (with mobile)
       const [activeMembersRows]: any = await pool.query(`
-        SELECT m.form_number AS formNumber, m.name AS name,
-               m.mobile,
-               COUNT(i.id) AS count
+        SELECT m.form_number, m.name, m.mobile, COUNT(i.id) AS count
         FROM issues i
         JOIN members m ON i.member_id = m.id
-        GROUP BY m.id
+        GROUP BY m.id, m.form_number, m.name, m.mobile
         ORDER BY count DESC
         LIMIT 5
       `);
       const activeMembers = activeMembersRows.map((r: any) => ({
-        formNumber: r.formNumber,
+        formNumber: r.form_number,
         name: r.name,
         mobile: r.mobile || '',
         count: Number(r.count)
       }));
-
       // Late return reports list
-      const [lateReportLoansRows]: any = await pool.query("SELECT * FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]);
+      const [lateReportLoansRows]: any = await pool.query(`
+        SELECT i.*, 
+               b.code AS book_code, b.name AS book_name, b.author, b.publisher,
+               m.name AS member_name, m.form_number, m.mobile, m.address
+        FROM issues i
+        JOIN books b ON i.book_id = b.id
+        JOIN members m ON i.member_id = m.id
+        WHERE i.status = 'Issued' AND i.return_date < ?
+      `, [todayStr]);
       const lateReportLoans = lateReportLoansRows.map((r: any) => ({
         id: String(r.id),
         bookCode: r.book_code,
@@ -1797,6 +1797,44 @@ if (process.env.VERCEL) {
 
 
       res.json({ success: true, message: "বইটি সফলভাবে ফেরত গ্রহণ করা হয়েছে।" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "সার্ভার এরর" });
+    }
+  });
+
+  // Get all active issues with detailed book and member info
+  app.get("/api/issues/active-detailed", authenticateAdmin, async (req, res) => {
+    try {
+      const [issueRows]: any = await pool.query(`
+        SELECT 
+          i.*, 
+          b.name as book_name, b.code as book_code, b.author, b.group_name, b.image_url,
+          m.name as member_name, m.mobile, m.form_number 
+        FROM issues i 
+        JOIN books b ON i.book_id = b.id 
+        JOIN members m ON i.member_id = m.id 
+        WHERE i.status = 'Issued'
+        ORDER BY i.return_date ASC
+      `);
+
+      const activeIssues = issueRows.map((r: any) => ({
+        id: String(r.id),
+        bookCode: r.book_code,
+        bookName: r.book_name,
+        author: r.author,
+        group: r.group_name,
+        imageUrl: r.image_url,
+        memberName: r.member_name,
+        formNumber: r.form_number,
+        mobile: r.mobile,
+        issueDate: r.issue_date,
+        returnDate: r.return_date,
+        status: r.status,
+        extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || [])
+      }));
+
+      res.json(activeIssues);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "সার্ভার এরর" });
@@ -3795,6 +3833,7 @@ if (process.env.VERCEL) {
           console.log("Migration: Upgraded image_url column to LONGTEXT.");
         }
       } catch (migErr) { console.warn("image_url migration check:", migErr); }
+
 
       connection.release();
       console.log("Database initialized successfully.");

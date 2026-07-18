@@ -284,7 +284,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                   </div>
                   <div className="space-y-3">
                     {charts.popularBooks.map((item, i) => (
-                      <button type="button" key={item.code} className="w-full text-left group cursor-pointer block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors" onClick={() => onNavigate("search-smart")}>
+                      <div key={item.code} className="w-full text-left group block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors">
                         <div className="flex gap-3 items-start">
                           {/* Cover thumbnail */}
                           {item.imageUrl ? (
@@ -296,24 +296,24 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                             />
                           ) : (
                             <div className="w-10 h-14 rounded-lg bg-[#E5E5EA] flex items-center justify-center flex-shrink-0 text-[#52525B] text-[10px] font-bold">
-                              {item.code.slice(0, 3)}
+                              {item.code ? item.code.slice(0, 3) : "BOK"}
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start gap-2">
                               <span className="text-xs font-bold text-[#22242A] truncate">
-                                <span className="text-[#D97706] mr-1">#{i + 1}</span> {item.name}
+                                <span className="text-[#D97706] mr-1">#{i + 1}</span> {item.name || "অজানা বই"}
                               </span>
                               <span className="text-[10px] text-[#3F3F46] font-bold font-mono flex-shrink-0">{item.count} বার</span>
                             </div>
-                            <p className="text-[10px] text-[#52525B] mt-0.5 truncate">{item.author}</p>
+                            <p className="text-[10px] text-[#52525B] mt-0.5 truncate">{item.author || "অজানা লেখক"}</p>
                             <div className="flex items-center gap-2 mt-1">
                               <span className="text-[9px] font-mono text-[#6B6B70] bg-[#F5F3EF] px-1.5 py-0.5 rounded">{item.code}</span>
                               {item.group && <span className="text-[9px] text-[#6B6B70] truncate">{item.group}</span>}
                             </div>
                           </div>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </>
@@ -355,20 +355,20 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                   </div>
                   <div className="space-y-3">
                     {charts.activeMembers.map((item, i) => (
-                      <button type="button" key={item.formNumber} className="w-full text-left group cursor-pointer block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors" onClick={() => onNavigate("members")}>
+                      <div key={item.formNumber} className="w-full text-left group block p-2 rounded-xl hover:bg-[#F5F3EF] transition-colors">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-[#22242A] truncate">
-                                <span className="text-[#D97706] mr-1">#{i + 1}</span> {item.name}
+                                <span className="text-[#D97706] mr-1">#{i + 1}</span> {item.name || "অজানা সদস্য"}
                               </span>
                               <span className="text-[9px] font-mono text-[#6B6B70] bg-[#F5F3EF] px-1.5 py-0.5 rounded flex-shrink-0">#{item.formNumber}</span>
                             </div>
-                            <p className="text-[10px] text-[#52525B] mt-0.5">{item.mobile}</p>
+                            <p className="text-[10px] text-[#52525B] mt-0.5">{item.mobile || "মোবাইল অজানা"}</p>
                           </div>
                           <span className="text-[11px] text-[#3F3F46] font-bold font-mono flex-shrink-0">{item.count} টি</span>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </>
