@@ -297,6 +297,25 @@ if (process.env.VERCEL) {
     next();
   });
 
+  // ----------- SITE TRAFFIC TRACKING MIDDLEWARE -----------
+  // Only tracks actual page visits (non-API GET requests), not API calls
+  app.use(async (req, res, next) => {
+    try {
+      // Only track GET requests that are NOT API calls (i.e., actual page loads / SPA navigation)
+      if (req.method === "GET" && !req.url.startsWith("/api/") && !req.url.startsWith("/uploads/") && !req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|json)$/i)) {
+        const todayStr = getBangladeshDateString();
+        await pool.query(
+          `INSERT INTO site_traffic (date, view_count) VALUES (?, 1)
+           ON DUPLICATE KEY UPDATE view_count = view_count + 1`,
+          [todayStr]
+        );
+      }
+    } catch (err) {
+      // Silently ignore tracking errors — they should never block the request
+    }
+    next();
+  });
+
   // Auth Middleware
   const authenticateAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -774,6 +793,26 @@ if (process.env.VERCEL) {
     } catch (err: any) {
       console.error(err);
       res.status(500).json({ error: "ড্যাশবোর্ড ডেটা লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // ---------------- VISITOR ANALYTICS API ----------------
+
+  app.get("/api/admin/analytics", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query(
+        `SELECT date, view_count FROM site_traffic 
+         WHERE date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+         ORDER BY date ASC`
+      );
+      const data = rows.map((r: any) => ({
+        date: typeof r.date === "string" ? r.date : new Date(r.date).toISOString().split("T")[0],
+        view_count: r.view_count
+      }));
+      res.json({ success: true, data });
+    } catch (err: any) {
+      console.error("GET /api/admin/analytics error:", err);
+      res.status(500).json({ error: "অ্যানালিটিক্স ডেটা লোড করতে ব্যর্থ।" });
     }
   });
 
@@ -1600,11 +1639,26 @@ if (process.env.VERCEL) {
             mobile: issue.mobile,
             status: "Sent",
             alertText: text,
-            triggerTime: `তাৎক্ষণিক ওভাররাইড টেস্ট অ্যালার্ট (সব সক্রিয় সদস্যকে সচল ওয়ার্নিং)`,
+            triggerTime: `তাৎক্ষণিক ওভাররাইড টেস্ট অ্যালার্ট (সব সক্রিয় সদস্যকে সচল ওয়ার্নিং)`,
             bookCode: issue.book_code,
             issueId: String(issue.id),
           });
-        } else if (diffDays >= 0) {
+        } else if (diffDays === 0) {
+          // Due today — special reminder (not overdue yet)
+          const dueTodayText = `আসসালামু আলাইকুম, আপনার (${issue.book_name}) বইটি আজকেই জমাদেয়ার শেষ দিন! অনুগ্রহ করে আজকের মধ্যে বইটি অক্ষর পাঠাগারে জমা দিন। পাঠাগার বিকাল ৪ টা থেকে রাত ৮ টা পর্যন্ত খোলা। যোগাযোগ: 01333474848`;
+          alerts.push({
+            id: `sms-${issue.id}-duetoday`,
+            bookName: issue.book_name,
+            memberName: issue.member_name,
+            returnDate: issue.return_date,
+            mobile: issue.mobile,
+            status: "Sent",
+            alertText: dueTodayText,
+            triggerTime: `${issue.return_date} (আজ জমাদেয়ার শেষ দিন!)`,
+            bookCode: issue.book_code,
+            issueId: String(issue.id),
+          });
+        } else if (diffDays > 0) {
           const isTriggerDay = diffDays % 2 === 0;
           alerts.push({
             id: `sms-${issue.id}-${diffDays}`,
@@ -2692,20 +2746,58 @@ if (process.env.VERCEL) {
   app.get("/api/public/leaderboard/books", async (req, res) => {
     try {
       const [rows]: any = await pool.query(
-        "SELECT book_code, book_name, author, publisher, COUNT(*) as count FROM issues GROUP BY book_code, book_name, author, publisher ORDER BY count DESC"
+        `SELECT b.id, b.code, b.name, b.author, b.image_url, b.group_name, COUNT(i.id) as count
+         FROM issues i
+         JOIN books b ON i.book_id = b.id
+         GROUP BY b.id, b.code, b.name, b.author, b.image_url, b.group_name
+         ORDER BY count DESC
+         LIMIT 10`
       );
-      
+
       const list = rows.map((r: any) => ({
-        code: r.book_code,
-        name: r.book_name,
+        id: r.id,
+        code: r.code,
+        name: r.name,
         author: r.author || "অজ্ঞাত",
-        publisher: r.publisher || "অজ্ঞাত",
-        count: r.count
+        imageUrl: r.image_url || "",
+        group: r.group_name || "",
+        count: r.count,
+        issueCount: r.count
       }));
-      
+
       res.json({ success: true, leaderboard: list });
     } catch (err: any) {
-      res.status(500).json({ error: "বই লিডারবোর্ড লোড করা যায়নি।" });
+      res.status(500).json({ error: "বই লিডারবোর্ড লোড করা যায়নি।" });
+    }
+  });
+
+  // 10b. Admin Notifications — books due today
+  app.get("/api/admin/notifications", authenticateAdmin, async (req, res) => {
+    try {
+      const todayStr = getBangladeshDateString();
+      const [rows]: any = await pool.query(
+        `SELECT i.id, i.return_date, b.name as book_name, b.code as book_code, m.name as member_name, m.form_number, m.mobile
+         FROM issues i
+         JOIN books b ON i.book_id = b.id
+         JOIN members m ON i.member_id = m.id
+         WHERE i.status = 'Issued' AND DATE(i.return_date) = ?`,
+        [todayStr]
+      );
+
+      const dueTodayList = rows.map((r: any) => ({
+        issueId: String(r.id),
+        bookName: r.book_name,
+        bookCode: r.book_code,
+        memberName: r.member_name,
+        formNumber: r.form_number,
+        mobile: r.mobile,
+        returnDate: r.return_date
+      }));
+
+      res.json({ success: true, count: dueTodayList.length, dueToday: dueTodayList });
+    } catch (err: any) {
+      console.error("GET /api/admin/notifications error:", err);
+      res.status(500).json({ error: "নটিফিকেশন লোড করতে ব্যর্থ।" });
     }
   });
 
@@ -2979,6 +3071,156 @@ if (process.env.VERCEL) {
       res.json({ books, members, issues, auditLogs });
     } catch (error) {
       res.status(500).json({ error: "ডাউনলোড তৈরি করতে সমস্যা হয়েছে।" });
+    }
+  });
+
+  // =============================================
+  // SYSTEM MAINTENANCE API
+  // =============================================
+  
+  app.post("/api/settings/maintenance/clear-temp", authenticateAdmin, async (req, res) => {
+    try {
+      const tmpDir = path.join(__dirname, "uploads", "tmp");
+      let count = 0;
+      if (fs.existsSync(tmpDir)) {
+        const files = fs.readdirSync(tmpDir);
+        for (const file of files) {
+          fs.unlinkSync(path.join(tmpDir, file));
+          count++;
+        }
+      }
+      res.json({ success: true, count, message: `${count}টি টেম্পোরারি ফাইল মুছে ফেলা হয়েছে।` });
+    } catch (err: any) {
+      console.error(err);
+      res.status(500).json({ error: "টেম্প ফাইল মুছতে ব্যর্থ।" });
+    }
+  });
+
+  app.post("/api/settings/maintenance/clean-audit-logs", authenticateAdmin, async (req, res) => {
+    try {
+      const { action } = req.body;
+      
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const formattedDate = thirtyDaysAgo.toISOString().slice(0, 19).replace('T', ' ');
+
+      if (action === 'preview') {
+        const [rows]: any = await pool.query("SELECT COUNT(*) as count FROM audit_logs WHERE timestamp < ?", [formattedDate]);
+        const count = rows[0].count;
+        res.json({ success: true, count });
+      } else if (action === 'delete') {
+        const [result]: any = await pool.query("DELETE FROM audit_logs WHERE timestamp < ?", [formattedDate]);
+        const count = result.affectedRows || 0;
+        addLog("সিস্টেম মেইনটেন্যান্স", `${count}টি পুরনো অডিট লগ মুছে ফেলা হয়েছে।`);
+        res.json({ success: true, count, message: `${count}টি পুরনো লগ মুছে ফেলা হয়েছে।` });
+      } else {
+        res.status(400).json({ error: "অ্যাকশন নির্দিষ্ট করা হয়নি।" });
+      }
+    } catch (err: any) {
+      console.error(err);
+      res.status(500).json({ error: "অডিট লগ মুছতে ব্যর্থ।" });
+    }
+  });
+
+  // =============================================
+  // NEWSLETTER & BREVO INTEGRATION
+  // =============================================
+
+  // Public endpoint for popup subscription
+  app.post("/api/public/newsletter-subscribe", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email || !/^\\S+@\\S+\\.\\S+$/.test(email)) {
+        return res.status(400).json({ error: "সঠিক ইমেইল ঠিকানা প্রদান করুন।" });
+      }
+
+      const apiKey = process.env.BREVO_API_KEY;
+      if (!apiKey) {
+        console.warn("BREVO_API_KEY is not configured.");
+        return res.json({ success: true, message: "সাবস্ক্রাইব করার জন্য ধন্যবাদ!" });
+      }
+
+      const response = await fetch("https://api.brevo.com/v3/contacts", {
+        method: "POST",
+        headers: {
+          "api-key": apiKey,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          listIds: [3],
+          updateEnabled: true
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.warn("Brevo API warning:", errorData);
+      }
+
+      res.json({ success: true, message: "সাবস্ক্রাইব করার জন্য ধন্যবাদ!" });
+    } catch (err: any) {
+      console.error("Newsletter subscribe error:", err);
+      res.json({ success: true, message: "সাবস্ক্রাইব করার জন্য ধন্যবাদ!" });
+    }
+  });
+
+  // Admin endpoint to send newsletter
+  app.post("/api/admin/newsletter-send", authenticateAdmin, async (req, res) => {
+    try {
+      const { subject, body } = req.body;
+      if (!subject || !body) {
+        return res.status(400).json({ error: "বিষয় এবং মেসেজ প্রদান করুন।" });
+      }
+
+      const apiKey = process.env.BREVO_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({ error: "Brevo API Key কনফিগার করা নেই।" });
+      }
+
+      const campaignRes = await fetch("https://api.brevo.com/v3/emailCampaigns", {
+        method: "POST",
+        headers: {
+          "api-key": apiKey,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          name: "Newsletter " + new Date().toISOString().split("T")[0],
+          subject: subject,
+          sender: { name: "অক্ষর পাঠাগার", email: "hello@okkhorpathagar.com" },
+          type: "classic",
+          htmlContent: `<html><body>${body.replace(/\n/g, '<br/>')}</body></html>`,
+          recipients: { listIds: [3] }
+        })
+      });
+
+      if (!campaignRes.ok) {
+        const errorData = await campaignRes.json();
+        console.error("Brevo Create Campaign Error:", errorData);
+        return res.status(500).json({ error: "ক্যাম্পেইন তৈরি করতে ব্যর্থ: " + (errorData.message || "Unknown error") });
+      }
+
+      const campaignData = await campaignRes.json();
+      const campaignId = campaignData.id;
+
+      const sendRes = await fetch(`https://api.brevo.com/v3/emailCampaigns/${campaignId}/action/send`, {
+        method: "POST",
+        headers: {
+          "api-key": apiKey,
+          "content-type": "application/json"
+        }
+      });
+
+      if (!sendRes.ok) {
+        const sendErrorData = await sendRes.json();
+        console.error("Brevo Send Campaign Error:", sendErrorData);
+        return res.status(500).json({ error: "ক্যাম্পেইন সেন্ড করতে ব্যর্থ: " + (sendErrorData.message || "Unknown error") });
+      }
+
+      addLog("নিউজলেটার", `একটি নতুন নিউজলেটার পাঠানো হয়েছে। বিষয়: ${subject}`);
+      res.json({ success: true, message: "নিউজলেটার সফলভাবে পাঠানো হয়েছে!" });
+    } catch (err: any) {
+      console.error("Newsletter send error:", err);
+      res.status(500).json({ error: "নিউজলেটার পাঠাতে সমস্যা হয়েছে।" });
     }
   });
 
@@ -3322,6 +3564,17 @@ if (process.env.VERCEL) {
           console.log("Migration: Added price column to books table.");
         }
       } catch (migErr) { console.warn("price migration check:", migErr); }
+
+      // Auto-migrate: ensure site_traffic table exists
+      try {
+        await connection.query(`
+          CREATE TABLE IF NOT EXISTS site_traffic (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            date DATE NOT NULL UNIQUE,
+            view_count INT NOT NULL DEFAULT 0
+          ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+        `);
+      } catch (migErr) { console.warn("site_traffic migration check:", migErr); }
 
       // Auto-migrate: ensure image_url is LONGTEXT (not TEXT)
       try {
