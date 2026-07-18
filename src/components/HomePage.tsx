@@ -48,6 +48,7 @@ import karyonirbahiImg from "../assets/images/karyonirbahi.png";
 import tawhidImg from "../assets/images/tawhid.png";
 import cornerBanner from "../assets/images/corner-banner.jpg";
 import Hero3DImage from "./Hero3DImage";
+import NewsletterPopup, { subscribeNewsletter } from "./NewsletterPopup";
 
 /* ===========================================
    DEMO DATA CONSTANTS
@@ -343,6 +344,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [writeSubmitting, setWriteSubmitting] = useState(false);
   const [writeSent, setWriteSent] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [footerEmail, setFooterEmail] = useState("");
+  const [footerSubStatus, setFooterSubStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [realBooks, setRealBooks] = useState<any[]>([]);
   const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
   const [liveReviews, setLiveReviews] = useState<any[]>([]);
@@ -2000,20 +2003,51 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               <p className="font-body-bn text-sm mb-3" style={{ color: "#94a3b8" }}>
                 নতুন বই ও ইভেন্টের খবর সরাসরি পান
               </p>
-              <div className="flex gap-2">
+              <form className="flex gap-2" onSubmit={async (e) => {
+                e.preventDefault();
+                const trimmed = footerEmail.trim();
+                if (!trimmed || !/^\S+@\S+\.\S+$/.test(trimmed)) return;
+                setFooterSubStatus("loading");
+                const result = await subscribeNewsletter(trimmed);
+                if (result.success) {
+                  setFooterSubStatus("done");
+                  setFooterEmail("");
+                  setTimeout(() => setFooterSubStatus("idle"), 4000);
+                } else {
+                  setFooterSubStatus("error");
+                  setTimeout(() => setFooterSubStatus("idle"), 3000);
+                }
+              }}>
                 <input
                   type="email"
+                  value={footerEmail}
+                  onChange={(e) => setFooterEmail(e.target.value)}
                   placeholder="আপনার ইমেইল"
                   className="flex-1 px-3 py-2 rounded-lg text-sm font-body-bn border-none"
                   style={{ background: "rgba(255,255,255,0.1)", color: "white", outline: "none" }}
+                  disabled={footerSubStatus === "loading"}
                 />
                 <button
-                  className="px-3 py-2 rounded-lg cursor-pointer border-none font-ui text-sm font-bold"
-                  style={{ background: "var(--flame-gradient)", color: "white" }}
+                  type="submit"
+                  disabled={footerSubStatus === "loading"}
+                  className="px-3 py-2 rounded-lg cursor-pointer border-none font-ui text-sm font-bold flex items-center justify-center"
+                  style={{ background: "var(--flame-gradient)", color: "white", minWidth: 40 }}
                 >
-                  <Send size={14} />
+                  {footerSubStatus === "loading" ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : footerSubStatus === "done" ? (
+                    <Check size={14} />
+                  ) : (
+                    <Send size={14} />
+                  )}
                 </button>
-              </div>
+              </form>
+              {footerSubStatus === "done" && (
+                <p className="text-xs font-body-bn mt-2" style={{ color: "#4ade80" }}>সাবস্ক্রাইব সফল হয়েছে!</p>
+              )}
+              {footerSubStatus === "error" && (
+                <p className="text-xs font-body-bn mt-2" style={{ color: "#f87171" }}>সমস্যা হয়েছে, আবার চেষ্টা করুন।</p>
+              )}
             </div>
           </div>
 
@@ -2031,6 +2065,9 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           </div>
         </div>
       </footer>
+
+      {/* Newsletter Popup — appears 4s after mount, suppressed for 7 days after dismiss */}
+      <NewsletterPopup />
     </div>
   );
 }
