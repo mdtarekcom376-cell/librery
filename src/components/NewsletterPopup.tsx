@@ -48,18 +48,21 @@ export default function NewsletterPopup() {
   const [error, setError] = useState("");
   const autoCloseTimerRef = React.useRef<any>(null);
 
-  // Show popup immediately, auto-close after 4 seconds
+  // Show popup almost immediately (small delay to avoid layout flash), auto-close after 3 seconds
   useEffect(() => {
     if (!shouldShowPopup()) return;
 
-    setVisible(true);
-
-    autoCloseTimerRef.current = setTimeout(() => {
-      setVisible(false);
-      markDismissed();
-    }, 4000);
+    const appearTimer = setTimeout(() => {
+      setVisible(true);
+      
+      autoCloseTimerRef.current = setTimeout(() => {
+        setVisible(false);
+        markDismissed();
+      }, 3000);
+    }, 10);
 
     return () => {
+      clearTimeout(appearTimer);
       if (autoCloseTimerRef.current) clearTimeout(autoCloseTimerRef.current);
     };
   }, []);
@@ -122,8 +125,6 @@ export default function NewsletterPopup() {
             animate={{ opacity: 1, y: "-50%", x: "-50%" }}
             exit={{ opacity: 0, y: "-30%", x: "-50%" }}
             transition={{ type: "spring", damping: 22, stiffness: 260 }}
-            onMouseEnter={handleInteract}
-            onTouchStart={handleInteract}
             onFocus={handleInteract}
           >
             <div
@@ -200,7 +201,6 @@ export default function NewsletterPopup() {
                           background: "white",
                         }}
                         disabled={submitting}
-                        autoFocus
                       />
                       <button
                         type="submit"

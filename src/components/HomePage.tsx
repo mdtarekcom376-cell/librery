@@ -453,6 +453,16 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
   const displayBooks = realBooks.length >= 5 ? realBooks : [...realBooks, ...DEMO_BOOKS];
 
+  // Limit books for marquee to prevent massive DOM nodes & extremely fast speeds on large data
+  const marqueeBooks = displayBooks.slice(0, 30);
+  const midPoint = Math.ceil(marqueeBooks.length / 2);
+  const row1Books = marqueeBooks.slice(0, midPoint);
+  const row2Books = marqueeBooks.slice(midPoint);
+  
+  // Calculate constant speed duration (3s per item) based on item count, avoiding JS DOM measurement
+  const durationRow1 = Math.max(row1Books.length * 3, 15);
+  const durationRow2 = Math.max(row2Books.length * 3, 15);
+
   // Scroll listener for sticky header
   useEffect(() => {
     const handleScroll = () => {
@@ -1123,12 +1133,13 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             {/* ROW 1: Left scrolling */}
             <div className="marquee-container w-full">
               <div 
+                key={`marquee-row1-${row1Books.length}`}
                 className="marquee-content flex gap-4 md:gap-5 items-center" 
-                style={{ animation: "marqueeScroll 45s linear infinite" }}
+                style={{ animation: `marqueeScroll ${durationRow1}s linear infinite` }}
               >
-                {[...displayBooks.slice(0, Math.ceil(displayBooks.length / 2)), ...displayBooks.slice(0, Math.ceil(displayBooks.length / 2))].map((book, i) => (
+                {[...row1Books, ...row1Books].map((book, i) => (
                   <motion.div
-                    key={`${book.id || 'b1'}-${i}`}
+                    key={`row1-${book.id || 'b1'}-${i}`}
                     className="shrink-0 cursor-pointer"
                     whileHover={{ scale: 1.03 }}
                     onClick={() => {
@@ -1152,12 +1163,13 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             {/* ROW 2: Right scrolling */}
             <div className="marquee-container w-full">
               <div 
+                key={`marquee-row2-${row2Books.length}`}
                 className="marquee-content flex gap-4 md:gap-5 items-center" 
-                style={{ animation: "marqueeScroll 45s linear infinite reverse" }}
+                style={{ animation: `marqueeScroll ${durationRow2}s linear infinite reverse` }}
               >
-                {[...displayBooks.slice(Math.ceil(displayBooks.length / 2)), ...displayBooks.slice(Math.ceil(displayBooks.length / 2))].map((book, i) => (
+                {[...row2Books, ...row2Books].map((book, i) => (
                   <motion.div
-                    key={`${book.id || 'b2'}-${i}`}
+                    key={`row2-${book.id || 'b2'}-${i}`}
                     className="shrink-0 cursor-pointer"
                     whileHover={{ scale: 1.03 }}
                     onClick={() => {
