@@ -7,13 +7,15 @@ interface DonationCTAProps {
   description?: string;
   buttonLabel?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export default function DonationCTA({
   title = "আলো ছড়ানোর মিছিলে যোগাযোগ করুন",
   description,
   buttonLabel = "ডোনেট করুন",
-  className = ""
+  className = "",
+  style
 }: DonationCTAProps) {
   return (
     <motion.div
@@ -21,21 +23,22 @@ export default function DonationCTA({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-20px" }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`relative group ${className}`}
+      className={`relative group shrink-0 ${className}`}
+      style={style || { width: "219px", height: "141px" }}
     >
       {/* Gradient border wrapper */}
       <div
-        className="relative p-[1.5px] rounded-xl overflow-hidden"
+        className="relative p-[1px] rounded-xl h-full flex flex-col"
         style={{
           background: "linear-gradient(135deg, #EC4899, #F43F5E, #EC4899)",
           borderRadius: "12px",
         }}
       >
         {/* Inner dark card */}
-        <div className="relative bg-[#1c1d23] rounded-[10.5px] p-5 overflow-hidden">
+        <div className="relative bg-[#1c1d23] rounded-[11px] p-3 overflow-hidden h-full flex flex-col justify-between">
           {/* Decorative glow orbs */}
-          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-[#EC4899]/15 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-12 w-28 h-28 rounded-full bg-[#F43F5E]/8 blur-3xl pointer-events-none" />
+          <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-[#EC4899]/15 blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-8 -left-8 w-16 h-16 rounded-full bg-[#F43F5E]/8 blur-2xl pointer-events-none" />
 
           {/* Shine overlay on hover */}
           <div
@@ -46,38 +49,40 @@ export default function DonationCTA({
             }}
           />
 
-          {/* Heading */}
-          <h4 className="font-display-bn text-sm font-bold text-white/90 mb-3 relative z-10">
-            {title}
-          </h4>
-          
-          {/* Description */}
-          {description && (
-            <p className="font-body-bn text-xs text-white/70 mb-4 relative z-10 leading-relaxed">
-              {description}
-            </p>
-          )}
+          <div>
+            {/* Heading */}
+            <h4 className="font-display-bn text-[12px] font-bold text-white/95 mb-1.5 relative z-10 leading-tight">
+              {title}
+            </h4>
+            
+            {/* Description */}
+            {description && (
+              <p className="font-body-bn text-[9px] text-white/70 relative z-10 leading-relaxed line-clamp-2">
+                {description}
+              </p>
+            )}
+          </div>
 
           {/* Animated Donate Button */}
           <motion.a
             href="http://donat.okkhorpathagar.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="relative z-10 flex items-center justify-center gap-2 text-white px-5 py-2.5 rounded-lg font-ui text-sm font-bold w-full text-center cursor-pointer"
+            className="relative z-10 flex items-center justify-center gap-1.5 text-white px-2 py-1.5 mt-2 rounded font-ui text-[10.5px] leading-none whitespace-nowrap font-bold w-full text-center cursor-pointer"
             style={{ textDecoration: "none" }}
             initial={{
               background: "linear-gradient(135deg, #EC4899, #E11D48, #BE123C)",
             }}
             whileHover={{
-              scale: 1.03,
-              boxShadow: "0 8px 32px rgba(225, 29, 72, 0.5), 0 0 40px rgba(244, 63, 94, 0.15)",
+              scale: 1.02,
+              boxShadow: "0 4px 16px rgba(225, 29, 72, 0.4)",
             }}
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.98 }}
             animate={{
               boxShadow: [
-                "0 4px 20px rgba(225, 29, 72, 0.3)",
-                "0 4px 32px rgba(225, 29, 72, 0.55), 0 0 24px rgba(244, 63, 94, 0.12)",
-                "0 4px 20px rgba(225, 29, 72, 0.3)",
+                "0 2px 10px rgba(225, 29, 72, 0.2)",
+                "0 2px 16px rgba(225, 29, 72, 0.4)",
+                "0 2px 10px rgba(225, 29, 72, 0.2)",
               ],
             }}
             transition={{
@@ -89,9 +94,9 @@ export default function DonationCTA({
             }}
           >
             <Heart
-              size={16}
+              size={12}
               className="text-white fill-white/80"
-              strokeWidth={2}
+              strokeWidth={2.5}
             />
             {buttonLabel}
           </motion.a>

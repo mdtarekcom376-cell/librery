@@ -114,6 +114,19 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
           >
             পাঠাগারের অফিশিয়াল টি-শার্ট, রাইটিং প্যাড, ডায়েরি, বই এবং কাস্টমাইজড উপহার সামগ্রী — সবকিছু এক জায়গায়।
           </motion.p>
+          
+          <motion.div
+            className="mt-8 flex justify-center w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <DonationCTA 
+              title="❤️ আলো ছড়ানোর মিছিলে যোগাযোগ করুন"
+              buttonLabel="আলো ছড়ানোর মিছিলে যুক্ত হোন"
+              style={{ width: "199px", height: "83px" }}
+            />
+          </motion.div>
         </div>
       </motion.section>
 
@@ -125,14 +138,6 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <PublicShopView onItemSelect={onItemSelect} />
-        
-        <div className="max-w-2xl mx-auto px-4 mt-12 w-full">
-          <DonationCTA 
-            title="❤️ জ্ঞানচর্চার এই উদ্যোগে পাশে থাকুন"
-            description="আপনার অনুদান বইভিত্তিক কার্যক্রম, শিক্ষামূলক উদ্যোগ এবং মানবিক সেবাকে আরও মানুষের কাছে পৌঁছে দিতে সহায়তা করে।"
-            buttonLabel="অনুদান করুন"
-          />
-        </div>
       </motion.main>
 
       {/* Footer */}

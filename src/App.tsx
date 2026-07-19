@@ -36,6 +36,7 @@ import {
 
 // Inner view components
 import Dashboard from "./components/Dashboard";
+import PublicBooksPage from "./components/PublicBooksPage";
 import BookManager from "./components/BookManager";
 import SmartSearch from "./components/SmartSearch";
 import IssueReturn from "./components/IssueReturn";
@@ -782,6 +783,9 @@ export default function App() {
           if (!isAuthenticated) handleGuestEntry();
           navigate("/dashboard");
         }}
+        onNavigateToBooks={() => {
+          navigate("/books");
+        }}
         logoBase64={logoBase64}
         onSalesCorner={() => {
           navigate("/shop");
@@ -1518,6 +1522,17 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={publicHomeRender} />
+      
+      <Route path="/books" element={
+        <PublicBooksPage 
+          onBack={() => navigate("/")} 
+          logoBase64={logoBase64} 
+          onBookSelect={(book) => {
+            setSelectedPublicBook(book);
+            navigate("/book/view");
+          }}
+        />
+      } />
       
       <Route path="/shop" element={
         selectedShopItem ? (

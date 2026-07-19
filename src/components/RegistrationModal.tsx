@@ -280,35 +280,56 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </p>
               </div>
 
-              {/* Unique ID Display */}
-              <div className="bg-white border border-[#E5E5EA] rounded-2xl p-5 space-y-3.5 shadow-inner">
-                <p className="text-[10px] font-bold text-[#6B6B70] uppercase tracking-widest">আপনার মেম্বার ফরম নম্বর (লগইন আইডি)</p>
-                <div className="flex items-center justify-center gap-3">
-                  <span className="text-3xl font-black text-[#22242A] tracking-wider font-mono">
-                    {registeredMember.formNumber}
-                  </span>
-                  <button
-                    onClick={handleCopyFormNo}
-                    className="p-2 bg-white hover:bg-white text-[#22242A] hover:text-[#22242A] rounded-lg transition-colors cursor-pointer"
-                    title="কপি করুন"
-                  >
-                    {copied ? <span className="text-[10px] font-bold text-[#22242A]">কপিড!</span> : <Copy size={14} />}
-                  </button>
+              {registeredMember.paymentStatus === "Pending" ? (
+                <div className="bg-[#F5F3EF] border border-[#FACC15] rounded-2xl p-5 space-y-3.5 shadow-inner mt-4">
+                  <div className="flex items-center justify-center gap-2 text-[#22242A]">
+                    <AlertCircle size={24} className="text-[#FACC15]" />
+                    <p className="text-sm font-black">যাচাইয়ের অপেক্ষায়</p>
+                  </div>
+                  <p className="text-xs text-[#6B6B70] leading-relaxed font-semibold">
+                    আপনার নিবন্ধন সফল হয়েছে। এডমিন কর্তৃক আপনার তথ্য ও পেমেন্ট যাচাইয়ের পর আপনার মেম্বারশিপটি অনুমোদন করা হবে। অনুমোদনের পর আপনাকে আপনার সদস্য আইডি জানানো হবে।
+                  </p>
+                  <div className="pt-2 flex flex-col gap-2">
+                    <button
+                      onClick={onClose}
+                      className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white font-extrabold rounded-xl text-xs sm:text-sm shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      বন্ধ করুন
+                    </button>
+                  </div>
                 </div>
-                <p className="text-[10px] text-[#FF6B6B] font-bold leading-relaxed">
-                  ⚠️ লগইন করতে এবং লাইব্রেরিতে যাতায়াত করতে এই ফরম নম্বরটি অবশ্যই মনে রাখবেন বা স্ক্রিনশট দিয়ে রাখুন।
-                </p>
-              </div>
+              ) : (
+                <>
+                  <div className="bg-white border border-[#E5E5EA] rounded-2xl p-5 space-y-3.5 shadow-inner">
+                    <p className="text-[10px] font-bold text-[#6B6B70] uppercase tracking-widest">আপনার মেম্বার ফরম নম্বর (লগইন আইডি)</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-3xl font-black text-[#22242A] tracking-wider font-mono">
+                        {registeredMember.formNumber}
+                      </span>
+                      <button
+                        onClick={handleCopyFormNo}
+                        className="p-2 bg-white hover:bg-white text-[#22242A] hover:text-[#22242A] rounded-lg transition-colors cursor-pointer"
+                        title="কপি করুন"
+                      >
+                        {copied ? <span className="text-[10px] font-bold text-[#22242A]">কপিড!</span> : <Copy size={14} />}
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-[#FF6B6B] font-bold leading-relaxed">
+                      ⚠️ লগইন করতে এবং লাইব্রেরিতে যাতায়াত করতে এই ফরম নম্বরটি অবশ্যই মনে রাখবেন বা স্ক্রিনশট দিয়ে রাখুন।
+                    </p>
+                  </div>
 
-              <div className="pt-2 flex flex-col gap-2">
-                <button
-                  onClick={() => onDirectLogin(registeredMember)}
-                  className="w-full py-3 bg-gradient-to-r bg-[#22242A] hover:bg-[#2d2f36] text-white font-extrabold rounded-xl text-xs sm:text-sm shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <CheckCircle2 size={15} />
-                  সরাসরি সদস্য প্যানেলে প্রবেশ করুন
-                </button>
-              </div>
+                  <div className="pt-2 flex flex-col gap-2">
+                    <button
+                      onClick={() => onDirectLogin(registeredMember)}
+                      className="w-full py-3 bg-gradient-to-r bg-[#22242A] hover:bg-[#2d2f36] text-white font-extrabold rounded-xl text-xs sm:text-sm shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle2 size={15} />
+                      সরাসরি সদস্য প্যানেলে প্রবেশ করুন
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             /* FORM PANEL */

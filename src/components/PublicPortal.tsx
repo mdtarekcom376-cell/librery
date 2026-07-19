@@ -50,6 +50,8 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
   const [selectedGroup, setSelectedGroup] = useState<string>("");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showGroupsSubmenu, setShowGroupsSubmenu] = useState(false);
+  const [showPriceSubmenu, setShowPriceSubmenu] = useState(false);
+  const [priceSort, setPriceSort] = useState<"none" | "low-to-high" | "high-to-low">("none");
 
   // Dashboard Live Explorer states
   const [dashboardFilter, setDashboardFilter] = useState<string>(""); // "", "Available", "Issued"
@@ -245,6 +247,12 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
 
     return matchesText && matchesStatus && matchesGroup;
   });
+
+  if (priceSort === "low-to-high") {
+    filteredBooks.sort((a, b) => (a.price || 0) - (b.price || 0));
+  } else if (priceSort === "high-to-low") {
+    filteredBooks.sort((a, b) => (b.price || 0) - (a.price || 0));
+  }
 
   return (
     <div className="space-y-6">
@@ -749,12 +757,13 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
             </div>
             
             {/* Clear Filters indicator */}
-            {(statusFilter || selectedGroup || searchVal) && (
+            {(statusFilter || selectedGroup || searchVal || priceSort !== "none") && (
               <button
                 onClick={() => {
                   setStatusFilter("");
                   setSelectedGroup("");
                   setSearchVal("");
+                  setPriceSort("none");
                 }}
                 className="text-[10px] bg-[#F5F3EF] hover:bg-[#F5F3EF] border border-[#E5E5EA] text-[#FF6B6B] px-2.5 py-1 rounded-lg cursor-pointer transition-colors"
               >
@@ -867,6 +876,51 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
                             {g}
                           </button>
                         ))}
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        setShowPriceSubmenu(!showPriceSubmenu);
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition-colors mt-1 ${showPriceSubmenu ? "bg-[#F5F3EF] text-[#22242A] font-bold" : "text-[#22242A] hover:bg-white"}`}
+                    >
+                      <span>৫. মূল্য অনুযায়ী সাজান</span>
+                      <span className="text-[9px] text-[#22242A] font-bold">▶</span>
+                    </button>
+
+                    {showPriceSubmenu && (
+                      <div className="border-t border-[#E5E5EA] pt-1 mt-1 space-y-0.5 bg-[#0d152c]/50 rounded-lg p-1.5">
+                        <button
+                          onClick={() => {
+                            setPriceSort("none");
+                            setShowFilterMenu(false);
+                            setShowPriceSubmenu(false);
+                          }}
+                          className={`w-full text-left px-2 py-1 rounded text-[11px] ${priceSort === "none" ? "text-[#22242A] font-bold" : "text-[#6B6B70] hover:text-white"}`}
+                        >
+                          সাধারণ ক্রম
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPriceSort("low-to-high");
+                            setShowFilterMenu(false);
+                            setShowPriceSubmenu(false);
+                          }}
+                          className={`w-full text-left px-2 py-1 rounded text-[11px] ${priceSort === "low-to-high" ? "text-[#22242A] font-bold" : "text-[#6B6B70] hover:text-white"}`}
+                        >
+                          কম থেকে বেশি (Low to High)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPriceSort("high-to-low");
+                            setShowFilterMenu(false);
+                            setShowPriceSubmenu(false);
+                          }}
+                          className={`w-full text-left px-2 py-1 rounded text-[11px] ${priceSort === "high-to-low" ? "text-[#22242A] font-bold" : "text-[#6B6B70] hover:text-white"}`}
+                        >
+                          বেশি থেকে কম (High to Low)
+                        </button>
                       </div>
                     )}
                   </div>

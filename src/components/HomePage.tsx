@@ -329,9 +329,10 @@ interface HomePageProps {
   onSalesCorner?: () => void;  // Navigate to dedicated sales page
   onBookSelect?: (book: any) => void; // Show book details
   onNoticeSelect?: (notice: any) => void; // Show notice details
+  onNavigateToBooks?: () => void; // Navigate to full books view
 }
 
-export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect, onNoticeSelect }: HomePageProps) {
+export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect, onNoticeSelect, onNavigateToBooks }: HomePageProps) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openCorner, setOpenCorner] = useState<string | null>("নজরুল কর্নার");
@@ -1112,59 +1113,83 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       </section>
 
       {/* ======================================
-          §4.5 FEATURED BOOKS (CAROUSEL)
+          §4.5 FEATURED BOOKS (MARQUEE)
           ====================================== */}
-      <section id="featured-books" className="section-tint py-16 md:py-24 px-4">
-        <div className="max-w-7xl mx-auto">
-          <SectionHeader eyebrow="নতুন সংযোজন" heading="সম্প্রতি যোগ হওয়া বই" />
-          <div className="relative">
-            {/* Carousel controls */}
-            <button
-              onClick={() => scrollCarousel("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border-none hidden md:flex"
-              style={{ background: "var(--flame-gradient)", color: "white" }}
-              aria-label="আগের বই"
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <button
-              onClick={() => scrollCarousel("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border-none hidden md:flex"
-              style={{ background: "var(--flame-gradient)", color: "white" }}
-              aria-label="পরের বই"
-            >
-              <ArrowRight size={18} />
-            </button>
-
-            {/* Scrollable carousel */}
-            <div
-              ref={carouselRef}
-              className="flex gap-5 overflow-x-auto pb-4 px-2 md:px-14 snap-x snap-mandatory scrollbar-hide"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {displayBooks.map((book, i) => (
-                <motion.div
-                  key={book.id || i}
-                  className="snap-start shrink-0 cursor-pointer"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                  whileHover={{ scale: 1.03 }}
-                  onClick={() => {
-                    if (onBookSelect) onBookSelect(book);
-                  }}
-                >
-                  {book.imageUrl ? (
-                    <div className="hp-card overflow-hidden flex flex-col justify-between" style={{ width: 160, height: 220, padding: 0 }}>
-                      <img src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <BookSpine title={book.title || book.name} author={book.author} color={book.color || "#1C8FE0"} />
-                  )}
-                </motion.div>
-              ))}
+      <section id="featured-books" className="section-tint py-16 md:py-24 px-4 overflow-hidden">
+        <div className="max-w-[100vw] mx-auto">
+          <SectionHeader eyebrow="" heading="পাঠাগার এর বই সমূহ" />
+          
+          <div className="relative mt-12 flex flex-col gap-6 md:gap-8">
+            {/* ROW 1: Left scrolling */}
+            <div className="marquee-container w-full">
+              <div 
+                className="marquee-content flex gap-4 md:gap-5 items-center" 
+                style={{ animation: "marqueeScroll 45s linear infinite" }}
+              >
+                {[...displayBooks.slice(0, Math.ceil(displayBooks.length / 2)), ...displayBooks.slice(0, Math.ceil(displayBooks.length / 2))].map((book, i) => (
+                  <motion.div
+                    key={`${book.id || 'b1'}-${i}`}
+                    className="shrink-0 cursor-pointer"
+                    whileHover={{ scale: 1.03 }}
+                    onClick={() => {
+                      if (onBookSelect) onBookSelect(book);
+                    }}
+                  >
+                    {book.imageUrl ? (
+                      <div className="hp-card overflow-hidden flex flex-col justify-between w-[140px] h-[190px] md:w-[160px] md:h-[220px]" style={{ padding: 0 }}>
+                        <img src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-[140px] h-[190px] md:w-[160px] md:h-[220px]">
+                        <BookSpine title={book.title || book.name} author={book.author} color={book.color || "#1C8FE0"} />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
             </div>
+
+            {/* ROW 2: Right scrolling */}
+            <div className="marquee-container w-full">
+              <div 
+                className="marquee-content flex gap-4 md:gap-5 items-center" 
+                style={{ animation: "marqueeScroll 45s linear infinite reverse" }}
+              >
+                {[...displayBooks.slice(Math.ceil(displayBooks.length / 2)), ...displayBooks.slice(Math.ceil(displayBooks.length / 2))].map((book, i) => (
+                  <motion.div
+                    key={`${book.id || 'b2'}-${i}`}
+                    className="shrink-0 cursor-pointer"
+                    whileHover={{ scale: 1.03 }}
+                    onClick={() => {
+                      if (onBookSelect) onBookSelect(book);
+                    }}
+                  >
+                    {book.imageUrl ? (
+                      <div className="hp-card overflow-hidden flex flex-col justify-between w-[140px] h-[190px] md:w-[160px] md:h-[220px]" style={{ padding: 0 }}>
+                        <img src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-[140px] h-[190px] md:w-[160px] md:h-[220px]">
+                        <BookSpine title={book.title || book.name} author={book.author} color={book.color || "#1C8FE0"} />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => {
+                if (onNavigateToBooks) onNavigateToBooks();
+              }}
+              className="btn-ghost px-6 py-3 text-sm md:text-base font-ui flex items-center gap-2 group cursor-pointer"
+            >
+              সব বই দেখুন
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </button>
           </div>
         </div>
       </section>
@@ -1560,13 +1585,6 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 })
             }
           </div>
-          
-          <DonationCTA 
-            title="❤️ জ্ঞানচর্চার এই উদ্যোগে পাশে থাকুন"
-            description="আপনার অনুদান বইভিত্তিক কার্যক্রম, শিক্ষামূলক উদ্যোগ এবং মানবিক সেবাকে আরও মানুষের কাছে পৌঁছে দিতে সহায়তা করে।"
-            buttonLabel="অনুদান করুন"
-            className="mt-12 max-w-2xl mx-auto"
-          />
 
           <div className="mt-10 flex justify-center">
             <button
@@ -1578,6 +1596,14 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               সকল পণ্য দেখুন
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
+          </div>
+
+          <div className="mt-12 flex justify-center w-full">
+            <DonationCTA 
+              title="❤️ আলো ছড়ানোর মিছিলে যোগাযোগ করুন"
+              description="আপনার অনুদান বইভিত্তিক কার্যক্রম, শিক্ষামূলক উদ্যোগ এবং মানবিক সেবাকে আরও মানুষের কাছে পৌঁছে দিতে সহায়তা করে।"
+              buttonLabel="আলো ছড়ানোর মিছিলে যুক্ত হোন"
+            />
           </div>
         </div>
       </section>

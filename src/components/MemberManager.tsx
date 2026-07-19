@@ -422,7 +422,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("all")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "all"
-                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  ? "bg-[#22242A] text-white shadow-sm"
                   : "text-[#6B6B70] hover:text-[#22242A]"
               }`}
             >
@@ -433,13 +433,13 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Pending")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer relative ${
                 statusFilter === "Pending"
-                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  ? "bg-[#22242A] text-white shadow-sm"
                   : "text-[#6B6B70] hover:text-[#FACC15]"
               }`}
             >
               যাচাইাধীন ({members.filter(m => m.paymentStatus === "Pending").length})
               {members.some(m => m.paymentStatus === "Pending") && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#F5F3EF] rounded-full animate-ping"></span>
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#FACC15] rounded-full animate-ping"></span>
               )}
             </button>
             <button
@@ -447,7 +447,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Paid")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Paid"
-                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  ? "bg-[#22242A] text-white shadow-sm"
                   : "text-[#6B6B70] hover:text-[#22242A]"
               }`}
             >
@@ -458,7 +458,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Unpaid")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Unpaid"
-                  ? "bg-[#F5F3EF] text-white shadow-sm"
+                  ? "bg-[#22242A] text-white shadow-sm"
                   : "text-[#6B6B70] hover:text-[#FF6B6B]"
               }`}
             >
@@ -505,10 +505,10 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         {(m.paymentMethod || m.paymentStatus) && (
                           <span className={`w-1.5 h-1.5 rounded-full ${
                             (m.paymentStatus || "Paid") === "Paid" 
-                              ? "bg-[#F5F3EF]" 
+                              ? "bg-emerald-500" 
                               : m.paymentStatus === "Pending" 
-                              ? "bg-[#F5F3EF] animate-pulse" 
-                              : "bg-[#F5F3EF]"
+                              ? "bg-[#FACC15] animate-pulse" 
+                              : "bg-[#FF6B6B]"
                           }`} title={
                             (m.paymentStatus || "Paid") === "Paid" ? "পরিশোধিত" : m.paymentStatus === "Pending" ? "যাচাইাধীন/পেন্ডিং" : "অপরিশোধিত/বাতিল"
                           } />
@@ -662,8 +662,8 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                         (activeProfile.member.paymentStatus || "Paid") === "Paid"
                           ? "bg-[#E5E5EA]/60 border-[#E5E5EA] text-[#22242A]"
                           : activeProfile.member.paymentStatus === "Pending"
-                          ? "bg-[#F5F3EF] border-[#E5E5EA] text-[#FACC15] animate-pulse"
-                          : "bg-[#F5F3EF] border-[#E5E5EA] text-[#FF6B6B]"
+                          ? "bg-[#22242A] border-[#22242A] text-[#FACC15] animate-pulse"
+                          : "bg-[#FF6B6B]/10 border-[#FF6B6B] text-[#FF6B6B]"
                       }`}>
                         {(activeProfile.member.paymentStatus || "Paid") === "Paid" ? "● অনুমোদিত ও সক্রিয় (Paid)" : activeProfile.member.paymentStatus === "Pending" ? "● যাচাইাধীন (Pending)" : "● অচল/বাতিল (Unpaid)"}
                       </span>

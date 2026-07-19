@@ -2420,6 +2420,11 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "প্রদত্ত মোবাইল নম্বরটি এই সদস্যের তথ্যের সাথে মিলছে না।" });
       }
 
+      const isApproved = (member.paymentStatus || "Paid") === "Paid";
+      if (!isApproved) {
+        return res.status(403).json({ error: "আপনার সদস্যপদ এখনও অনুমোদনের অপেক্ষায় আছে বা স্থগিত রয়েছে। অনুগ্রহ করে এডমিনের সাথে যোগাযোগ করুন।" });
+      }
+
       // If DOB is already registered in the DB, verify it. Otherwise, save the user's provided DOB for them!
       if (member.dob && member.dob.trim()) {
         const normDobInDb = member.dob.trim().replace(/[-\/]/g, "");
