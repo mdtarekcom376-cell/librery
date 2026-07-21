@@ -15,6 +15,12 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
 
   const [activeSection, setActiveSection] = useState("branding"); // "branding", "security", "sms", "pdf_reports"
 
+  // Member ID Start Number configurations
+  const [memberIdStartNumber, setMemberIdStartNumber] = useState("");
+  const [memberIdLoading, setMemberIdLoading] = useState(false);
+  const [memberIdSuccessMsg, setMemberIdSuccessMsg] = useState("");
+  const [memberIdErrorMsg, setMemberIdErrorMsg] = useState("");
+
   // Firebase configurations
   const [firebaseApiKey, setFirebaseApiKey] = useState("");
   const [firebaseAuthDomain, setFirebaseAuthDomain] = useState("");
@@ -607,6 +613,17 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
       }
     };
 
+    const fetchMemberIdStart = async () => {
+      try {
+        const res = await apiClient.get("/settings/member-id-start");
+        if (res && res.startNumber) {
+          setMemberIdStartNumber(res.startNumber.toString());
+        }
+      } catch (err: any) {
+        console.warn("Member ID load deferred:", err);
+      }
+    };
+
     const fetchLoginFlowSetting = async () => {
       try {
         const res = await apiClient.get("/public/settings/login-flow");
@@ -642,7 +659,26 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
     fetchShopHelpline();
     fetchPaymentMethods();
     fetchFirebaseConfig();
+    fetchMemberIdStart();
   }, []);
+
+  const handleSaveMemberIdStart = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMemberIdSuccessMsg("");
+    setMemberIdErrorMsg("");
+    setMemberIdLoading(true);
+
+    try {
+      await apiClient.post("/settings/member-id-start", {
+        startNumber: memberIdStartNumber,
+      });
+      setMemberIdSuccessMsg("মেম্বার আইডি শুরুর নম্বর সফলভাবে সেভ করা হয়েছে!");
+    } catch (err: any) {
+      setMemberIdErrorMsg(err.message || "মেম্বার আইডি শুরুর নম্বর সেভ করতে সমস্যা হয়েছে।");
+    } finally {
+      setMemberIdLoading(false);
+    }
+  };
 
   const handleSaveFirebaseConfig = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1498,6 +1534,56 @@ export default function Settings({ onPreviewBooksList, onPreviewMembersList, onP
               </form>
             </div>
             
+            {/* Member ID Start Number Card */}
+            <div className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] relative overflow-hidden mt-6">
+              <div className="absolute right-0 bottom-0 translate-x-20 translate-y-20 p-24 bg-[#F5F3EF] rotate-45 rounded-full pointer-events-none"></div>
+
+              <h3 className="text-xs font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-3 mb-6">
+                <Lock size={15} className="text-[#22242A]" />
+                সদস্য আইডি শুরুর নম্বর (Member ID Start Number)
+              </h3>
+
+              {memberIdErrorMsg && (
+                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 mb-4">
+                  <AlertTriangle size={14} className="text-[#FF6B6B] shrink-0" />
+                  <span>{memberIdErrorMsg}</span>
+                </div>
+              )}
+
+              {memberIdSuccessMsg && (
+                <div className="bg-[#E5E5EA]/45 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3 mb-4">
+                  <CheckCircle2 size={14} className="text-[#22242A] shrink-0" />
+                  <span>{memberIdSuccessMsg}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSaveMemberIdStart} className="space-y-4 relative">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">সদস্য আইডি শুরু হওয়ার নম্বর</label>
+                  <input
+                    type="number"
+                    value={memberIdStartNumber}
+                    onChange={(e) => setMemberIdStartNumber(e.target.value)}
+                    placeholder="যেমন: 1000"
+                    className="w-full px-4 py-3 bg-white border border-[#E5E5EA] rounded-xl text-[#22242A] text-xs focus:outline-none focus:border-[#22242A] transition-colors"
+                    min="1"
+                    required
+                  />
+                  <p className="text-[10px] text-[#6B6B70] mt-2 leading-relaxed">নতুন সদস্য যোগ করার সময় এই নম্বর থেকে অটো-জেনারেট শুরু হবে। যদি পূর্ববর্তী কোনো সদস্যের আইডি এর চেয়ে বেশি থাকে, তবে সেই বড় সংখ্যার পরের সংখ্যা জেনারেট হবে।</p>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    disabled={memberIdLoading}
+                    className="px-5 py-3 bg-[#22242A] hover:bg-[#2d2f36] disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer transition-colors shadow-lg"
+                  >
+                    {memberIdLoading ? <RefreshCw className="animate-spin" size={14} /> : <Save size={14} />}
+                    সেভ করুন
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
         {/* TAB 4: SMS CONFIGURATION */}

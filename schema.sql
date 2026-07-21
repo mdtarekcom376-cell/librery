@@ -160,3 +160,13 @@ CREATE TABLE site_traffic (
   date DATE NOT NULL UNIQUE,
   view_count INT NOT NULL DEFAULT 0
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE blog_posts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  image LONGTEXT DEFAULT NULL,
+  category VARCHAR(50) NOT NULL,
+  event_date DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

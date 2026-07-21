@@ -136,7 +136,7 @@ const DEMO_SALES_ITEMS = [
 const NAV_LINKS = [
   { label: "হোম", href: "#hero" },
   { label: "বৈশিষ্ট্য", href: "#features" },
-  { label: "বইয়ের কর্নার", href: "#corners" },
+  { label: "বইয়ের কর্নার", href: "#corners", isPage: true },
   { label: "সদস্যপদ", href: "#membership" },
   { label: "আমাদের সম্পর্কে", href: "#about" },
   { label: "বিক্রয় কর্নার", href: "#sales", isPage: true },
@@ -342,7 +342,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
   // New Write Form states
   const [contactTab, setContactTab] = useState<'contact' | 'write'>('contact');
-  const [writeForm, setWriteForm] = useState({ name: "", email: "", subject: "", category: "পরামর্শ", message: "" });
+  const [writeForm, setWriteForm] = useState({ name: "", email: "", phone: "", subject: "", category: "পরামর্শ", message: "" });
   const [writeAttachment, setWriteAttachment] = useState<File | null>(null);
   const [writeSubmitting, setWriteSubmitting] = useState(false);
   const [writeSent, setWriteSent] = useState(false);
@@ -514,6 +514,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       const formData = new FormData();
       formData.append("name", writeForm.name);
       formData.append("email", writeForm.email);
+      if (writeForm.phone) formData.append("phone", writeForm.phone);
       formData.append("subject", writeForm.subject);
       formData.append("category", writeForm.category);
       formData.append("message", writeForm.message);
@@ -528,7 +529,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
       if (res.ok) {
         setWriteSent(true);
-        setWriteForm({ name: "", email: "", subject: "", category: "পরামর্শ", message: "" });
+        setWriteForm({ name: "", email: "", phone: "", subject: "", category: "পরামর্শ", message: "" });
         setWriteAttachment(null);
         setTimeout(() => setWriteSent(false), 4000);
       } else {
@@ -584,6 +585,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 onClick={() => {
                   if (link.isPage && link.href === "#sales" && onSalesCorner) {
                     onSalesCorner();
+                  } else if (link.isPage && link.href === "#corners" && onNavigateToBooks) {
+                    onNavigateToBooks();
                   } else {
                     scrollTo(link.href);
                   }
@@ -666,6 +669,9 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                       if (link.isPage && link.href === "#sales" && onSalesCorner) {
                         setMobileMenuOpen(false);
                         onSalesCorner();
+                      } else if (link.isPage && link.href === "#corners" && onNavigateToBooks) {
+                        setMobileMenuOpen(false);
+                        onNavigateToBooks();
                       } else {
                         scrollTo(link.href);
                       }
@@ -1612,9 +1618,9 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
           <div className="mt-12 flex justify-center w-full">
             <DonationCTA 
-              title="❤️ আলো ছড়ানোর মিছিলে যোগাযোগ করুন"
+              title="❤️ আলো ছড়ানোর মিছিলে যুক্ত হন"
               description="আপনার অনুদান বইভিত্তিক কার্যক্রম, শিক্ষামূলক উদ্যোগ এবং মানবিক সেবাকে আরও মানুষের কাছে পৌঁছে দিতে সহায়তা করে।"
-              buttonLabel="আলো ছড়ানোর মিছিলে যুক্ত হোন"
+              buttonLabel="Donation"
             />
           </div>
         </div>
@@ -1922,6 +1928,19 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                     placeholder="example@email.com"
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
+                    ফোন নম্বর (ঐচ্ছিক)
+                  </label>
+                  <input
+                    type="tel"
+                    value={writeForm.phone}
+                    onChange={(e) => setWriteForm({ ...writeForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body-bn border bg-white shadow-sm"
+                    style={{ borderColor: "#e2e8f0", color: "var(--ink-navy)", outline: "none" }}
+                    placeholder="০১৭xxxxxxxx"
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-ui font-bold uppercase tracking-wider mb-1.5" style={{ color: "#64748b" }}>
@@ -2108,7 +2127,10 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               </p>
               
               {/* Donate CTA — Premium Redesign (Reused Component) */}
-              <DonationCTA title="আলো ছড়ানোর মিছিলে যোগাযোগ করুন" />
+              <DonationCTA 
+                title="আলো ছড়ানোর মিছিলে যুক্ত হন" 
+                style={{ width: "100%", maxWidth: "250px", height: "90px" }} 
+              />
             </div>
 
             {/* Quick links */}

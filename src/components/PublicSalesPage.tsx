@@ -122,8 +122,8 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <DonationCTA 
-              title="❤️ আলো ছড়ানোর মিছিলে যোগাযোগ করুন"
-              buttonLabel="আলো ছড়ানোর মিছিলে যুক্ত হোন"
+              title="❤️ আলো ছড়ানোর মিছিলে যুক্ত হন"
+              buttonLabel="Donation"
               style={{ width: "199px", height: "83px" }}
             />
           </motion.div>

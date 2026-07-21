@@ -615,8 +615,40 @@ if (process.env.VERCEL) {
       addLog("লোগো পরিবর্তন", "পাঠাগারের মূল লোগো সফলভাবে পরিবর্তন করা হয়েছে।");
       res.json({ success: true, message: "লোগো সফলভাবে পরিবর্তন করা হয়েছে।" });
     } catch (err: any) {
-      console.error("POST /api/settings/logo failed:", err);
       res.status(500).json({ error: "লোগো সংরক্ষণ করতে অভ্যন্তরীণ ত্রুটি হয়েছে।" });
+    }
+  });
+
+  // GET member ID start number
+  app.get("/api/settings/member-id-start", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'memberIdStartNumber'");
+      if (rows.length > 0 && rows[0].setting_value) {
+        res.json({ startNumber: parseInt(rows[0].setting_value, 10) });
+      } else {
+        res.json({ startNumber: 1000 });
+      }
+    } catch (err: any) {
+      res.status(500).json({ error: "সেটিংস লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // POST member ID start number
+  app.post("/api/settings/member-id-start", authenticateAdmin, async (req, res) => {
+    try {
+      const { startNumber } = req.body;
+      if (!startNumber || isNaN(parseInt(startNumber, 10))) {
+         return res.status(400).json({ error: "সঠিক নম্বর প্রদান করুন।" });
+      }
+      const num = parseInt(startNumber, 10);
+      await pool.query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES ('memberIdStartNumber', ?) ON DUPLICATE KEY UPDATE setting_value = ?",
+        [num.toString(), num.toString()]
+      );
+      addLog("সেটিংস পরিবর্তন", `মেম্বার আইডি শুরুর নম্বর পরিবর্তন করা হয়েছে: ${num}`);
+      res.json({ success: true, message: "মেম্বার আইডি শুরুর নম্বর সেভ হয়েছে।" });
+    } catch (err: any) {
+      res.status(500).json({ error: "সেটিংস সেভ করতে ব্যর্থ।" });
     }
   });
 
@@ -1323,9 +1355,14 @@ if (process.env.VERCEL) {
     try {
       let finalFormNumber = formNumber ? formNumber.trim() : "";
       if (!finalFormNumber) {
-        const [maxRow]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as maxForm FROM members");
-        let maxForm = maxRow.length > 0 && maxRow[0].maxForm ? parseInt(maxRow[0].maxForm, 10) : 999;
-        finalFormNumber = (maxForm + 1).toString();
+        const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'memberIdStartNumber'");
+        let configuredStart = 1000;
+        if (settingsRows.length > 0 && settingsRows[0].setting_value) {
+          configuredStart = parseInt(settingsRows[0].setting_value, 10) || 1000;
+        }
+        const [maxRow]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as maxForm FROM members WHERE form_number REGEXP '^[0-9]+$'");
+        let maxForm = maxRow.length > 0 && maxRow[0].maxForm !== null ? parseInt(maxRow[0].maxForm, 10) : 0;
+        finalFormNumber = (Math.max(configuredStart - 1, maxForm) + 1).toString();
       } else {
         const [existing]: any = await pool.query("SELECT id FROM members WHERE form_number = ?", [finalFormNumber]);
         if (existing.length > 0) {
@@ -2483,12 +2520,18 @@ if (process.env.VERCEL) {
       }
 
       // Auto-generate unique Form Number. Find the highest numeric Form Number and add 1
-      const [maxFormRows]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as max_form FROM members WHERE form_number REGEXP '^[0-9]+$'");
-      let maxForm = 999;
-      if (maxFormRows.length > 0 && maxFormRows[0].max_form !== null) {
-        maxForm = Math.max(999, parseInt(maxFormRows[0].max_form, 10));
+      const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'memberIdStartNumber'");
+      let configuredStart = 1000;
+      if (settingsRows.length > 0 && settingsRows[0].setting_value) {
+        configuredStart = parseInt(settingsRows[0].setting_value, 10) || 1000;
       }
-      const nextFormNumber = (maxForm + 1).toString();
+      
+      const [maxFormRows]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as max_form FROM members WHERE form_number REGEXP '^[0-9]+$'");
+      let maxForm = 0;
+      if (maxFormRows.length > 0 && maxFormRows[0].max_form !== null) {
+        maxForm = parseInt(maxFormRows[0].max_form, 10);
+      }
+      const nextFormNumber = (Math.max(configuredStart - 1, maxForm) + 1).toString();
 
       // Compile current address and permanent address
       const addressStr = `বর্তমান: ${currVillage || ""}, ডাকঘর: ${currPostOffice || ""}, উপজেলা: ${currUpazila || ""}, জেলা: ${currDistrict || ""}. স্থায়ী: ${permVillage || ""}, ডাকঘর: ${permPostOffice || ""}, উপজেলা: ${permUpazila || ""}, জেলা: ${permDistrict || ""}`;
@@ -3629,6 +3672,93 @@ if (process.env.VERCEL) {
       res.json(notices);
     } catch (err: any) {
       res.status(500).json({ error: "নোটিশ লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // =============================================
+  // BLOG / NEWS / EVENTS API (Admin posting, public viewing)
+  // =============================================
+
+  // Admin: Create a blog/news/event post
+  app.post("/api/blog_posts", authenticateAdmin, async (req, res) => {
+    try {
+      const { title, content, image, category, eventDate } = req.body;
+      if (!title || !content || !category) {
+        return res.status(400).json({ error: "শিরোনাম, বিস্তারিত এবং ক্যাটাগরি পূরণ করুন।" });
+      }
+      
+      const [resInsert]: any = await pool.query(
+        "INSERT INTO blog_posts (title, content, image, category, event_date, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        [title, content, image || null, category, eventDate || null, formatCurrentDateTime()]
+      );
+
+      const newPost = {
+        id: String(resInsert.insertId),
+        title,
+        content,
+        image: image || null,
+        category,
+        eventDate: eventDate || null,
+        createdAt: formatCurrentDateTime(),
+      };
+      
+      addLog("সংবাদ/ইভেন্ট প্রকাশ", `নতুন ${category} প্রকাশিত: "${title}"`);
+      res.json({ success: true, post: newPost });
+    } catch (err: any) {
+      res.status(500).json({ error: "পোস্ট প্রকাশ করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Get all blog posts
+  app.get("/api/blog_posts", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM blog_posts ORDER BY id DESC");
+      const posts = rows.map((r: any) => ({
+        id: String(r.id),
+        title: r.title,
+        content: r.content,
+        image: r.image || null,
+        category: r.category,
+        eventDate: r.event_date || null,
+        createdAt: r.created_at
+      }));
+      res.json(posts);
+    } catch (err: any) {
+      res.status(500).json({ error: "পোস্ট লোড করতে ব্যর্থ।" });
+    }
+  });
+
+  // Admin: Delete a blog post
+  app.delete("/api/blog_posts/:id", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const [rows]: any = await pool.query("SELECT title FROM blog_posts WHERE id = ?", [id]);
+      if (rows.length === 0) return res.status(404).json({ error: "পোস্ট পাওয়া যায়নি।" });
+      
+      await pool.query("DELETE FROM blog_posts WHERE id = ?", [id]);
+      addLog("সংবাদ/ইভেন্ট মুছে ফেলা", `পোস্ট মুছে ফেলা হয়েছে: "${rows[0].title}"`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "পোস্ট মুছতে ব্যর্থ।" });
+    }
+  });
+
+  // Public: Get all blog posts
+  app.get("/api/public/blog_posts", async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT * FROM blog_posts ORDER BY id DESC");
+      const posts = rows.map((r: any) => ({
+        id: String(r.id),
+        title: r.title,
+        content: r.content,
+        image: r.image || null,
+        category: r.category,
+        eventDate: r.event_date || null,
+        createdAt: r.created_at
+      }));
+      res.json(posts);
+    } catch (err: any) {
+      res.status(500).json({ error: "পোস্ট লোড করতে ব্যর্থ।" });
     }
   });
 

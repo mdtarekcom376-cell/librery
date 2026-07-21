@@ -11,9 +11,9 @@ interface DonationCTAProps {
 }
 
 export default function DonationCTA({
-  title = "আলো ছড়ানোর মিছিলে যোগাযোগ করুন",
+  title = "আলো ছড়ানোর মিছিলে যুক্ত হন",
   description,
-  buttonLabel = "ডোনেট করুন",
+  buttonLabel = "Donation",
   className = "",
   style
 }: DonationCTAProps) {

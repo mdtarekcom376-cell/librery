@@ -171,3 +171,12 @@ export interface Notice {
   createdAt: string;
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  category: "blog" | "news" | "event";
+  eventDate?: string;
+  createdAt: string;
+}
