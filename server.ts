@@ -1360,9 +1360,14 @@ if (process.env.VERCEL) {
         if (settingsRows.length > 0 && settingsRows[0].setting_value) {
           configuredStart = parseInt(settingsRows[0].setting_value, 10) || 1000;
         }
-        const [maxRow]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as maxForm FROM members WHERE form_number REGEXP '^[0-9]+$'");
-        let maxForm = maxRow.length > 0 && maxRow[0].maxForm !== null ? parseInt(maxRow[0].maxForm, 10) : 0;
-        finalFormNumber = (Math.max(configuredStart - 1, maxForm) + 1).toString();
+        
+        const [existingRows]: any = await pool.query("SELECT CAST(form_number AS UNSIGNED) as fn FROM members WHERE form_number REGEXP '^[0-9]+$' AND CAST(form_number AS UNSIGNED) >= ?", [configuredStart]);
+        const existingSet = new Set(existingRows.map((r: any) => parseInt(r.fn, 10)));
+        let nextFormNumber = configuredStart;
+        while (existingSet.has(nextFormNumber)) {
+          nextFormNumber++;
+        }
+        finalFormNumber = nextFormNumber.toString();
       } else {
         const [existing]: any = await pool.query("SELECT id FROM members WHERE form_number = ?", [finalFormNumber]);
         if (existing.length > 0) {
@@ -2519,19 +2524,20 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "এই মোবাইল নম্বরটি দিয়ে ইতিমধ্যেই একাউন্ট রেজিস্টার্ড রয়েছে।" });
       }
 
-      // Auto-generate unique Form Number. Find the highest numeric Form Number and add 1
+      // Auto-generate unique Form Number strictly starting from configured value
       const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'memberIdStartNumber'");
       let configuredStart = 1000;
       if (settingsRows.length > 0 && settingsRows[0].setting_value) {
         configuredStart = parseInt(settingsRows[0].setting_value, 10) || 1000;
       }
       
-      const [maxFormRows]: any = await pool.query("SELECT MAX(CAST(form_number AS UNSIGNED)) as max_form FROM members WHERE form_number REGEXP '^[0-9]+$'");
-      let maxForm = 0;
-      if (maxFormRows.length > 0 && maxFormRows[0].max_form !== null) {
-        maxForm = parseInt(maxFormRows[0].max_form, 10);
+      const [existingFormRows]: any = await pool.query("SELECT CAST(form_number AS UNSIGNED) as fn FROM members WHERE form_number REGEXP '^[0-9]+$' AND CAST(form_number AS UNSIGNED) >= ?", [configuredStart]);
+      const existingSet = new Set(existingFormRows.map((r: any) => parseInt(r.fn, 10)));
+      let nextFormNumber = configuredStart;
+      while (existingSet.has(nextFormNumber)) {
+        nextFormNumber++;
       }
-      const nextFormNumber = (Math.max(configuredStart - 1, maxForm) + 1).toString();
+      const nextFormNumberStr = nextFormNumber.toString();
 
       // Compile current address and permanent address
       const addressStr = `বর্তমান: ${currVillage || ""}, ডাকঘর: ${currPostOffice || ""}, উপজেলা: ${currUpazila || ""}, জেলা: ${currDistrict || ""}. স্থায়ী: ${permVillage || ""}, ডাকঘর: ${permPostOffice || ""}, উপজেলা: ${permUpazila || ""}, জেলা: ${permDistrict || ""}`;
@@ -2539,7 +2545,7 @@ if (process.env.VERCEL) {
       const p_paymentStatus = paymentMethod === "অফলাইন কাউন্টার" ? "Unpaid" : "Pending";
 
       const insertValues = [
-        nextFormNumber, name.trim(), (nameEnglish || "").trim(), mobile.trim(), addressStr, dob.trim(),
+        nextFormNumberStr, name.trim(), (nameEnglish || "").trim(), mobile.trim(), addressStr, dob.trim(),
         (educationInstitution || "").trim(), (className || "").trim(), (classRoll || "").trim(),
         (fatherName || "").trim(), (motherName || "").trim(), (currVillage || "").trim(),
         (currPostOffice || "").trim(), (currUpazila || "").trim(), (currDistrict || "").trim(),
