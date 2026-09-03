@@ -15,63 +15,128 @@
 }
 
 /* --- SINGLE FIXED PALETTE --- */
+/* --- MODERN CONTEMPORARY PALETTE --- */
 :root {
-  --bg-page: #E8E2D5;
+  --bg-page: #F8FAFC;
   --bg-card: #FFFFFF;
-  --bg-dark-card: #22242A;
-  --accent-yellow: #FACC15;
-  --accent-coral: #FF6B6B;
-  --text-primary: #22242A;
-  --text-muted: #6B6B70;
-  --text-subtle: #B0B0B4;
-  --border-light: #E5E5EA;
-  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --bg-dark-card: #0F172A;
+  --accent-yellow: #F59E0B;
+  --accent-indigo: #6366F1;
+  --accent-emerald: #10B981;
+  --accent-coral: #EF4444;
+  --text-primary: #0F172A;
+  --text-muted: #64748B;
+  --text-subtle: #94A3B8;
+  --border-light: #E2E8F0;
+  --shadow-soft: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+  --shadow-elevated: 0 20px 40px -15px rgba(15, 23, 42, 0.12);
   --radius-card: 20px;
   --radius-pill: 28px;
 }
 
 /* Background and base body styles */
 body {
-  font-family: "Hind Siliguri", "Inter", sans-serif;
+  font-family: "Hind Siliguri", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-page);
   color: var(--text-primary);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Card utility classes */
+/* Modern Glass Panel utility classes */
 .glass-panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
   border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(203, 213, 225, 0.9);
   box-shadow: var(--shadow-soft);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .glass-panel-cyan {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-panel:hover, .glass-panel-cyan:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+.glass-panel-cyan:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: var(--shadow-soft);
 }
 
 .glass-input {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  color: var(--text-primary);
+  background: rgba(248, 250, 252, 0.85);
+  border: 1px solid #E2E8F0;
+  color: #0F172A;
   border-radius: 12px;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-input:focus {
-  border-color: var(--bg-dark-card);
-  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15);
+  background: #FFFFFF;
+  border-color: #6366F1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   outline: none;
+}
+
+/* Status Badges */
+.badge-available {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.badge-issued {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.badge-overdue {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.badge-paid {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.badge-pending {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.badge-unpaid {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* Skeleton Loading Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
 }
 
 /* Custom Scrollbar */
@@ -81,16 +146,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-page);
+  background: #F8FAFC;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(34, 36, 42, 0.15);
-  border-radius: 4px;
+  background: rgba(100, 116, 139, 0.2);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 36, 42, 0.3);
+  background: rgba(100, 116, 139, 0.4);
 }
 
 /* Print configuration styled beautifully for Bengali unicode downloads */

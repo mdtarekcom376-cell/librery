@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { UserPlus, Search, Phone, MapPin, ClipboardList, BookOpen, Clock, CheckCircle2, Eye, RefreshCw, AlertCircle, Trash2, AlertTriangle, Database, Check, Camera, Upload } from "lucide-react";
+import { UserPlus, Search, Phone, MapPin, ClipboardList, BookOpen, Clock, CheckCircle2, Eye, RefreshCw, AlertCircle, Trash2, AlertTriangle, Database, Check, Camera, Upload, Edit3, Users } from "lucide-react";
 import { Member } from "../types";
 import { apiClient } from "../api";
 
@@ -379,51 +379,55 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
       
       {/* Upper header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200/80">
         <div>
-          <h2 className="text-xl font-bold text-[#22242A] flex items-center gap-2">৪. সদস্য ব্যবস্থাপনা (Member Management)</h2>
-          <p className="text-xs text-[#6B6B70]">লাইব্রেরিতে পাঠক সদস্য যোগ করুন এবং সদস্য আইডি অনুযায়ী বিস্তারিত ব্যবহারের ইতিহাস অডিট করুন</p>
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">সদস্য ব্যবস্থাপনা (Member Management)</h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+              {members.length} জন সদস্য
+            </span>
+          </div>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">পাঠক সদস্য তথ্য, আবেদন অনুমোদন এবং বিস্তারিত বই গ্রহণের ইতিহাস অডিট করুন</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-
           <button
             onClick={() => {
               setFormErr("");
               setIsAddOpen(true);
             }}
-            className="flex-1 sm:flex-none px-5 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white rounded-lg text-xs font-bold shadow-lg shadow-none flex items-center justify-center gap-1.5 cursor-pointer transition-transform"
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            <UserPlus size={14} />
-            ম্যানুয়াল নতুন সদস্য যোগ
+            <UserPlus size={16} />
+            <span>নতুন সদস্য যোগ</span>
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left column: Search and Sorted List */}
-        <div className="col-span-1 lg:col-span-5  p-4 rounded-2xl border border-[#E5E5EA] space-y-4 max-h-[80vh] flex flex-col">
+        {/* Left column: Search and Filtered Member List */}
+        <div className="col-span-1 lg:col-span-5 glass-panel p-4 space-y-3.5 max-h-[80vh] flex flex-col">
           
           <div className="relative shrink-0">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" />
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="নাম বা ফরম আইডি লিখে খুঁজুন..."
-              className="w-full text-xs pl-9 pr-4 py-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] placeholder:text-slate-600 focus:outline-none focus:border-[#22242A]"
+              className="w-full text-xs pl-10 pr-4 py-2.5 glass-input placeholder:text-slate-400"
             />
           </div>
 
           {/* Status Filter Tabs */}
-          <div className="flex gap-1 bg-white p-1 rounded-xl border border-[#E5E5EA] shrink-0 text-[9px] sm:text-[10px]">
+          <div className="flex gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 shrink-0 text-[10px] sm:text-xs">
             <button
               type="button"
               onClick={() => setStatusFilter("all")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "all"
-                  ? "bg-[#22242A] text-white shadow-sm"
-                  : "text-[#6B6B70] hover:text-[#22242A]"
+                  ? "bg-white text-indigo-600 shadow-xs"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               সকল ({members.length})
@@ -433,13 +437,13 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Pending")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer relative ${
                 statusFilter === "Pending"
-                  ? "bg-[#22242A] text-white shadow-sm"
-                  : "text-[#6B6B70] hover:text-[#FACC15]"
+                  ? "bg-white text-indigo-600 shadow-xs"
+                  : "text-slate-500 hover:text-amber-600"
               }`}
             >
               যাচাইাধীন ({members.filter(m => m.paymentStatus === "Pending").length})
               {members.some(m => m.paymentStatus === "Pending") && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#FACC15] rounded-full animate-ping"></span>
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping"></span>
               )}
             </button>
             <button
@@ -447,8 +451,8 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Paid")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Paid"
-                  ? "bg-[#22242A] text-white shadow-sm"
-                  : "text-[#6B6B70] hover:text-[#22242A]"
+                  ? "bg-white text-indigo-600 shadow-xs"
+                  : "text-slate-500 hover:text-emerald-600"
               }`}
             >
               সক্রিয় ({members.filter(m => (m.paymentStatus || "Paid") === "Paid").length})
@@ -458,19 +462,24 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               onClick={() => setStatusFilter("Unpaid")}
               className={`flex-1 py-1.5 text-center font-bold rounded-lg transition-all cursor-pointer ${
                 statusFilter === "Unpaid"
-                  ? "bg-[#22242A] text-white shadow-sm"
-                  : "text-[#6B6B70] hover:text-[#FF6B6B]"
+                  ? "bg-white text-indigo-600 shadow-xs"
+                  : "text-slate-500 hover:text-rose-600"
               }`}
             >
               বাতিল ({members.filter(m => m.paymentStatus === "Unpaid").length})
             </button>
           </div>
 
+          {/* Member List Items */}
           <div className="overflow-y-auto flex-1 space-y-2 pr-1">
             {loading ? (
-              <p className="text-center text-xs text-[#6B6B70] py-6">তালিকা লোড হচ্ছে...</p>
+              <div className="space-y-2 py-2">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-16 rounded-xl skeleton-shimmer"></div>
+                ))}
+              </div>
             ) : filteredList.length === 0 ? (
-              <p className="text-center text-xs text-[#6B6B70] py-6">কোনো সদস্য নিবন্ধিত পাওয়া যায়নি।</p>
+              <p className="text-center text-xs text-slate-400 py-10">কোনো সদস্য নিবন্ধিত পাওয়া যায়নি।</p>
             ) : (
               filteredList.map((m) => {
                 const isActive = activeProfile && activeProfile.member.formNumber === m.formNumber;
@@ -478,44 +487,70 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   <div
                     key={m.formNumber}
                     onClick={() => fetchProfile(m.formNumber)}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-150 ${isActive ? "bg-[#F5F3EF] border-[#E5E5EA]" : "bg-[#F5F3EF] border-[#E5E5EA] hover:border-[#E5E5EA]"}`}
+                    className={`p-3 rounded-2xl border text-left cursor-pointer transition-all duration-150 relative ${
+                      isActive 
+                        ? "bg-indigo-50/70 border-indigo-300 shadow-xs ring-1 ring-indigo-400/30" 
+                        : "bg-white/80 border-slate-200/80 hover:border-slate-300 hover:bg-white"
+                    }`}
                   >
-                    <div className="flex justify-between items-start gap-1">
-                      <h4 className="font-bold text-[#22242A] text-xs sm:text-sm">{m.name}</h4>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {m.photo ? (
+                          <img 
+                            src={m.photo} 
+                            alt={m.name} 
+                            className="w-8 h-8 rounded-full object-cover border border-slate-200 shrink-0" 
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200">
+                            {m.name ? m.name.charAt(0) : "স"}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-slate-900 text-xs sm:text-sm truncate">{m.name}</h4>
+                          <p className="text-[10px] text-slate-500 font-mono">{m.mobile}</p>
+                        </div>
+                      </div>
+
                       <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="font-mono text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
+                          #{m.formNumber}
+                        </span>
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             openEditModal(m);
                           }}
-                          className="text-[10px] bg-white border border-[#E5E5EA] px-2 py-0.5 rounded hover:bg-[#F5F3EF] hover:border-[#22242A] transition-colors flex items-center gap-1 text-[#22242A] font-medium"
+                          className="p-1 hover:bg-slate-100 text-slate-400 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
                           title="সম্পাদনা করুন"
                         >
-                          ✏️ এডিট
+                          <Edit3 size={13} />
                         </button>
-                        <span className="font-mono text-[10px] font-bold text-[#22242A] bg-[#F5F3EF] px-2 py-0.5 rounded">
-                          #{m.formNumber}
-                        </span>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center text-[10px] text-[#6B6B70] mt-1">
+
+                    <div className="flex justify-between items-center text-[10px] text-slate-500 mt-2 pt-2 border-t border-slate-100">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono">{m.mobile}</span>
-                        {(m.paymentMethod || m.paymentStatus) && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          (m.paymentStatus || "Paid") === "Paid" 
+                            ? "badge-paid" 
+                            : m.paymentStatus === "Pending" 
+                            ? "badge-pending" 
+                            : "badge-unpaid"
+                        }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${
                             (m.paymentStatus || "Paid") === "Paid" 
                               ? "bg-emerald-500" 
                               : m.paymentStatus === "Pending" 
-                              ? "bg-[#FACC15] animate-pulse" 
-                              : "bg-[#FF6B6B]"
-                          }`} title={
-                            (m.paymentStatus || "Paid") === "Paid" ? "পরিশোধিত" : m.paymentStatus === "Pending" ? "যাচাইাধীন/পেন্ডিং" : "অপরিশোধিত/বাতিল"
-                          } />
-                        )}
+                              ? "bg-amber-500 animate-pulse" 
+                              : "bg-rose-500"
+                          }`} />
+                          {(m.paymentStatus || "Paid") === "Paid" ? "অনুমোদিত" : m.paymentStatus === "Pending" ? "যাচাইাধীন" : "বাতিল"}
+                        </span>
                       </div>
                       {m.dob && (
-                        <span className="text-[#22242A] font-sans flex items-center gap-0.5">
+                        <span className="text-slate-400 font-sans flex items-center gap-1">
                           📅 {m.dob}
                         </span>
                       )}
@@ -527,72 +562,87 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
           </div>
         </div>
 
-        {/* Right column: member active detailed profile summaries */}
-        <div className="col-span-1 lg:col-span-7  p-5 rounded-2xl border border-[#E5E5EA] min-h-[40vh] flex flex-col justify-between">
+        {/* Right column: Member Active Detailed Profile Summary */}
+        <div className="col-span-1 lg:col-span-7 glass-panel p-6 min-h-[50vh] flex flex-col justify-between">
           
           {profileLoading ? (
-            <div className="py-24 flex flex-col items-center justify-center flex-1">
-              <RefreshCw className="animate-spin text-[#22242A] mb-2" size={24} />
-              <p className="text-xs text-[#6B6B70]">প্রোফাইল লোড হচ্ছে...</p>
+            <div className="py-24 flex flex-col items-center justify-center flex-1 space-y-3">
+              <RefreshCw className="animate-spin text-indigo-600" size={28} />
+              <p className="text-xs text-slate-500 font-medium">সদস্য প্রোফাইল লোড হচ্ছে...</p>
             </div>
           ) : !activeProfile ? (
-            <div className="py-24 text-center text-[#6B6B70] text-xs flex-1">
-              বিস্তারিত ব্যবহারের রেকর্ড এবং ব্যবহারের চক্রসমূহ দেখতে বামে সদস্য তালিকায় ক্লিক করুন।
+            <div className="py-28 text-center text-slate-400 text-xs flex-1 flex flex-col items-center justify-center gap-2">
+              <Users size={36} className="text-slate-300" />
+              <p className="text-slate-600 font-semibold">কোনো সদস্য নির্বাচিত হয়নি</p>
+              <p className="text-slate-400 text-[11px] max-w-xs">
+                বিস্তারিত প্রোফাইল ও লেনদেন হিস্ট্রি দেখতে বামের তালিকা থেকে যেকোনো সদস্যে ক্লিক করুন।
+              </p>
             </div>
           ) : (
-            <div className="space-y-5 flex-1 flex flex-col justify-between">
+            <div className="space-y-6 flex-1 flex flex-col justify-between">
               
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Member Profile Card Details Header */}
-                <div className="flex justify-between items-start border-b border-[#E5E5EA] pb-3 gap-2">
-                  <div className="flex items-start gap-3">
-                    {activeProfile.member.photo && (
-                      <div className="w-16 h-16 rounded-xl border border-[#E5E5EA] overflow-hidden shrink-0 bg-[#F5F3EF]">
+                <div className="flex flex-col sm:flex-row justify-between items-start border-b border-slate-100 pb-4 gap-4">
+                  <div className="flex items-start gap-4">
+                    {activeProfile.member.photo ? (
+                      <div className="w-16 h-16 rounded-2xl border border-slate-200 overflow-hidden shrink-0 bg-slate-100 shadow-sm">
                         <img src={activeProfile.member.photo} alt={activeProfile.member.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-2xl bg-indigo-600 text-white font-bold text-xl flex items-center justify-center shrink-0 shadow-sm">
+                        {activeProfile.member.name ? activeProfile.member.name.charAt(0) : "ম"}
                       </div>
                     )}
                     <div>
-                      <h3 className="text-lg font-bold text-[#22242A] flex items-center gap-1.5 flex-wrap">
+                      <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 flex-wrap">
                         {activeProfile.member.name}
-                        {activeProfile.member.nameEnglish && <span className="text-xs font-normal text-[#6B6B70] block font-mono mt-0.5">({activeProfile.member.nameEnglish})</span>}
+                        {activeProfile.member.nameEnglish && (
+                          <span className="text-xs font-normal text-slate-500 font-mono">
+                            ({activeProfile.member.nameEnglish})
+                          </span>
+                        )}
                       </h3>
                       
                       {activeProfile.member.currVillage ? (
-                        <div className="text-[10px] text-[#6B6B70] mt-1 space-y-0.5">
-                          <p className="flex items-center gap-1">
-                            <MapPin size={11} className="text-[#22242A] shrink-0" />
-                            <span className="text-[#6B6B70]">বর্তমান:</span> {activeProfile.member.currVillage}, ডাকঘর: {activeProfile.member.currPostOffice}, উপজেলা: {activeProfile.member.currUpazila}, জেলা: {activeProfile.member.currDistrict}
+                        <div className="text-[11px] text-slate-500 mt-1.5 space-y-0.5">
+                          <p className="flex items-center gap-1.5">
+                            <MapPin size={12} className="text-indigo-600 shrink-0" />
+                            <span><strong className="text-slate-700">বর্তমান:</strong> {activeProfile.member.currVillage}, ডাকঘর: {activeProfile.member.currPostOffice}, {activeProfile.member.currUpazila}, {activeProfile.member.currDistrict}</span>
                           </p>
-                          <p className="flex items-center gap-1">
-                            <MapPin size={11} className="text-[#22242A] shrink-0" />
-                            <span className="text-[#6B6B70]">স্থায়ী:</span> {activeProfile.member.permVillage}, ডাকঘর: {activeProfile.member.permPostOffice}, উপজেলা: {activeProfile.member.permUpazila}, জেলা: {activeProfile.member.permDistrict}
+                          <p className="flex items-center gap-1.5">
+                            <MapPin size={12} className="text-slate-400 shrink-0" />
+                            <span><strong className="text-slate-700">স্থায়ী:</strong> {activeProfile.member.permVillage}, ডাকঘর: {activeProfile.member.permPostOffice}, {activeProfile.member.permUpazila}, {activeProfile.member.permDistrict}</span>
                           </p>
                         </div>
                       ) : (
-                        <p className="text-[10px] text-[#6B6B70] mt-0.5 flex items-center gap-1">
-                          <MapPin size={11} className="text-[#22242A] shrink-0" />
-                          ঠিকানা: {activeProfile.member.address}
+                        <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
+                          <MapPin size={12} className="text-indigo-600 shrink-0" />
+                          <span>ঠিকানা: {activeProfile.member.address}</span>
                         </p>
                       )}
 
                       {activeProfile.member.dob && (
-                        <p className="text-[10px] text-[#6B6B70] mt-1 flex items-center gap-1">
-                          📅 জন্ম তারিখ: {activeProfile.member.dob}
+                        <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
+                          <span>📅 জন্ম তারিখ: {activeProfile.member.dob}</span>
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-[11px] font-bold font-mono text-[#22242A]">ID: #{activeProfile.member.formNumber}</p>
-                    <p className="text-[10px] text-[#6B6B70] mt-0.5 flex items-center justify-end gap-1 font-mono">
-                      <Phone size={10} className="text-[#22242A] shrink-0" />
+
+                  <div className="sm:text-right shrink-0">
+                    <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-100 inline-block">
+                      ID: #{activeProfile.member.formNumber}
+                    </span>
+                    <p className="text-xs text-slate-700 mt-1.5 flex items-center sm:justify-end gap-1.5 font-mono font-semibold">
+                      <Phone size={12} className="text-slate-400 shrink-0" />
                       {activeProfile.member.mobile}
                     </p>
                     {(activeProfile.member.educationInstitution || activeProfile.member.className || activeProfile.member.classRoll) && (
-                      <div className="text-[10px] text-[#22242A] mt-1 flex flex-col items-end">
+                      <div className="text-[11px] text-slate-600 mt-1.5 flex flex-col sm:items-end">
                         {activeProfile.member.educationInstitution && <span>🏫 {activeProfile.member.educationInstitution}</span>}
                         {(activeProfile.member.className || activeProfile.member.classRoll) && (
-                          <span>
+                          <span className="text-slate-500">
                             {activeProfile.member.className && `শ্রেণী: ${activeProfile.member.className}`}
                             {activeProfile.member.className && activeProfile.member.classRoll && " | "}
                             {activeProfile.member.classRoll && `রোল: ${activeProfile.member.classRoll}`}
@@ -610,43 +660,47 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                   activeProfile.member.bloodGroup || 
                   activeProfile.member.profession || 
                   activeProfile.member.educationQualification) && (
-                  <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl space-y-2">
-                    <span className="text-[10px] font-black text-[#22242A] uppercase tracking-wider block">📋 অতিরিক্ত তথ্য (Detailed Profile Info):</span>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[10px] bg-[#070b16]/60 p-2.5 rounded-lg border border-[#E5E5EA]">
+                  <div className="p-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl space-y-2.5">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      📋 অতিরিক্ত তথ্য (Detailed Profile Info):
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                       {activeProfile.member.fatherName && (
                         <div>
-                          <span className="text-[#6B6B70]">পিতার নাম:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.fatherName}</p>
+                          <span className="text-slate-400 text-[10px]">পিতার নাম:</span>
+                          <p className="font-semibold text-slate-800 mt-0.5">{activeProfile.member.fatherName}</p>
                         </div>
                       )}
                       {activeProfile.member.motherName && (
                         <div>
-                          <span className="text-[#6B6B70]">মাতার নাম:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.motherName}</p>
+                          <span className="text-slate-400 text-[10px]">মাতার নাম:</span>
+                          <p className="font-semibold text-slate-800 mt-0.5">{activeProfile.member.motherName}</p>
                         </div>
                       )}
                       {activeProfile.member.nidBirthReg && (
                         <div>
-                          <span className="text-[#6B6B70]">NID / জন্ম নিবন্ধন:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5 font-mono select-all bg-white px-1 py-0.5 rounded border border-[#E5E5EA] inline-block">{activeProfile.member.nidBirthReg}</p>
+                          <span className="text-slate-400 text-[10px]">NID / জন্ম নিবন্ধন:</span>
+                          <p className="font-bold text-slate-800 mt-0.5 font-mono select-all bg-white px-2 py-0.5 rounded border border-slate-200 inline-block">
+                            {activeProfile.member.nidBirthReg}
+                          </p>
                         </div>
                       )}
                       {activeProfile.member.bloodGroup && (
                         <div>
-                          <span className="text-[#6B6B70]">রক্তের গ্রুপ:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.bloodGroup}</p>
+                          <span className="text-slate-400 text-[10px]">রক্তের গ্রুপ:</span>
+                          <p className="font-bold text-rose-600 mt-0.5">{activeProfile.member.bloodGroup}</p>
                         </div>
                       )}
                       {activeProfile.member.profession && (
                         <div>
-                          <span className="text-[#6B6B70]">পেশা:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.profession}</p>
+                          <span className="text-slate-400 text-[10px]">পেশা:</span>
+                          <p className="font-semibold text-slate-800 mt-0.5">{activeProfile.member.profession}</p>
                         </div>
                       )}
                       {activeProfile.member.educationQualification && (
                         <div>
-                          <span className="text-[#6B6B70]">শিক্ষাগত যোগ্যতা:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.educationQualification}</p>
+                          <span className="text-slate-400 text-[10px]">শিক্ষাগত যোগ্যতা:</span>
+                          <p className="font-semibold text-slate-800 mt-0.5">{activeProfile.member.educationQualification}</p>
                         </div>
                       )}
                     </div>
@@ -655,33 +709,35 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                 {/* Payment & Member Approval Information */}
                 {(activeProfile.member.paymentMethod || activeProfile.member.paymentStatus) && (
-                  <div className="p-3 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl space-y-2.5">
+                  <div className="p-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-[#6B6B70] uppercase tracking-wider">💳 মেম্বারশিপ নিবন্ধন ফি ও অনুমোদন বিবরণ:</span>
-                      <span className={`text-[9px] font-black px-2 py-0.5 rounded border ${
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        💳 মেম্বারশিপ নিবন্ধন ফি ও অনুমোদন বিবরণ:
+                      </span>
+                      <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                         (activeProfile.member.paymentStatus || "Paid") === "Paid"
-                          ? "bg-[#E5E5EA]/60 border-[#E5E5EA] text-[#22242A]"
+                          ? "badge-paid"
                           : activeProfile.member.paymentStatus === "Pending"
-                          ? "bg-[#22242A] border-[#22242A] text-[#FACC15] animate-pulse"
-                          : "bg-[#FF6B6B]/10 border-[#FF6B6B] text-[#FF6B6B]"
+                          ? "badge-pending"
+                          : "badge-unpaid"
                       }`}>
                         {(activeProfile.member.paymentStatus || "Paid") === "Paid" ? "● অনুমোদিত ও সক্রিয় (Paid)" : activeProfile.member.paymentStatus === "Pending" ? "● যাচাইাধীন (Pending)" : "● অচল/বাতিল (Unpaid)"}
                       </span>
                     </div>
                     
                     {activeProfile.member.paymentMethod && (
-                      <div className="grid grid-cols-3 gap-2.5 text-[10px] bg-white p-2 rounded-lg border border-[#E5E5EA]">
+                      <div className="grid grid-cols-3 gap-2.5 text-xs bg-white p-3 rounded-xl border border-slate-200">
                         <div>
-                          <span className="text-[#6B6B70] font-medium">পেমেন্ট মাধ্যম:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5">{activeProfile.member.paymentMethod}</p>
+                          <span className="text-slate-400 text-[10px] font-medium">পেমেন্ট মাধ্যম:</span>
+                          <p className="font-bold text-slate-800 mt-0.5">{activeProfile.member.paymentMethod}</p>
                         </div>
                         <div>
-                          <span className="text-[#6B6B70] font-medium">প্রেরক মোবাইল:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5 font-mono">{activeProfile.member.senderNumber || "N/A"}</p>
+                          <span className="text-slate-400 text-[10px] font-medium">প্রেরক মোবাইল:</span>
+                          <p className="font-bold text-slate-800 mt-0.5 font-mono">{activeProfile.member.senderNumber || "N/A"}</p>
                         </div>
                         <div>
-                          <span className="text-[#6B6B70] font-medium">ট্রানজেকশন ID:</span>
-                          <p className="font-bold text-[#22242A] mt-0.5 font-mono select-all bg-[#F5F3EF] px-1 py-0.5 rounded border border-[#E5E5EA] inline-block" title="কপি করতে ডাবল ক্লিক করুন">
+                          <span className="text-slate-400 text-[10px] font-medium">ট্রানজেকশন ID:</span>
+                          <p className="font-bold text-slate-800 mt-0.5 font-mono select-all bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 inline-block" title="কপি করতে ডাবল ক্লিক করুন">
                             {activeProfile.member.transactionId || "N/A"}
                           </p>
                         </div>
@@ -689,17 +745,17 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     )}
                     
                     {/* Admin actions to update payment status / approve member */}
-                    <div className="pt-2.5 border-t border-[#E5E5EA] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="text-[9px] text-[#6B6B70] flex flex-col leading-relaxed max-w-[280px]">
-                        <span className="font-extrabold text-[#22242A] text-[10px]">অ্যাডমিন অ্যাকশন (সদস্য অনুমোদন):</span>
+                    <div className="pt-3 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="text-[10px] text-slate-500 flex flex-col leading-relaxed max-w-[280px]">
+                        <span className="font-bold text-slate-800 text-xs">অ্যাডমিন অ্যাকশন (সদস্য অনুমোদন):</span>
                         {activeProfile.member.paymentStatus === "Pending" && (
-                          <span>অনলাইন সদস্য আবেদনটি যাচাই করে মেম্বারশিপ সক্রিয় করতে ডানপাশের অনুমোদন বাটনে ক্লিক করুন।</span>
+                          <span>অনলাইন আবেদনটি যাচাই করে সদস্যপদ সক্রিয় করতে অনুমোদন বাটনে ক্লিক করুন।</span>
                         )}
                         {(activeProfile.member.paymentStatus || "Paid") === "Paid" && (
-                          <span className="text-[#22242A] font-semibold">সদস্যটি বর্তমানে অনুমোদিত এবং সচল রয়েছে। উনাকে সাময়িকভাবে অচল করতে চাইলে ডানপাশের বাটন চাপুন।</span>
+                          <span className="text-emerald-700 font-semibold">সদস্যটি বর্তমানে অনুমোদিত এবং সচল রয়েছে।</span>
                         )}
                         {activeProfile.member.paymentStatus === "Unpaid" && (
-                          <span className="text-[#FF6B6B] font-semibold">সদস্যটি অচল বা বাতিল অবস্থায় আছে। সচল করতে ডানপাশের এপ্রুভ বাটনটি চাপুন।</span>
+                          <span className="text-rose-600 font-semibold">সদস্যটি স্থগিত বা বাতিল অবস্থায় রয়েছে।</span>
                         )}
                       </div>
 
@@ -708,16 +764,16 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Paid")}
-                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 bg-[#F5F3EF] hover:from-emerald-700 hover:bg-[#F5F3EF] text-[#22242A] rounded-lg text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 shadow-md shadow-emerald-950/20"
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
                           >
-                            <CheckCircle2 size={12} />
+                            <CheckCircle2 size={13} />
                             সদস্য এপ্রুভ করুন
                           </button>
                         ) : (
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Unpaid")}
-                            className="px-3 py-1.5 bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#FF6B6B] hover:bg-[#F5F3EF] rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                            className="px-3.5 py-1.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1"
                           >
                             স্থগিত/বাতিল করুন
                           </button>
@@ -727,9 +783,9 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                           <button
                             type="button"
                             onClick={() => handleUpdatePaymentStatus(activeProfile.member.formNumber, "Unpaid")}
-                            className="px-2 py-1.5 bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] text-[#6B6B70] hover:text-[#22242A] rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                            className="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:text-rose-600 rounded-xl text-xs font-medium transition-all cursor-pointer flex items-center gap-1"
                           >
-                            আবেদন রিজেক্ট
+                            আবেদন বাতিল
                           </button>
                         )}
                       </div>
@@ -739,36 +795,38 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
                 {/* Dashboard metric summary counters */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA] text-center">
-                    <p className="text-[10px] text-[#6B6B70] uppercase tracking-widest font-bold">মোট বই লেনদেন সংখ্যা</p>
-                    <p className="text-2xl font-extrabold text-[#22242A] mt-1 font-mono">{activeProfile.rentCount} বার</p>
+                  <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/80 text-center">
+                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">মোট বই লেনদেন সংখ্যা</p>
+                    <p className="text-2xl font-extrabold text-slate-900 mt-1 font-mono">{activeProfile.rentCount} বার</p>
                   </div>
-                  <div className="p-3 bg-[#F5F3EF] rounded-xl border border-[#E5E5EA] text-center">
-                    <p className="text-[10px] text-[#6B6B70] uppercase tracking-widest font-bold">বর্তমানে নেওয়া বই (Issued)</p>
-                    <p className="text-2xl font-extrabold text-[#22242A] mt-1 font-mono">{activeProfile.activeRents.length} টি</p>
+                  <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/80 text-center">
+                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">বর্তমানে নেওয়া বই (Issued)</p>
+                    <p className="text-2xl font-extrabold text-indigo-600 mt-1 font-mono">{activeProfile.activeRents.length} টি</p>
                   </div>
                 </div>
 
-                {/* Active Books and histories block */}
-                <div className="space-y-3 pt-2">
+                {/* Active Borrows & History */}
+                <div className="space-y-4 pt-1">
                   
-                  {/* Presently Active borrows */}
+                  {/* Presently Active Borrows */}
                   <div>
-                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5 mb-1.5 uppercase">
-                      <BookOpen size={13} className="text-[#22242A]" />
+                    <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5 mb-2 uppercase">
+                      <BookOpen size={14} className="text-indigo-600" />
                       বর্তমানে ধারকৃত বইসমূহ ({activeProfile.activeRents.length})
                     </h4>
                     {activeProfile.activeRents.length === 0 ? (
-                      <p className="text-[11px] text-[#6B6B70] py-2 bg-[#F5F3EF] p-3 rounded">এই মুহূর্তে কোনো বই ইস্যু করা নাই।</p>
+                      <p className="text-xs text-slate-400 py-3 bg-slate-50 rounded-xl px-4 border border-slate-100">
+                        এই মুহূর্তে কোনো বই ইস্যু করা নাই।
+                      </p>
                     ) : (
                       <div className="space-y-2">
                         {activeProfile.activeRents.map((item: any) => (
-                          <div key={item.id} className="p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center text-xs">
+                          <div key={item.id} className="p-3 bg-slate-50/70 border border-slate-200/80 rounded-xl flex justify-between items-center text-xs">
                             <div>
-                              <p className="font-bold text-[#22242A] mb-0.5">{item.bookName}</p>
-                              <p className="text-[9px] text-[#22242A] font-mono italic">কোড: {item.bookCode} | ইস্যু ডেট: {item.issueDate}</p>
+                              <p className="font-bold text-slate-900 mb-0.5">{item.bookName}</p>
+                              <p className="text-[10px] text-slate-500 font-mono">কোড: {item.bookCode} | ইস্যু ডেট: {item.issueDate}</p>
                             </div>
-                            <span className="text-[10px] text-[#FF6B6B] font-bold font-mono bg-[#F5F3EF] border border-[#E5E5EA] px-2 py-0.5 rounded">
+                            <span className="text-[10px] text-rose-600 font-bold font-mono bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">
                               ফেরত দিন: {item.returnDate}
                             </span>
                           </div>
@@ -777,24 +835,26 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     )}
                   </div>
 
-                  {/* Previous books return lists */}
-                  <div className="pt-2">
-                    <h4 className="text-xs font-bold text-[#22242A] flex items-center gap-1.5 mb-1.5 uppercase">
-                      <CheckCircle2 size={13} className="text-[#22242A]" />
+                  {/* Previous books return list */}
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5 mb-2 uppercase">
+                      <CheckCircle2 size={14} className="text-emerald-600" />
                       ফেরত দেওয়া বইয়ের ইতিহাস ({activeProfile.returnedHistory.length})
                     </h4>
                     {activeProfile.returnedHistory.length === 0 ? (
-                      <p className="text-[11px] text-[#6B6B70] py-2 bg-[#F5F3EF] p-3 rounded">ইতিপূর্বে বই ফেরত দেওয়ার কোনো ইতিহাস নেই।</p>
+                      <p className="text-xs text-slate-400 py-3 bg-slate-50 rounded-xl px-4 border border-slate-100">
+                        ইতিপূর্বে বই ফেরত দেওয়ার কোনো ইতিহাস নেই।
+                      </p>
                     ) : (
                       <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
                         {activeProfile.returnedHistory.map((item: any) => (
-                          <div key={item.id} className="p-2.5 bg-[#F5F3EF] border border-[#E5E5EA] rounded-xl flex justify-between items-center text-xs">
+                          <div key={item.id} className="p-3 bg-slate-50/70 border border-slate-200/80 rounded-xl flex justify-between items-center text-xs">
                             <div>
-                              <p className="font-semibold text-[#22242A] mb-0.5">{item.bookName}</p>
-                              <p className="text-[9px] text-[#6B6B70] font-mono">কোড: {item.bookCode} | ইস্যু: {item.issueDate}</p>
+                              <p className="font-semibold text-slate-800 mb-0.5">{item.bookName}</p>
+                              <p className="text-[10px] text-slate-500 font-mono">কোড: {item.bookCode} | ইস্যু: {item.issueDate}</p>
                             </div>
                             <div className="text-right">
-                              <span className="text-[9px] text-[#22242A] font-semibold font-mono bg-[#E5E5EA]/60 border border-[#E5E5EA] px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] text-slate-700 font-semibold font-mono bg-white border border-slate-200 px-2 py-0.5 rounded-md">
                                 ফেরত এসেছে: {item.returnedAt || item.returnDate}
                               </span>
                             </div>
@@ -809,28 +869,28 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
               </div>
 
               {/* Slips preview triggers */}
-              <div className="pt-4 border-t border-[#E5E5EA] flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div className="pt-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div className="flex gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => openEditModal(activeProfile.member)}
-                    className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#22242A] px-4 py-2.5 rounded-lg text-[#22242A] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                    className="flex items-center gap-1.5 text-xs font-bold bg-white border border-slate-200 hover:border-indigo-300 px-4 py-2.5 rounded-xl text-slate-700 hover:text-indigo-600 cursor-pointer transition-colors w-full sm:w-auto justify-center shadow-xs"
                   >
                     ✏️ তথ্য সম্পাদনা
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="flex items-center gap-1.5 text-xs font-bold bg-white border border-[#E5E5EA] hover:border-[#E5E5EA] hover:text-[#FF6B6B] px-4 py-2.5 rounded-lg text-[#6B6B70] hover:bg-[#F5F3EF] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                    className="flex items-center gap-1.5 text-xs font-bold bg-white border border-slate-200 hover:border-rose-300 hover:text-rose-600 px-4 py-2.5 rounded-xl text-slate-500 cursor-pointer transition-colors w-full sm:w-auto justify-center shadow-xs"
                   >
-                    <Trash2 size={12} />
-                    সদস্য মুছে ফেলুন
+                    <Trash2 size={13} />
+                    সদস্য মুছুন
                   </button>
                 </div>
                 <button
                   onClick={() => onPreviewMemberSlip(activeProfile)}
-                  className="flex items-center gap-1.5 text-xs font-bold bg-[#0e1629] border border-[#E5E5EA] hover:border-[#22242A] px-4 py-2.5 rounded-lg text-white hover:bg-[#1f293d] cursor-pointer transition-colors w-full sm:w-auto justify-center"
+                  className="flex items-center gap-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl cursor-pointer transition-all w-full sm:w-auto justify-center shadow-sm active:scale-95"
                 >
-                  <Eye size={12} />
-                  গ্রাহক স্লিপ চোখের প্রাকদর্শন ও PDF
+                  <Eye size={14} />
+                  গ্রাহক স্লিপ ও আইডি কার্ড
                 </button>
               </div>
 
@@ -1670,20 +1730,26 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
 
       {/* MEMBER DELETE CONFIRMATION MODAL */}
       {showDeleteConfirm && activeProfile && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-6 rounded-2xl w-full max-w-sm shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2">
-              <AlertTriangle className="text-[#FF6B6B]" size={18} />
-              সদস্য মুছে ফেলার সতর্কতা
-            </h3>
-            <p className="text-xs text-[#22242A] leading-relaxed">
-              আপনি কি নিশ্চিতভাবে <span className="font-bold text-[#22242A]">'{activeProfile.member.name}'</span> (ID: #{activeProfile.member.formNumber}) সদস্যকে মুছে ফেলতে চান? উনার ব্যবহারের সব লেনদেন রেকর্ড ড্যাশবোর্ড থেকে মুছে যাবে।
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white border border-slate-200 p-6 sm:p-7 rounded-3xl w-full max-w-sm shadow-2xl space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle size={20} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">সদস্য মুছে ফেলার সতর্কতা</h3>
+                <p className="text-xs text-slate-500">ID: #{activeProfile.member.formNumber}</p>
+              </div>
+            </div>
+            
+            <p className="text-xs text-slate-600 leading-relaxed">
+              আপনি কি নিশ্চিতভাবে <strong className="text-slate-900">'{activeProfile.member.name}'</strong> সদস্যকে মুছে ফেলতে চান? উনার ব্যবহারের সব লেনদেন রেকর্ড সিস্টেম থেকে স্থায়ীভাবে অপসারিত হবে।
             </p>
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 bg-[#F5F3EF] border border-slate-705 text-[#22242A] rounded-lg hover:bg-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
               >
                 বাতিল
               </button>
@@ -1701,7 +1767,7 @@ export default function MemberManager({ onRefreshStats, onPreviewMemberSlip, onP
                     setShowDeleteConfirm(false);
                   }
                 }}
-                className="px-5 py-2 bg-[#F5F3EF] hover:bg-[#F5F3EF] text-[#22242A] rounded-lg text-xs font-bold cursor-pointer"
+                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold cursor-pointer transition-all shadow-sm active:scale-95"
               >
                 হ্যাঁ, মুছে ফেলুন
               </button>

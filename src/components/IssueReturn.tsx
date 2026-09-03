@@ -228,18 +228,35 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
   return (
     <div className="space-y-6">
       
-      {/* Tab Select Block */}
-      <div className="flex flex-wrap border-b border-[#E5E5EA]">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200/80">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">বই লেনদেন (Issue & Return)</h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+              {activeIssues.length} টি সক্রিয় ঋণ
+            </span>
+          </div>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">বই ধার প্রদান, ফেরত গ্রহণ এবং সময়সীমা সমন্বয় পরিচালনা করুন</p>
+        </div>
+      </div>
+
+      {/* Modern Segmented Sub Navigation Control */}
+      <div className="bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80 flex flex-wrap gap-1.5">
         <button
           onClick={() => {
             setActiveSubTab("issue");
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "issue" ? "border-[#E5E5EA] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-2.5 px-4 text-xs md:text-sm font-bold flex items-center justify-center gap-2 rounded-xl cursor-pointer transition-all ${
+            activeSubTab === "issue" 
+              ? "bg-white text-indigo-600 shadow-xs" 
+              : "text-slate-600 hover:text-slate-900"
+          }`}
         >
           <BookOpen size={16} />
-          বই ইস্যু করুন (Checkout)
+          <span>বই ধার প্রদান (Checkout)</span>
         </button>
 
         <button
@@ -248,10 +265,14 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "return" ? "border-[#22242A] text-[#22242A] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-2.5 px-4 text-xs md:text-sm font-bold flex items-center justify-center gap-2 rounded-xl cursor-pointer transition-all ${
+            activeSubTab === "return" 
+              ? "bg-white text-indigo-600 shadow-xs" 
+              : "text-slate-600 hover:text-slate-900"
+          }`}
         >
           <CheckCircle2 size={16} />
-          বই রিটার্ন গ্রহণ (Checkin)
+          <span>বই রিটার্ন গ্রহণ (Checkin)</span>
         </button>
 
         <button
@@ -260,10 +281,14 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "time" ? "border-[#E5E5EA] text-[#FACC15] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-2.5 px-4 text-xs md:text-sm font-bold flex items-center justify-center gap-2 rounded-xl cursor-pointer transition-all ${
+            activeSubTab === "time" 
+              ? "bg-white text-indigo-600 shadow-xs" 
+              : "text-slate-600 hover:text-slate-900"
+          }`}
         >
           <ArrowRightLeft size={16} />
-          সময় বৃদ্ধি ও হ্রাস
+          <span>সময় বৃদ্ধি ও হ্রাস</span>
         </button>
 
         <button
@@ -272,24 +297,28 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             setOpError("");
             setOpSuccess("");
           }}
-          className={`flex-1 min-w-[140px] py-3 text-xs md:text-sm font-bold flex items-center justify-center gap-2 border-b-2 cursor-pointer transition-all ${activeSubTab === "active" ? "border-[#E5E5EA] text-[#2266FF] bg-[#F5F3EF]" : "border-transparent text-[#6B6B70] hover:text-[#22242A]"}`}
+          className={`flex-1 min-w-[140px] py-2.5 px-4 text-xs md:text-sm font-bold flex items-center justify-center gap-2 rounded-xl cursor-pointer transition-all ${
+            activeSubTab === "active" 
+              ? "bg-white text-indigo-600 shadow-xs" 
+              : "text-slate-600 hover:text-slate-900"
+          }`}
         >
           <List size={16} />
-          ইস্যুকৃত বইসমূহ (Issued Books)
+          <span>ইস্যুকৃত বইসমূহ ({activeIssues.length})</span>
         </button>
       </div>
 
       {/* Operation Alert Statuses */}
       {opError && (
-        <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#FF6B6B] flex items-center gap-3 animate-pulse">
-          <AlertTriangle size={16} className="text-[#FF6B6B] shrink-0" />
-          <span>{opError}</span>
+        <div className="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-xs text-rose-700 flex items-center gap-3 animate-pulse shadow-xs">
+          <AlertTriangle size={18} className="text-rose-600 shrink-0" />
+          <span className="font-semibold">{opError}</span>
         </div>
       )}
 
       {opSuccess && (
-        <div className="bg-[#E5E5EA]/40 border border-[#E5E5EA] p-4 rounded-xl text-xs text-[#22242A] flex items-center gap-3">
-          <CheckCircle2 size={16} className="text-[#22242A] shrink-0" />
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-xs text-emerald-800 flex items-center gap-3 shadow-xs font-medium">
+          <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
           <span>{opSuccess}</span>
         </div>
       )}
@@ -300,15 +329,15 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* 1. Borrower Customer Information */}
-            <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
-              <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
-                <UserCheck size={16} className="text-[#22242A]" />
-                গ্রাহক সদস্যের তথ্যাদি
+            <div className="glass-panel p-6 space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                <UserCheck size={18} className="text-indigo-600" />
+                <span>গ্রাহক সদস্যের তথ্যাদি</span>
               </h3>
 
               {/* Form text input with dynamic AutoSuggest overlay */}
               <div className="relative">
-                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">সদস্যের নাম বা ফরম নাম্বার লিখুন *</label>
+                <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">সদস্যের নাম বা ফরম নাম্বার লিখুন *</label>
                 <input
                   type="text"
                   value={issueMemName}
@@ -318,30 +347,30 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                   }}
                   onFocus={() => setShowMemSug(true)}
                   placeholder="খুঁজতে টাইপ করুন..."
-                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] placeholder:text-slate-600 focus:outline-none focus:border-[#22242A]"
+                  className="w-full text-xs p-3 glass-input"
                   required
                 />
                 
                 {/* Auto Suggestions dropdown */}
                 {showMemSug && memSuggestions.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#E5E5EA] rounded-lg max-h-40 overflow-y-auto shadow-2xl z-20 divide-y divide-purple-500/5">
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl max-h-48 overflow-y-auto shadow-2xl z-20 divide-y divide-slate-100">
                     {memSuggestions.map(mem => (
                       <div
                         key={mem.formNumber}
                         onClick={() => fillMember(mem)}
-                        className="p-2.5 hover:bg-[#F5F3EF] text-xs text-[#22242A] cursor-pointer flex justify-between items-center"
+                        className="p-3 hover:bg-indigo-50/50 text-xs text-slate-800 cursor-pointer flex justify-between items-center transition-colors"
                       >
                         <div>
-                          <p className="font-bold text-[#22242A]">{mem.name}</p>
-                          <p className="text-[10px] text-[#6B6B70]">মোবাইল: {mem.mobile}</p>
+                          <p className="font-bold text-slate-900">{mem.name}</p>
+                          <p className="text-[10px] text-slate-500 font-mono mt-0.5">মোবাইল: {mem.mobile}</p>
                         </div>
-                        <span className="font-mono text-[#22242A] font-semibold text-[10px] bg-[#F5F3EF] px-1.5 py-0.5 rounded">
+                        <span className="font-mono text-indigo-700 font-bold text-[10px] bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
                           #{mem.formNumber}
                         </span>
                       </div>
                     ))}
-                    <div className="p-1 px-2 text-[9px] text-[#22242A] text-right bg-[#F5F3EF]">
-                      মিল থাকলে ক্লিক করুন, না থাকলে টাইপ শেষ করুন (স্বয়ংক্রিয় নতুন মেম্বার তৈরি হবে)
+                    <div className="p-2 text-[10px] text-slate-400 text-center bg-slate-50 border-t border-slate-100">
+                      মিল থাকলে ক্লিক করুন, না থাকলে টাইপ শেষ করুন
                     </div>
                   </div>
                 )}
@@ -349,7 +378,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">সদস্য ফরম নাম্বার (ID) *</label>
+                  <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">সদস্য ফরম নাম্বার (ID) *</label>
                   <input
                     type="text"
                     value={issueMemForm}
@@ -358,46 +387,46 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                       setShowMemSug(true);
                     }}
                     placeholder="যেমন: M-101"
-                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                    className="w-full text-xs p-3 glass-input font-mono uppercase"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">মোবাইল নম্বর *</label>
+                  <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">মোবাইল নম্বর *</label>
                   <input
                     type="text"
                     value={issueMemMobile}
                     onChange={(e) => setIssueMemMobile(e.target.value)}
                     placeholder="01712xxxxxx"
-                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                    className="w-full text-xs p-3 glass-input font-mono"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">গ্রাহকের ঠিকানা</label>
+                <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">গ্রাহকের ঠিকানা</label>
                 <input
                   type="text"
                   value={issueMemAddress}
                   onChange={(e) => setIssueMemAddress(e.target.value)}
-                  placeholder="ধামন্ডী, ঢাকা"
-                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                  placeholder="ঠিকানা লিখুন..."
+                  className="w-full text-xs p-3 glass-input"
                 />
               </div>
 
             </div>
 
             {/* 2. Target Book Information to issue */}
-            <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA] space-y-4">
-              <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
-                <BookOpen size={16} className="text-[#22242A]" />
-                বইয়ের কোড ও বিবরণ
+            <div className="glass-panel p-6 space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                <BookOpen size={18} className="text-indigo-600" />
+                <span>বইয়ের কোড ও বিবরণ</span>
               </h3>
 
               {/* Book search input with AutoSuggest */}
               <div className="relative">
-                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বই কোড বা নাম লিখুন *</label>
+                <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">বই কোড বা নাম লিখুন *</label>
                 <input
                   type="text"
                   value={issueBookCode}
@@ -407,24 +436,24 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                   }}
                   onFocus={() => setShowBookSug(true)}
                   placeholder="যেমন: BOK-101..."
-                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                  className="w-full text-xs p-3 glass-input font-mono uppercase"
                   required
                 />
 
                 {/* Auto Suggestions dropdown */}
                 {showBookSug && bookSuggestions.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#E5E5EA] rounded-lg max-h-40 overflow-y-auto shadow-2xl z-20 divide-y divide-purple-500/5">
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl max-h-48 overflow-y-auto shadow-2xl z-20 divide-y divide-slate-100">
                     {bookSuggestions.map(book => (
                       <div
                         key={book.id}
                         onClick={() => fillBook(book)}
-                        className="p-2.5 hover:bg-[#F5F3EF] text-xs text-[#22242A] cursor-pointer flex justify-between items-center"
+                        className="p-3 hover:bg-indigo-50/50 text-xs text-slate-800 cursor-pointer flex justify-between items-center transition-colors"
                       >
                         <div className="min-w-0 pr-2">
-                          <p className="font-bold text-[#22242A] truncate text-xs">{book.name}</p>
-                          <p className="text-[10px] text-[#6B6B70] truncate">{book.author}</p>
+                          <p className="font-bold text-slate-900 truncate text-xs">{book.name}</p>
+                          <p className="text-[10px] text-slate-500 truncate mt-0.5">{book.author}</p>
                         </div>
-                        <span className={`shrink-0 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded ${book.status === "Available" ? "bg-[#F5F3EF] text-[#22242A]" : "bg-[#F5F3EF] text-[#FF6B6B]"}`}>
+                        <span className={`shrink-0 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ${book.status === "Available" ? "badge-available" : "badge-issued"}`}>
                           {book.code} ({book.status === "Available" ? "উপলব্ধ" : "ধারকৃত"})
                         </span>
                       </div>
@@ -434,36 +463,36 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
               </div>
 
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বইয়ের নাম *</label>
+                <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">বইয়ের নাম *</label>
                 <input
                   type="text"
                   value={issueBookName}
                   onChange={(e) => setIssueBookName(e.target.value)}
                   placeholder="যেমন: লালসালু"
-                  className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                  className="w-full text-xs p-3 glass-input"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">লেখক</label>
+                  <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">লেখক</label>
                   <input
                     type="text"
                     value={issueBookAuthor}
                     onChange={(e) => setIssueBookAuthor(e.target.value)}
-                    placeholder="সৈয়দ ওয়ালীউল্লাহ"
-                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                    placeholder="লেখক..."
+                    className="w-full text-xs p-3 glass-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">প্রকাশনী</label>
+                  <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">প্রকাশনী</label>
                   <input
                     type="text"
                     value={issueBookPublisher}
                     onChange={(e) => setIssueBookPublisher(e.target.value)}
-                    placeholder="রেনেসাঁ পাবলিশার্স"
-                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                    placeholder="প্রকাশনী..."
+                    className="w-full text-xs p-3 glass-input"
                   />
                 </div>
               </div>
@@ -472,22 +501,26 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
           </div>
 
           {/* 3. Date settings and submit */}
-          <div className="glass-panel p-5 rounded-2xl border border-[#E5E5EA]">
-            <h3 className="text-sm font-bold text-[#22242A] flex items-center gap-2 mb-4 border-b border-[#E5E5EA] pb-2">
-              <CalendarDays size={16} className="text-[#22242A]" />
-              বই ফেরত দেওয়ার সময়সীমা নির্ধারণ (Time Offset & Return Date)
+          <div className="glass-panel p-6">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
+              <CalendarDays size={18} className="text-indigo-600" />
+              <span>বই ফেরত দেওয়ার সময়সীমা নির্ধারণ (Time Offset & Return Date)</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
               <div>
-                <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">ফেরত লিজ সময় কোটা দিন</label>
-                <div className="grid grid-cols-5 gap-1.5">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 mb-2">ফেরত লিজ সময় কোটা দিন</label>
+                <div className="grid grid-cols-5 gap-2">
                   {["1", "2", "7", "10", "manual"].map((opt) => (
                     <button
                       key={opt}
                       type="button"
                       onClick={() => setReturnOption(opt)}
-                      className={`py-2 text-[11px] font-bold rounded-lg cursor-pointer transition-all ${returnOption === opt ? "bg-[#F5F3EF] text-white font-semibold ring-2 ring-[#E5E5EA]" : "bg-white border border-[#E5E5EA] text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                      className={`py-2 px-1 text-xs font-bold rounded-xl cursor-pointer transition-all ${
+                        returnOption === opt 
+                          ? "bg-indigo-600 text-white shadow-xs" 
+                          : "bg-slate-100/90 text-slate-600 hover:bg-slate-200/80"
+                      }`}
                     >
                       {opt === "manual" ? "ম্যানুয়াল" : `${opt} দিন`}
                     </button>
@@ -497,35 +530,35 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
               {/* Manual Date Input Picker */}
               {returnOption === "manual" ? (
-                <div className="animate-in fade-in slide-in-from-bottom-2 duration-120">
-                  <label className="block text-[10px] uppercase font-bold text-[#FF6B6B] mb-1">ফেরত তারিখ সিলেক্ট করুন *</label>
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-150">
+                  <label className="block text-[11px] uppercase font-bold text-rose-600 mb-1.5">ফেরত তারিখ সিলেক্ট করুন *</label>
                   <input
                     type="date"
                     value={manualReturnDate}
                     onChange={(e) => setManualReturnDate(e.target.value)}
-                    className="w-full text-xs p-2.5 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#E5E5EA] font-mono"
+                    className="w-full text-xs p-3 glass-input font-mono"
                     required
                   />
                 </div>
               ) : (
-                <div className="text-xs text-[#6B6B70] py-2">
+                <div className="text-xs text-slate-500 py-2">
                   ফেরত প্রদানের শেষ তারিখটি আজ থেকে হিসাব করে সিস্টেমের ডাটাবেইজে স্বয়ংক্রিয় শিডিউলে সংযুক্ত হবে।
                 </div>
               )}
             </div>
 
-            <div className="border-t border-[#E5E5EA] mt-5 pt-4 flex justify-end">
+            <div className="border-t border-slate-100 mt-6 pt-4 flex justify-end">
               <button
                 type="submit"
                 disabled={opLoading}
-                className="w-full sm:w-auto px-8 py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl shadow-lg shadow-none cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md cursor-pointer flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
               >
                 {opLoading ? (
-                  <RefreshCw className="animate-spin" size={14} />
+                  <RefreshCw className="animate-spin" size={15} />
                 ) : (
-                  <CheckCircle2 size={14} />
+                  <CheckCircle2 size={15} />
                 )}
-                লেনদেন সফল করুন ও বই ইস্যু করুন
+                <span>লেনদেন সফল করুন ও বই ইস্যু করুন</span>
               </button>
             </div>
           </div>
@@ -534,31 +567,34 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
       {/* --- FORM SUBTAB B: RETURN BOOK --- */}
       {activeSubTab === "return" && (
-        <form onSubmit={handleReturnSubmit} className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] max-w-xl mx-auto space-y-4">
-          <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
-            <CheckCircle2 size={18} className="text-[#22242A]" />
-            বই লাইব্রেরিতে ফেরত গ্রহণ ও রিসেট প্যানেল
-          </h3>
+        <form onSubmit={handleReturnSubmit} className="glass-panel p-7 max-w-xl mx-auto space-y-5">
+          <div className="border-b border-slate-100 pb-3">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <CheckCircle2 size={20} className="text-emerald-600" />
+              <span>বই লাইব্রেরিতে ফেরত গ্রহণ (Return Check-in)</span>
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">পাঠকের কাছ থেকে বই গ্রহণ করে তাকে পুনরায় উপলব্ধ তালিকায় সংযুক্ত করুন</p>
+          </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">বই কোড স্ক্যান অথবা কী-ইন করুন *</label>
+            <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">বই কোড স্ক্যান অথবা কী-ইন করুন *</label>
             <input
               type="text"
               value={returnBookCode}
               onChange={(e) => setReturnBookCode(e.target.value)}
               placeholder="যেমন: BOK-103"
-              className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono uppercase"
+              className="w-full text-xs p-3.5 glass-input font-mono uppercase text-sm font-bold"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">ফেরত গ্রহণের সময় মন্তব্য / ক্ষতির বিবরণী (ঐচ্ছিক)</label>
+            <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">ফেরত গ্রহণের সময় মন্তব্য / ক্ষতির বিবরণী (ঐচ্ছিক)</label>
             <textarea
               value={returnComments}
               onChange={(e) => setReturnComments(e.target.value)}
-              placeholder="যেমন: প্রচ্ছদ বা পৃষ্ঠা ছেঁড়া নেই, ভালো অবস্থায় এসেছে"
-              className="w-full text-xs p-3 h-24 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] resize-none"
+              placeholder="যেমন: প্রচ্ছদ বা পৃষ্ঠা ভালো অবস্থায় এসেছে..."
+              className="w-full text-xs p-3 h-24 glass-input resize-none"
             />
           </div>
 
@@ -566,10 +602,10 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             <button
               type="submit"
               disabled={opLoading}
-              className="w-full py-3 bg-gradient-to-r bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer shadow-lg shadow-none flex items-center justify-center gap-1"
+              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-sm hover:shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
             >
-              {opLoading ? <RefreshCw className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
-              ফেরত নিশ্চিত ও তাকে জমা গ্রহণ করুন
+              {opLoading ? <RefreshCw className="animate-spin" size={15} /> : <CheckCircle2 size={15} />}
+              <span>ফেরত নিশ্চিত ও তাকে জমা গ্রহণ করুন</span>
             </button>
           </div>
         </form>
@@ -577,26 +613,31 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
       {/* --- FORM SUBTAB C: TIME EXTENSION/REDUCTION --- */}
       {activeSubTab === "time" && (
-        <form onSubmit={handleTimeSubmit} className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] max-w-xl mx-auto space-y-4">
-          <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2 border-b border-[#E5E5EA] pb-2">
-            <Clock size={18} className="text-[#FACC15]" />
-            সময়সীমা প্রলম্বিত করা অথবা হ্রাসকরণ (Return Line Extend/Reduce)
-          </h3>
+        <form onSubmit={handleTimeSubmit} className="glass-panel p-7 max-w-xl mx-auto space-y-5">
+          <div className="border-b border-slate-100 pb-3">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Clock size={20} className="text-amber-500" />
+              <span>সময়সীমা প্রলম্বিত করা অথবা হ্রাসকরণ (Return Line Extend/Reduce)</span>
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">ধারকৃত বইয়ের নির্ধারিত জমাদানের তারিখ প্রয়োজন অনুযায়ী পরিবর্তন করুন</p>
+          </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1">চলমান ইস্যুকৃত ধার স্লিপ সিলেক্ট করুন *</label>
+            <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">চলমান ইস্যুকৃত ধার স্লিপ সিলেক্ট করুন *</label>
             {activeIssues.length === 0 ? (
-              <p className="text-xs text-[#22242A] py-3 block">বর্তমানে কোনো বই ধারকৃত বা Issued হিসেবে সচল নাই।</p>
+              <p className="text-xs text-slate-400 py-3 block bg-slate-50 p-3 rounded-xl border border-slate-100">
+                বর্তমানে কোনো বই ধারকৃত বা Issued হিসেবে সচল নাই।
+              </p>
             ) : (
               <select
                 value={selectedIssueId}
                 onChange={(e) => setSelectedIssueId(e.target.value)}
-                className="w-full text-xs p-3 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A]"
+                className="w-full text-xs p-3 glass-input cursor-pointer"
                 required
               >
                 <option value="">নির্ধারিত লিজ একাউন্ট নির্বাচন করুন...</option>
                 {activeIssues.map(issue => (
-                  <option key={issue.id} value={issue.id} className="bg-white">
+                  <option key={issue.id} value={issue.id}>
                     {issue.bookName} ({issue.bookCode}) - {issue.memberName} (রিটার্ন তারিখ: {issue.returnDate})
                   </option>
                 ))}
@@ -606,19 +647,27 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">কোন একশনটি নিবেন?</label>
+              <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">অ্যাকশন নির্বাচন করুন</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setTimeAction("Extend")}
-                  className={`py-2 text-xs font-bold rounded-lg cursor-pointer ${timeAction === "Extend" ? "bg-[#F5F3EF] text-white font-semibold shadow" : "bg-white border border-[#E5E5EA] text-[#22242A]"}`}
+                  className={`py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all ${
+                    timeAction === "Extend" 
+                      ? "bg-indigo-600 text-white shadow-xs" 
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
                 >
-                  সময় বাড়ান (+)
+                  সময় বাড়ান (+)
                 </button>
                 <button
                   type="button"
                   onClick={() => setTimeAction("Reduce")}
-                  className={`py-2 text-xs font-bold rounded-lg cursor-pointer ${timeAction === "Reduce" ? "bg-[#F5F3EF] text-white font-semibold shadow" : "bg-white border border-[#E5E5EA] text-[#22242A]"}`}
+                  className={`py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all ${
+                    timeAction === "Reduce" 
+                      ? "bg-indigo-600 text-white shadow-xs" 
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
                 >
                   সময় কমান (-)
                 </button>
@@ -626,14 +675,14 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase font-bold text-[#6B6B70] mb-1.5">কত দিন পরিবর্তন করবেন? *</label>
+              <label className="block text-[11px] uppercase font-bold text-slate-500 mb-1.5">কত দিন পরিবর্তন করবেন? *</label>
               <input
                 type="number"
                 value={timeDays}
                 onChange={(e) => setTimeDays(e.target.value)}
                 min="1"
                 max="60"
-                className="w-full text-xs p-2 bg-white border border-[#E5E5EA] rounded-lg text-[#22242A] focus:outline-none focus:border-[#22242A] font-mono"
+                className="w-full text-xs p-2.5 glass-input font-mono"
                 required
               />
             </div>
@@ -643,10 +692,10 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
             <button
               type="submit"
               disabled={opLoading || activeIssues.length === 0}
-              className="w-full py-3 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl cursor-pointer disabled:opacity-50"
+              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer disabled:opacity-50 shadow-sm hover:shadow transition-all active:scale-95"
             >
-              {opLoading ? <RefreshCw className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
-              সময় পরিবর্তন নিশ্চিত করুন
+              {opLoading ? <RefreshCw className="animate-spin" size={15} /> : <CheckCircle2 size={15} />}
+              <span>সময় পরিবর্তন নিশ্চিত করুন</span>
             </button>
           </div>
         </form>
@@ -654,36 +703,41 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
       {/* --- FORM SUBTAB D: ACTIVE ISSUES LIST --- */}
       {activeSubTab === "active" && (
-        <div className="glass-panel p-6 rounded-2xl border border-[#E5E5EA] space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E5EA] pb-3">
-            <h3 className="text-base font-bold text-[#22242A] flex items-center gap-2">
-              <List size={18} className="text-[#2266FF]" />
-              বর্তমানে ইস্যুকৃত সকল বইয়ের তালিকা
-            </h3>
+        <div className="glass-panel p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <List size={20} className="text-indigo-600" />
+                <span>বর্তমানে ইস্যুকৃত সকল বইয়ের তালিকা</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">ধারকৃত বইগুলোর বিস্তারিত ওভারভিউ ও মেয়াদোত্তীর্ণ তথ্য</p>
+            </div>
             
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B70]" size={14} />
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
               <input
                 type="text"
                 placeholder="বই, কোড, মেম্বার বা মোবাইল..."
                 value={activeSearchQuery}
                 onChange={(e) => setActiveSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E5EA] rounded-xl focus:outline-none focus:border-[#2266FF] transition-colors"
+                className="w-full pl-10 pr-3 py-2 text-xs glass-input"
               />
             </div>
           </div>
 
           {activeIssuesLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <RefreshCw className="animate-spin text-[#6B6B70]" size={24} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 rounded-2xl skeleton-shimmer"></div>
+              ))}
             </div>
           ) : activeIssuesError ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <AlertTriangle size={28} className="text-[#FF6B6B]" />
-              <p className="text-sm text-[#FF6B6B] font-semibold">{activeIssuesError}</p>
+              <AlertTriangle size={28} className="text-rose-500" />
+              <p className="text-sm text-rose-600 font-semibold">{activeIssuesError}</p>
               <button
                 onClick={fetchActiveDetailedIssues}
-                className="px-4 py-2 bg-[#22242A] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-[#2d2f36]"
+                className="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer hover:bg-indigo-700 transition-colors"
               >
                 <RefreshCw size={13} /> পুনরায় লোড করুন
               </button>
@@ -704,7 +758,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
                 if (filtered.length === 0 && activeDetailedIssues.length > 0) {
                   return (
-                    <div className="col-span-1 md:col-span-2 py-10 text-center text-[#6B6B70] text-sm">
+                    <div className="col-span-1 md:col-span-2 py-10 text-center text-slate-400 text-xs">
                       "{activeSearchQuery}" এর জন্য কোনো ফলাফল পাওয়া যায়নি।
                     </div>
                   );
@@ -712,8 +766,10 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
 
                 if (filtered.length === 0) {
                   return (
-                    <div className="col-span-1 md:col-span-2 py-10 text-center text-[#6B6B70] text-sm">
-                      বর্তমানে কোনো ইস্যুকৃত বই নেই।
+                    <div className="col-span-1 md:col-span-2 py-12 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
+                      <CheckCircle2 size={32} className="text-emerald-500" />
+                      <span className="font-semibold text-slate-700">বর্তমানে কোনো বই ধারকৃত অবস্থায় নেই।</span>
+                      <span className="text-[11px]">সকল বই লাইব্রেরিতে জমা রয়েছে।</span>
                     </div>
                   );
                 }
@@ -728,52 +784,58 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                   const isOverdue = diffDays < 0;
 
                   return (
-                    <div key={issue.id} className="bg-white border border-[#E5E5EA] rounded-xl p-4 flex gap-4 hover:shadow-md transition-shadow relative overflow-hidden">
+                    <div key={issue.id} className="glass-panel p-4 flex gap-4 hover:border-indigo-200 transition-all relative overflow-hidden group shadow-xs hover:shadow-md">
                       {isOverdue && (
-                        <div className="absolute top-0 right-0 bg-[#F43F5E] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm z-10 flex items-center gap-1">
+                        <div className="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-2xl shadow-sm z-10 flex items-center gap-1">
                           <AlertCircle size={10} /> {Math.abs(diffDays)} দিন ওভারডিউ
                         </div>
                       )}
                       
                       {/* Book Thumbnail */}
-                      <div className="w-20 h-28 shrink-0 rounded-lg overflow-hidden border border-[#E5E5EA] bg-gray-50 flex items-center justify-center">
+                      <div className="w-20 h-28 shrink-0 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-100 flex items-center justify-center shadow-2xs">
                         {issue.imageUrl ? (
-                          <img src={issue.imageUrl} alt={issue.bookName} className="w-full h-full object-cover" />
+                          <img src={issue.imageUrl} alt={issue.bookName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
                         ) : (
-                          <BookOpen className="text-gray-300" size={32} />
+                          <BookOpen className="text-slate-300" size={32} />
                         )}
                       </div>
 
-                      <div className="flex flex-col flex-1 min-w-0">
+                      <div className="flex flex-col flex-1 min-w-0 justify-between">
                         {/* Book Info */}
-                        <div className="mb-2">
-                          <h4 className="text-sm font-bold text-[#22242A] truncate" title={issue.bookName}>{issue.bookName}</h4>
-                          <div className="text-[10px] text-[#6B6B70] flex items-center gap-2 mt-1">
-                            <span className="font-mono bg-[#F5F3EF] px-1.5 py-0.5 rounded text-[#22242A]">{issue.bookCode}</span>
-                            <span className="truncate" title={issue.author}>{issue.author}</span>
+                        <div>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-800 text-[10px] font-bold border border-slate-200">
+                              {issue.bookCode}
+                            </span>
+                            <span className="text-[10px] text-slate-400 truncate max-w-[120px]" title={issue.author}>
+                              {issue.author}
+                            </span>
                           </div>
+                          <h4 className="text-sm font-bold text-slate-900 truncate" title={issue.bookName}>
+                            {issue.bookName}
+                          </h4>
                         </div>
 
                         {/* Member Info */}
-                        <div className="bg-[#F5F3EF]/50 p-2 rounded-lg mb-2">
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#22242A] truncate">
-                            <UserCheck size={12} className="text-[#2266FF]" />
-                            {issue.memberName}
-                            <span className="text-[10px] text-[#6B6B70] font-normal">(ফরম: {issue.formNumber})</span>
+                        <div className="bg-slate-50/80 border border-slate-100 p-2.5 rounded-xl my-1.5">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 truncate">
+                            <UserCheck size={13} className="text-indigo-600 shrink-0" />
+                            <span className="truncate">{issue.memberName}</span>
+                            <span className="text-[10px] text-slate-400 font-normal shrink-0 font-mono">(#{issue.formNumber})</span>
                           </div>
-                          <div className="text-[10px] text-[#6B6B70] mt-0.5 ml-4.5">
-                            মোবাইল: {issue.mobile}
+                          <div className="text-[10px] text-slate-500 mt-0.5 ml-4.5 font-mono">
+                            {issue.mobile}
                           </div>
                         </div>
 
                         {/* Dates Info */}
-                        <div className="mt-auto flex items-center justify-between text-[10px]">
-                          <div className="flex items-center gap-1 text-[#6B6B70]">
-                            <Calendar size={12} />
+                        <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-100">
+                          <div className="flex items-center gap-1 text-slate-400 font-mono">
+                            <Calendar size={11} />
                             ইস্যু: {issue.issueDate}
                           </div>
-                          <div className={`flex items-center gap-1 font-bold ${isOverdue ? "text-[#F43F5E]" : "text-[#10B981]"}`}>
-                            <CalendarDays size={12} />
+                          <div className={`flex items-center gap-1 font-bold font-mono ${isOverdue ? "text-rose-600" : "text-emerald-600"}`}>
+                            <CalendarDays size={11} />
                             রিটার্ন: {issue.returnDate}
                           </div>
                         </div>

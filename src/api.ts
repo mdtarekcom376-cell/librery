@@ -3,7 +3,7 @@ const API_BASE = "/api";
 function getHeaders(): HeadersInit {
   const token = localStorage.getItem("okkhor_pathagar_token");
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json; charset=utf-8",
   };
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;

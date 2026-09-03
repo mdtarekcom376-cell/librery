@@ -16,7 +16,10 @@ const pool = mysql.createPool({
 });
 
 pool.on('connection', (conn) => {
-  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci").catch((err: any) => {
+    console.error("Failed to set charset on connection:", err?.message || err);
+  });
 });
 
 export default pool;
+

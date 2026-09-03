@@ -551,13 +551,13 @@ export default function App() {
 
       // Convert Members to Spreadsheet CSV
       const membersHeaders = ["FormNumber", "MemberName", "Mobile", "Address"];
-      const membersRows = rawData.members.map((m: any) => [m.formNumber, m.name, m.mobile, m.address]);
+      const membersRows = rawData.members.map((m: any) => [m.formNumber || m.form_number || "", m.name || "", m.mobile || "", m.address || ""]);
       const membersCSV = "\ufeff" + [membersHeaders.join("\t"), ...membersRows.map((r: any) => r.join("\t"))].join("\n");
       zip.file("2_Akkhor_Members_List.xls", membersCSV);
 
       // Convert Transactions to Spreadsheet CSV
       const issueHeaders = ["ID", "BookCode", "BookName", "MemberName", "Mobile", "Address", "IssueDate", "ReturnDate", "Status"];
-      const issueRows = rawData.issues.map((i: any) => [i.id, i.bookCode, i.bookName, i.memberName, i.mobile, i.address, i.issueDate, i.returnDate, i.status]);
+      const issueRows = rawData.issues.map((i: any) => [i.id, i.bookCode || i.book_code || "", i.bookName || i.book_name || "", i.memberName || i.member_name || "", i.mobile || "", i.address || "", i.issueDate || i.issue_date || "", i.returnDate || i.return_date || "", i.status || ""]);
       const issueCSV = "\ufeff" + [issueHeaders.join("\t"), ...issueRows.map((r: any) => r.join("\t"))].join("\n");
       zip.file("3_Akkhor_Transactions_Registry.xls", issueCSV);
 
@@ -1123,21 +1123,21 @@ export default function App() {
   );
 
   const adminRender = (
-    <div className="min-h-screen flex flex-col bg-[#F5F3EF] overflow-hidden theme-royal-ivory">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 overflow-hidden font-sans selection:bg-indigo-500 selection:text-white">
       
       {/* 1. Header Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-[#F5F3EF] px-3 py-2.5 md:px-6 flex items-center justify-between gap-1.5 sm:gap-4">
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 md:px-7 flex items-center justify-between gap-2 sm:gap-4 shadow-[0_1px_12px_rgba(0,0,0,0.02)]">
         
         {/* Brand logotypes and logo uploader */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           
           {/* Mobile hamburger menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 text-[#6B6B70] hover:text-[#22242A] hover:bg-white rounded-lg cursor-pointer shrink-0 z-50"
+            className="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl cursor-pointer shrink-0 z-50 transition-colors"
             aria-label="Toggle mobile menu"
           >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
           {/* Glowing dynamic circular logo banner with uploader helper */}
@@ -1146,20 +1146,20 @@ export default function App() {
               <>
                 <label htmlFor="logo-uploader-input" className="cursor-pointer block relative">
                   {isLogoLoading ? (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E5E5EA] flex items-center justify-center">
-                      <RefreshCw size={12} className="animate-spin text-[#FACC15]" />
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-xs">
+                      <RefreshCw size={14} className="animate-spin text-indigo-600" />
                     </div>
                   ) : logoBase64 ? (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E5E5EA] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center justify-center p-0.5">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs flex items-center justify-center p-0.5">
                       <img src={logoBase64} alt="Library Logo" className="w-full h-full object-contain" />
                     </div>
                   ) : (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#22242A] shadow flex items-center justify-center text-[#FACC15] text-base sm:text-xl font-bold">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-indigo-600 shadow-sm shadow-indigo-500/20 flex items-center justify-center text-white text-base sm:text-xl font-bold">
                       অ
                     </div>
                   )}
                   {/* Overlaid edit camera icon */}
-                  <div className="absolute -bottom-1 -right-1 p-0.5 bg-[#22242A] text-[8px] text-[#FACC15] rounded-full font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute -bottom-1 -right-1 p-0.5 bg-slate-900 text-[8px] text-amber-300 rounded-full font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                     +
                   </div>
                 </label>
@@ -1174,11 +1174,11 @@ export default function App() {
             ) : (
               <div className="block relative">
                 {logoBase64 ? (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white border border-[#E5E5EA] overflow-hidden flex items-center justify-center p-0.5">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white border border-slate-200 overflow-hidden flex items-center justify-center p-0.5 shadow-xs">
                     <img src={logoBase64} alt="Library Logo" className="w-full h-full object-contain" />
                   </div>
                 ) : (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#22242A] shadow flex items-center justify-center text-[#FACC15] text-base sm:text-xl font-bold">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-indigo-600 shadow-sm flex items-center justify-center text-white text-base sm:text-xl font-bold">
                     অ
                   </div>
                 )}
@@ -1187,44 +1187,44 @@ export default function App() {
           </div>
 
           <div className="min-w-0">
-            <h1 className="text-xs sm:text-sm md:text-lg font-bold tracking-tight text-[#22242A] flex items-center gap-1 font-sans truncate">
+            <h1 className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-slate-900 flex items-center gap-1.5 font-sans truncate">
               অক্ষর পাঠাগার
             </h1>
-            <p className="hidden sm:block text-[9px] text-[#6B6B70] font-sans tracking-wide truncate">স্মার্ট লাইব্রেরি সিস্টেম</p>
+            <p className="hidden sm:block text-[10px] text-slate-500 font-sans tracking-wide truncate">স্মার্ট লাইব্রেরি ম্যানেজমেন্ট সিস্টেম</p>
           </div>
 
         </div>
         
         {/* User context profile and actions */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
 
           {/* Search bar (decorative) */}
-          <div className="hidden md:flex items-center gap-2 bg-white border border-[#E5E5EA] rounded-full px-4 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] min-w-[200px]">
-            <Search size={14} className="text-[#6B6B70] shrink-0" />
-            <span className="text-xs text-[#6B6B70]">অনুসন্ধান করুন...</span>
+          <div className="hidden md:flex items-center gap-2 bg-slate-100/90 border border-slate-200/80 rounded-full px-4 py-2 shadow-2xs min-w-[210px]">
+            <Search size={14} className="text-slate-400 shrink-0" />
+            <span className="text-xs text-slate-400">ক্যাটালগ অনুসন্ধান...</span>
           </div>
 
           {/* Unified ZIP backup download indicator */}
           <button
             onClick={handleBulkZipDownload}
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[#22242A] text-[10px] sm:text-xs font-bold text-white rounded-full shadow-[0_2px_8px_rgba(34,36,42,0.15)] cursor-pointer transition-colors hover:bg-[#2d2f36] shrink-0"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white rounded-full shadow-xs hover:shadow transition-all cursor-pointer shrink-0 active:scale-95"
             title="সব ডেটাবেজ এক্সপোর্ট করুন (ZIP ব্যাকআপ)"
             id="bulk-backup-btn"
           >
-            <FileArchive size={14} className="text-[#FACC15]" />
-            ZIP ব্যাকআপ
+            <FileArchive size={14} className="text-amber-300" />
+            <span>ZIP ব্যাকআপ</span>
           </button>
 
           {/* Notification bell for due-today books */}
           {userRole === "admin" && (
             <button
               onClick={() => setActiveTab("sms")}
-              className="relative p-1.5 hover:bg-orange-50 text-[#6B6B70] hover:text-orange-500 border border-[#E5E5EA] rounded-full cursor-pointer transition-colors shrink-0"
+              className="relative p-2 hover:bg-amber-50 text-slate-500 hover:text-amber-600 border border-slate-200/80 rounded-full cursor-pointer transition-colors shrink-0"
               title="আজকের জমাদেয়ার বই"
             >
-              <Bell size={14} />
+              <Bell size={15} />
               {dueTodayCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center px-1 text-[9px] font-bold text-white bg-red-500 rounded-full animate-pulse">
+                <span className="absolute -top-1 -right-1 min-w-[17px] h-4 flex items-center justify-center px-1 text-[9px] font-bold text-white bg-rose-500 rounded-full animate-pulse">
                   {dueTodayCount}
                 </span>
               )}
@@ -1232,9 +1232,9 @@ export default function App() {
           )}
 
           {/* User profile identifier badge */}
-          <div className="hidden md:flex bg-white border border-[#E5E5EA] p-1 px-3 rounded-full items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] shrink-0">
-            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-            <span className="text-[10px] sm:text-xs font-bold text-[#22242A]">
+          <div className="hidden md:flex bg-white border border-slate-200/80 py-1.5 px-3.5 rounded-full items-center gap-2 shadow-2xs shrink-0">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+            <span className="text-xs font-bold text-slate-800">
               {userRole === "admin" && `অ্যাডমিন (${username})`}
               {userRole === "member" && `সদস্যঃ ${loggedInMember?.name || "সদস্য"}`}
               {userRole === "guest" && "অতিথি পাঠক"}
@@ -1244,10 +1244,10 @@ export default function App() {
           {/* Logout button */}
           <button
             onClick={handleLogout}
-            className="p-1.5 hover:bg-red-50 text-[#6B6B70] hover:text-[#FF6B6B] border border-[#E5E5EA] rounded-full cursor-pointer transition-colors shrink-0"
+            className="p-2 hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-200/80 rounded-full cursor-pointer transition-colors shrink-0"
             title="নিরাপদে একাউন্ট লগআউট করুন"
           >
-            <LogOut size={14} />
+            <LogOut size={15} />
           </button>
         </div>
 
@@ -1257,8 +1257,8 @@ export default function App() {
       <div className="flex flex-1 relative min-h-[calc(100vh-65px)]">
         
         {/* Desk Nav Sidebar — Floating Icon-Only Pill */}
-        <aside className="hidden md:flex flex-col items-center justify-between w-16 bg-white rounded-[28px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] m-4 mr-0 p-2 shrink-0 sticky top-[73px] self-start" style={{ maxHeight: 'calc(100vh - 73px - 32px)' }}>
-          <div className="space-y-1 pt-1">
+        <aside className="hidden md:flex flex-col items-center justify-between w-16 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-[28px] shadow-[0_4px_24px_rgba(0,0,0,0.03)] m-4 mr-0 p-2.5 shrink-0 sticky top-[73px] self-start" style={{ maxHeight: 'calc(100vh - 73px - 32px)' }}>
+          <div className="space-y-1.5 pt-1">
             {navTabs.map((item) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.id;
@@ -1268,7 +1268,7 @@ export default function App() {
                     key={item.id}
                     onClick={() => navigate("/")}
                     title={item.label}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25" : "text-slate-400 hover:text-slate-800 hover:bg-slate-100/80"}`}
                   >
                     <Icon size={18} />
                   </button>
@@ -1279,7 +1279,7 @@ export default function App() {
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   title={item.label}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-[#22242A] text-[#FACC15] shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25" : "text-slate-400 hover:text-slate-800 hover:bg-slate-100/80"}`}
                 >
                   <Icon size={18} />
                 </button>
@@ -1288,14 +1288,14 @@ export default function App() {
           </div>
 
           {/* Bottom avatar + logout */}
-          <div className="space-y-2 pb-1 border-t border-[#E5E5EA] pt-2">
-            <div className="w-8 h-8 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[10px] font-bold text-[#22242A] mx-auto" title={username || loggedInMember?.name || "User"}>
+          <div className="space-y-2 pb-1 border-t border-slate-100 pt-2">
+            <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-700 mx-auto" title={username || loggedInMember?.name || "User"}>
               {(username || loggedInMember?.name || "U").charAt(0).toUpperCase()}
             </div>
             <button
               onClick={handleLogout}
               title="লগআউট"
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-[#6B6B70] hover:text-[#FF6B6B] hover:bg-red-50 cursor-pointer transition-colors"
+              className="w-10 h-10 rounded-2xl flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer transition-colors"
             >
               <LogOut size={16} />
             </button>
@@ -1304,13 +1304,13 @@ export default function App() {
 
         {/* Mobile floating responsive drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-30 bg-black/30 backdrop-blur-sm pr-16">
-            <div className="w-full max-w-xs h-full bg-white border-r border-[#E5E5EA] p-5 flex flex-col justify-between shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
+          <div className="md:hidden fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm pr-16 animate-in fade-in duration-150">
+            <div className="w-full max-w-xs h-full bg-white/95 backdrop-blur-md border-r border-slate-200 p-5 flex flex-col justify-between shadow-2xl">
               
               <div className="space-y-5">
-                <div className="flex justify-between items-center pb-2 border-b border-[#E5E5EA]">
-                  <p className="font-bold text-[#22242A] text-xs uppercase tracking-wider">মেনু নেভিগেশন</p>
-                  <button onClick={() => setMobileMenuOpen(false)} className="text-[#6B6B70] p-1">
+                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <p className="font-bold text-slate-900 text-xs uppercase tracking-wider">মেনু নেভিগেশন</p>
+                  <button onClick={() => setMobileMenuOpen(false)} className="text-slate-400 hover:text-slate-700 p-1">
                     <X size={18} />
                   </button>
                 </div>
@@ -1326,7 +1326,7 @@ export default function App() {
                             navigate("/");
                             setMobileMenuOpen(false);
                           }}
-                          className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                          className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-indigo-600 text-white font-bold shadow-xs" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`}
                         >
                           <Icon size={16} />
                           <span>{item.label}</span>
@@ -1340,7 +1340,7 @@ export default function App() {
                           setActiveTab(item.id);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-[#22242A] text-[#FACC15] font-bold shadow-md" : "text-[#6B6B70] hover:text-[#22242A] hover:bg-[#F5F3EF]"}`}
+                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 cursor-pointer transition-colors ${isSelected ? "bg-indigo-600 text-white font-bold shadow-xs" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`}
                       >
                         <Icon size={16} />
                         <span>{item.label}</span>
@@ -1350,11 +1350,11 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="space-y-3.5 pt-4 border-t border-[#E5E5EA]">
+              <div className="space-y-3.5 pt-4 border-t border-slate-100">
                 {/* Mobile User Profile Badge */}
-                <div className="bg-[#F5F3EF] border border-[#E5E5EA] p-2 px-3 rounded-xl flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <p className="text-xs font-bold text-[#22242A] truncate">
+                <div className="bg-slate-50 border border-slate-200 p-2.5 px-3 rounded-xl flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  <p className="text-xs font-bold text-slate-800 truncate">
                     {userRole === "admin" && `অ্যাডমিন: ${username}`}
                     {userRole === "member" && `সদস্যঃ ${loggedInMember?.name || "সদস্য"}`}
                     {userRole === "guest" && "অতিথি পাঠক (Guest)"}
@@ -1367,10 +1367,10 @@ export default function App() {
                     handleBulkZipDownload();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#22242A] hover:bg-[#2d2f36] text-white text-xs font-bold rounded-xl shadow-[0_2px_8px_rgba(34,36,42,0.15)]"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer transition-all"
                 >
-                  <FileArchive size={14} className="text-[#FACC15]" />
-                  ZIP ক্যাটালগ ব্যাকআপ
+                  <FileArchive size={14} className="text-amber-300" />
+                  <span>ZIP ক্যাটালগ ব্যাকআপ</span>
                 </button>
               </div>
 
