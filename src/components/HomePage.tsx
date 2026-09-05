@@ -42,12 +42,16 @@ import {
   Loader2,
   Book,
   Heart,
+  Search,
+  Bookmark,
+  Globe,
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
 import foundersImg from "../assets/images/founders.png";
 import karyonirbahiImg from "../assets/images/karyonirbahi.png";
 import tawhidImg from "../assets/images/tawhid.png";
 import cornerBanner from "../assets/images/corner-banner.jpg";
+import aboutBookStack from "../assets/images/about-books-stack.webp";
 import Hero3DImage from "./Hero3DImage";
 import NewsletterPopup, { subscribeNewsletter } from "./NewsletterPopup";
 
@@ -106,10 +110,10 @@ const DEMO_CORNER_COUNTS: Record<string, number> = {
 };
 
 const DEMO_STATS = {
-  totalBooks: 3200,
-  activeMembers: 850,
-  issuedBooks: 1480,
-  activeCorners: 6,
+  totalBooks: 586,
+  activeMembers: 108,
+  issuedBooks: 48,
+  activeCorners: 23,
   yearsRunning: 5,
 };
 
@@ -136,11 +140,11 @@ const DEMO_SALES_ITEMS = [
 const NAV_LINKS = [
   { label: "হোম", href: "#hero" },
   { label: "বৈশিষ্ট্য", href: "#features" },
-  { label: "বইয়ের কর্নার", href: "#corners", isPage: true },
+  { label: "বইয়ের কর্নার", href: "#corners", isPage: true },
+  { label: "শপ", href: "#sales", isPage: true, isShop: true },
   { label: "সদস্যপদ", href: "#membership" },
   { label: "আমাদের সম্পর্কে", href: "#about" },
-  { label: "বিক্রয় কর্নার", href: "#sales", isPage: true },
-  { label: "মতামত", href: "#testimonials" },
+  { label: "ব্লগ", href: "#blog", isBlog: true },
   { label: "যোগাযোগ", href: "#contact" },
 ];
 
@@ -330,9 +334,10 @@ interface HomePageProps {
   onBookSelect?: (book: any) => void; // Show book details
   onNoticeSelect?: (notice: any) => void; // Show notice details
   onNavigateToBooks?: () => void; // Navigate to full books view
+  onNavigateToBlog?: () => void; // Navigate to blog page
 }
 
-export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect, onNoticeSelect, onNavigateToBooks }: HomePageProps) {
+export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin, onGuestEntry, logoBase64, onSalesCorner, onBookSelect, onNoticeSelect, onNavigateToBooks, onNavigateToBlog }: HomePageProps) {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openCorner, setOpenCorner] = useState<string | null>("নজরুল কর্নার");
@@ -558,32 +563,40 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   return (
     <div className="homepage">
       {/* ======================================
-          §4.1 HEADER / NAVIGATION — Floating Pill
+          §4.1 HEADER / NAVIGATION — Modern Glass Floating Pill
           ====================================== */}
       <header
         className={`hp-header fixed top-0 left-0 right-0 z-50 px-4 md:px-6 pt-3 md:pt-4 ${headerScrolled ? "scrolled" : ""}`}
         style={{ backgroundColor: "transparent", pointerEvents: "none" }}
       >
-        <div className="hp-header-pill" style={{ pointerEvents: "auto" }}>
+        <div 
+          className="max-w-6xl mx-auto bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-2xl md:rounded-[22px] px-4 sm:px-6 py-2.5 sm:py-3 shadow-[0_10px_35px_-8px_rgba(15,23,42,0.06)] flex items-center justify-between"
+          style={{ pointerEvents: "auto" }}
+        >
           {/* Logo + Wordmark */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div 
+            className="flex items-center gap-2.5 shrink-0 cursor-pointer" 
+            onClick={() => scrollTo("#hero")}
+          >
             <img
               src={logoSrc}
               alt="অক্ষর পাঠাগার লোগো"
-              className="w-8 h-8 md:w-9 md:h-9 rounded-full object-contain bg-white border border-[#1C8FE0]/15 p-0.5"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-contain bg-white border border-slate-200 p-0.5 shadow-xs"
             />
-            <span className="font-display-bn text-sm md:text-base font-bold" style={{ color: "var(--ink-navy)" }}>
+            <span className="font-display-bn text-base sm:text-lg font-bold text-slate-900 tracking-tight">
               অক্ষর পাঠাগার
             </span>
           </div>
 
           {/* Desktop Nav — center links */}
-          <nav className="hidden lg:flex items-center gap-1 mx-4" id="homepage-desktop-nav">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 mx-1 xl:mx-2" id="homepage-desktop-nav">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.href}
                 onClick={() => {
-                  if (link.isPage && link.href === "#sales" && onSalesCorner) {
+                  if (link.isBlog && onNavigateToBlog) {
+                    onNavigateToBlog();
+                  } else if ((link.isShop || (link.isPage && link.href === "#sales")) && onSalesCorner) {
                     onSalesCorner();
                   } else if (link.isPage && link.href === "#corners" && onNavigateToBooks) {
                     onNavigateToBooks();
@@ -591,37 +604,39 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                     scrollTo(link.href);
                   }
                 }}
-                className="pill-nav-link font-body-bn"
+                className="px-2.5 xl:px-3.5 py-1.5 rounded-full text-[13px] xl:text-sm font-medium text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 transition-all cursor-pointer font-body-bn whitespace-nowrap"
               >
                 {link.label}
               </button>
             ))}
           </nav>
 
-          {/* Right side — login + CTA + mobile toggle */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Right side — login + CTA + menu toggle */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={onLogin}
-              className="pill-login-link font-ui hidden sm:inline-flex"
+              className="text-slate-700 hover:text-blue-600 font-medium text-xs sm:text-sm px-3 py-1.5 transition-colors cursor-pointer hidden sm:inline-flex font-ui"
               id="homepage-login-btn"
             >
               লগইন
             </button>
-            <span className="pill-divider hidden sm:block" />
+
             <button
               onClick={onMemberLogin}
-              className="pill-cta font-ui"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_18px_rgba(37,99,235,0.45)] transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer font-ui"
               id="homepage-member-btn"
             >
-              সদস্য হোন
+              <span>সদস্য হন</span>
+              <ArrowRight size={14} />
             </button>
-            {/* Mobile menu toggle */}
+
+            {/* Menu toggle button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="pill-mobile-toggle lg:hidden"
-              aria-label="মোবাইল মেনু খুলুন"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center"
+              aria-label="মেনু খুলুন"
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
           </div>
         </div>
@@ -666,18 +681,18 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   <button
                     key={link.href}
                     onClick={() => {
-                      if (link.isPage && link.href === "#sales" && onSalesCorner) {
-                        setMobileMenuOpen(false);
+                      setMobileMenuOpen(false);
+                      if (link.isBlog && onNavigateToBlog) {
+                        onNavigateToBlog();
+                      } else if ((link.isShop || (link.isPage && link.href === "#sales")) && onSalesCorner) {
                         onSalesCorner();
                       } else if (link.isPage && link.href === "#corners" && onNavigateToBooks) {
-                        setMobileMenuOpen(false);
                         onNavigateToBooks();
                       } else {
                         scrollTo(link.href);
                       }
                     }}
-                    className="text-left py-3 px-3 rounded-xl font-body-bn text-sm cursor-pointer bg-transparent border-none hover:bg-[#EAF5FD] transition-colors"
-                    style={{ color: "var(--ink-navy)" }}
+                    className="text-left py-3 px-3.5 rounded-xl font-body-bn text-sm font-medium cursor-pointer text-slate-700 hover:text-blue-600 hover:bg-blue-50/80 transition-colors"
                   >
                     {link.label}
                   </button>
@@ -700,258 +715,355 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       </AnimatePresence>
 
       {/* ======================================
-          §4.2 HERO
+          §4.2 HERO SECTION
           ====================================== */}
       <section
         id="hero"
-        className="section-warm pt-28 md:pt-36 pb-16 md:pb-24 px-4"
+        className="relative pt-28 md:pt-36 pb-12 md:pb-16 px-4 overflow-hidden"
+        style={{
+          background: "radial-gradient(circle at 76% 36%, rgba(205, 228, 253, 0.9) 0%, rgba(226, 239, 254, 0.65) 26%, rgba(240, 246, 255, 0.45) 50%, #F8FAFC 75%)"
+        }}
       >
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Left: copy */}
-          <div>
-            {/* Eyebrow */}
-            <motion.p
-              className="font-display-lat text-sm md:text-base tracking-wide mb-4"
-              style={{ color: "var(--flame-orange)" }}
+        {/* Subtle Ambient Glowing Light Rings in background */}
+        <div className="absolute top-1/4 right-[-5%] w-[480px] h-[480px] rounded-full border border-blue-200/40 pointer-events-none -z-0" />
+        <div className="absolute top-1/3 right-4 w-[360px] h-[360px] rounded-full border border-blue-100/60 pointer-events-none -z-0" />
+        <div className="absolute top-1/2 left-[-10%] w-[380px] h-[380px] rounded-full bg-blue-100/20 blur-3xl pointer-events-none -z-0" />
+
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+          {/* Left: Copy & Actions (7 cols) */}
+          <div className="lg:col-span-7 pt-2 lg:pt-4 text-left">
+            {/* Eyebrow Badge */}
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EEF4FF] border border-blue-200/80 text-blue-600 font-medium text-xs md:text-sm mb-6 shadow-xs"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র
-            </motion.p>
+              <Star size={14} className="text-blue-600 stroke-[2] fill-transparent" />
+              <span className="font-body-bn font-semibold text-blue-600">জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র</span>
+            </motion.div>
 
-            {/* Headline — word by word reveal */}
-            <h2 className="font-display-bn text-3xl md:text-5xl lg:text-[3.4rem] font-bold leading-tight" style={{ color: "var(--ink-navy)" }}>
-              {heroWords.map((word, i) => (
-                <motion.span
-                  key={i}
-                  className="inline-block mr-2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 + i * 0.06 }}
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </h2>
+            {/* Main Headline */}
+            <h1 className="font-display-bn text-3xl sm:text-4xl md:text-5xl lg:text-[2.85rem] xl:text-[3.15rem] font-black leading-[1.22] tracking-tight text-slate-900">
+              <span className="block text-slate-900">অক্ষরে অক্ষরে জ্ঞানের পথে,</span>
+              <span className="block mt-1 text-[#2563EB] drop-shadow-[0_4px_16px_rgba(37,99,235,0.22)] whitespace-normal lg:whitespace-nowrap">
+                বইয়ের আলোয় আলোকিত হোক জীবন
+              </span>
+            </h1>
 
             {/* Subtext */}
             <motion.p
-              className="font-body-bn text-base md:text-lg mt-5 leading-relaxed max-w-lg"
-              style={{ color: "#475569" }}
+              className="font-body-bn text-base md:text-lg mt-5 leading-relaxed max-w-lg text-slate-600 font-normal"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              আপনার পছন্দের বই খুঁজে পেতে এবং পাঠাগারের সাথে যুক্ত থেকে আমাদের সকল সেবা উপভোগ করতে ভিজিট করুন অক্ষর পাঠাগার।
+              আপনার পছন্দের বই খুঁজে পেতে এবং পাঠাগার এর সাথে যুক্ত থেকে আমাদের সকল সেবা উপভোগ করতে ভিজিট করুন অক্ষর পাঠাগার।
             </motion.p>
 
-            {/* CTA row */}
+            {/* Three Action Buttons */}
             <motion.div
-              className="flex flex-wrap gap-3 mt-8"
+              className="flex flex-wrap items-center gap-3 sm:gap-4 mt-8"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
             >
               <button
-                onClick={onGuestEntry}
-                className="btn-ghost px-6 py-3 text-sm md:text-base font-ui"
-                id="hero-cta-guest"
+                onClick={onNavigateToBooks || (() => scrollTo("#corners"))}
+                className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 font-semibold text-sm flex items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer"
+                id="hero-cta-search-books"
               >
-                গেস্ট হিসেবে দেখুন
+                <Search size={16} className="text-slate-600" />
+                <span className="font-ui">বই খুঁজে দেখুন</span>
               </button>
+
               <button
                 onClick={onLibraryMemberLogin}
-                className="btn-blue px-6 py-3 text-sm md:text-base font-ui"
+                className="px-6 py-3 rounded-2xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm flex items-center gap-2 shadow-[0_8px_20px_-4px_rgba(37,99,235,0.45)] hover:shadow-[0_12px_24px_-4px_rgba(37,99,235,0.55)] transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-95"
                 id="hero-cta-member-login"
               >
-                পাঠাগারের সদস্য লগইন
+                <Users size={16} className="text-white/95" />
+                <span className="font-ui">পাঠাগারের সদস্য লগইন</span>
               </button>
+
               <button
                 onClick={onMemberLogin}
-                className="btn-flame px-6 py-3 text-sm md:text-base font-ui flex items-center gap-2 group"
-                id="hero-cta-primary"
+                className="px-5 py-3 rounded-2xl bg-white/95 hover:bg-white border border-slate-200/90 text-slate-800 font-semibold text-sm flex items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer"
+                id="hero-cta-register"
               >
-                পাঠাগারে সদস্য হোন
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                <span className="font-ui">সদস্য হতে চান?</span>
+                <ArrowRight size={16} className="text-slate-600" />
               </button>
             </motion.div>
 
-            {/* Stat strip */}
+            {/* Micro Stats Row (below CTA buttons) */}
             <motion.div
-              className="flex items-center gap-4 mt-10 text-sm font-body-bn"
-              style={{ color: "#64748b" }}
+              className="flex items-center gap-3 sm:gap-4 mt-8 text-xs sm:text-sm font-semibold text-slate-700"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.3 }}
+              transition={{ delay: 0.7 }}
             >
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full" style={{ background: "var(--flame-orange)" }} />
-                চলছে <strong className="font-display-lat" style={{ color: "var(--ink-navy)" }}>{liveStats.totalBooks.toLocaleString("bn-BD")}+</strong> বই
-              </span>
-              <span style={{ color: "#cbd5e1" }}>·</span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full" style={{ background: "var(--book-blue)" }} />
-                <strong className="font-display-lat" style={{ color: "var(--ink-navy)" }}>{liveStats.activeMembers.toLocaleString("bn-BD")}</strong> সক্রিয় সদস্য
-              </span>
+              <div className="flex items-center gap-2.5 bg-white/90 backdrop-blur-sm border border-slate-200/80 px-3.5 py-2 rounded-xl shadow-xs">
+                <div className="w-6 h-6 rounded-lg bg-blue-100/90 text-blue-600 flex items-center justify-center">
+                  <BookOpen size={14} />
+                </div>
+                <span className="font-display-lat text-slate-800">
+                  {(liveStats.totalBooks || 586).toLocaleString("bn-BD")}+ বই
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2.5 bg-white/90 backdrop-blur-sm border border-slate-200/80 px-3.5 py-2 rounded-xl shadow-xs">
+                <div className="w-6 h-6 rounded-lg bg-indigo-100/90 text-indigo-600 flex items-center justify-center">
+                  <Users size={14} />
+                </div>
+                <span className="font-display-lat text-slate-800">
+                  {(liveStats.activeMembers || 108).toLocaleString("bn-BD")} সক্রিয় সদস্য
+                </span>
+              </div>
             </motion.div>
           </div>
 
-          {/* Right: Hero 3D Image */}
+          {/* Right: Hero 3D Podium & Stage (5 cols) */}
           <motion.div
-            className="relative flex items-center justify-center w-full h-80 md:h-[450px]"
-            initial={{ opacity: 0, scale: 0.9 }}
+            className="lg:col-span-5 relative flex items-center justify-center w-full"
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Hero3DImage />
           </motion.div>
         </div>
+
+        {/* ======================================
+            HERO BOTTOM FLOATING STATS BANNER (4 Columns)
+            ====================================== */}
+        <motion.div
+          className="max-w-6xl mx-auto mt-12 md:mt-16 relative z-20"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <div className="bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_20px_45px_-12px_rgba(15,23,42,0.06)]">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+              {/* Col 1: Total Books */}
+              <div className="flex items-center gap-3.5 sm:gap-4 pt-2 lg:pt-0 lg:px-4 first:lg:pl-0">
+                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#DBEAFE] text-[#2563EB] flex items-center justify-center shrink-0 shadow-xs border border-blue-100/80">
+                  <BookOpen size={24} className="text-[#2563EB]" />
+                </div>
+                <div>
+                  <h3 className="font-display-lat text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                    {(liveStats.totalBooks || 586).toLocaleString("bn-BD")}+
+                  </h3>
+                  <p className="font-body-bn text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    মোট বই
+                  </p>
+                </div>
+              </div>
+
+              {/* Col 2: Active Members */}
+              <div className="flex items-center gap-3.5 sm:gap-4 pt-2 lg:pt-0 lg:px-6">
+                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#DCFCE7] text-[#16A34A] flex items-center justify-center shrink-0 shadow-xs border border-emerald-100/80">
+                  <Users size={24} className="text-[#16A34A]" />
+                </div>
+                <div>
+                  <h3 className="font-display-lat text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                    {(liveStats.activeMembers || 108).toLocaleString("bn-BD")}+
+                  </h3>
+                  <p className="font-body-bn text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    সক্রিয় সদস্য
+                  </p>
+                </div>
+              </div>
+
+              {/* Col 3: Categories */}
+              <div className="flex items-center gap-3.5 sm:gap-4 pt-4 lg:pt-0 lg:px-6">
+                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#F3E8FF] text-[#9333EA] flex items-center justify-center shrink-0 shadow-xs border border-purple-100/80">
+                  <Bookmark size={24} className="text-[#9333EA]" />
+                </div>
+                <div>
+                  <h3 className="font-display-lat text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                    {(liveStats.activeCorners || 23).toLocaleString("bn-BD")}+
+                  </h3>
+                  <p className="font-body-bn text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    বিভিন্ন ক্যাটাগরি
+                  </p>
+                </div>
+              </div>
+
+              {/* Col 4: Trust & Reliability */}
+              <div className="flex items-center gap-3.5 sm:gap-4 pt-4 lg:pt-0 lg:px-6">
+                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center shrink-0 shadow-xs border border-amber-100/80">
+                  <Shield size={24} className="text-[#D97706]" />
+                </div>
+                <div>
+                  <h3 className="font-display-lat text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                    ১০০%
+                  </h3>
+                  <p className="font-body-bn text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    নিরাপদ ও নির্ভরযোগ্য
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* ======================================
-          §4.3 WHY AKKHOR PATHAGAR
+          §4.3 ABOUT AKKHOR PATHAGAR (জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র)
           ====================================== */}
-      <section id="features" className="section-tint py-16 md:py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+      <section id="features" className="py-12 md:py-16 px-4 sm:px-6 relative">
+        <div className="max-w-6xl mx-auto">
           <motion.div 
-            className="max-w-4xl mx-auto relative overflow-hidden rounded-[2rem] shadow-2xl"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl md:rounded-[2.5rem] p-6 sm:p-8 md:p-12 lg:p-14 border border-slate-200/70 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.06)] relative overflow-hidden"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.5 }}
           >
-            {/* Dark Header Block */}
-            <div 
-              className="px-8 py-12 md:py-16 md:px-16 text-center relative"
-              style={{ background: "linear-gradient(135deg, #0B1120 0%, #172554 100%)" }}
-            >
-              {/* Decorative Circle */}
-              <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mx-auto mb-6 bg-white/5 backdrop-blur-sm">
-                <div className="w-4 h-4 rounded-full bg-white/20" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Left Column: Text & Quotes */}
+              <div className="lg:col-span-7 flex flex-col items-start text-left">
+                {/* Blue Pill Badge */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2563EB] text-white shadow-sm mb-5">
+                  <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold shrink-0">
+                    ★
+                  </div>
+                  <span className="font-semibold text-xs sm:text-sm font-display-bn tracking-wide">
+                    জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র
+                  </span>
+                </div>
+
+                {/* Main Paragraph */}
+                <p className="font-body-bn text-sm sm:text-base text-slate-700 leading-relaxed mb-6 font-normal">
+                  &ldquo;অক্ষর পাঠাগার&rdquo; একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন যা গণগ্রন্থাগার অধিদপ্তরের সরকারি তালিকাভুক্ত সমাজ-গ্রন্থাগার (ক্যাটাগরি গ-পাঠাগার)। নিবন্ধন নং—বরগুনা বেসর/লাই নং-০৪।
+                </p>
+
+                {/* Callout Quote 1 */}
+                <div className="w-full bg-[#F0F7FF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-4 border border-blue-100/60 shadow-xs">
+                  <span className="text-[#2563EB] font-serif font-black text-2xl sm:text-3xl leading-none select-none shrink-0 mt-0.5">
+                    “
+                  </span>
+                  <p className="font-body-bn text-xs sm:text-sm md:text-[14.5px] text-slate-700 leading-relaxed font-medium">
+                    আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
+                  </p>
+                </div>
+
+                {/* Callout Quote 2 */}
+                <div className="w-full bg-[#F0F7FF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 border border-blue-100/60 shadow-xs">
+                  <span className="text-[#2563EB] font-serif font-black text-2xl sm:text-3xl leading-none select-none shrink-0 mt-0.5">
+                    “
+                  </span>
+                  <p className="font-body-bn text-xs sm:text-sm md:text-[14.5px] text-slate-700 leading-relaxed font-medium">
+                    অক্ষর পাঠাগারের ডিজিটাল প্ল্যাটফর্মে বিভিন্ন বিষয়ভিত্তিক বই, শিক্ষামূলক উপকরণ এবং নির্ভরযোগ্য ডিজিটাল জ্ঞানসম্পদ সুসংগঠিতভাবে উপস্থাপন করা হয়েছে। বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই, শিশু-কিশোর সাহিত্য থেকে শুরু করে প্রতিযোগিতামূলক পরীক্ষার প্রস্তুতি সহ নানা ধরনের বই এখানে পাওয়া যায়।
+                  </p>
+                </div>
               </div>
-              
-              {/* Pill Badge */}
-              <div 
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
-                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.05)" }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8]" />
-                <span className="text-[10px] md:text-xs uppercase font-bold tracking-[0.2em] text-white/90 font-display-lat">
-                  WHAT IS THE OKKHOR PATHAGAR?
-                </span>
+
+              {/* Right Column: 3D Book Stack & Plant Illustration */}
+              <div className="lg:col-span-5 flex justify-center items-center relative py-2">
+                <motion.div 
+                  className="relative w-full max-w-[340px] sm:max-w-[380px] md:max-w-[440px] flex items-center justify-center"
+                  animate={{ y: [-5, 5, -5] }}
+                  transition={{ duration: 5, ease: "easeInOut", repeat: Infinity }}
+                >
+                  {/* Soft ambient background glow */}
+                  <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-blue-300/35 blur-3xl -z-10 pointer-events-none" />
+                  
+                  <motion.img 
+                    src={aboutBookStack} 
+                    alt="জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র - অক্ষর পাঠাগার"
+                    className="w-full h-auto object-contain select-none pointer-events-none mix-blend-multiply"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.15 }}
+                  />
+                </motion.div>
               </div>
-
-              {/* Headings */}
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 font-display-bn">
-                অক্ষর পাঠাগার কী?
-              </h2>
-              <p className="text-[#94a3b8] text-lg md:text-xl font-display-lat italic">
-                Just a <span className="relative inline-block">
-                  <span className="relative z-10 text-white">PDF library?</span>
-                  <span className="absolute bottom-1 left-0 w-full h-[3px] rounded-full bg-[#38BDF8]/60 z-0" />
-                </span>
-                {" "}No — <span className="relative inline-block">
-                  <span className="relative z-10 text-white">a knowledge center.</span>
-                  <span className="absolute bottom-1 left-0 w-full h-[3px] rounded-full bg-[#38BDF8]/60 z-0" />
-                </span>
-              </p>
-
-              {/* Wavy Divider */}
-              <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
-                <svg className="relative block w-full h-[40px] rotate-180" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                  <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#ffffff"></path>
-                </svg>
-              </div>
-            </div>
-
-            {/* White Body Content */}
-            <div className="bg-white px-6 py-12 md:p-16 text-center relative z-10">
-              <span className="inline-block text-[10px] md:text-xs uppercase font-bold tracking-widest px-4 py-1.5 rounded-full mb-8 font-display-bn bg-[#F8FAFC] text-[#64748b] border border-[#E2E8F0]">
-                বিস্তারিত
-              </span>
-
-              <p className="font-body-bn text-xl md:text-[22px] leading-relaxed mx-auto mb-8 text-left" style={{ color: "var(--ink-navy)", maxWidth: "700px" }}>
-                <span className="font-bold text-2xl md:text-3xl block mb-6 leading-tight" style={{ color: "var(--book-blue)" }}>
-                  <span style={{ color: "var(--flame-orange)" }}>★</span> জ্ঞানচর্চার এক নিরবচ্ছিন্ন কেন্দ্র
-                </span>
-                <span className="block mb-5 text-[#334155]">
-                  "অক্ষর পাঠাগার" একটি অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন।
-                  যা গণগ্রন্থাগার অধিদপ্তরে সরকারি সীলমোহরে সনদ-প্রাপ্ত বেসরকারি গণ-পাঠাগার।
-                  নিবন্ধন নং—"বরগুনা বেসর/লাই নং-০৪"।
-                </span>
-                <span className="block mb-5 text-[#334155] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
-                  আমরা শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত মানুষের পাশে থেকে সমাজে ইতিবাচক পরিবর্তন আনতে কাজ করে যাচ্ছি।
-                </span>
-                <span className="block text-[#475569] font-medium p-5 rounded-2xl bg-[#F8FAFC] border-l-4 border-l-[var(--book-blue)] shadow-sm">
-                  অক্ষর পাঠাগারের ডিজিটাল প্ল্যাটফর্মে বিভিন্ন বিষয়ভিত্তিক বই, শিক্ষামূলক উপকরণ এবং নির্ভরযোগ্য ডিজিটাল জ্ঞানসম্পদ সুসংগঠিতভাবে উপস্থাপন করা হয়েছে। বাংলা সাহিত্য, ইসলামিক বই, একাডেমিক বই, শিশু-কিশোর কর্নারসহ বিভিন্ন ক্যাটাগরির সমৃদ্ধ সংগ্রহের পাশাপাশি পাঠকরা সহজেই প্রয়োজনীয় বই খুঁজে নিতে, নতুন বই সম্পর্কে জানতে এবং জ্ঞানচর্চার নতুন দিগন্তে যুক্ত হতে পারবেন।
-                </span>
-              </p>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ======================================
-          §4.4 OUR MISSION
+          §4.4 OUR MISSION & ACTIVITIES
           ====================================== */}
-      <section id="mission" className="section-warm py-16 md:py-24 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-4xl mx-auto">
-            <SectionHeader eyebrow="আমাদের লক্ষ্য" heading="একটি জ্ঞানভিত্তিক সমাজ গড়ার অঙ্গীকার" />
+      <section id="mission" className="pt-4 pb-14 md:pb-20 px-4 sm:px-6 relative">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-10 md:mb-12">
+            <span className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-[#2563EB] block mb-2 font-display-lat">
+              OUR MISSION
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] font-display-bn mb-3">
+              আমাদের লক্ষ্য ও কার্যক্রম
+            </h2>
+            <div className="w-12 h-1 bg-[#2563EB] rounded-full mx-auto" />
+          </div>
 
+          {/* 3 Mission Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Card 1: ডিজিটাল প্রচার */}
             <motion.div
-              className="bg-white rounded-2xl p-8 md:p-12 shadow-xl border border-[#E2E8F0] relative overflow-hidden"
-              initial={{ opacity: 0, y: 24 }}
+              className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/70 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05)] flex items-start gap-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
             >
-              {/* Decorative accent */}
-              <div className="absolute top-0 left-0 w-1.5 h-full" style={{ background: "var(--flame-gradient)" }} />
-
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sky-tint)" }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--book-blue)" strokeWidth="2" className="w-6 h-6">
-                    <path d="M12 6v12M6 12h12" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-display-bn text-xl md:text-2xl font-bold" style={{ color: "var(--ink-navy)" }}>
-                    একটি জ্ঞানভিত্তিক সমাজ গড়ার লক্ষ্যে
-                  </h3>
-                </div>
+              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#DBEAFE] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-[#2563EB]" />
               </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 font-display-bn mb-1.5">
+                  ডিজিটাল প্রচার
+                </h3>
+                <p className="text-xs sm:text-[13px] text-slate-500 font-body-bn leading-relaxed">
+                  দুর্লভ ও গুরুত্বপূর্ণ বই ও রিসোর্সগুলো ডিজিটাল আকারে সংরক্ষণ ও ছড়িয়ে দেওয়া।
+                </p>
+              </div>
+            </motion.div>
 
-              <p className="font-body-bn text-base md:text-lg leading-relaxed mb-6" style={{ color: "#334155" }}>
-                আমাদের লক্ষ্য এমন একটি জ্ঞানভিত্তিক সমাজ গড়ে তোলা, যেখানে শিক্ষা, বই, গবেষণা, নৈতিকতা ও মানবিক মূল্যবোধ সকলের কাছে সমানভাবে পৌঁছে যায়। প্রযুক্তিকে কাজে লাগিয়ে আমরা জ্ঞানকে আরও সহজলভ্য, সংগঠিত এবং সবার জন্য উন্মুক্ত করার চেষ্টা করছি।
-              </p>
+            {/* Card 2: শিক্ষামূলক উদ্যোগ */}
+            <motion.div
+              className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/70 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05)] flex items-start gap-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#DCFCE7] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <Users className="w-6 h-6 sm:w-7 sm:h-7 text-[#16A34A]" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 font-display-bn mb-1.5">
+                  শিক্ষামূলক উদ্যোগ
+                </h3>
+                <p className="text-xs sm:text-[13px] text-slate-500 font-body-bn leading-relaxed">
+                  শিক্ষার্থীদের মানসম্মত শিক্ষাসামগ্রী ও গাইডলাইন সরবরাহ করে তাদের শিক্ষাজীবনকে সহজ করা।
+                </p>
+              </div>
+            </motion.div>
 
-              {/* Stats row */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                {[
-                  { value: "শিক্ষা", desc: "জ্ঞানচর্চার প্রসার" },
-                  { value: "মানবিকতা", desc: "সামাজিক দায়বদ্ধতা" },
-                  { value: "গবেষণা", desc: "তথ্যভিত্তিক জ্ঞান" },
-                  { value: "প্রযুক্তি", desc: "জ্ঞানের সহজলভ্যতা" },
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.value}
-                    className="text-center p-4 rounded-xl"
-                    style={{ background: "#F8FAFC" }}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-10%" }}
-                    transition={{ duration: 0.3, delay: i * 0.08 }}
-                  >
-                    <p className="font-display-bn text-sm font-bold mb-1" style={{ color: "var(--book-blue)" }}>
-                      {item.value}
-                    </p>
-                    <p className="font-body-bn text-xs" style={{ color: "#64748b" }}>
-                      {item.desc}
-                    </p>
-                  </motion.div>
-                ))}
+            {/* Card 3: সচেতনতা ও সহযোগিতা */}
+            <motion.div
+              className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/70 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05)] flex items-start gap-4 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#F3E8FF] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <Globe className="w-6 h-6 sm:w-7 sm:h-7 text-[#9333EA]" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 font-display-bn mb-1.5">
+                  সচেতনতা ও সহযোগিতা
+                </h3>
+                <p className="text-xs sm:text-[13px] text-slate-500 font-body-bn leading-relaxed">
+                  অসহায় ও সুবিধাবঞ্চিত মানুষের মধ্যে শিক্ষার আলো পৌঁছে দিতে সচেতনতা ও সহযোগিতা করা।
+                </p>
               </div>
             </motion.div>
           </div>

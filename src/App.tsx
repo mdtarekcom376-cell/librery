@@ -59,6 +59,8 @@ import PublicSalesPage from "./components/PublicSalesPage";
 import PublicBookDetailsPage from "./components/PublicBookDetailsPage";
 import PublicShopItemDetailsPage from "./components/PublicShopItemDetailsPage";
 import PublicNoticeDetailsPage from "./components/PublicNoticeDetailsPage";
+import PublicBlogPage from "./components/PublicBlogPage";
+import PublicBlogDetailsPage from "./components/PublicBlogDetailsPage";
 
 import { apiClient } from "./api";
 import { Book, WishlistItem, Note, AuditLog, ShopItem } from "./types";
@@ -758,6 +760,7 @@ export default function App() {
   const [selectedPublicBook, setSelectedPublicBook] = useState<any | null>(null);
   const [selectedShopItem, setSelectedShopItem] = useState<any | null>(null);
   const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
+  const [selectedBlogPost, setSelectedBlogPost] = useState<any | null>(null);
 
   const publicHomeRender = (
     <>
@@ -785,6 +788,9 @@ export default function App() {
         }}
         onNavigateToBooks={() => {
           navigate("/books");
+        }}
+        onNavigateToBlog={() => {
+          navigate("/blog");
         }}
         logoBase64={logoBase64}
         onSalesCorner={() => {
@@ -1572,6 +1578,41 @@ export default function App() {
         ) : (
           <Navigate to="/" replace />
         )
+      } />
+
+      <Route path="/blog" element={
+        <PublicBlogPage
+          onBack={() => navigate("/")}
+          logoBase64={logoBase64}
+          onPostSelect={(post) => {
+            setSelectedBlogPost(post);
+            navigate(`/blog/${post.slug || post.id}`);
+          }}
+        />
+      } />
+
+      <Route path="/blog/:idOrSlug" element={
+        <PublicBlogDetailsPage
+          post={selectedBlogPost}
+          onBack={() => { setSelectedBlogPost(null); navigate("/blog"); }}
+          logoBase64={logoBase64}
+          onPostSelect={(post) => {
+            setSelectedBlogPost(post);
+            navigate(`/blog/${post.slug || post.id}`);
+          }}
+        />
+      } />
+
+      <Route path="/blog/view" element={
+        <PublicBlogDetailsPage
+          post={selectedBlogPost}
+          onBack={() => { setSelectedBlogPost(null); navigate("/blog"); }}
+          logoBase64={logoBase64}
+          onPostSelect={(post) => {
+            setSelectedBlogPost(post);
+            navigate(`/blog/${post.slug || post.id}`);
+          }}
+        />
       } />
 
       <Route path="/login" element={

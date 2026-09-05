@@ -3749,22 +3749,100 @@ if (process.env.VERCEL) {
     }
   });
 
+  // Default curated blog posts for public API fallback
+  const DEFAULT_SERVER_BLOG_POSTS = [
+    {
+      id: "1",
+      slug: "digital-age-book-reading-habits-guide",
+      title: "ডিজিটাল যুগে বই পড়ার গুরুত্ব ও পাঠাভ্যাস গড়ে তোলার ৫টি সহজ উপায়",
+      category: "blog",
+      eventDate: null,
+      createdAt: "2026-02-28T10:00:00Z",
+      image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80",
+      content: "বর্তমান তথ্যপ্রযুক্তির যুগে আমরা প্রতিদিন অজস্র তথ্য, শর্ট ভিডিও এবং সোশ্যাল মিডিয়ার নোটিফিকেশনের বন্যায় ভেসে যাচ্ছি। কিন্তু গবেষকেরা বলছেন, স্ক্রিনের দ্রুতগতির কনটেন্ট আমাদের তাৎক্ষণিক উত্তেজনা দিলেও তা ধীরে ধীরে মনোযোগের পরিধি ও গভীর চিন্তাশক্তিকে নষ্ট করে দিচ্ছে। এই বাস্তবতায় মুদ্রিত বা ডিজিটাল বই পড়ার অভ্যাস একজন মানুষের মানসিক স্বাস্থ্যের জন্য পরম আশ্রয়ের মতো।"
+    },
+    {
+      id: "2",
+      slug: "five-years-of-akkhor-pathagar-journey-impact",
+      title: "অক্ষর পাঠাগারের ৫ বছর: সুবিধাবঞ্চিত শিশুদের মাঝে শিক্ষার আলো ছড়ানোর গল্প",
+      category: "news",
+      eventDate: null,
+      createdAt: "2026-02-15T09:30:00Z",
+      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+      content: "২০২১ সালের এক বিকেলে বরগুনার পশ্চিম কলেজ রোডের একটি ছোট ভাড়া কক্ষে মাত্র অর্ধশত বই আর কয়েকজন স্বপ্নবাজ তরুণের হাত ধরে যাত্রা শুরু হয়েছিল 'অক্ষর পাঠাগার'-এর। লক্ষ্য ছিল উপকূলীয় অঞ্চলে প্রতিটি মানুষের কাছে বই পৌঁছে দেওয়া এবং সুবিধাবঞ্চিত শিশুদের শিক্ষার আলোয় উদ্ভাসিত করা।"
+    },
+    {
+      id: "3",
+      slug: "top-10-bengali-classic-novels-must-read",
+      title: "বাংলা সাহিত্যের কালজয়ী সেরা ১০টি উপন্যাস যা প্রতিটি বইপ্রেমীর পড়া উচিত",
+      category: "blog",
+      eventDate: null,
+      createdAt: "2026-02-10T14:00:00Z",
+      image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80",
+      content: "বাংলা সাহিত্য বিশ্বসাহিত্যের দরবারে এক অনন্য সম্পদ। আমাদের লেখকেরা গ্রামীণ বাংলার সবুজ প্রকৃতি থেকে শুরু করে মানুষের জটিল মনস্তত্ত্ব ও সমাজ বাস্তবতাকে অপরূপ দক্ষতায় তুলে ধরেছেন। পথের পাঁচালী, শেষের কবিতা থেকে একাত্তরের দিনগুলি—সেরা ১০টি অবশ্য পাঠ্য বাংলা উপন্যাসের সংকলন।"
+    },
+    {
+      id: "4",
+      slug: "role-of-library-in-youth-ethics-and-mental-health",
+      title: "তরুণ প্রজন্মের মানসিক বিকাশ ও নৈতিক শিক্ষায় পাঠাগারের অনন্য ভূমিকা",
+      category: "blog",
+      eventDate: null,
+      createdAt: "2026-01-25T11:15:00Z",
+      image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=80",
+      content: "আজকের তরুণ প্রজন্ম প্রযুক্তিগত দিক দিয়ে যতটা অগ্রসর, মানসিক ও নৈতিক দিক দিয়ে ততটাই চ্যালেঞ্জের মুখোমুখি। ভার্চুয়াল দুনিয়ার আসক্তি ও মানসিক অবসাদ দূর করে সুস্থ নৈতিক জীবন গঠনে পাঠাগার এক নিভৃত শান্তির আশ্রয়।"
+    },
+    {
+      id: "5",
+      slug: "interschool-book-reading-quiz-fest-2026",
+      title: "অক্ষর পাঠাগার আন্তঃস্কুল বইপড়া ও কুইজ উৎসব ২০২৬ — নিবন্ধন ও বিস্তারিত",
+      category: "event",
+      eventDate: "১৫ এপ্রিল, ২০২৬",
+      createdAt: "2026-02-01T08:00:00Z",
+      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
+      content: "শিক্ষার্থীদের মাঝে বই পড়ার আনন্দ ছড়িয়ে দিতে এবং সাধারণ জ্ঞান ও যুক্তিচর্চাকে উৎসাহিত করতে অক্ষর পাঠাগার আয়োজন করতে যাচ্ছে বর্ণাঢ্য 'আন্তঃস্কুল বইপড়া ও কুইজ উৎসব ২০২৬'। বরগুনা জেলার বিভিন্ন বিদ্যালয়ের শিক্ষার্থীরা এই জ্ঞানযজ্ঞে অংশ নিতে পারবে।"
+    },
+    {
+      id: "6",
+      slug: "rare-manuscripts-digital-archiving-project",
+      title: "দুষ্প্রাপ্য ও ঐতিহাসিক পান্ডুলিপি ডিজিটাল আর্কাইভে সংরক্ষণে অক্ষর পাঠাগারের নতুন উদ্যোগ",
+      category: "news",
+      eventDate: null,
+      createdAt: "2026-01-15T12:00:00Z",
+      image: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=80",
+      content: "আমাদের উপকূলীয় অঞ্চল শুধু প্রাকৃতিক সম্পদে নয়, লোকসাহিত্য, পুঁথিসাহিত্য এবং ঐতিহাসিক নথিপত্রেও অত্যন্ত সমৃদ্ধ। শতবর্ষী পুঁথি, লোকসাহিত্য ও দুর্লভ গ্রন্থসমূহ ডিজিটাল প্রযুক্তির সহায়তায় দীর্ঘমেয়াদে সংরক্ষণের যুগান্তকারী প্রকল্প শুরু করেছে অক্ষর পাঠাগার।"
+    },
+    {
+      id: "7",
+      slug: "how-to-build-a-community-library-step-by-step",
+      title: "কীভাবে একটি কমিউনিটি পাঠাগার গড়ে তোলা যায়: স্বপ্ন থেকে বাস্তবায়নের রূপরেখা",
+      category: "blog",
+      eventDate: null,
+      createdAt: "2026-01-05T07:45:00Z",
+      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1200&q=80",
+      content: "একটি এলাকাকে মাদকমুক্ত, অপরাধমুক্ত এবং প্রগতিশীল করতে চাইলে সেখানে একটি সক্রিয় পাঠাগার গড়ে তোলার চেয়ে শক্তিশালী বিকল্প আর কিছু হতে পারে না। স্থান নির্বাচন, বই সংগ্রহ, তহবিল ও ডিজিটাল ক্যাটালগিংয়ের বাস্তব অভিজ্ঞতাভিত্তিক রূপরেখা।"
+    }
+  ];
+
   // Public: Get all blog posts
   app.get("/api/public/blog_posts", async (req, res) => {
     try {
       const [rows]: any = await pool.query("SELECT * FROM blog_posts ORDER BY id DESC");
-      const posts = rows.map((r: any) => ({
-        id: String(r.id),
-        title: r.title,
-        content: r.content,
-        image: r.image || null,
-        category: r.category,
-        eventDate: r.event_date || null,
-        createdAt: r.created_at
-      }));
-      res.json(posts);
+      if (rows && rows.length > 0) {
+        const posts = rows.map((r: any) => ({
+          id: String(r.id),
+          title: r.title,
+          content: r.content,
+          image: r.image || null,
+          category: r.category,
+          eventDate: r.event_date || null,
+          createdAt: r.created_at
+        }));
+        return res.json(posts);
+      }
+      res.json(DEFAULT_SERVER_BLOG_POSTS);
     } catch (err: any) {
-      res.status(500).json({ error: "পোস্ট লোড করতে ব্যর্থ।" });
+      console.warn("Serving fallback blog posts due to DB status:", err.message);
+      res.json(DEFAULT_SERVER_BLOG_POSTS);
     }
   });
 

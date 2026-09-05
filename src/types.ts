@@ -179,4 +179,9 @@ export interface BlogPost {
   category: "blog" | "news" | "event";
   eventDate?: string;
   createdAt: string;
+  slug?: string;
+  metaDescription?: string;
+  readTime?: string;
+  author?: string;
+  tags?: string[];
 }

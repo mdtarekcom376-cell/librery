@@ -25,6 +25,54 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
   
   const [helplineNumber, setHelplineNumber] = useState("");
 
+  const DEFAULT_FALLBACK_ITEMS: ShopItem[] = [
+    {
+      id: "1",
+      name: "অক্ষর অফিসিয়াল প্রিমিয়াম টি-শার্ট",
+      description: "১০০% কটন প্রিমিয়াম ফেব্রিকে তৈরি অক্ষর পাঠাগারের অফিসিয়াল লোগো সম্বলিত টি-শার্ট।",
+      price: 350,
+      category: "টি-শার্ট",
+      imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
+      createdAt: "2026-01-01"
+    },
+    {
+      id: "2",
+      name: "কাস্টমাইজড সিরামিক রিডিং মগ",
+      description: "বই পড়ার সাথে এক কাপ চা বা কফির জন্য অক্ষর পাঠাগারের অনুপ্রেরণামূলক উক্তি সম্বলিত মগ।",
+      price: 250,
+      category: "মগ",
+      imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+      createdAt: "2026-01-01"
+    },
+    {
+      id: "3",
+      name: "অক্ষর হার্ডকভার রিডিং নোটপ্যাড ও ডায়েরি",
+      description: "বই পড়ার নোট রাখা ও পছন্দের উদ্ধৃতি লিখে রাখার জন্য দৃষ্টিনন্দন ডায়েরি।",
+      price: 150,
+      category: "প্যাড",
+      imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+      createdAt: "2026-01-01"
+    },
+    {
+      id: "4",
+      name: "বাংলা সাহিত্য ক্লাসিক বুক বান্ডেল প্যাক",
+      description: "জনপ্রিয় ও কালজয়ী নির্বাচিত ৫টি বইয়ের বিশেষ উপহার বান্ডেল প্যাক।",
+      price: 800,
+      category: "বই",
+      imageUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
+      createdAt: "2026-01-01"
+    },
+    {
+      id: "5",
+      name: "মেটালিক ভিন্টেজ বুকমার্ক সেট (৪ পিস)",
+      description: "বইপ্রেমীদের জন্য নান্দনিক মেটালিক বুকমার্ক সেট।",
+      price: 100,
+      category: "অন্যান্য",
+      imageUrl: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80",
+      createdAt: "2026-01-01"
+    }
+  ];
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -34,12 +82,21 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
         apiClient.get("/public/shop/helpline")
       ]);
 
-      if (itemsRes?.success) setItems(itemsRes.shopItems || []);
-      if (catRes?.success && catRes.categories) setCategories(["সব", ...catRes.categories]);
+      if (itemsRes?.success && itemsRes.shopItems && itemsRes.shopItems.length > 0) {
+        setItems(itemsRes.shopItems);
+      } else {
+        setItems(DEFAULT_FALLBACK_ITEMS);
+      }
+      if (catRes?.success && catRes.categories) {
+        setCategories(["সব", ...catRes.categories]);
+      } else {
+        setCategories(["সব", "টি-শার্ট", "মগ", "প্যাড", "বই", "অন্যান্য"]);
+      }
       if (helpRes?.success && helpRes.helpline?.number) setHelplineNumber(helpRes.helpline.number);
-      
     } catch (err: any) {
-      setErrorMsg("পণ্য তালিকা লোড করতে ব্যর্থ হয়েছে।");
+      // Fallback to default items so user never sees a broken shop
+      setItems(DEFAULT_FALLBACK_ITEMS);
+      setCategories(["সব", "টি-শার্ট", "মগ", "প্যাড", "বই", "অন্যান্য"]);
     } finally {
       setLoading(false);
     }
