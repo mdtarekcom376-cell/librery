@@ -54,6 +54,7 @@ import cornerBanner from "../assets/images/corner-banner.jpg";
 import aboutBookStack from "../assets/images/about-books-stack.webp";
 import Hero3DImage from "./Hero3DImage";
 import NewsletterPopup, { subscribeNewsletter } from "./NewsletterPopup";
+import Footer from "./Footer";
 
 /* ===========================================
    DEMO DATA CONSTANTS
@@ -352,8 +353,6 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [writeSubmitting, setWriteSubmitting] = useState(false);
   const [writeSent, setWriteSent] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [footerEmail, setFooterEmail] = useState("");
-  const [footerSubStatus, setFooterSubStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [realBooks, setRealBooks] = useState<any[]>([]);
   const [hotSalesItems, setHotSalesItems] = useState<any[]>([]);
   const [liveReviews, setLiveReviews] = useState<any[]>([]);
@@ -2223,174 +2222,15 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
       </section>
 
       {/* ======================================
-          §4.13 FOOTER
+          §4.13 FOOTER (New Light & Organic Design)
           ====================================== */}
-      <footer className="py-12 md:py-16 px-4" style={{ background: "var(--ink-navy)", color: "white" }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-10">
-            {/* Brand & Donate */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <img src={logoSrc} alt="Logo" className="w-9 h-9 rounded-lg object-contain bg-white p-0.5" />
-                <span className="font-display-bn text-lg font-bold">অক্ষর পাঠাগার</span>
-              </div>
-              <p className="font-body-bn text-sm leading-relaxed mb-6" style={{ color: "#94a3b8" }}>
-                অরাজনৈতিক, অলাভজনক, শিক্ষামূলক ও মানবিক স্বেচ্ছাসেবী সংগঠন। জ্ঞানচর্চা, শিক্ষা ও মানবিক মূল্যবোধের বিকাশে নিয়োজিত।
-              </p>
-              
-              {/* Donate CTA — Premium Redesign (Reused Component) */}
-              <DonationCTA 
-                title="আলো ছড়ানোর মিছিলে যুক্ত হন" 
-                style={{ width: "100%", maxWidth: "250px", height: "90px" }} 
-              />
-            </div>
-
-            {/* Quick links */}
-            <div>
-              <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
-                দ্রুত লিংক
-              </h4>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: "হোম", href: "#hero" },
-                  { label: "বৈশিষ্ট্য", href: "#features" },
-                  { label: "সদস্যপদ", href: "#membership" },
-                  { label: "যোগাযোগ", href: "#contact" },
-                ].map((link) => (
-                  <button
-                    key={link.href}
-                    onClick={() => scrollTo(link.href)}
-                    className="text-left font-body-bn text-sm cursor-pointer bg-transparent border-none transition-colors"
-                    style={{ color: "#94a3b8" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#94a3b8")}
-                  >
-                    {link.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
-                যোগাযোগ
-              </h4>
-              <div className="flex flex-col gap-3 font-body-bn text-sm" style={{ color: "#94a3b8" }}>
-                <a 
-                  href="https://maps.app.goo.gl/E5vehANcowQ2vcEv5?g_st=aw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-2 group border border-white/10 bg-white/5 p-2 rounded-lg hover:border-[#38BDF8]/50 hover:bg-[#38BDF8]/10 transition-all text-[#94a3b8] hover:text-white"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <MapPin size={16} className="mt-0.5 shrink-0 text-[#38BDF8] group-hover:-translate-y-0.5 transition-transform" />
-                  <span>পশ্চিম কলেজ রোড, বরগুনা, সদর বরগুনা</span>
-                </a>
-                <span className="flex items-center gap-2 px-2 mt-1">
-                  <Phone size={14} className="text-[#64748b]" />
-                  01642-816737, 01798-084404
-                </span>
-                <span className="flex items-center gap-2 px-2 py-1 bg-white/5 rounded-md border border-white/5 w-fit mt-1">
-                  <Mail size={14} className="text-[#38BDF8]" />
-                  <span className="text-white font-bold tracking-wide">hello@okkhorpathagar.com</span>
-                </span>
-                <span className="flex items-center gap-2 px-2">
-                  <Mail size={14} className="text-[#64748b]" />
-                  okkhorpathagar@gmail.com
-                </span>
-              </div>
-            </div>
-
-            {/* Founders */}
-            <div>
-              <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
-                পরিচালনা পরিষদ
-              </h4>
-              <div className="flex flex-col gap-5">
-                <div>
-                  <p className="font-body-bn text-sm font-bold text-white mb-0.5">মোঃ সাইফুল ইসলাম তোহা</p>
-                  <p className="font-body-bn text-xs mb-1" style={{ color: "#94a3b8" }}>প্রতিষ্ঠাতা, পরিচালক, অক্ষর পাঠাগার</p>
-                  <p className="font-body-bn text-xs font-bold" style={{ color: "var(--sky-tint)" }}>01642-816737</p>
-                </div>
-                <div>
-                  <p className="font-body-bn text-sm font-bold text-white mb-0.5">ওমর বিন আব্দুল আজিজ</p>
-                  <p className="font-body-bn text-xs mb-1" style={{ color: "#94a3b8" }}>প্রতিষ্ঠাতা, সহকারী পরিচালক, অক্ষর পাঠাগার</p>
-                  <p className="font-body-bn text-xs font-bold" style={{ color: "var(--sky-tint)" }}>01798-084404</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Newsletter */}
-            <div>
-              <h4 className="font-ui text-sm font-bold uppercase tracking-wider mb-4" style={{ color: "#64748b" }}>
-                আপডেট পান
-              </h4>
-              <p className="font-body-bn text-sm mb-3" style={{ color: "#94a3b8" }}>
-                নতুন বই ও ইভেন্টের খবর সরাসরি পান
-              </p>
-              <form className="flex gap-2" onSubmit={async (e) => {
-                e.preventDefault();
-                const trimmed = footerEmail.trim();
-                if (!trimmed || !/^\S+@\S+\.\S+$/.test(trimmed)) return;
-                setFooterSubStatus("loading");
-                const result = await subscribeNewsletter(trimmed);
-                if (result.success) {
-                  setFooterSubStatus("done");
-                  setFooterEmail("");
-                  setTimeout(() => setFooterSubStatus("idle"), 4000);
-                } else {
-                  setFooterSubStatus("error");
-                  setTimeout(() => setFooterSubStatus("idle"), 3000);
-                }
-              }}>
-                <input
-                  type="email"
-                  value={footerEmail}
-                  onChange={(e) => setFooterEmail(e.target.value)}
-                  placeholder="আপনার ইমেইল"
-                  className="flex-1 px-3 py-2 rounded-lg text-sm font-body-bn border-none"
-                  style={{ background: "rgba(255,255,255,0.1)", color: "white", outline: "none" }}
-                  disabled={footerSubStatus === "loading"}
-                />
-                <button
-                  type="submit"
-                  disabled={footerSubStatus === "loading"}
-                  className="px-3 py-2 rounded-lg cursor-pointer border-none font-ui text-sm font-bold flex items-center justify-center"
-                  style={{ background: "var(--flame-gradient)", color: "white", minWidth: 40 }}
-                >
-                  {footerSubStatus === "loading" ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : footerSubStatus === "done" ? (
-                    <Check size={14} />
-                  ) : (
-                    <Send size={14} />
-                  )}
-                </button>
-              </form>
-              {footerSubStatus === "done" && (
-                <p className="text-xs font-body-bn mt-2" style={{ color: "#4ade80" }}>সাবস্ক্রাইব সফল হয়েছে!</p>
-              )}
-              {footerSubStatus === "error" && (
-                <p className="text-xs font-body-bn mt-2" style={{ color: "#f87171" }}>সমস্যা হয়েছে, আবার চেষ্টা করুন।</p>
-              )}
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="border-t pt-8 mt-4 flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
-            <p className="text-center md:text-left font-body-bn text-sm text-[#94a3b8]">
-              © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩 | Developed by <a href="https://artx.techvrs.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#22242A] transition-colors" style={{ textDecoration: 'none', color: 'inherit', borderBottom: '1px solid rgba(255,255,255,0.3)' }}>ARTX</a>
-            </p>
-            <div className="flex items-center gap-3 bg-white/5 rounded-full pl-3 pr-4 py-2 border border-white/10 hover:bg-white/10 transition-colors cursor-default">
-              <img src={tawhidImg} alt="মোঃ তাওহীদ ইসলাম অন্তর" className="w-7 h-7 rounded-full object-cover border border-white/20" />
-              <span className="font-body-bn text-xs text-[#cbd5e1]">
-                Crafted by — <strong className="text-white font-medium">মোঃ তাওহীদ ইসলাম অন্তর</strong>
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer
+        logoSrc={logoSrc}
+        scrollTo={scrollTo}
+        onNavigateToBooks={onNavigateToBooks}
+        onNavigateToBlog={onNavigateToBlog}
+        onSalesCorner={onSalesCorner}
+      />
 
       {/* All Reviews Modal */}
       <AnimatePresence>
