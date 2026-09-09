@@ -362,8 +362,8 @@ export default function Footer({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-2 items-center">
             
             {/* Left Column: Portrait of Sharif Osman Bin Hadi */}
-            <div className="lg:col-span-3 flex justify-center lg:justify-start items-center">
-              <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-60 lg:h-60 flex items-center justify-center">
+            <div className="lg:col-span-3 flex flex-col items-center justify-center text-center">
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 lg:w-56 lg:h-56 flex items-center justify-center">
                 {/* Floating confetti around character */}
                 <div className="absolute top-4 left-2 w-3.5 h-3.5 border-2 border-pink-300 rotate-12 rounded-xs pointer-events-none" />
                 <div className="absolute top-2 right-6 w-3 h-3 bg-amber-200/80 rotate-45 pointer-events-none" />
@@ -373,11 +373,14 @@ export default function Footer({
 
                 <img
                   src={sharifPortrait}
-                  alt="Sharif Osman Bin Hadi"
+                  alt="শরীফ ওসমান বিন হাদী"
                   className="w-full h-full object-contain select-none"
                   loading="lazy"
                 />
               </div>
+              <p className="text-xs sm:text-[13px] text-slate-700 font-medium font-body-bn italic leading-snug mt-1 max-w-[260px]">
+                “বিপ্লবীর মৃত্যু ঘরের মধ্যে হতে পারে না, তার মৃত্যু হবে রাজপথে গ্লোরির মৃত্যু।”
+              </p>
             </div>
 
             {/* Middle Column: Heading text */}

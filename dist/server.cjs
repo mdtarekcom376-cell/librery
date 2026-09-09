@@ -66,6 +66,11 @@ var pool = import_promise.default.createPool({
   queueLimit: 0,
   connectTimeout: 1e4
 });
+pool.on("connection", (conn) => {
+  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci", (err) => {
+    if (err) console.warn("SET NAMES utf8mb4 failed:", err?.message || err);
+  });
+});
 var db_default = pool;
 
 // server.ts

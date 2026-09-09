@@ -30,5 +30,14 @@ const pool = mysql.createPool({
   connectTimeout: 10000,
 });
 
+// Force every pooled connection to utf8mb4 so Bangla text is never stored as "?".
+// This is belt-and-suspenders on top of `charset: 'utf8mb4'` above, because some
+// shared hosts (cPanel) negotiate latin1 unless SET NAMES is issued explicitly.
+pool.on('connection', (conn: any) => {
+  conn.query('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci', (err: any) => {
+    if (err) console.warn('SET NAMES utf8mb4 failed:', err?.message || err);
+  });
+});
+
 export default pool;
 
