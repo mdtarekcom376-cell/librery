@@ -374,7 +374,7 @@ export default function Footer({
                 <img
                   src={sharifPortrait}
                   alt="Sharif Osman Bin Hadi"
-                  className="w-full h-full object-contain drop-shadow-md select-none"
+                  className="w-full h-full object-contain select-none"
                   loading="lazy"
                 />
               </div>
@@ -434,11 +434,11 @@ export default function Footer({
           </div>
 
           {/* Books Stack Illustration on far right */}
-          <div className="hidden xl:block absolute -top-4 right-4 lg:right-6 xl:right-10 w-44 sm:w-52 h-auto pointer-events-none drop-shadow-md z-0">
+          <div className="hidden xl:block absolute -top-4 right-4 lg:right-6 xl:right-10 w-48 sm:w-56 h-auto pointer-events-none z-0">
             <img
               src={booksIllustration}
               alt="Books Illustration"
-              className="w-full h-auto object-contain rounded-2xl select-none"
+              className="w-full h-auto object-contain select-none"
               loading="lazy"
             />
           </div>
