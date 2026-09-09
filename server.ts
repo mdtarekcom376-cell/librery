@@ -2789,8 +2789,8 @@ if (process.env.VERCEL) {
   // 6. Public Book List (Search & Filter)
   app.get("/api/public/books", async (req, res) => {
     try {
-      const { q, status, group } = req.query;
-      let query = "SELECT * FROM books WHERE 1=1";
+      const { q, status, group, limit } = req.query;
+      let query = "SELECT id, code, name, author, publisher, image_url, status, group_name, description, page_count, price FROM books WHERE 1=1";
       const params: any[] = [];
       
       if (q) {
@@ -2809,6 +2809,9 @@ if (process.env.VERCEL) {
         params.push(group.toString().toLowerCase().trim());
       }
       
+      const numLimit = limit ? Math.min(Math.max(1, parseInt(limit.toString(), 10) || 60), 200) : 60;
+      query += ` ORDER BY id DESC LIMIT ${numLimit}`;
+
       const [rows]: any = await pool.query(query, params);
       const books = rows.map((r: any) => ({
         id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
@@ -2818,32 +2821,37 @@ if (process.env.VERCEL) {
 
       res.json({ success: true, books });
     } catch (err: any) {
+      console.error("GET /api/public/books error:", err);
       res.status(500).json({ error: "বইয়ের তালিকা লোড করা যায়নি।" });
     }
   });
 
+
   // 6.2. Public Corners (Book Groups with counts + top books)
   app.get("/api/public/corners", async (req, res) => {
     try {
-      // Get all distinct group_names with their book counts
+      // Get top 8 distinct group_names with their book counts
       const [groupRows]: any = await pool.query(
         `SELECT group_name, COUNT(*) as book_count 
          FROM books 
-         WHERE group_name IS NOT NULL AND group_name != '' 
+         WHERE group_name IS NOT NULL AND TRIM(group_name) != '' 
          GROUP BY group_name 
-         ORDER BY book_count DESC`
+         ORDER BY book_count DESC 
+         LIMIT 8`
       );
 
-      // For each corner, get the top 5 most-issued books
+      // For each corner, get the top 4 books
       const corners = [];
       for (const row of groupRows) {
         const [topBooks]: any = await pool.query(
           `SELECT b.id, b.code, b.name, b.author, b.image_url,
-                  (SELECT COUNT(*) FROM issues i WHERE i.book_code = b.code) as issue_count
+                  COUNT(i.id) as issue_count
            FROM books b
+           LEFT JOIN issues i ON i.book_code = b.code
            WHERE b.group_name = ?
+           GROUP BY b.id, b.code, b.name, b.author, b.image_url
            ORDER BY issue_count DESC, b.id DESC
-           LIMIT 5`,
+           LIMIT 4`,
           [row.group_name]
         );
 
@@ -2856,7 +2864,7 @@ if (process.env.VERCEL) {
             title: b.name,
             author: b.author,
             imageUrl: b.image_url,
-            reads: b.issue_count || 0
+            reads: Number(b.issue_count) || 0
           }))
         });
       }
@@ -3998,8 +4006,9 @@ if (process.env.VERCEL) {
 
   // Background Database Table Initialization and Migrations
   async function initDatabase() {
+    let connection: any;
     try {
-      const connection = await pool.getConnection();
+      connection = await pool.getConnection();
       await connection.query(`
         CREATE TABLE IF NOT EXISTS reviews (
           id INT AUTO_INCREMENT PRIMARY KEY,
@@ -4090,10 +4099,13 @@ if (process.env.VERCEL) {
         }
       } catch (migErr) { console.warn("image_url migration check:", migErr); }
 
-      connection.release();
       console.log("Database initialized successfully.");
     } catch (e) {
       console.error("Database init error:", e);
+    } finally {
+      if (connection) {
+        try { connection.release(); } catch (_) {}
+      }
     }
   }
 

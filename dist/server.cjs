@@ -62,14 +62,9 @@ var pool = import_promise.default.createPool({
   port: dbPort,
   charset: "utf8mb4",
   waitForConnections: true,
-  connectionLimit: 4,
+  connectionLimit: 8,
   queueLimit: 0,
   connectTimeout: 1e4
-});
-pool.on("connection", (conn) => {
-  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci", (err) => {
-    if (err) console.error("Failed to set charset on connection:", err?.message || err);
-  });
 });
 var db_default = pool;
 
@@ -2567,8 +2562,8 @@ app.get("/api/public/stats", async (req, res) => {
 });
 app.get("/api/public/books", async (req, res) => {
   try {
-    const { q, status, group } = req.query;
-    let query = "SELECT * FROM books WHERE 1=1";
+    const { q, status, group, limit } = req.query;
+    let query = "SELECT id, code, name, author, publisher, image_url, status, group_name, description, page_count, price FROM books WHERE 1=1";
     const params = [];
     if (q) {
       query += " AND (LOWER(name) LIKE ? OR LOWER(code) LIKE ? OR LOWER(author) LIKE ? OR LOWER(publisher) LIKE ?)";
@@ -2583,6 +2578,8 @@ app.get("/api/public/books", async (req, res) => {
       query += " AND LOWER(group_name) = ?";
       params.push(group.toString().toLowerCase().trim());
     }
+    const numLimit = limit ? Math.min(Math.max(1, parseInt(limit.toString(), 10) || 60), 200) : 60;
+    query += ` ORDER BY id DESC LIMIT ${numLimit}`;
     const [rows] = await db_default.query(query, params);
     const books = rows.map((r) => ({
       id: String(r.id),
@@ -2599,6 +2596,7 @@ app.get("/api/public/books", async (req, res) => {
     }));
     res.json({ success: true, books });
   } catch (err) {
+    console.error("GET /api/public/books error:", err);
     res.status(500).json({ error: "\u09AC\u0987\u09DF\u09C7\u09B0 \u09A4\u09BE\u09B2\u09BF\u0995\u09BE \u09B2\u09CB\u09A1 \u0995\u09B0\u09BE \u09AF\u09BE\u09DF\u09A8\u09BF\u0964" });
   }
 });
@@ -2607,19 +2605,22 @@ app.get("/api/public/corners", async (req, res) => {
     const [groupRows] = await db_default.query(
       `SELECT group_name, COUNT(*) as book_count 
          FROM books 
-         WHERE group_name IS NOT NULL AND group_name != '' 
+         WHERE group_name IS NOT NULL AND TRIM(group_name) != '' 
          GROUP BY group_name 
-         ORDER BY book_count DESC`
+         ORDER BY book_count DESC 
+         LIMIT 8`
     );
     const corners = [];
     for (const row of groupRows) {
       const [topBooks] = await db_default.query(
         `SELECT b.id, b.code, b.name, b.author, b.image_url,
-                  (SELECT COUNT(*) FROM issues i WHERE i.book_code = b.code) as issue_count
+                  COUNT(i.id) as issue_count
            FROM books b
+           LEFT JOIN issues i ON i.book_code = b.code
            WHERE b.group_name = ?
+           GROUP BY b.id, b.code, b.name, b.author, b.image_url
            ORDER BY issue_count DESC, b.id DESC
-           LIMIT 5`,
+           LIMIT 4`,
         [row.group_name]
       );
       corners.push({
@@ -2631,7 +2632,7 @@ app.get("/api/public/corners", async (req, res) => {
           title: b.name,
           author: b.author,
           imageUrl: b.image_url,
-          reads: b.issue_count || 0
+          reads: Number(b.issue_count) || 0
         }))
       });
     }
@@ -3576,8 +3577,9 @@ app.get("/api/health", async (req, res) => {
   }
 });
 async function initDatabase() {
+  let connection;
   try {
-    const connection = await db_default.getConnection();
+    connection = await db_default.getConnection();
     await connection.query(`
         CREATE TABLE IF NOT EXISTS reviews (
           id INT AUTO_INCREMENT PRIMARY KEY,
@@ -3670,10 +3672,16 @@ async function initDatabase() {
     } catch (migErr) {
       console.warn("image_url migration check:", migErr);
     }
-    connection.release();
     console.log("Database initialized successfully.");
   } catch (e) {
     console.error("Database init error:", e);
+  } finally {
+    if (connection) {
+      try {
+        connection.release();
+      } catch (_) {
+      }
+    }
   }
 }
 async function startServer() {
