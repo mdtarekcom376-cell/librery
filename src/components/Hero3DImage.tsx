@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 
-import heroImage from "../assets/images/hero-3d-stage.webp";
+import heroImage from "../assets/images/hero-3d-stage.png";
 import fallbackImage from "../assets/images/akkhor_logo_1781456142605.jpg";
 
 export default function Hero3DImage() {
