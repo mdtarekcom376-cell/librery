@@ -670,11 +670,11 @@ export default function Footer({
               </div>
             </div>
 
-            {/* Right Col: Developer Credit & Minimal Crafted Credit (Span 4) */}
+            {/* Right Col: Developer Credit & Project Initiator Credit (Span 4) */}
             <div className="md:col-span-4 flex flex-col items-center md:items-end justify-center gap-1.5">
               <DeveloperCreditBadge />
               <p className="text-xs text-slate-500 font-display-bn flex items-center gap-1">
-                Crafted by — <span className="font-semibold text-slate-700">মোঃ তাওহীদ ইসলাম ওমর</span>
+                Project Initiator — <span className="font-semibold text-slate-700">মোঃ তাওহীদ ইসলাম ওমর</span>
               </p>
             </div>
 
