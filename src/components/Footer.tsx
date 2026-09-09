@@ -19,6 +19,7 @@ import {
 import tawhidImg from "../assets/images/tawhid.png";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
 import { subscribeNewsletter } from "./NewsletterPopup";
+import DeveloperCreditBadge from "./DeveloperCreditBadge";
 
 interface FooterProps {
   logoSrc?: string;
@@ -670,18 +671,19 @@ export default function Footer({
               </div>
             </div>
 
-            {/* Right Col: Crafted by pill badge (Span 4) */}
-            <div className="md:col-span-4 flex items-center justify-center md:justify-end">
-              <div className="flex items-center gap-2.5 bg-[#FFF0E2] border border-[#FCDDC6] rounded-full px-4 py-1.5 shadow-2xs">
+            {/* Right Col: Developer Credit & Crafted by badges (Span 4) */}
+            <div className="md:col-span-4 flex flex-wrap items-center justify-center md:justify-end gap-2.5">
+              <DeveloperCreditBadge />
+              <div className="flex items-center gap-2 bg-[#FFF0E2] border border-[#FCDDC6] rounded-full px-3.5 py-1.5 shadow-2xs">
                 <img
                   src={tawhidImg}
                   alt="মোঃ তাওহীদ ইসলাম ওমর"
-                  className="w-7 h-7 rounded-full object-cover border border-amber-300/80 shrink-0"
+                  className="w-6 h-6 rounded-full object-cover border border-amber-300/80 shrink-0"
                 />
                 <span className="text-xs text-slate-800 font-display-bn">
                   Crafted by — <strong className="font-bold text-slate-900">মোঃ তাওহীদ ইসলাম ওমর</strong>
                 </span>
-                <Heart size={14} className="text-[#E11D48] shrink-0 fill-none" />
+                <Heart size={13} className="text-[#E11D48] shrink-0 fill-none" />
               </div>
             </div>
 

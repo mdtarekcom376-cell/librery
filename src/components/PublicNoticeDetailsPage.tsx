@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowLeft, Bell, Calendar, Clock } from "lucide-react";
 import { motion } from "motion/react";
+import DeveloperCreditBadge from "./DeveloperCreditBadge";
 
 interface PublicNoticeDetailsPageProps {
   notice: {
@@ -135,6 +136,9 @@ export default function PublicNoticeDetailsPage({
         >
           © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
         </p>
+        <div className="mt-3 flex items-center justify-center">
+          <DeveloperCreditBadge size="sm" />
+        </div>
         <button
           onClick={onBack}
           className="mt-3 flex items-center justify-center mx-auto gap-1 text-xs text-[#F25A29] hover:text-[#e04818] cursor-pointer bg-transparent border-none font-bold group"

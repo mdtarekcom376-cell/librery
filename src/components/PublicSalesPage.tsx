@@ -3,6 +3,7 @@ import { ArrowLeft, Store, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import PublicShopView from "./PublicShopView";
 import DonationCTA from "./DonationCTA";
+import DeveloperCreditBadge from "./DeveloperCreditBadge";
 
 import { ShopItem } from "../types";
 
@@ -147,6 +148,9 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
         <p className="text-xs text-[#8E8E93] font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
           © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
         </p>
+        <div className="mt-3 flex items-center justify-center">
+          <DeveloperCreditBadge size="sm" />
+        </div>
         <button
           onClick={onBack}
           className="mt-3 flex items-center justify-center mx-auto gap-1 text-xs text-[#F25A29] hover:text-[#e04818] cursor-pointer bg-transparent border-none font-bold group"

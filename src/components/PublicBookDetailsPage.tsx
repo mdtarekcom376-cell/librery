@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowLeft, BookOpen, Package, User, Building, Hash } from "lucide-react";
 import { motion } from "motion/react";
 import { Book } from "../types";
+import DeveloperCreditBadge from "./DeveloperCreditBadge";
 
 interface PublicBookDetailsPageProps {
   book: Book;
@@ -176,6 +177,9 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
         <p className="text-xs text-[#6B6B70] font-bold" style={{ fontFamily: "'Noto Serif Bengali', serif" }}>
           © ২০২৬ অক্ষর পাঠাগার। সর্বস্বত্ব সংরক্ষিত। বাংলায় তৈরি 🇧🇩
         </p>
+        <div className="mt-3 flex items-center justify-center">
+          <DeveloperCreditBadge size="sm" />
+        </div>
         <button
           onClick={onBack}
           className="mt-3 flex items-center justify-center mx-auto gap-1 text-xs text-[#F25A29] hover:text-[#e04818] cursor-pointer bg-transparent border-none font-bold group"
