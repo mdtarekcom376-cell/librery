@@ -33,23 +33,27 @@ __export(server_exports, {
 });
 module.exports = __toCommonJS(server_exports);
 var import_express = __toESM(require("express"), 1);
-var import_path = __toESM(require("path"), 1);
-var import_fs = __toESM(require("fs"), 1);
+var import_path2 = __toESM(require("path"), 1);
+var import_fs2 = __toESM(require("fs"), 1);
 var import_crypto = __toESM(require("crypto"), 1);
 var import_multer = __toESM(require("multer"), 1);
 
 // src/db.ts
 var import_promise = __toESM(require("mysql2/promise"), 1);
 var import_dotenv = __toESM(require("dotenv"), 1);
+var import_path = __toESM(require("path"), 1);
+var import_fs = __toESM(require("fs"), 1);
 import_dotenv.default.config();
-var dbHost = process.env.DB_HOST || "127.0.0.1";
-var dbUser = process.env.DB_USER || "root";
-var dbPassword = process.env.DB_PASSWORD || "";
-var dbName = process.env.DB_NAME || "librery";
-var dbPort = parseInt(process.env.DB_PORT || "3306", 10);
-if (!process.env.DB_USER) {
-  console.warn("\u26A0\uFE0F Warning: DB_USER is not defined in environment variables! Using fallback 'root'. On cPanel, ensure DB_USER is configured in the Node.js selector.");
+import_dotenv.default.config({ path: import_path.default.join(__dirname, "..", ".env") });
+import_dotenv.default.config({ path: import_path.default.join(__dirname, ".env") });
+if (import_fs.default.existsSync("/home/okkhorpa/librery/.env")) {
+  import_dotenv.default.config({ path: "/home/okkhorpa/librery/.env" });
 }
+var dbHost = process.env.DB_HOST || "127.0.0.1";
+var dbUser = process.env.DB_USER || "okkhorpa_tawha";
+var dbPassword = process.env.DB_PASSWORD || "@admin.com";
+var dbName = process.env.DB_NAME || "okkhorpa_okkhorpa_pathagar";
+var dbPort = parseInt(process.env.DB_PORT || "3306", 10);
 var pool = import_promise.default.createPool({
   host: dbHost === "localhost" ? "127.0.0.1" : dbHost,
   user: dbUser,
@@ -287,9 +291,9 @@ app.get("/api/public/firebase-config", async (req, res) => {
     if (rows.length > 0 && rows[0].setting_value.apiKey) {
       return res.json(rows[0].setting_value);
     }
-    const configPath = import_path.default.join(process.cwd(), "firebase-applet-config.json");
-    if (import_fs.default.existsSync(configPath)) {
-      const fileContent = import_fs.default.readFileSync(configPath, "utf-8");
+    const configPath = import_path2.default.join(process.cwd(), "firebase-applet-config.json");
+    if (import_fs2.default.existsSync(configPath)) {
+      const fileContent = import_fs2.default.readFileSync(configPath, "utf-8");
       const defaultFirebase = JSON.parse(fileContent);
       return res.json(defaultFirebase);
     }
@@ -3017,12 +3021,12 @@ app.get("/api/bulk-raw", authenticateAdmin, async (req, res) => {
 });
 app.post("/api/settings/maintenance/clear-temp", authenticateAdmin, async (req, res) => {
   try {
-    const tmpDir = import_path.default.join(__dirname, "uploads", "tmp");
+    const tmpDir = import_path2.default.join(__dirname, "uploads", "tmp");
     let count = 0;
-    if (import_fs.default.existsSync(tmpDir)) {
-      const files = import_fs.default.readdirSync(tmpDir);
+    if (import_fs2.default.existsSync(tmpDir)) {
+      const files = import_fs2.default.readdirSync(tmpDir);
       for (const file of files) {
-        import_fs.default.unlinkSync(import_path.default.join(tmpDir, file));
+        import_fs2.default.unlinkSync(import_path2.default.join(tmpDir, file));
         count++;
       }
     }
@@ -3450,20 +3454,20 @@ app.get("/api/public/blog_posts", async (req, res) => {
     res.json(DEFAULT_SERVER_BLOG_POSTS);
   }
 });
-var submissionsUploadDir = process.env.VERCEL ? import_path.default.join("/tmp", "uploads", "submissions") : import_path.default.join(process.cwd(), "uploads", "submissions");
-if (!import_fs.default.existsSync(submissionsUploadDir)) {
-  import_fs.default.mkdirSync(submissionsUploadDir, { recursive: true });
+var submissionsUploadDir = process.env.VERCEL ? import_path2.default.join("/tmp", "uploads", "submissions") : import_path2.default.join(process.cwd(), "uploads", "submissions");
+if (!import_fs2.default.existsSync(submissionsUploadDir)) {
+  import_fs2.default.mkdirSync(submissionsUploadDir, { recursive: true });
 }
 var submissionStorage = import_multer.default.diskStorage({
   destination: (req, file, cb) => cb(null, submissionsUploadDir),
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = import_path.default.extname(file.originalname);
+    const ext = import_path2.default.extname(file.originalname);
     cb(null, `submission-${uniqueSuffix}${ext}`);
   }
 });
 var uploadSubmission = (0, import_multer.default)({ storage: submissionStorage, limits: { fileSize: 10 * 1024 * 1024 } });
-app.use("/uploads", import_express.default.static(import_path.default.join(process.cwd(), "uploads")));
+app.use("/uploads", import_express.default.static(import_path2.default.join(process.cwd(), "uploads")));
 app.post("/api/submissions", (req, res, next) => {
   uploadSubmission.single("attachment")(req, res, function(err) {
     if (err) {
@@ -3673,7 +3677,7 @@ async function initDatabase() {
   }
 }
 async function startServer() {
-  const distPath = import_fs.default.existsSync(import_path.default.join(__dirname, "index.html")) ? __dirname : import_fs.default.existsSync(import_path.default.join(process.cwd(), "dist", "index.html")) ? import_path.default.join(process.cwd(), "dist") : process.cwd();
+  const distPath = import_fs2.default.existsSync(import_path2.default.join(__dirname, "index.html")) ? __dirname : import_fs2.default.existsSync(import_path2.default.join(process.cwd(), "dist", "index.html")) ? import_path2.default.join(process.cwd(), "dist") : process.cwd();
   if (process.env.NODE_ENV !== "production") {
     try {
       const { createServer: createViteServer } = await import("vite");
@@ -3685,12 +3689,12 @@ async function startServer() {
     } catch (e) {
       console.warn("Vite not found or failed to load. Falling back to static files (Production mode).");
       app.use(import_express.default.static(distPath));
-      app.get("*", (req, res) => res.sendFile(import_path.default.join(distPath, "index.html")));
+      app.get("*", (req, res) => res.sendFile(import_path2.default.join(distPath, "index.html")));
     }
   } else {
     app.use(import_express.default.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(import_path.default.join(distPath, "index.html"));
+      res.sendFile(import_path2.default.join(distPath, "index.html"));
     });
   }
   if (!process.env.VERCEL) {
