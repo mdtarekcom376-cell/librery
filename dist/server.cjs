@@ -58,7 +58,7 @@ var pool = import_promise.default.createPool({
   port: dbPort,
   charset: "utf8mb4",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 4,
   queueLimit: 0,
   connectTimeout: 1e4
 });
@@ -141,15 +141,16 @@ async function verifySignedToken(token) {
 var app = (0, import_express.default)();
 app.use(import_express.default.json({ limit: "50mb" }));
 app.use(import_express.default.urlencoded({ extended: true, limit: "50mb" }));
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
   try {
     if (req.method === "GET" && !req.url.startsWith("/api/") && !req.url.startsWith("/uploads/") && !req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|json)$/i)) {
       const todayStr = getBangladeshDateString();
-      await db_default.query(
+      db_default.query(
         `INSERT INTO site_traffic (date, view_count) VALUES (?, 1)
            ON DUPLICATE KEY UPDATE view_count = view_count + 1`,
         [todayStr]
-      );
+      ).catch(() => {
+      });
     }
   } catch (err) {
   }

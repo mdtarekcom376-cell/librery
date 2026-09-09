@@ -279,19 +279,19 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
   // ----------- SITE TRAFFIC TRACKING MIDDLEWARE -----------
   // Must run BEFORE Vercel URL normalization so it sees the original request path.
   // Tracks actual page visits (non-API GET requests), not API calls.
-  app.use(async (req, res, next) => {
+  app.use((req, res, next) => {
     try {
       // Only track GET requests that are NOT API calls (i.e., actual page loads / SPA navigation)
       if (req.method === "GET" && !req.url.startsWith("/api/") && !req.url.startsWith("/uploads/") && !req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|json)$/i)) {
         const todayStr = getBangladeshDateString();
-        await pool.query(
+        pool.query(
           `INSERT INTO site_traffic (date, view_count) VALUES (?, 1)
            ON DUPLICATE KEY UPDATE view_count = view_count + 1`,
           [todayStr]
-        );
+        ).catch(() => {});
       }
     } catch (err) {
-      // Silently ignore tracking errors — they should never block the request
+      // Silently ignore tracking errors
     }
     next();
   });
