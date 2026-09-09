@@ -3977,8 +3977,27 @@ if (process.env.VERCEL) {
     }
   });
 
-  // Vite middleware setup and server listening
-  async function initServerListening() {
+  // Health check endpoint for debugging and uptime monitors
+  app.get("/api/health", async (req, res) => {
+    try {
+      const [rows]: any = await pool.query("SELECT 1 as ok");
+      res.json({
+        status: "ok",
+        database: "connected",
+        time: new Date().toISOString(),
+      });
+    } catch (err: any) {
+      res.status(500).json({
+        status: "degraded",
+        database: "disconnected",
+        error: err?.message || String(err),
+        time: new Date().toISOString(),
+      });
+    }
+  });
+
+  // Background Database Table Initialization and Migrations
+  async function initDatabase() {
     try {
       const connection = await pool.getConnection();
       await connection.query(`
@@ -4071,12 +4090,21 @@ if (process.env.VERCEL) {
         }
       } catch (migErr) { console.warn("image_url migration check:", migErr); }
 
-
       connection.release();
       console.log("Database initialized successfully.");
     } catch (e) {
       console.error("Database init error:", e);
     }
+  }
+
+  // Vite middleware setup and server listening
+  async function startServer() {
+    // Determine dist folder path reliably
+    const distPath = fs.existsSync(path.join(__dirname, "index.html"))
+      ? __dirname
+      : (fs.existsSync(path.join(process.cwd(), "dist", "index.html"))
+          ? path.join(process.cwd(), "dist")
+          : process.cwd());
 
     if (process.env.NODE_ENV !== "production") {
       try {
@@ -4087,13 +4115,11 @@ if (process.env.VERCEL) {
         });
         app.use(vite.middlewares);
       } catch (e) {
-        console.warn("Vite not found or failed to load. Falling back to static files (Production mode). Please set NODE_ENV=production in your .env file.");
-        const distPath = path.join(process.cwd(), "dist");
+        console.warn("Vite not found or failed to load. Falling back to static files (Production mode).");
         app.use(express.static(distPath));
         app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
       }
     } else {
-      const distPath = path.join(process.cwd(), "dist");
       app.use(express.static(distPath));
       app.get("*", (req, res) => {
         res.sendFile(path.join(distPath, "index.html"));
@@ -4104,12 +4130,17 @@ if (process.env.VERCEL) {
       const PORT = process.env.PORT || 3000;
       app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
+        // Run database initialization in the background so HTTP listener is never delayed
+        initDatabase().catch((dbErr) => console.error("Database init failed:", dbErr));
       });
+    } else {
+      initDatabase().catch((dbErr) => console.error("Database init failed:", dbErr));
     }
   }
 
-  initServerListening().catch((error) => {
+  startServer().catch((error) => {
     console.error("Failed to start server", error);
   });
 
   export default app;
+

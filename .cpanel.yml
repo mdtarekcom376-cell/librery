@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/okkhorpa/library/
+    - export DEPLOYPATH=/home/okkhorpa/librery/
     - /bin/cp -R * $DEPLOYPATH
     - cd $DEPLOYPATH && npm install
     - cd $DEPLOYPATH && npm run build
