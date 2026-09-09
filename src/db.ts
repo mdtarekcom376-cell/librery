@@ -30,9 +30,9 @@ const pool = mysql.createPool({
   connectTimeout: 10000,
 });
 
-pool.on('connection', (conn) => {
-  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci").catch((err: any) => {
-    console.error("Failed to set charset on connection:", err?.message || err);
+pool.on('connection', (conn: any) => {
+  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci", (err: any) => {
+    if (err) console.error("Failed to set charset on connection:", err?.message || err);
   });
 });
 

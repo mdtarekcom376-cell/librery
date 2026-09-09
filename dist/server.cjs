@@ -67,8 +67,8 @@ var pool = import_promise.default.createPool({
   connectTimeout: 1e4
 });
 pool.on("connection", (conn) => {
-  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci").catch((err) => {
-    console.error("Failed to set charset on connection:", err?.message || err);
+  conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci", (err) => {
+    if (err) console.error("Failed to set charset on connection:", err?.message || err);
   });
 });
 var db_default = pool;
