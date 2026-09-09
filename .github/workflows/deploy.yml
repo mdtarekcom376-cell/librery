@@ -31,6 +31,8 @@ jobs:
           cp -r dist _deploy/
           cp package.json _deploy/
           cp package-lock.json _deploy/
+          mkdir -p _deploy/tmp
+          touch _deploy/tmp/restart.txt
           
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
