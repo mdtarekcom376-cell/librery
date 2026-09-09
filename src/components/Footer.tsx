@@ -219,10 +219,12 @@ export default function Footer({
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-900 text-xs sm:text-[13px] font-display-bn leading-tight">
-                    মোঃ মাহফুজ ইসলাম তোহা
+                    মোঃ সাইফুল ইসলাম তোহা
                   </h5>
-                  <p className="text-[11px] text-slate-500 font-body-bn leading-tight mt-0.5">
-                    প্রতিষ্ঠাতা, পরিচালক, অক্ষর পাঠাগার
+                  <p className="text-[11px] text-slate-500 font-body-bn leading-snug mt-0.5">
+                    প্রতিষ্ঠাতা, পরিচালক
+                    <br />
+                    অক্ষর পাঠাগার
                   </p>
                   <a
                     href="tel:01642816737"
@@ -242,10 +244,12 @@ export default function Footer({
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-900 text-xs sm:text-[13px] font-display-bn leading-tight">
-                    এমরান বিন আব্দুল আজিজ
+                    ওমর বিন আব্দুল আজিজ
                   </h5>
-                  <p className="text-[11px] text-slate-500 font-body-bn leading-tight mt-0.5">
-                    প্রতিষ্ঠাতা, সহকারী পরিচালক, অক্ষর পাঠাগার
+                  <p className="text-[11px] text-slate-500 font-body-bn leading-snug mt-0.5">
+                    প্রতিষ্ঠাতা, সহকারী পরিচালক
+                    <br />
+                    অক্ষর পাঠাগার
                   </p>
                   <a
                     href="tel:01798084404"
@@ -515,7 +519,7 @@ export default function Footer({
             <div className="md:col-span-4 flex flex-col items-center md:items-end justify-center gap-1.5">
               <DeveloperCreditBadge />
               <p className="text-xs text-slate-500 font-display-bn flex items-center gap-1">
-                Project Initiator — <span className="font-semibold text-slate-700">মোঃ তাওহীদ ইসলাম ওমর</span>
+                Project Initiator — <span className="font-semibold text-slate-700">মোঃ তাওহীদ ইসলাম অন্তর</span>
               </p>
             </div>
 
