@@ -3559,6 +3559,16 @@ app.put("/api/submissions/:id/status", authenticateAdmin, async (req, res) => {
     res.status(500).json({ error: "\u09B8\u09CD\u099F\u09CD\u09AF\u09BE\u099F\u09BE\u09B8 \u0986\u09AA\u09A1\u09C7\u099F \u0995\u09B0\u09A4\u09C7 \u09AC\u09CD\u09AF\u09B0\u09CD\u09A5\u0964" });
   }
 });
+app.delete("/api/submissions/:id", authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db_default.query("DELETE FROM contact_submissions WHERE id = ?", [id]);
+    addLog("\u09B2\u09C7\u0996\u09BE/\u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE", `\u0986\u0987\u09A1\u09BF ${id} \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE \u09B9\u09DF\u09C7\u099B\u09C7\u0964`);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "\u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09A4\u09C7 \u09AC\u09CD\u09AF\u09B0\u09CD\u09A5\u0964" });
+  }
+});
 app.get("/api/health", async (req, res) => {
   try {
     const [rows] = await db_default.query("SELECT 1 as ok");
@@ -3580,6 +3590,11 @@ async function initDatabase() {
   let connection;
   try {
     connection = await db_default.getConnection();
+    try {
+      await connection.query("ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+    } catch (dbColErr) {
+      console.warn("database collation alter check:", dbColErr);
+    }
     await connection.query(`
         CREATE TABLE IF NOT EXISTS reviews (
           id INT AUTO_INCREMENT PRIMARY KEY,
@@ -3591,7 +3606,7 @@ async function initDatabase() {
           status VARCHAR(50) NOT NULL,
           created_at DATETIME NOT NULL,
           reviewed_at DATETIME
-        );
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
       `);
     await connection.query(`
         CREATE TABLE IF NOT EXISTS contact_submissions (
@@ -3605,8 +3620,42 @@ async function initDatabase() {
           attachment_path VARCHAR(500),
           status VARCHAR(50) NOT NULL DEFAULT 'pending',
           created_at DATETIME NOT NULL
-        );
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
       `);
+    try {
+      await connection.query("ALTER TABLE contact_submissions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+      console.log("Migration: Converted contact_submissions to utf8mb4_unicode_ci.");
+    } catch (migErr) {
+      console.warn("contact_submissions utf8mb4 migration:", migErr);
+    }
+    try {
+      await connection.query("ALTER TABLE reviews CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+      console.log("Migration: Converted reviews to utf8mb4_unicode_ci.");
+    } catch (migErr) {
+      console.warn("reviews utf8mb4 migration:", migErr);
+    }
+    const coreTablesToConvert = [
+      "books",
+      "members",
+      "issues",
+      "wishlist",
+      "notes",
+      "audit_logs",
+      "shop_items",
+      "shop_categories",
+      "notices",
+      "payment_methods",
+      "book_groups",
+      "settings",
+      "blog_posts",
+      "site_traffic"
+    ];
+    for (const tbl of coreTablesToConvert) {
+      try {
+        await connection.query(`ALTER TABLE ${tbl} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
+      } catch (_) {
+      }
+    }
     try {
       const [cols] = await connection.query("SHOW COLUMNS FROM contact_submissions LIKE 'phone'");
       if (cols.length === 0) {

@@ -47,6 +47,20 @@ export default function WritingsManager({ onRefreshStats }: { onRefreshStats?: (
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("আপনি কি নিশ্চিতভাবে এই বার্তাটি মুছে ফেলতে চান?")) return;
+    setActionLoading(id);
+    try {
+      await apiClient.delete(`/submissions/${id}`);
+      await loadSubmissions();
+      onRefreshStats?.();
+    } catch (err: any) {
+      alert(err.message || "মুছে ফেলতে ব্যর্থ হয়েছে।");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const filtered = submissions.filter(s => filter === "all" ? true : s.status === filter);
   const pendingCount = submissions.filter(s => s.status === "pending").length;
   const reviewedCount = submissions.filter(s => s.status === "reviewed").length;
@@ -167,25 +181,36 @@ export default function WritingsManager({ onRefreshStats }: { onRefreshStats?: (
               )}
 
               {/* Actions */}
-              <div className="flex gap-2 flex-wrap">
-                {submission.status === "pending" && (
-                  <>
-                    <button
-                      onClick={() => handleStatusUpdate(submission.id, "reviewed")}
-                      disabled={actionLoading === submission.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#E5E5EA]/40 text-[#22242A] border border-[#E5E5EA] rounded-lg hover:bg-[#E5E5EA] transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                      <CheckCircle2 size={13} /> পর্যালোচনা সম্পন্ন
-                    </button>
-                    <button
-                      onClick={() => handleStatusUpdate(submission.id, "rejected")}
-                      disabled={actionLoading === submission.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#F5F3EF] text-[#FF6B6B] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                      <XCircle size={13} /> বাতিল করুন
-                    </button>
-                  </>
-                )}
+              <div className="flex gap-2 flex-wrap items-center justify-between">
+                <div className="flex gap-2 flex-wrap">
+                  {submission.status === "pending" && (
+                    <>
+                      <button
+                        onClick={() => handleStatusUpdate(submission.id, "reviewed")}
+                        disabled={actionLoading === submission.id}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#E5E5EA]/40 text-[#22242A] border border-[#E5E5EA] rounded-lg hover:bg-[#E5E5EA] transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        <CheckCircle2 size={13} /> পর্যালোচনা সম্পন্ন
+                      </button>
+                      <button
+                        onClick={() => handleStatusUpdate(submission.id, "rejected")}
+                        disabled={actionLoading === submission.id}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#F5F3EF] text-[#FF6B6B] border border-[#E5E5EA] rounded-lg hover:bg-[#F5F3EF] transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        <XCircle size={13} /> বাতিল করুন
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handleDelete(submission.id)}
+                  disabled={actionLoading === submission.id}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-rose-50 text-[#FF6B6B] border border-rose-200/80 rounded-lg hover:bg-rose-100 transition-colors cursor-pointer disabled:opacity-50 ml-auto"
+                  title="মুছে ফেলুন"
+                >
+                  <Trash2 size={13} /> মুছে ফেলুন
+                </button>
               </div>
             </div>
           ))}

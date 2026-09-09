@@ -3985,6 +3985,18 @@ if (process.env.VERCEL) {
     }
   });
 
+  // Admin: Delete submission
+  app.delete("/api/submissions/:id", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await pool.query("DELETE FROM contact_submissions WHERE id = ?", [id]);
+      addLog("লেখা/অভিযোগ মুছে ফেলা", `আইডি ${id} মুছে ফেলা হয়েছে।`);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "মুছে ফেলতে ব্যর্থ।" });
+    }
+  });
+
   // Health check endpoint for debugging and uptime monitors
   app.get("/api/health", async (req, res) => {
     try {
@@ -4009,6 +4021,11 @@ if (process.env.VERCEL) {
     let connection: any;
     try {
       connection = await pool.getConnection();
+      // Auto-migrate: ensure database default is utf8mb4
+      try {
+        await connection.query("ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+      } catch (dbColErr) { console.warn("database collation alter check:", dbColErr); }
+
       await connection.query(`
         CREATE TABLE IF NOT EXISTS reviews (
           id INT AUTO_INCREMENT PRIMARY KEY,
@@ -4020,7 +4037,7 @@ if (process.env.VERCEL) {
           status VARCHAR(50) NOT NULL,
           created_at DATETIME NOT NULL,
           reviewed_at DATETIME
-        );
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
       `);
       await connection.query(`
         CREATE TABLE IF NOT EXISTS contact_submissions (
@@ -4034,8 +4051,31 @@ if (process.env.VERCEL) {
           attachment_path VARCHAR(500),
           status VARCHAR(50) NOT NULL DEFAULT 'pending',
           created_at DATETIME NOT NULL
-        );
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
       `);
+
+      // Auto-migrate: Convert contact_submissions & reviews to utf8mb4_unicode_ci for full Bangla support
+      try {
+        await connection.query("ALTER TABLE contact_submissions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+        console.log("Migration: Converted contact_submissions to utf8mb4_unicode_ci.");
+      } catch (migErr) { console.warn("contact_submissions utf8mb4 migration:", migErr); }
+
+      try {
+        await connection.query("ALTER TABLE reviews CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+        console.log("Migration: Converted reviews to utf8mb4_unicode_ci.");
+      } catch (migErr) { console.warn("reviews utf8mb4 migration:", migErr); }
+
+      // Also ensure all tables are utf8mb4_unicode_ci
+      const coreTablesToConvert = [
+        "books", "members", "issues", "wishlist", "notes", "audit_logs",
+        "shop_items", "shop_categories", "notices", "payment_methods",
+        "book_groups", "settings", "blog_posts", "site_traffic"
+      ];
+      for (const tbl of coreTablesToConvert) {
+        try {
+          await connection.query(`ALTER TABLE ${tbl} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
+        } catch (_) {}
+      }
 
       // Auto-migrate: ensure contact_submissions has all required columns
       try {
