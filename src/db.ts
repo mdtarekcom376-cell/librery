@@ -3,10 +3,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
+import { fileURLToPath } from 'url';
+
+const _filename = typeof __filename !== 'undefined' ? __filename : fileURLToPath(import.meta.url);
+const _dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(_filename);
+
 // Robust multi-path .env resolution for cPanel/LiteSpeed environments
 dotenv.config();
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(_dirname, '..', '.env') });
+dotenv.config({ path: path.join(_dirname, '.env') });
 if (fs.existsSync('/home/okkhorpa/librery/.env')) {
   dotenv.config({ path: '/home/okkhorpa/librery/.env' });
 }

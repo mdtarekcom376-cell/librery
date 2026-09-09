@@ -614,7 +614,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={onLogin}
-              className="text-slate-700 hover:text-blue-600 font-medium text-xs sm:text-sm px-3 py-1.5 transition-colors cursor-pointer hidden sm:inline-flex font-ui"
+              className="text-slate-700 hover:text-[#4A72D4] font-medium text-xs sm:text-sm px-3 py-1.5 transition-colors cursor-pointer hidden sm:inline-flex font-ui"
               id="homepage-login-btn"
             >
               লগইন
@@ -622,7 +622,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
             <button
               onClick={onMemberLogin}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_18px_rgba(37,99,235,0.45)] transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer font-ui"
+              className="bg-gradient-to-r from-[#4A72D4] to-[#3258B8] hover:from-[#3F66C8] hover:to-[#2B4EAC] text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_14px_rgba(74,114,212,0.32)] hover:shadow-[0_6px_18px_rgba(74,114,212,0.42)] transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer font-ui"
               id="homepage-member-btn"
             >
               <span>সদস্য হন</span>
@@ -745,7 +745,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             {/* Main Headline */}
             <h1 className="font-display-bn text-3xl sm:text-4xl md:text-5xl lg:text-[2.85rem] xl:text-[3.15rem] font-black leading-[1.22] tracking-tight text-slate-900">
               <span className="block text-slate-900">অক্ষরে অক্ষরে জ্ঞানের পথে,</span>
-              <span className="block mt-1 text-[#2563EB] drop-shadow-[0_4px_16px_rgba(37,99,235,0.22)] whitespace-normal lg:whitespace-nowrap">
+              <span className="block mt-1 text-[#4A72D4] drop-shadow-[0_4px_16px_rgba(74,114,212,0.22)] whitespace-normal lg:whitespace-nowrap">
                 বইয়ের আলোয় আলোকিত হোক জীবন
               </span>
             </h1>
@@ -778,7 +778,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
               <button
                 onClick={onLibraryMemberLogin}
-                className="px-6 py-3 rounded-2xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm flex items-center gap-2 shadow-[0_8px_20px_-4px_rgba(37,99,235,0.45)] hover:shadow-[0_12px_24px_-4px_rgba(37,99,235,0.55)] transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-95"
+                className="px-6 py-3 rounded-2xl bg-[#4A72D4] hover:bg-[#3258B8] text-white font-semibold text-sm flex items-center gap-2 shadow-[0_8px_20px_-4px_rgba(74,114,212,0.38)] hover:shadow-[0_12px_24px_-4px_rgba(74,114,212,0.48)] transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-95"
                 id="hero-cta-member-login"
               >
                 <Users size={16} className="text-white/95" />
@@ -846,8 +846,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
               {/* Col 1: Total Books */}
               <div className="flex items-center gap-3.5 sm:gap-4 pt-2 lg:pt-0 lg:px-4 first:lg:pl-0">
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#DBEAFE] text-[#2563EB] flex items-center justify-center shrink-0 shadow-xs border border-blue-100/80">
-                  <BookOpen size={24} className="text-[#2563EB]" />
+                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#EEF4FE] text-[#4A72D4] flex items-center justify-center shrink-0 shadow-xs border border-blue-100/80">
+                  <BookOpen size={24} className="text-[#4A72D4]" />
                 </div>
                 <div>
                   <h3 className="font-display-lat text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
@@ -924,7 +924,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               {/* Left Column: Text & Quotes */}
               <div className="lg:col-span-7 flex flex-col items-start text-left">
                 {/* Blue Pill Badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2563EB] text-white shadow-sm mb-5">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#4A72D4] text-white shadow-sm mb-5">
                   <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold shrink-0">
                     ★
                   </div>
@@ -940,7 +940,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
                 {/* Callout Quote 1 */}
                 <div className="w-full bg-[#F0F7FF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-4 border border-blue-100/60 shadow-xs">
-                  <span className="text-[#2563EB] font-serif font-black text-2xl sm:text-3xl leading-none select-none shrink-0 mt-0.5">
+                  <span className="text-[#4A72D4] font-serif font-black text-2xl sm:text-3xl leading-none select-none shrink-0 mt-0.5">
                     “
                   </span>
                   <p className="font-body-bn text-xs sm:text-sm md:text-[14.5px] text-slate-700 leading-relaxed font-medium">
@@ -950,7 +950,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
                 {/* Callout Quote 2 */}
                 <div className="w-full bg-[#F0F7FF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 border border-blue-100/60 shadow-xs">
-                  <span className="text-[#2563EB] font-serif font-black text-2xl sm:text-3xl leading-none select-none shrink-0 mt-0.5">
+                  <span className="text-[#4A72D4] font-serif font-black text-2xl sm:text-3xl leading-none select-none shrink-0 mt-0.5">
                     “
                   </span>
                   <p className="font-body-bn text-xs sm:text-sm md:text-[14.5px] text-slate-700 leading-relaxed font-medium">
@@ -992,13 +992,13 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-10 md:mb-12">
-            <span className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-[#2563EB] block mb-2 font-display-lat">
+            <span className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-[#4A72D4] block mb-2 font-display-lat">
               OUR MISSION
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] font-display-bn mb-3">
               আমাদের লক্ষ্য ও কার্যক্রম
             </h2>
-            <div className="w-12 h-1 bg-[#2563EB] rounded-full mx-auto" />
+            <div className="w-12 h-1 bg-[#4A72D4] rounded-full mx-auto" />
           </div>
 
           {/* 3 Mission Cards */}
@@ -1011,8 +1011,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
             >
-              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#DBEAFE] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-[#2563EB]" />
+              <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[#EEF4FE] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-[#4A72D4]" />
               </div>
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 font-display-bn mb-1.5">

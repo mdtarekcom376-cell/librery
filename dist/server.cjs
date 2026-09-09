@@ -37,15 +37,20 @@ var import_path2 = __toESM(require("path"), 1);
 var import_fs2 = __toESM(require("fs"), 1);
 var import_crypto = __toESM(require("crypto"), 1);
 var import_multer = __toESM(require("multer"), 1);
+var import_url2 = require("url");
 
 // src/db.ts
 var import_promise = __toESM(require("mysql2/promise"), 1);
 var import_dotenv = __toESM(require("dotenv"), 1);
 var import_path = __toESM(require("path"), 1);
 var import_fs = __toESM(require("fs"), 1);
+var import_url = require("url");
+var import_meta = {};
+var _filename = typeof __filename !== "undefined" ? __filename : (0, import_url.fileURLToPath)(import_meta.url);
+var _dirname = typeof __dirname !== "undefined" ? __dirname : import_path.default.dirname(_filename);
 import_dotenv.default.config();
-import_dotenv.default.config({ path: import_path.default.join(__dirname, "..", ".env") });
-import_dotenv.default.config({ path: import_path.default.join(__dirname, ".env") });
+import_dotenv.default.config({ path: import_path.default.join(_dirname, "..", ".env") });
+import_dotenv.default.config({ path: import_path.default.join(_dirname, ".env") });
 if (import_fs.default.existsSync("/home/okkhorpa/librery/.env")) {
   import_dotenv.default.config({ path: "/home/okkhorpa/librery/.env" });
 }
@@ -74,6 +79,9 @@ pool.on("connection", (conn) => {
 var db_default = pool;
 
 // server.ts
+var import_meta2 = {};
+var _filename2 = typeof __filename !== "undefined" ? __filename : (0, import_url2.fileURLToPath)(import_meta2.url);
+var _dirname2 = typeof __dirname !== "undefined" ? __dirname : import_path2.default.dirname(_filename2);
 function hashPassword(password) {
   return import_crypto.default.createHash("sha256").update(password).digest("hex");
 }
@@ -3027,7 +3035,7 @@ app.get("/api/bulk-raw", authenticateAdmin, async (req, res) => {
 });
 app.post("/api/settings/maintenance/clear-temp", authenticateAdmin, async (req, res) => {
   try {
-    const tmpDir = import_path2.default.join(__dirname, "uploads", "tmp");
+    const tmpDir = import_path2.default.join(_dirname2, "uploads", "tmp");
     let count = 0;
     if (import_fs2.default.existsSync(tmpDir)) {
       const files = import_fs2.default.readdirSync(tmpDir);
@@ -3739,7 +3747,7 @@ async function initDatabase() {
   }
 }
 async function startServer() {
-  const distPath = import_fs2.default.existsSync(import_path2.default.join(__dirname, "index.html")) ? __dirname : import_fs2.default.existsSync(import_path2.default.join(process.cwd(), "dist", "index.html")) ? import_path2.default.join(process.cwd(), "dist") : process.cwd();
+  const distPath = import_fs2.default.existsSync(import_path2.default.join(_dirname2, "index.html")) ? _dirname2 : import_fs2.default.existsSync(import_path2.default.join(process.cwd(), "dist", "index.html")) ? import_path2.default.join(process.cwd(), "dist") : process.cwd();
   if (process.env.NODE_ENV !== "production") {
     try {
       const { createServer: createViteServer } = await import("vite");

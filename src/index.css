@@ -190,15 +190,15 @@ body {
 
 .homepage {
   --ink-navy: #0F172A;
-  --book-blue: #2563EB;
-  --book-blue-deep: #1D4ED8;
+  --book-blue: #4A72D4;
+  --book-blue-deep: #3258B8;
   --sky-tint: #EFF6FF;
-  --flame-orange: #2563EB;
-  --flame-magenta: #3B82F6;
+  --flame-orange: #4A72D4;
+  --flame-magenta: #5B82E6;
   --paper: #FFFFFF;
   --paper-warm: #F8FAFC;
-  --flame-gradient: linear-gradient(135deg, #2563EB, #1D4ED8);
-  --blue-gradient: linear-gradient(135deg, #2563EB, #1D4ED8);
+  --flame-gradient: linear-gradient(135deg, #4A72D4, #3258B8);
+  --blue-gradient: linear-gradient(135deg, #4A72D4, #3258B8);
 
   font-family: "Hind Siliguri", "Inter", sans-serif;
   color: var(--ink-navy);
@@ -394,7 +394,7 @@ body {
 }
 .homepage .btn-blue:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(28, 143, 224, 0.3);
+  box-shadow: 0 6px 20px rgba(74, 114, 212, 0.32);
 }
 .homepage .btn-blue:active {
   transform: scale(0.97);
@@ -442,12 +442,12 @@ body {
 }
 .homepage .pill-nav-link:hover {
   background: #EFF6FF;
-  color: #2563EB;
+  color: #4A72D4;
 }
 
 /* Pill CTA button */
 .homepage .pill-cta {
-  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  background: linear-gradient(135deg, #4A72D4, #3258B8);
   color: white;
   font-weight: 600;
   border: none;
@@ -455,7 +455,7 @@ body {
   padding: 8px 20px;
   font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.38);
+  box-shadow: 0 4px 14px rgba(74, 114, 212, 0.32);
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   white-space: nowrap;
   flex-shrink: 0;
@@ -465,7 +465,7 @@ body {
 }
 .homepage .pill-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.48);
+  box-shadow: 0 6px 20px rgba(74, 114, 212, 0.42);
 }
 .homepage .pill-cta:active {
   transform: scale(0.97);

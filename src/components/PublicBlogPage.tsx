@@ -163,7 +163,7 @@ export default function PublicBlogPage({
               )}
               <div>
                 <h1 className="text-sm sm:text-base font-extrabold text-slate-900 font-display-bn flex items-center gap-2">
-                  <Rss size={16} className="text-[#2563EB]" />
+                  <Rss size={16} className="text-[#4A72D4]" />
                   অক্ষর পাঠাগার ব্লগ ও সংবাদ
                 </h1>
                 <p className="text-[11px] text-slate-500 font-display-bn hidden sm:block">
@@ -233,7 +233,7 @@ export default function PublicBlogPage({
                 onClick={() => setSelectedCategory(tab.id)}
                 className={`px-3.5 py-1.5 text-xs sm:text-sm font-bold rounded-xl transition-all cursor-pointer font-display-bn flex items-center gap-1.5 ${
                   selectedCategory === tab.id
-                    ? "bg-[#2563EB] text-white shadow-sm shadow-blue-500/20 scale-102"
+                    ? "bg-[#4A72D4] text-white shadow-sm shadow-blue-500/20 scale-102"
                     : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
                 }`}
               >

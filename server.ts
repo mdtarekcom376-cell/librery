@@ -3,7 +3,11 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import multer from "multer";
+import { fileURLToPath } from "url";
 import pool from "./src/db";
+
+const _filename = typeof __filename !== "undefined" ? __filename : fileURLToPath(import.meta.url);
+const _dirname = typeof __dirname !== "undefined" ? __dirname : path.dirname(_filename);
 
 // Password Hasher Helper
 function hashPassword(password: string): string {
@@ -3340,7 +3344,7 @@ if (process.env.VERCEL) {
   
   app.post("/api/settings/maintenance/clear-temp", authenticateAdmin, async (req, res) => {
     try {
-      const tmpDir = path.join(__dirname, "uploads", "tmp");
+      const tmpDir = path.join(_dirname, "uploads", "tmp");
       let count = 0;
       if (fs.existsSync(tmpDir)) {
         const files = fs.readdirSync(tmpDir);
@@ -4152,8 +4156,8 @@ if (process.env.VERCEL) {
   // Vite middleware setup and server listening
   async function startServer() {
     // Determine dist folder path reliably
-    const distPath = fs.existsSync(path.join(__dirname, "index.html"))
-      ? __dirname
+    const distPath = fs.existsSync(path.join(_dirname, "index.html"))
+      ? _dirname
       : (fs.existsSync(path.join(process.cwd(), "dist", "index.html"))
           ? path.join(process.cwd(), "dist")
           : process.cwd());
