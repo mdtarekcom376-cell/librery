@@ -1,4 +1,5 @@
 import React from "react";
+import FallbackImage from "./FallbackImage";
 import { BookOpen, CheckCircle, ShieldAlert, Award, FileSpreadsheet, Users, RefreshCw, Send, ArrowUpRight, Clock, AlertTriangle, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { DashboardData } from "../types";
@@ -407,7 +408,7 @@ export default function Dashboard({ data, onRefresh, onNavigate, onPostSmsCheck 
                   {safeCharts.popularBooks.slice(0, 4).map((item, i) => (
                     <div key={item.code} className="flex items-center gap-3 p-2 rounded-xl bg-slate-50/60 hover:bg-slate-100/80 border border-slate-100 transition-all">
                       {item.imageUrl ? (
-                        <img
+                        <FallbackImage
                           src={item.imageUrl}
                           alt={item.name}
                           className="w-9 h-12 rounded-lg object-cover flex-shrink-0 shadow-sm"

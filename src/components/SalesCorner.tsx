@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FallbackImage from "./FallbackImage";
 import { 
   ShoppingBag, 
   Tag, 
@@ -445,7 +446,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                   {/* Compact Product Image panel */}
                   <div className="w-20 h-28 rounded-xl bg-white overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0 relative">
                     {item.imageUrl ? (
-                      <img
+                      <FallbackImage
                         src={item.imageUrl}
                         alt={item.name}
                         referrerPolicy="no-referrer"
@@ -637,7 +638,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
                   <div className="sm:col-span-4 h-24 bg-white rounded-xl border border-[#E5E5EA] flex items-center justify-center overflow-hidden relative">
                     {imagePreview ? (
                       <>
-                        <img 
+                        <FallbackImage
                           src={imagePreview} 
                           alt="Preview" 
                           referrerPolicy="no-referrer"
@@ -700,7 +701,7 @@ export default function SalesCorner({ isAdmin, onRefreshStats }: SalesCornerProp
               {/* Image Preview */}
               <div className="h-64 w-full bg-white rounded-xl overflow-hidden relative border border-[#E5E5EA] flex items-center justify-center">
                 {selectedItem.imageUrl ? (
-                  <img
+                  <FallbackImage
                     src={selectedItem.imageUrl}
                     alt={selectedItem.name}
                     referrerPolicy="no-referrer"

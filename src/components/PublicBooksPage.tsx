@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FallbackImage from "./FallbackImage";
 import { ArrowLeft, BookMarked, Search, RefreshCw, LayoutGrid } from "lucide-react";
 import { apiClient } from "../api";
 import { Book } from "../types";
@@ -26,7 +27,7 @@ export default function PublicBooksPage({ onBack, logoBase64, onBookSelect }: Pu
     const fetchData = async () => {
       try {
         setLoading(true);
-        const booksRes = await apiClient.get("/public/books");
+        const booksRes = await apiClient.get("/public/books?limit=1000");
         if (booksRes && Array.isArray(booksRes.books)) {
           setBooks(booksRes.books);
         } else if (Array.isArray(booksRes)) {
@@ -260,7 +261,7 @@ export default function PublicBooksPage({ onBack, logoBase64, onBookSelect }: Pu
                       >
                         {/* Cover Image as Background Top Half */}
                         <div className="h-[115px] w-full bg-[#F5F3EF] relative overflow-hidden shrink-0 border-b border-[#E5E5EA]">
-                          <img 
+                          <FallbackImage
                             src={book.imageUrl && book.imageUrl.trim() ? book.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                             alt={book.name} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 

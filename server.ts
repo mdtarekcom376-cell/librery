@@ -17,6 +17,10 @@ function hashPassword(password: string): string {
 // Default credentials
 const DEFAULT_USERNAME = "okkhor";
 const DEFAULT_PASSWORD_HASH = hashPassword("pathagar");
+const MAX_PUBLIC_BOOKS = 1000;
+const MAX_SHOP_CATEGORIES = 1000;
+const DEFAULT_BOOK_IMAGE_URL = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
+const DEFAULT_SHOP_CATEGORIES = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
 const SECURITY_PASSWORD = "PASSWD";
 
 // Helper to format date with seconds in Bangladesh timezone (UTC+6): YYYY-MM-DD HH:mm:ss
@@ -35,6 +39,25 @@ function formatCurrentDateTime(): string {
 function getBangladeshDateString(date: Date = new Date()): string {
   const bdTime = new Date(date.getTime() + 6 * 60 * 60 * 1000);
   return bdTime.toISOString().split("T")[0];
+}
+
+function getBangladeshMonthStartDateString(monthsAgo = 0): string {
+  const bdNow = new Date(Date.now() + 6 * 60 * 60 * 1000);
+  const start = new Date(Date.UTC(bdNow.getUTCFullYear(), bdNow.getUTCMonth() - monthsAgo, 1));
+  return start.toISOString().split("T")[0];
+}
+
+function parseStringArray(value: any, fallback: string[]): string[] {
+  let parsed = value;
+  if (typeof parsed === "string") {
+    try { parsed = JSON.parse(parsed); } catch { parsed = null; }
+  }
+  if (!Array.isArray(parsed)) return [...fallback];
+  return parsed
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, MAX_SHOP_CATEGORIES);
 }
 
 // Helper to add/subtract days from a YYYY-MM-DD string cleanly without timezone drift
@@ -769,7 +792,7 @@ if (process.env.VERCEL) {
         pool.query("SELECT COUNT(*) AS count FROM members"),
         pool.query("SELECT COUNT(*) AS count FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]),
         pool.query("SELECT COUNT(*) AS count FROM issues WHERE issue_date = ? OR DATE(returned_at) = ?", [todayStr, todayStr]),
-        pool.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) OR returned_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)"),
+        pool.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= ? OR returned_at >= ?", [getBangladeshMonthStartDateString(5), getBangladeshMonthStartDateString(5)]),
         pool.query(`
           SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS issue_count
           FROM issues i
@@ -809,10 +832,10 @@ if (process.env.VERCEL) {
       const issuesByMonthMap: Record<string, number> = {};
       const returnsByMonthMap: Record<string, number> = {};
 
-      const now = new Date();
+      const bdNow = new Date(Date.now() + 6 * 60 * 60 * 1000);
       for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const mName = bnMonths[d.getMonth()];
+        const d = new Date(Date.UTC(bdNow.getUTCFullYear(), bdNow.getUTCMonth() - i, 1));
+        const mName = bnMonths[d.getUTCMonth()];
         issuesByMonthMap[mName] = 0;
         returnsByMonthMap[mName] = 0;
       }
@@ -820,13 +843,15 @@ if (process.env.VERCEL) {
       recentIssues.forEach((issue: any) => {
         try {
           if (issue.issue_date) {
-            const issueD = new Date(issue.issue_date);
-            const mName = bnMonths[issueD.getMonth()];
+            const issueDateKey = String(issue.issue_date).slice(0, 7);
+            const issueD = new Date(`${issueDateKey}-01T00:00:00Z`);
+            const mName = bnMonths[issueD.getUTCMonth()];
             if (mName in issuesByMonthMap) issuesByMonthMap[mName]++;
           }
           if (issue.returned_at) {
-            const retD = new Date(issue.returned_at);
-            const retMName = bnMonths[retD.getMonth()];
+            const returnDateKey = String(issue.returned_at).slice(0, 7);
+            const retD = new Date(`${returnDateKey}-01T00:00:00Z`);
+            const retMName = bnMonths[retD.getUTCMonth()];
             if (retMName in returnsByMonthMap) returnsByMonthMap[retMName]++;
           }
         } catch (err) {}
@@ -941,7 +966,7 @@ if (process.env.VERCEL) {
       const mapBookRow = (r: any) => ({
         id: String(r.id),
         code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.group_name,
+        imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
         pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined
       });
       const mapped = rows.map(mapBookRow);
@@ -1000,7 +1025,7 @@ if (process.env.VERCEL) {
       const mapBookRow = (r: any) => ({
         id: String(r.id),
         code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.group_name,
+        imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
         pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined
       });
       const mapped = rows.map(mapBookRow);
@@ -1063,7 +1088,7 @@ if (process.env.VERCEL) {
       
       const [newBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [result.insertId]);
       const r = newBookRow[0];
-      const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
+      const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name, description: r.description, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
 
       addLog("বই যোগ", `নতুন বই '${name}' (কোড: ${code}${grp ? `, গ্রুপ: ${grp}` : ""}) সিস্টেমে যোগ করা হয়েছে।`);
 
@@ -1133,7 +1158,7 @@ if (process.env.VERCEL) {
 
       const [updatedBookRow]: any = await pool.query("SELECT * FROM books WHERE id = ?", [id]);
       const r = updatedBookRow[0];
-      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
+      const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
 
       addLog("বই সম্পাদনা", `বই '${name}' (কোড: ${code}) এর সঠিক তথ্য আপডেট করা হয়েছে।`);
 
@@ -1161,7 +1186,7 @@ if (process.env.VERCEL) {
 
       await pool.query("DELETE FROM books WHERE id = ?", [id]);
 
-      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
+      const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name, pageCount: r.page_count ?? undefined, price: r.price != null ? Number(r.price) : undefined };
 
       addLog("বই মুছে ফেলা", `বই '${book.name}' (কোড: ${book.code}) সিস্টেম থেকে মুছে ফেলা হয়েছে।`);
 
@@ -2850,13 +2875,13 @@ if (process.env.VERCEL) {
         params.push(group.toString().toLowerCase().trim());
       }
       
-      const numLimit = limit ? Math.min(Math.max(1, parseInt(limit.toString(), 10) || 60), 200) : 60;
+      const numLimit = limit ? Math.min(Math.max(1, parseInt(limit.toString(), 10) || 60), MAX_PUBLIC_BOOKS) : 60;
       query += ` ORDER BY id DESC LIMIT ${numLimit}`;
 
       const [rows]: any = await pool.query(query, params);
       const books = rows.map((r: any) => ({
         id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url, status: r.status, group: r.group_name,
+        imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
         description: r.description, pageCount: r.page_count, price: r.price
       }));
 
@@ -3154,7 +3179,7 @@ if (process.env.VERCEL) {
         name: r.name,
         description: r.description,
         price: r.price,
-        imageUrl: r.image_url,
+        imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL,
         category: r.category,
         createdAt: r.created_at
       }));
@@ -3168,11 +3193,7 @@ if (process.env.VERCEL) {
   app.get("/api/public/shop/categories", async (req, res) => {
     try {
       const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
-      let categories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
-      if (settingsRows.length > 0) {
-        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
-        categories = val || categories;
-      }
+      const categories = settingsRows.length > 0 ? parseStringArray(settingsRows[0].setting_value, DEFAULT_SHOP_CATEGORIES) : [...DEFAULT_SHOP_CATEGORIES];
       res.json({ success: true, categories });
     } catch (err: any) {
       res.status(500).json({ error: "বিক্রয় ক্যাটাগরি লোড করতে ব্যর্থ।" });
@@ -3231,13 +3252,11 @@ if (process.env.VERCEL) {
       }
 
       const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
-      let currentCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
-      if (settingsRows.length > 0) {
-        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
-        currentCategories = val || currentCategories;
-      }
-
+      let currentCategories = settingsRows.length > 0 ? parseStringArray(settingsRows[0].setting_value, DEFAULT_SHOP_CATEGORIES) : [...DEFAULT_SHOP_CATEGORIES];
       const trimmedName = categoryName.trim();
+      if (currentCategories.length >= MAX_SHOP_CATEGORIES) {
+        return res.status(400).json({ error: `সর্বোচ্চ ${MAX_SHOP_CATEGORIES}টি ক্যাটাগরি রাখা যাবে।` });
+      }
       if (currentCategories.some((c: string) => c.toLowerCase() === trimmedName.toLowerCase())) {
         return res.status(400).json({ error: "এই ক্যাটাগরি বা গ্রুপটি ইতিমধ্যে বিদ্যমান রয়েছে।" });
       }
@@ -3262,12 +3281,7 @@ if (process.env.VERCEL) {
       const { categoryName } = req.params;
       
       const [settingsRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
-      let currentCategories = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
-      if (settingsRows.length > 0) {
-        const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
-        currentCategories = val || currentCategories;
-      }
-
+      let currentCategories = settingsRows.length > 0 ? parseStringArray(settingsRows[0].setting_value, DEFAULT_SHOP_CATEGORIES) : [...DEFAULT_SHOP_CATEGORIES];
       currentCategories = currentCategories.filter((c: string) => c.toLowerCase() !== categoryName.toLowerCase());
       
       await pool.query(

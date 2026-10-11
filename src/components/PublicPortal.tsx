@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FallbackImage from "./FallbackImage";
 import { 
   BookMarked, 
   Search, 
@@ -81,7 +82,7 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
       // Fetch the portal's shared resources in parallel (previously sequential).
       const [statsRes, booksRes, groupsRes, lbRes] = await Promise.all([
         apiClient.get("/public/stats"),
-        apiClient.get("/public/books"),
+        apiClient.get("/public/books?limit=1000"),
         apiClient.get("/public/groups"),
         apiClient.get("/public/leaderboard/books"),
       ]);
@@ -534,7 +535,7 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
                     className="glass-panel p-3.5 rounded-xl border border-[#E5E5EA] flex gap-3 hover:border-[#E5E5EA] duration-150 transition-all hover:-translate-y-0.5"
                   >
                     <div className="w-16 h-22 rounded bg-white overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0">
-                      <img 
+                      <FallbackImage
                         src={book.imageUrl && book.imageUrl.trim() ? book.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                         alt={book.name} 
                         className="w-full h-full object-cover" 
@@ -714,7 +715,7 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
                         </div>
 
                         <div className="w-16 h-22 rounded bg-white overflow-hidden border border-[#E5E5EA] mx-auto mb-2 shadow group-hover:scale-105 transition-transform">
-                          <img
+                          <FallbackImage
                             src={item.imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"}
                             alt={item.name}
                             className="w-full h-full object-cover"
@@ -1002,7 +1003,7 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
                   className="glass-panel p-4 rounded-2xl border border-[#E5E5EA] flex gap-4 hover:border-[#E5E5EA] duration-200 hover:-translate-y-0.5 relative group"
                 >
                   <div className="w-20 h-28 rounded bg-white overflow-hidden border border-[#E5E5EA] flex items-center justify-center shrink-0">
-                    <img 
+                    <FallbackImage
                       src={book.imageUrl && book.imageUrl.trim() ? book.imageUrl : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                       alt={book.name} 
                       className="w-full h-full object-cover" 
@@ -1101,7 +1102,7 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
                         </span>
 
                         <div className="w-10 h-14 bg-white rounded overflow-hidden border border-[#E5E5EA] shrink-0">
-                          <img 
+                          <FallbackImage
                             src={item.imageUrl || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400"} 
                             alt={item.name} 
                             className="w-full h-full object-cover" 

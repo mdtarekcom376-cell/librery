@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FallbackImage from "./FallbackImage";
 import { ArrowLeft, ShoppingBag, Package, Store, MessageCircle, Hash } from "lucide-react";
 import { motion } from "motion/react";
 import { ShopItem } from "../types";
@@ -101,7 +102,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
           <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
             <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
               {item.imageUrl ? (
-                <img 
+                <FallbackImage
                   src={item.imageUrl} 
                   alt={item.name}
                   className="w-full h-full object-cover"

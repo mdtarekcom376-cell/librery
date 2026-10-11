@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FallbackImage from "./FallbackImage";
 import { BookOpen, UserCheck, CalendarDays, RefreshCw, CheckCircle2, ArrowRightLeft, Clock, MessageSquare, AlertTriangle, List, Search, AlertCircle, Info, Calendar } from "lucide-react";
 import { apiClient } from "../api";
 
@@ -794,7 +795,7 @@ export default function IssueReturn({ onIssueBook, onReturnBook, onChangeTime, a
                       {/* Book Thumbnail */}
                       <div className="w-20 h-28 shrink-0 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-100 flex items-center justify-center shadow-2xs">
                         {issue.imageUrl ? (
-                          <img src={issue.imageUrl} alt={issue.bookName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                          <FallbackImage src={issue.imageUrl} alt={issue.bookName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
                         ) : (
                           <BookOpen className="text-slate-300" size={32} />
                         )}

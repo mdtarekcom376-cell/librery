@@ -90,6 +90,10 @@ function hashPassword(password) {
   return import_crypto.default.createHash("sha256").update(password).digest("hex");
 }
 var DEFAULT_PASSWORD_HASH = hashPassword("pathagar");
+var MAX_PUBLIC_BOOKS = 1e3;
+var MAX_SHOP_CATEGORIES = 1e3;
+var DEFAULT_BOOK_IMAGE_URL = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
+var DEFAULT_SHOP_CATEGORIES = ["\u099F\u09BF-\u09B6\u09BE\u09B0\u09CD\u099F", "\u09AA\u09CD\u09AF\u09BE\u09A1", "\u09AC\u0987", "\u09AE\u0997", "\u0985\u09A8\u09CD\u09AF\u09BE\u09A8\u09CD\u09AF"];
 var SECURITY_PASSWORD = "PASSWD";
 function formatCurrentDateTime() {
   const bdNow = new Date(Date.now() + 6 * 60 * 60 * 1e3);
@@ -104,6 +108,23 @@ function formatCurrentDateTime() {
 function getBangladeshDateString(date = /* @__PURE__ */ new Date()) {
   const bdTime = new Date(date.getTime() + 6 * 60 * 60 * 1e3);
   return bdTime.toISOString().split("T")[0];
+}
+function getBangladeshMonthStartDateString(monthsAgo = 0) {
+  const bdNow = new Date(Date.now() + 6 * 60 * 60 * 1e3);
+  const start = new Date(Date.UTC(bdNow.getUTCFullYear(), bdNow.getUTCMonth() - monthsAgo, 1));
+  return start.toISOString().split("T")[0];
+}
+function parseStringArray(value, fallback) {
+  let parsed = value;
+  if (typeof parsed === "string") {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      parsed = null;
+    }
+  }
+  if (!Array.isArray(parsed)) return [...fallback];
+  return parsed.filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean).slice(0, MAX_SHOP_CATEGORIES);
 }
 function addDaysToDateString(dateStr, days) {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -542,7 +563,7 @@ app.get("/api/dashboard", authenticateAdmin, async (req, res) => {
       db_default.query("SELECT COUNT(*) AS count FROM members"),
       db_default.query("SELECT COUNT(*) AS count FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]),
       db_default.query("SELECT COUNT(*) AS count FROM issues WHERE issue_date = ? OR DATE(returned_at) = ?", [todayStr, todayStr]),
-      db_default.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) OR returned_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)"),
+      db_default.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= ? OR returned_at >= ?", [getBangladeshMonthStartDateString(5), getBangladeshMonthStartDateString(5)]),
       db_default.query(`
           SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS issue_count
           FROM issues i
@@ -578,23 +599,25 @@ app.get("/api/dashboard", authenticateAdmin, async (req, res) => {
     const bnMonths = ["\u099C\u09BE\u09A8\u09C1\u09DF\u09BE\u09B0\u09BF", "\u09AB\u09C7\u09AC\u09CD\u09B0\u09C1\u09DF\u09BE\u09B0\u09BF", "\u09AE\u09BE\u09B0\u09CD\u099A", "\u098F\u09AA\u09CD\u09B0\u09BF\u09B2", "\u09AE\u09C7", "\u099C\u09C1\u09A8", "\u099C\u09C1\u09B2\u09BE\u0987", "\u0986\u0997\u09B8\u09CD\u099F", "\u09B8\u09C7\u09AA\u09CD\u099F\u09C7\u09AE\u09CD\u09AC\u09B0", "\u0985\u0995\u09CD\u099F\u09CB\u09AC\u09B0", "\u09A8\u09AD\u09C7\u09AE\u09CD\u09AC\u09B0", "\u09A1\u09BF\u09B8\u09C7\u09AE\u09CD\u09AC\u09B0"];
     const issuesByMonthMap = {};
     const returnsByMonthMap = {};
-    const now = /* @__PURE__ */ new Date();
+    const bdNow = new Date(Date.now() + 6 * 60 * 60 * 1e3);
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const mName = bnMonths[d.getMonth()];
+      const d = new Date(Date.UTC(bdNow.getUTCFullYear(), bdNow.getUTCMonth() - i, 1));
+      const mName = bnMonths[d.getUTCMonth()];
       issuesByMonthMap[mName] = 0;
       returnsByMonthMap[mName] = 0;
     }
     recentIssues.forEach((issue) => {
       try {
         if (issue.issue_date) {
-          const issueD = new Date(issue.issue_date);
-          const mName = bnMonths[issueD.getMonth()];
+          const issueDateKey = String(issue.issue_date).slice(0, 7);
+          const issueD = /* @__PURE__ */ new Date(`${issueDateKey}-01T00:00:00Z`);
+          const mName = bnMonths[issueD.getUTCMonth()];
           if (mName in issuesByMonthMap) issuesByMonthMap[mName]++;
         }
         if (issue.returned_at) {
-          const retD = new Date(issue.returned_at);
-          const retMName = bnMonths[retD.getMonth()];
+          const returnDateKey = String(issue.returned_at).slice(0, 7);
+          const retD = /* @__PURE__ */ new Date(`${returnDateKey}-01T00:00:00Z`);
+          const retMName = bnMonths[retD.getUTCMonth()];
           if (retMName in returnsByMonthMap) returnsByMonthMap[retMName]++;
         }
       } catch (err) {
@@ -694,7 +717,7 @@ app.get("/api/books/suggest", authenticateAdmin, async (req, res) => {
       name: r.name,
       author: r.author,
       publisher: r.publisher,
-      imageUrl: r.image_url,
+      imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL,
       status: r.status,
       group: r.group_name,
       pageCount: r.page_count ?? void 0,
@@ -757,7 +780,7 @@ app.get("/api/books", authenticateAdmin, async (req, res) => {
       name: r.name,
       author: r.author,
       publisher: r.publisher,
-      imageUrl: r.image_url,
+      imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL,
       status: r.status,
       group: r.group_name,
       pageCount: r.page_count ?? void 0,
@@ -821,7 +844,7 @@ app.post("/api/books", authenticateAdmin, async (req, res) => {
     );
     const [newBookRow] = await db_default.query("SELECT * FROM books WHERE id = ?", [result.insertId]);
     const r = newBookRow[0];
-    const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, description: r.description, pageCount: r.page_count ?? void 0, price: r.price != null ? Number(r.price) : void 0 };
+    const newBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name, description: r.description, pageCount: r.page_count ?? void 0, price: r.price != null ? Number(r.price) : void 0 };
     addLog("\u09AC\u0987 \u09AF\u09CB\u0997", `\u09A8\u09A4\u09C1\u09A8 \u09AC\u0987 '${name}' (\u0995\u09CB\u09A1: ${code}${grp ? `, \u0997\u09CD\u09B0\u09C1\u09AA: ${grp}` : ""}) \u09B8\u09BF\u09B8\u09CD\u099F\u09C7\u09AE\u09C7 \u09AF\u09CB\u0997 \u0995\u09B0\u09BE \u09B9\u09DF\u09C7\u099B\u09C7\u0964`);
     res.status(201).json(newBook);
   } catch (err) {
@@ -875,7 +898,7 @@ app.put("/api/books/:id", authenticateAdmin, async (req, res) => {
     );
     const [updatedBookRow] = await db_default.query("SELECT * FROM books WHERE id = ?", [id]);
     const r = updatedBookRow[0];
-    const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, pageCount: r.page_count ?? void 0, price: r.price != null ? Number(r.price) : void 0 };
+    const updatedBook = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name, pageCount: r.page_count ?? void 0, price: r.price != null ? Number(r.price) : void 0 };
     addLog("\u09AC\u0987 \u09B8\u09AE\u09CD\u09AA\u09BE\u09A6\u09A8\u09BE", `\u09AC\u0987 '${name}' (\u0995\u09CB\u09A1: ${code}) \u098F\u09B0 \u09B8\u09A0\u09BF\u0995 \u09A4\u09A5\u09CD\u09AF \u0986\u09AA\u09A1\u09C7\u099F \u0995\u09B0\u09BE \u09B9\u09DF\u09C7\u099B\u09C7\u0964`);
     res.json(updatedBook);
   } catch (err) {
@@ -895,7 +918,7 @@ app.delete("/api/books/:id", authenticateAdmin, async (req, res) => {
       return res.status(400).json({ error: "\u09AC\u0987\u099F\u09BF \u09AC\u09B0\u09CD\u09A4\u09AE\u09BE\u09A8\u09C7 \u09B8\u09AE\u09B0\u09CD\u09AA\u09BF\u09A4/\u0987\u09B8\u09CD\u09AF\u09C1 \u0985\u09AC\u09B8\u09CD\u09A5\u09BE\u09DF \u09B0\u09DF\u09C7\u099B\u09C7\u0964 \u09B0\u09BF\u099F\u09BE\u09B0\u09CD\u09A8 \u09A8\u09BE \u0995\u09B0\u09BE \u09AA\u09B0\u09CD\u09AF\u09A8\u09CD\u09A4 \u09A1\u09BF\u09B2\u09BF\u099F \u09B8\u09AE\u09CD\u09AD\u09AC \u09A8\u09DF\u0964" });
     }
     await db_default.query("DELETE FROM books WHERE id = ?", [id]);
-    const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url, status: r.status, group: r.group_name, pageCount: r.page_count ?? void 0, price: r.price != null ? Number(r.price) : void 0 };
+    const book = { id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher, imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name, pageCount: r.page_count ?? void 0, price: r.price != null ? Number(r.price) : void 0 };
     addLog("\u09AC\u0987 \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE", `\u09AC\u0987 '${book.name}' (\u0995\u09CB\u09A1: ${book.code}) \u09B8\u09BF\u09B8\u09CD\u099F\u09C7\u09AE \u09A5\u09C7\u0995\u09C7 \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE \u09B9\u09DF\u09C7\u099B\u09C7\u0964`);
     res.json({ message: "\u09AC\u0987\u099F\u09BF \u09B8\u09AB\u09B2\u09AD\u09BE\u09AC\u09C7 \u09B8\u09BF\u09B8\u09CD\u099F\u09C7\u09AE \u09A5\u09C7\u0995\u09C7 \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE \u09B9\u09DF\u09C7\u099B\u09C7\u0964" });
   } catch (err) {
@@ -2640,7 +2663,7 @@ app.get("/api/public/books", async (req, res) => {
       query += " AND LOWER(group_name) = ?";
       params.push(group.toString().toLowerCase().trim());
     }
-    const numLimit = limit ? Math.min(Math.max(1, parseInt(limit.toString(), 10) || 60), 200) : 60;
+    const numLimit = limit ? Math.min(Math.max(1, parseInt(limit.toString(), 10) || 60), MAX_PUBLIC_BOOKS) : 60;
     query += ` ORDER BY id DESC LIMIT ${numLimit}`;
     const [rows] = await db_default.query(query, params);
     const books = rows.map((r) => ({
@@ -2649,7 +2672,7 @@ app.get("/api/public/books", async (req, res) => {
       name: r.name,
       author: r.author,
       publisher: r.publisher,
-      imageUrl: r.image_url,
+      imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL,
       status: r.status,
       group: r.group_name,
       description: r.description,
@@ -2898,7 +2921,7 @@ app.get("/api/public/shop/items", async (req, res) => {
       name: r.name,
       description: r.description,
       price: r.price,
-      imageUrl: r.image_url,
+      imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL,
       category: r.category,
       createdAt: r.created_at
     }));
@@ -2910,11 +2933,7 @@ app.get("/api/public/shop/items", async (req, res) => {
 app.get("/api/public/shop/categories", async (req, res) => {
   try {
     const [settingsRows] = await db_default.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
-    let categories = ["\u099F\u09BF-\u09B6\u09BE\u09B0\u09CD\u099F", "\u09AA\u09CD\u09AF\u09BE\u09A1", "\u09AC\u0987", "\u09AE\u0997", "\u0985\u09A8\u09CD\u09AF\u09BE\u09A8\u09CD\u09AF"];
-    if (settingsRows.length > 0) {
-      const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
-      categories = val || categories;
-    }
+    const categories = settingsRows.length > 0 ? parseStringArray(settingsRows[0].setting_value, DEFAULT_SHOP_CATEGORIES) : [...DEFAULT_SHOP_CATEGORIES];
     res.json({ success: true, categories });
   } catch (err) {
     res.status(500).json({ error: "\u09AC\u09BF\u0995\u09CD\u09B0\u09DF \u0995\u09CD\u09AF\u09BE\u099F\u09BE\u0997\u09B0\u09BF \u09B2\u09CB\u09A1 \u0995\u09B0\u09A4\u09C7 \u09AC\u09CD\u09AF\u09B0\u09CD\u09A5\u0964" });
@@ -2963,12 +2982,11 @@ app.post("/api/settings/shop/categories", authenticateAdmin, async (req, res) =>
       return res.status(400).json({ error: "\u0995\u09CD\u09AF\u09BE\u099F\u09BE\u0997\u09B0\u09BF\u09B0 \u09A8\u09BE\u09AE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09BE \u0986\u09AC\u09B6\u09CD\u09AF\u0995\u0964" });
     }
     const [settingsRows] = await db_default.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
-    let currentCategories = ["\u099F\u09BF-\u09B6\u09BE\u09B0\u09CD\u099F", "\u09AA\u09CD\u09AF\u09BE\u09A1", "\u09AC\u0987", "\u09AE\u0997", "\u0985\u09A8\u09CD\u09AF\u09BE\u09A8\u09CD\u09AF"];
-    if (settingsRows.length > 0) {
-      const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
-      currentCategories = val || currentCategories;
-    }
+    let currentCategories = settingsRows.length > 0 ? parseStringArray(settingsRows[0].setting_value, DEFAULT_SHOP_CATEGORIES) : [...DEFAULT_SHOP_CATEGORIES];
     const trimmedName = categoryName.trim();
+    if (currentCategories.length >= MAX_SHOP_CATEGORIES) {
+      return res.status(400).json({ error: `\u09B8\u09B0\u09CD\u09AC\u09CB\u099A\u09CD\u099A ${MAX_SHOP_CATEGORIES}\u099F\u09BF \u0995\u09CD\u09AF\u09BE\u099F\u09BE\u0997\u09B0\u09BF \u09B0\u09BE\u0996\u09BE \u09AF\u09BE\u09AC\u09C7\u0964` });
+    }
     if (currentCategories.some((c) => c.toLowerCase() === trimmedName.toLowerCase())) {
       return res.status(400).json({ error: "\u098F\u0987 \u0995\u09CD\u09AF\u09BE\u099F\u09BE\u0997\u09B0\u09BF \u09AC\u09BE \u0997\u09CD\u09B0\u09C1\u09AA\u099F\u09BF \u0987\u09A4\u09BF\u09AE\u09A7\u09CD\u09AF\u09C7 \u09AC\u09BF\u09A6\u09CD\u09AF\u09AE\u09BE\u09A8 \u09B0\u09DF\u09C7\u099B\u09C7\u0964" });
     }
@@ -2987,11 +3005,7 @@ app.delete("/api/settings/shop/categories/:categoryName", authenticateAdmin, asy
   try {
     const { categoryName } = req.params;
     const [settingsRows] = await db_default.query("SELECT setting_value FROM settings WHERE setting_key = 'shopCategories'");
-    let currentCategories = ["\u099F\u09BF-\u09B6\u09BE\u09B0\u09CD\u099F", "\u09AA\u09CD\u09AF\u09BE\u09A1", "\u09AC\u0987", "\u09AE\u0997", "\u0985\u09A8\u09CD\u09AF\u09BE\u09A8\u09CD\u09AF"];
-    if (settingsRows.length > 0) {
-      const val = typeof settingsRows[0].setting_value === "string" ? JSON.parse(settingsRows[0].setting_value) : settingsRows[0].setting_value;
-      currentCategories = val || currentCategories;
-    }
+    let currentCategories = settingsRows.length > 0 ? parseStringArray(settingsRows[0].setting_value, DEFAULT_SHOP_CATEGORIES) : [...DEFAULT_SHOP_CATEGORIES];
     currentCategories = currentCategories.filter((c) => c.toLowerCase() !== categoryName.toLowerCase());
     await db_default.query(
       "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)",

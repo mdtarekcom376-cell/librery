@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FallbackImage from "./FallbackImage";
 import { 
   ShoppingBag, 
   Search, 
@@ -198,7 +199,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
               {/* Product Image */}
               <div className="aspect-[4/3] bg-slate-50 relative overflow-hidden flex items-center justify-center border-b border-[#E5E5EA]">
                 {item.imageUrl ? (
-                  <img
+                  <FallbackImage
                     src={item.imageUrl}
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

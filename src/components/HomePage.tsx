@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import FallbackImage from "./FallbackImage";
 import DonationCTA from "./DonationCTA";
 import {
   motion,
@@ -365,7 +366,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await fetch("/api/public/books");
+        const res = await fetch("/api/public/books?limit=1000");
         if (res.ok) {
           const data = await res.json();
           const booksArray = Array.isArray(data) ? data : (data.books || []);
@@ -1265,7 +1266,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   >
                     {book.imageUrl ? (
                       <div className="hp-card overflow-hidden flex flex-col justify-between w-[140px] h-[190px] md:w-[160px] md:h-[220px]" style={{ padding: 0 }}>
-                        <img src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
+                        <FallbackImage src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
                       <div className="w-[140px] h-[190px] md:w-[160px] md:h-[220px]">
@@ -1295,7 +1296,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   >
                     {book.imageUrl ? (
                       <div className="hp-card overflow-hidden flex flex-col justify-between w-[140px] h-[190px] md:w-[160px] md:h-[220px]" style={{ padding: 0 }}>
-                        <img src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
+                        <FallbackImage src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
                       <div className="w-[140px] h-[190px] md:w-[160px] md:h-[220px]">
@@ -1663,7 +1664,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   >
                     <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-3 bg-slate-50 border border-[#E5E5EA] flex items-center justify-center">
                       {item.imageUrl ? (
-                        <img 
+                        <FallbackImage
                           src={item.imageUrl} 
                           alt={item.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
