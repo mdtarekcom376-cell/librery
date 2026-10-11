@@ -65,7 +65,8 @@ import PublicBlogDetailsPage from "./components/PublicBlogDetailsPage";
 import { apiClient } from "./api";
 import { Book, WishlistItem, Note, AuditLog, ShopItem } from "./types";
 import akkhorLogo from "./assets/images/akkhor_logo_1781456142605.jpg";
-import { initFirebase, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "./lib/firebase";
+// Firebase is loaded lazily inside handleLoginSubmit to keep it out of the
+// initial bundle (it is only needed when an admin signs in).
 import { useScrollRestoration } from "./hooks/useScrollRestoration";
 
 export default function App() {
@@ -246,26 +247,30 @@ export default function App() {
   // --- 2. DYNAMIC SYSTEM LOAD LOOPS ---
   const loadCoreData = async () => {
     try {
-      // 1. Fetch books list
-      const booksList = await apiClient.get("/books");
-      setBooks(booksList);
-
-      // 2. Fetch dashboard specs
-      const dbStats = await apiClient.get("/dashboard");
-      setDashboardData(dbStats);
-
-      // 3. Filter active issued items for timing change dropdown picker
       const currentRole = userRole || localStorage.getItem("okkhor_pathagar_role");
+
+      // 1 & 2. Fetch the book list and dashboard metrics in parallel, handling
+      // each independently so a failure in one endpoint never blocks the other
+      // (previously a dashboard error stopped the book list from ever loading).
+      const [booksResult, dashResult] = await Promise.allSettled([
+        apiClient.get("/books"),
+        apiClient.get("/dashboard"),
+      ]);
+
+      if (booksResult.status === "fulfilled") {
+        setBooks(booksResult.value);
+      } else {
+        console.warn("বইয়ের তালিকা লোড ব্যর্থ:", booksResult.reason);
+      }
+
+      if (dashResult.status === "fulfilled") {
+        setDashboardData(dashResult.value);
+      } else {
+        console.warn("ড্যাশবোর্ড ডেটা লোড ব্যর্থ:", dashResult.reason);
+      }
+
+      // 3. Populate the active-issue picker used by the time-change form.
       if (currentRole === "admin") {
-        if (dbStats.charts?.lateReportLoans) {
-          const issuesList = await apiClient.get("/history");
-          const activeLoans = issuesList.filter((i: any) => i.action === "বই ইস্যু" || i.action === "সময় বাড়ানো" || i.action === "সময় কমানো");
-          // Get actual active issues from server-side active items
-          const allStats = await apiClient.get("/dashboard");
-          // Filter active transactions
-          const activeRents = allStats.charts.lateReportLoans; // placeholder or calculations
-        }
-        
         const smsScheduled = await apiClient.get("/sms/scheduled");
         // Map currently active borrows from warnings list
         const activeBorns = smsScheduled.map((item: any) => ({
@@ -322,6 +327,7 @@ export default function App() {
       const email = `${usernameClean}@akkhorpathagar.com`;
       
       try {
+        const { initFirebase, signInWithEmailAndPassword, createUserWithEmailAndPassword } = await import("./lib/firebase");
         const { auth } = await initFirebase();
         let userCredential;
         try {

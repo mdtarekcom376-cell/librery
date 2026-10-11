@@ -30,9 +30,13 @@ const pool = mysql.createPool({
   port: dbPort,
   charset: 'utf8mb4',
   waitForConnections: true,
-  connectionLimit: 8,
+  connectionLimit: 12,
+  maxIdle: 12,
+  idleTimeout: 60000,
   queueLimit: 0,
   connectTimeout: 10000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000,
 });
 
 // Force every pooled connection to utf8mb4 so Bangla text is never stored as "?".

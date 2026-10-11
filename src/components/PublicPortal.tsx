@@ -78,8 +78,15 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
   const loadData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch statistics
-      const statsRes = await apiClient.get("/public/stats");
+      // Fetch the portal's shared resources in parallel (previously sequential).
+      const [statsRes, booksRes, groupsRes, lbRes] = await Promise.all([
+        apiClient.get("/public/stats"),
+        apiClient.get("/public/books"),
+        apiClient.get("/public/groups"),
+        apiClient.get("/public/leaderboard/books"),
+      ]);
+
+      // 1. Statistics
       if (statsRes) {
         setStats({
           total: statsRes.totalBooks || 0,
@@ -88,22 +95,19 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
         });
       }
 
-      // 2. Fetch books list
-      const booksRes = await apiClient.get("/public/books");
+      // 2. Books list
       if (Array.isArray(booksRes)) {
         setBooks(booksRes);
       } else if (booksRes && Array.isArray(booksRes.books)) {
         setBooks(booksRes.books);
       }
 
-      // 3. Fetch groups
-      const groupsRes = await apiClient.get("/public/groups");
+      // 3. Groups
       if (groupsRes && groupsRes.success) {
         setGroups(groupsRes.groups);
       }
 
-      // 4. Fetch leaderboard
-      const lbRes = await apiClient.get("/public/leaderboard/books");
+      // 4. Leaderboard
       if (lbRes && Array.isArray(lbRes.leaderboard)) {
         setLeaderboard(lbRes.leaderboard);
       } else if (Array.isArray(lbRes)) {
@@ -161,7 +165,7 @@ export default function PublicPortal({ userRole, memberInfo, activeTab, onNaviga
     setWishLoading(true);
     try {
       const payload = {
-        bookName: wishBookName.trim(),
+        name: wishBookName.trim(),
         memberFormNumber: memberInfo.formNumber
       };
       const res = await apiClient.post("/public/wishlist", payload);

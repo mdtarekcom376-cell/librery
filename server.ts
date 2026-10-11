@@ -734,15 +734,68 @@ if (process.env.VERCEL) {
     try {
       const todayStr = getBangladeshDateString();
 
-      // Execute basic count queries concurrently
-      const [booksTotal]: any = await pool.query("SELECT COUNT(*) AS count FROM books");
-      const [booksAvail]: any = await pool.query("SELECT COUNT(*) AS count FROM books WHERE status = 'Available'");
-      const [booksIssued]: any = await pool.query("SELECT COUNT(*) AS count FROM books WHERE status = 'Issued'");
-      const [membersTotal]: any = await pool.query("SELECT COUNT(*) AS count FROM members");
-      
-      const [lateBooksRows]: any = await pool.query("SELECT COUNT(*) AS count FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]);
-      
-      const [todaysTxRows]: any = await pool.query("SELECT COUNT(*) AS count FROM issues WHERE issue_date = ? OR DATE(returned_at) = ?", [todayStr, todayStr]);
+      // Safely coerce a JSON column value into an array (never throws on malformed data).
+      const safeJsonArray = (val: any): any[] => {
+        if (Array.isArray(val)) return val;
+        if (typeof val === "string" && val.trim()) {
+          try {
+            const parsed = JSON.parse(val);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            return [];
+          }
+        }
+        return [];
+      };
+
+      // Execute every independent dashboard query in ONE concurrent batch.
+      // Previously these ran sequentially (10 round-trips), which is why the
+      // dashboard felt slow and could time out on a busy database.
+      const [
+        [booksTotal],
+        [booksAvail],
+        [booksIssued],
+        [membersTotal],
+        [lateBooksRows],
+        [todaysTxRows],
+        [recentIssues],
+        [popularBooksRows],
+        [activeMembersRows],
+        [lateReportLoansRows],
+      ]: any = await Promise.all([
+        pool.query("SELECT COUNT(*) AS count FROM books"),
+        pool.query("SELECT COUNT(*) AS count FROM books WHERE status = 'Available'"),
+        pool.query("SELECT COUNT(*) AS count FROM books WHERE status = 'Issued'"),
+        pool.query("SELECT COUNT(*) AS count FROM members"),
+        pool.query("SELECT COUNT(*) AS count FROM issues WHERE status = 'Issued' AND return_date < ?", [todayStr]),
+        pool.query("SELECT COUNT(*) AS count FROM issues WHERE issue_date = ? OR DATE(returned_at) = ?", [todayStr, todayStr]),
+        pool.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) OR returned_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)"),
+        pool.query(`
+          SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS issue_count
+          FROM issues i
+          JOIN books b ON i.book_id = b.id
+          GROUP BY b.id, b.code, b.name, b.author, b.group_name, b.image_url
+          ORDER BY issue_count DESC
+          LIMIT 5
+        `),
+        pool.query(`
+          SELECT m.form_number, m.name, m.mobile, COUNT(i.id) AS issue_count
+          FROM issues i
+          JOIN members m ON i.member_id = m.id
+          GROUP BY m.id, m.form_number, m.name, m.mobile
+          ORDER BY issue_count DESC
+          LIMIT 5
+        `),
+        pool.query(`
+          SELECT i.id, i.status, i.issue_date, i.return_date, i.extension_history, i.comments, i.returned_at,
+                 b.code AS book_code, b.name AS book_name, b.author, b.publisher,
+                 m.name AS member_name, m.form_number, m.mobile, m.address
+          FROM issues i
+          JOIN books b ON i.book_id = b.id
+          JOIN members m ON i.member_id = m.id
+          WHERE i.status = 'Issued' AND i.return_date < ?
+        `, [todayStr]),
+      ]);
 
       const totalBooks = booksTotal[0].count;
       const availableBooks = booksAvail[0].count;
@@ -764,9 +817,6 @@ if (process.env.VERCEL) {
         returnsByMonthMap[mName] = 0;
       }
 
-      // We fetch only the issue_date and returned_at for the last 6 months to minimize data transfer
-      const [recentIssues]: any = await pool.query("SELECT issue_date, returned_at FROM issues WHERE issue_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) OR returned_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)");
-      
       recentIssues.forEach((issue: any) => {
         try {
           if (issue.issue_date) {
@@ -789,14 +839,6 @@ if (process.env.VERCEL) {
       }));
 
       // 2. Most Popular Books (with author, group, image)
-      const [popularBooksRows]: any = await pool.query(`
-        SELECT b.code, b.name, b.author, b.group_name, b.image_url, COUNT(i.id) AS issue_count
-        FROM issues i
-        JOIN books b ON i.book_id = b.id
-        GROUP BY b.id, b.code, b.name, b.author, b.group_name, b.image_url
-        ORDER BY issue_count DESC
-        LIMIT 5
-      `);
       const popularBooks = popularBooksRows.map((r: any) => ({
         code: r.code || '',
         name: r.name || '',
@@ -807,30 +849,14 @@ if (process.env.VERCEL) {
       }));
 
       // 3. Most Active Members (with mobile)
-      const [activeMembersRows]: any = await pool.query(`
-        SELECT m.form_number, m.name, m.mobile, COUNT(i.id) AS issue_count
-        FROM issues i
-        JOIN members m ON i.member_id = m.id
-        GROUP BY m.id, m.form_number, m.name, m.mobile
-        ORDER BY issue_count DESC
-        LIMIT 5
-      `);
       const activeMembers = activeMembersRows.map((r: any) => ({
         formNumber: r.form_number || '',
         name: r.name || '',
         mobile: r.mobile || '',
         count: Number(r.issue_count) || 0
       }));
-      // Late return reports list
-      const [lateReportLoansRows]: any = await pool.query(`
-        SELECT i.*, 
-               b.code AS book_code, b.name AS book_name, b.author, b.publisher,
-               m.name AS member_name, m.form_number, m.mobile, m.address
-        FROM issues i
-        JOIN books b ON i.book_id = b.id
-        JOIN members m ON i.member_id = m.id
-        WHERE i.status = 'Issued' AND i.return_date < ?
-      `, [todayStr]);
+
+      // 4. Late return reports list
       const lateReportLoans = lateReportLoansRows.map((r: any) => ({
         id: String(r.id),
         bookCode: r.book_code,
@@ -844,8 +870,8 @@ if (process.env.VERCEL) {
         issueDate: r.issue_date,
         returnDate: r.return_date,
         status: r.status,
-        extensionHistory: typeof r.extension_history === "string" ? JSON.parse(r.extension_history) : (r.extension_history || []),
-        comments: typeof r.comments === "string" ? JSON.parse(r.comments) : (r.comments || []),
+        extensionHistory: safeJsonArray(r.extension_history),
+        comments: safeJsonArray(r.comments),
         returnedAt: r.returned_at
       }));
 
@@ -1666,10 +1692,21 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "একটি সঠিক রিটার্ন তারিখ নির্বাচন করুন।" });
       }
 
-      // Insert issue record
+      // Insert issue record. Include the denormalized snapshot columns so the
+      // row is complete (strict-mode safe) and downstream dashboard / leaderboard
+      // queries that read issues.book_name / member_name / form_number work.
       const [iRes]: any = await pool.query(
-        "INSERT INTO issues (book_id, member_id, issue_date, return_date, status) VALUES (?, ?, ?, ?, ?)",
-        [book.id, member.id, issueDateStr, computedReturnDateStr, "Issued"]
+        `INSERT INTO issues (
+           book_id, member_id, book_code, book_name, author, publisher,
+           member_name, form_number, mobile, address,
+           issue_date, return_date, status, extension_history, comments
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          book.id, member.id, book.code, book.name, book.author || "", book.publisher || "",
+          member.name || name, member.form_number || formNumber, member.mobile || mobile,
+          member.address || address || "অজানা ঠিকানা",
+          issueDateStr, computedReturnDateStr, "Issued", JSON.stringify([]), JSON.stringify([])
+        ]
       );
 
       // Update book status
@@ -2844,34 +2881,43 @@ if (process.env.VERCEL) {
          LIMIT 8`
       );
 
-      // For each corner, get the top 4 books
-      const corners = [];
-      for (const row of groupRows) {
-        const [topBooks]: any = await pool.query(
-          `SELECT b.id, b.code, b.name, b.author, b.image_url,
+      // Gather the top 4 books for EVERY corner in a single batched query.
+      // This replaces an N+1 loop (one query per group) that made the public
+      // homepage slow to load.
+      const groupNames = groupRows.map((r: any) => r.group_name);
+      const topBooksByGroup: Record<string, any[]> = {};
+      if (groupNames.length > 0) {
+        const placeholders = groupNames.map(() => "?").join(",");
+        const [topBooksRows]: any = await pool.query(
+          `SELECT b.id, b.code, b.name, b.author, b.image_url, b.group_name,
                   COUNT(i.id) as issue_count
            FROM books b
            LEFT JOIN issues i ON i.book_code = b.code
-           WHERE b.group_name = ?
-           GROUP BY b.id, b.code, b.name, b.author, b.image_url
-           ORDER BY issue_count DESC, b.id DESC
-           LIMIT 4`,
-          [row.group_name]
+           WHERE b.group_name IN (${placeholders})
+           GROUP BY b.id, b.code, b.name, b.author, b.image_url, b.group_name
+           ORDER BY issue_count DESC, b.id DESC`,
+          groupNames
         );
 
-        corners.push({
-          name: row.group_name,
-          bookCount: row.book_count,
-          topBooks: topBooks.map((b: any) => ({
-            id: String(b.id),
-            code: b.code,
-            title: b.name,
-            author: b.author,
-            imageUrl: b.image_url,
-            reads: Number(b.issue_count) || 0
-          }))
-        });
+        // Rows arrive already sorted best-first, so keep only the first 4 per group.
+        for (const b of topBooksRows) {
+          const list = topBooksByGroup[b.group_name] || (topBooksByGroup[b.group_name] = []);
+          if (list.length < 4) list.push(b);
+        }
       }
+
+      const corners = groupRows.map((row: any) => ({
+        name: row.group_name,
+        bookCount: row.book_count,
+        topBooks: (topBooksByGroup[row.group_name] || []).map((b: any) => ({
+          id: String(b.id),
+          code: b.code,
+          title: b.name,
+          author: b.author,
+          imageUrl: b.image_url,
+          reads: Number(b.issue_count) || 0
+        }))
+      }));
 
       res.json({ success: true, corners });
     } catch (err: any) {
@@ -2985,20 +3031,33 @@ if (process.env.VERCEL) {
       query += " ORDER BY id DESC";
 
       const [rows]: any = await pool.query(query, params);
-      
-      const resolvedList = [];
-      for (const item of rows) {
-        const [bookRows]: any = await pool.query("SELECT id FROM books WHERE LOWER(name) = ?", [item.name.trim().toLowerCase()]);
-        resolvedList.push({
-          id: String(item.id),
-          name: item.name,
-          author: item.author,
-          publisher: item.publisher,
-          createdAt: item.created_at,
-          memberFormNumber: item.member_form_number,
-          status: bookRows.length > 0 ? "Available" : "Waiting"
-        });
+
+      // Resolve "Available" status for ALL wishlist items in a single query
+      // instead of one lookup per item (N+1).
+      const availableNames = new Set<string>();
+      if (rows.length > 0) {
+        const wantedNames = Array.from(new Set(
+          rows.map((r: any) => (r.name || "").trim().toLowerCase()).filter((n: string) => n.length > 0)
+        ));
+        if (wantedNames.length > 0) {
+          const placeholders = wantedNames.map(() => "?").join(",");
+          const [bookRows]: any = await pool.query(
+            `SELECT DISTINCT LOWER(name) as lname FROM books WHERE LOWER(name) IN (${placeholders})`,
+            wantedNames
+          );
+          for (const b of bookRows) availableNames.add(b.lname);
+        }
       }
+
+      const resolvedList = rows.map((item: any) => ({
+        id: String(item.id),
+        name: item.name,
+        author: item.author,
+        publisher: item.publisher,
+        createdAt: item.created_at,
+        memberFormNumber: item.member_form_number,
+        status: availableNames.has((item.name || "").trim().toLowerCase()) ? "Available" : "Waiting"
+      }));
 
       res.json({ success: true, wishlist: resolvedList });
     } catch (err: any) {
@@ -4142,6 +4201,38 @@ if (process.env.VERCEL) {
           console.log("Migration: Upgraded image_url column to LONGTEXT.");
         }
       } catch (migErr) { console.warn("image_url migration check:", migErr); }
+
+      // Auto-migrate: ensure performance indexes exist.
+      // These mirror migrate_indexes.sql but are applied automatically so the
+      // dashboard and public book lists never fall back to full-table scans.
+      const indexesToEnsure: Array<{ table: string; name: string; columns: string }> = [
+        { table: "issues", name: "idx_issues_status", columns: "status" },
+        { table: "issues", name: "idx_issues_book_id", columns: "book_id" },
+        { table: "issues", name: "idx_issues_member_id", columns: "member_id" },
+        { table: "issues", name: "idx_issues_book_code", columns: "book_code" },
+        { table: "issues", name: "idx_issues_form_number", columns: "form_number" },
+        { table: "issues", name: "idx_issues_return_date", columns: "return_date" },
+        { table: "issues", name: "idx_issues_issue_date", columns: "issue_date" },
+        { table: "issues", name: "idx_issues_status_return", columns: "status, return_date" },
+        { table: "books", name: "idx_books_status", columns: "status" },
+        { table: "books", name: "idx_books_group_name", columns: "group_name" },
+        { table: "members", name: "idx_members_payment_status", columns: "payment_status" },
+        { table: "audit_logs", name: "idx_audit_logs_timestamp", columns: "timestamp" },
+        { table: "reviews", name: "idx_reviews_status", columns: "status" },
+        { table: "reviews", name: "idx_reviews_member_form", columns: "member_form_number" },
+        { table: "wishlist", name: "idx_wishlist_member_form", columns: "member_form_number" },
+      ];
+      for (const idx of indexesToEnsure) {
+        try {
+          await connection.query(`ALTER TABLE ${idx.table} ADD INDEX ${idx.name} (${idx.columns})`);
+          console.log(`Migration: Added index ${idx.name} on ${idx.table}.`);
+        } catch (idxErr: any) {
+          // ER_DUP_KEYNAME (1061) simply means the index already exists.
+          if (idxErr && idxErr.errno !== 1061) {
+            console.warn(`Index ${idx.name} on ${idx.table} not applied:`, idxErr?.code || idxErr?.message || idxErr);
+          }
+        }
+      }
 
       console.log("Database initialized successfully.");
     } catch (e) {
