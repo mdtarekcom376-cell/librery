@@ -20,6 +20,28 @@ const DEFAULT_PASSWORD_HASH = hashPassword("pathagar");
 const MAX_PUBLIC_BOOKS = 1000;
 const MAX_SHOP_CATEGORIES = 1000;
 const DEFAULT_BOOK_IMAGE_URL = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400";
+
+// Many images are stored inline as base64 data URIs. Sending them inside public list
+// responses made /api/public/books ~12MB. Public lists now select only an MD5 token for
+// inline images (IMAGE_TOKEN_SQL) and hand the browser a cacheable URL (publicImageRef)
+// served by /api/public/img/:kind/:id.
+const PUBLIC_IMAGE_SOURCES: Record<string, { table: string; column: string }> = {
+  books: { table: "books", column: "image_url" },
+  shop: { table: "shop_items", column: "image_url" },
+  notices: { table: "notices", column: "image" },
+};
+const INLINE_IMAGE_TOKEN = "data:#";
+const IMAGE_TOKEN_SQL = (col: string) =>
+  `CASE WHEN ${col} LIKE 'data:%' THEN CONCAT('${INLINE_IMAGE_TOKEN}', MD5(${col})) ELSE ${col} END`;
+const PUBLIC_IMAGE_URL_PREFIX = "/api/public/img/";
+
+function publicImageRef(kind: keyof typeof PUBLIC_IMAGE_SOURCES, id: unknown, value: string | null | undefined): string | null | undefined {
+  if (typeof value !== "string" || !value.startsWith("data:")) return value;
+  const version = value.startsWith(INLINE_IMAGE_TOKEN)
+    ? value.slice(INLINE_IMAGE_TOKEN.length, INLINE_IMAGE_TOKEN.length + 12)
+    : crypto.createHash("md5").update(value).digest("hex").slice(0, 12);
+  return `${PUBLIC_IMAGE_URL_PREFIX}${kind}/${id}?v=${version}`;
+}
 const DEFAULT_SHOP_CATEGORIES = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
 const SECURITY_PASSWORD = "PASSWD";
 
@@ -2852,11 +2874,42 @@ if (process.env.VERCEL) {
     }
   });
 
+  // 5.9. Public inline-image server: decodes a stored base64 data URI and serves it as a
+  // real image with long-lived caching (URLs carry a content hash, so they never go stale).
+  app.get("/api/public/img/:kind/:id", async (req, res) => {
+    try {
+      const source = PUBLIC_IMAGE_SOURCES[req.params.kind];
+      if (!source) return res.status(404).end();
+      const [rows]: any = await pool.query(
+        `SELECT ${source.column} AS img FROM ${source.table} WHERE id = ? LIMIT 1`,
+        [req.params.id]
+      );
+      const value: string | undefined = rows[0]?.img;
+      if (!value) return res.status(404).end();
+      if (!value.startsWith("data:")) return res.redirect(302, value);
+
+      const match = /^data:([^;,]+)((?:;[^;,]+)*?)(;base64)?,([\s\S]*)$/.exec(value);
+      if (!match || !match[1].startsWith("image/")) return res.status(415).end();
+      const body = match[3] ? Buffer.from(match[4], "base64") : Buffer.from(decodeURIComponent(match[4]));
+
+      res.set({
+        "Content-Type": match[1],
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+      });
+      res.send(body);
+    } catch (err: any) {
+      console.error("GET /api/public/img error:", err);
+      res.status(500).end();
+    }
+  });
+
   // 6. Public Book List (Search & Filter)
   app.get("/api/public/books", async (req, res) => {
     try {
       const { q, status, group, limit } = req.query;
-      let query = "SELECT id, code, name, author, publisher, image_url, status, group_name, description, page_count, price FROM books WHERE 1=1";
+      let query = `SELECT id, code, name, author, publisher, ${IMAGE_TOKEN_SQL("image_url")} AS image_url, status, group_name, description, page_count, price FROM books WHERE 1=1`;
       const params: any[] = [];
       
       if (q) {
@@ -2881,7 +2934,7 @@ if (process.env.VERCEL) {
       const [rows]: any = await pool.query(query, params);
       const books = rows.map((r: any) => ({
         id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
+        imageUrl: publicImageRef("books", r.id, r.image_url) || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
         description: r.description, pageCount: r.page_count, price: r.price
       }));
 
@@ -2914,12 +2967,12 @@ if (process.env.VERCEL) {
       if (groupNames.length > 0) {
         const placeholders = groupNames.map(() => "?").join(",");
         const [topBooksRows]: any = await pool.query(
-          `SELECT b.id, b.code, b.name, b.author, b.image_url, b.group_name,
+          `SELECT b.id, b.code, b.name, b.author, ${IMAGE_TOKEN_SQL("b.image_url")} AS image_url, b.group_name,
                   COUNT(i.id) as issue_count
            FROM books b
            LEFT JOIN issues i ON i.book_code = b.code
            WHERE b.group_name IN (${placeholders})
-           GROUP BY b.id, b.code, b.name, b.author, b.image_url, b.group_name
+           GROUP BY b.id, b.code, b.name, b.author, ${IMAGE_TOKEN_SQL("b.image_url")}, b.group_name
            ORDER BY issue_count DESC, b.id DESC`,
           groupNames
         );
@@ -2939,7 +2992,7 @@ if (process.env.VERCEL) {
           code: b.code,
           title: b.name,
           author: b.author,
-          imageUrl: b.image_url,
+          imageUrl: publicImageRef("books", b.id, b.image_url),
           reads: Number(b.issue_count) || 0
         }))
       }));
@@ -3094,10 +3147,10 @@ if (process.env.VERCEL) {
   app.get("/api/public/leaderboard/books", async (req, res) => {
     try {
       const [rows]: any = await pool.query(
-        `SELECT b.id, b.code, b.name, b.author, b.image_url, b.group_name, COUNT(i.id) as count
+        `SELECT b.id, b.code, b.name, b.author, ${IMAGE_TOKEN_SQL("b.image_url")} AS image_url, b.group_name, COUNT(i.id) as count
          FROM issues i
          JOIN books b ON i.book_id = b.id
-         GROUP BY b.id, b.code, b.name, b.author, b.image_url, b.group_name
+         GROUP BY b.id, b.code, b.name, b.author, ${IMAGE_TOKEN_SQL("b.image_url")}, b.group_name
          ORDER BY count DESC
          LIMIT 10`
       );
@@ -3107,7 +3160,7 @@ if (process.env.VERCEL) {
         code: r.code,
         name: r.name,
         author: r.author || "অজ্ঞাত",
-        imageUrl: r.image_url || "",
+        imageUrl: publicImageRef("books", r.id, r.image_url) || "",
         group: r.group_name || "",
         count: r.count,
         issueCount: r.count
@@ -3173,13 +3226,15 @@ if (process.env.VERCEL) {
   // 1. Get all shop items (Public)
   app.get("/api/public/shop/items", async (req, res) => {
     try {
-      const [rows]: any = await pool.query("SELECT * FROM shop_items ORDER BY id DESC");
+      const [rows]: any = await pool.query(
+        `SELECT id, name, description, price, ${IMAGE_TOKEN_SQL("image_url")} AS image_url, category, created_at FROM shop_items ORDER BY id DESC`
+      );
       const shopItems = rows.map((r: any) => ({
         id: String(r.id),
         name: r.name,
         description: r.description,
         price: r.price,
-        imageUrl: r.image_url || DEFAULT_BOOK_IMAGE_URL,
+        imageUrl: publicImageRef("shop", r.id, r.image_url) || DEFAULT_BOOK_IMAGE_URL,
         category: r.category,
         createdAt: r.created_at
       }));
@@ -3335,9 +3390,15 @@ if (process.env.VERCEL) {
         return res.status(400).json({ error: "নাম, মূল্য এবং ক্যাটাগরি পূরণ করা আবশ্যক!" });
       }
 
+      // The admin list reads public URLs for inline images; saving one back must keep the stored image.
+      const keepStoredImage = typeof imageUrl === "string" && imageUrl.startsWith(PUBLIC_IMAGE_URL_PREFIX);
       await pool.query(
-        "UPDATE shop_items SET name = ?, description = ?, price = ?, category = ?, image_url = ? WHERE id = ?",
-        [name.trim(), (description || "").trim(), Number(price), category.trim(), imageUrl || "", id]
+        keepStoredImage
+          ? "UPDATE shop_items SET name = ?, description = ?, price = ?, category = ? WHERE id = ?"
+          : "UPDATE shop_items SET name = ?, description = ?, price = ?, category = ?, image_url = ? WHERE id = ?",
+        keepStoredImage
+          ? [name.trim(), (description || "").trim(), Number(price), category.trim(), id]
+          : [name.trim(), (description || "").trim(), Number(price), category.trim(), imageUrl || "", id]
       );
 
       addLog("বিক্রয় কর্নার", `পণ্য '${name.trim()}' এর তথ্য পরিবর্তন করা হয়েছে।`);
@@ -3752,12 +3813,14 @@ if (process.env.VERCEL) {
 
   app.get("/api/public/notices", async (req, res) => {
     try {
-      const [rows]: any = await pool.query("SELECT * FROM notices ORDER BY id DESC");
+      const [rows]: any = await pool.query(
+        `SELECT id, subject, content, ${IMAGE_TOKEN_SQL("image")} AS image, created_at FROM notices ORDER BY id DESC`
+      );
       const notices = rows.map((r: any) => ({
         id: String(r.id),
         subject: r.subject,
         content: r.content,
-        image: r.image || null,
+        image: publicImageRef("notices", r.id, r.image) || null,
         createdAt: r.created_at
       }));
       res.json(notices);
@@ -4281,8 +4344,21 @@ if (process.env.VERCEL) {
         app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
       }
     } else {
-      app.use(express.static(distPath));
+      // Vite fingerprints /assets/* filenames, so they can be cached for a year;
+      // index.html must always revalidate so a new deploy shows up immediately.
+      app.use(express.static(distPath, {
+        setHeaders: (res, filePath) => {
+          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          } else if (filePath.endsWith(".html")) {
+            res.setHeader("Cache-Control", "no-cache");
+          } else {
+            res.setHeader("Cache-Control", "public, max-age=86400");
+          }
+        },
+      }));
       app.get("*", (req, res) => {
+        res.setHeader("Cache-Control", "no-cache");
         res.sendFile(path.join(distPath, "index.html"));
       });
     }
