@@ -9,9 +9,68 @@ import pool from "./src/db";
 const _filename = typeof __filename !== "undefined" ? __filename : fileURLToPath(import.meta.url);
 const _dirname = typeof __dirname !== "undefined" ? __dirname : path.dirname(_filename);
 
-// Password Hasher Helper
+// Password hashing: salted scrypt ("scrypt$<salt>$<hash>"). Older unsalted SHA-256
+// hashes still verify and are upgraded on the admin's next successful login.
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 32).toString("hex");
+  return `scrypt$${salt}$${hash}`;
+}
+
+function isLegacyPasswordHash(stored: string | undefined): boolean {
+  return !!stored && !stored.startsWith("scrypt$");
+}
+
+function verifyPassword(password: string, stored: string | undefined): boolean {
+  if (!stored || typeof password !== "string") return false;
+  let actual: Buffer;
+  let expected: Buffer;
+  if (stored.startsWith("scrypt$")) {
+    const [, salt, hash] = stored.split("$");
+    if (!salt || !hash) return false;
+    actual = crypto.scryptSync(password, salt, 32);
+    expected = Buffer.from(hash, "hex");
+  } else {
+    actual = crypto.createHash("sha256").update(password).digest();
+    expected = Buffer.from(stored, "hex");
+  }
+  return actual.length === expected.length && crypto.timingSafeEqual(actual, expected);
+}
+
+function parseSettingValue(value: any) {
+  if (typeof value !== "string") return value;
+  try { return JSON.parse(value); } catch { return value; }
+}
+
+// Admin session tokens are HMAC-signed with a random server-side secret. (They used to be
+// signed with the admin password hash, which leaked in a public DB backup and would let
+// anyone forge a token.) The admin hash is mixed in so changing the password logs out
+// every existing session. Set SESSION_SECRET in .env to pin it; otherwise one is generated
+// once and kept in the settings table.
+let sessionSecretCache: string | null = null;
+async function getSessionSecret(): Promise<string> {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  if (sessionSecretCache) return sessionSecretCache;
+  const read = async () => {
+    const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'sessionSecret'");
+    return rows.length > 0 ? String(parseSettingValue(rows[0].setting_value) || "") : "";
+  };
+  let secret = await read();
+  if (!secret) {
+    await pool.query("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('sessionSecret', ?)", [
+      JSON.stringify(crypto.randomBytes(32).toString("hex")),
+    ]);
+    secret = await read(); // whichever insert won a race
+  }
+  if (!secret) throw new Error("session secret unavailable");
+  sessionSecretCache = secret;
+  return secret;
+}
+
+async function tokenSigningKey(): Promise<string> {
+  const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
+  const admin = rows.length > 0 ? parseSettingValue(rows[0].setting_value) : null;
+  return `${await getSessionSecret()}:${admin?.passwordHash || ""}`;
 }
 
 // Default credentials
@@ -43,7 +102,8 @@ function publicImageRef(kind: keyof typeof PUBLIC_IMAGE_SOURCES, id: unknown, va
   return `${PUBLIC_IMAGE_URL_PREFIX}${kind}/${id}?v=${version}`;
 }
 const DEFAULT_SHOP_CATEGORIES = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
-const SECURITY_PASSWORD = "PASSWD";
+// Extra confirmation required to change admin credentials. Override via .env.
+const SECURITY_PASSWORD = process.env.SECURITY_PASSWORD || "PASSWD";
 
 // Helper to format date with seconds in Bangladesh timezone (UTC+6): YYYY-MM-DD HH:mm:ss
 function formatCurrentDateTime(): string {
@@ -277,14 +337,7 @@ const ACTIVE_SESSIONS = new Set<string>();
 
 // Stateless signed token helpers for Vercel/serverless environments
 async function generateSignedToken(username: string): Promise<string> {
-  const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
-  let secret = "okkhor-fallback-secret";
-  if (rows.length > 0) {
-    let admin = rows[0].setting_value;
-    if (typeof admin === "string") admin = JSON.parse(admin);
-    if (admin.passwordHash) secret = admin.passwordHash;
-  }
-  
+  const secret = await tokenSigningKey();
   const payload = {
     username,
     expiry: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days expiry
@@ -299,17 +352,11 @@ async function verifySignedToken(token: string): Promise<string | null> {
     const parts = token.split(".");
     if (parts.length !== 2) return null;
     const [payloadStr, signature] = parts;
-    
-    const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
-    let secret = "okkhor-fallback-secret";
-    if (rows.length > 0) {
-      let admin = rows[0].setting_value;
-      if (typeof admin === "string") admin = JSON.parse(admin);
-      if (admin.passwordHash) secret = admin.passwordHash;
-    }
 
-    const expectedSignature = crypto.createHmac("sha256", secret).update(payloadStr).digest("hex");
-    if (signature !== expectedSignature) return null;
+    const secret = await tokenSigningKey();
+    const expectedSignature = Buffer.from(crypto.createHmac("sha256", secret).update(payloadStr).digest("hex"));
+    const givenSignature = Buffer.from(signature);
+    if (givenSignature.length !== expectedSignature.length || !crypto.timingSafeEqual(givenSignature, expectedSignature)) return null;
 
     const payload = JSON.parse(Buffer.from(payloadStr, "base64").toString("utf-8"));
     if (Date.now() > payload.expiry) {
@@ -399,11 +446,13 @@ if (process.env.VERCEL) {
       if (rows.length === 0) {
         return res.status(401).json({ error: "ভুল ইউজারনেম অথবা পাসওয়ার্ড!" });
       }
-      let admin = rows[0].setting_value;
-      if (typeof admin === "string") admin = JSON.parse(admin);
-      const inputHash = hashPassword(password);
+      const admin = parseSettingValue(rows[0].setting_value);
 
-      if (admin.username === username && admin.passwordHash === inputHash) {
+      if (admin.username === username && verifyPassword(password, admin.passwordHash)) {
+        if (isLegacyPasswordHash(admin.passwordHash)) {
+          const upgraded = { ...admin, passwordHash: hashPassword(password) };
+          await pool.query("UPDATE settings SET setting_value = ? WHERE setting_key = 'admin'", [JSON.stringify(upgraded)]);
+        }
         const token = await generateSignedToken(username);
         ACTIVE_SESSIONS.add(token);
 
@@ -443,7 +492,7 @@ if (process.env.VERCEL) {
     if (isAuthenticated) {
       if (!username) {
         const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
-        if (rows.length > 0) username = rows[0].setting_value.username;
+        if (rows.length > 0) username = parseSettingValue(rows[0].setting_value)?.username || "";
       }
 
       return res.json({ authenticated: true, username });
@@ -474,10 +523,9 @@ if (process.env.VERCEL) {
     }
 
     const [rows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
-    const admin = rows.length > 0 ? rows[0].setting_value : { username: "", passwordHash: "" };
-    const currentHash = hashPassword(currentPassword);
+    const admin = rows.length > 0 ? parseSettingValue(rows[0].setting_value) : { username: "", passwordHash: "" };
 
-    if (admin.username !== currentUsername || admin.passwordHash !== currentHash) {
+    if (admin.username !== currentUsername || !verifyPassword(currentPassword, admin.passwordHash)) {
       return res.status(400).json({ error: "বর্তমান ইউজারনেম বা পাসওয়ার্ড সঠিক নয়!" });
     }
 
@@ -595,11 +643,9 @@ if (process.env.VERCEL) {
       const storedPassword = pwdRows.length > 0 ? pwdRows[0].setting_value : "PASSWORD";
       
       const [adminRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
-      const adminHash = adminRows.length > 0 ? adminRows[0].setting_value.passwordHash : "";
-      
-      const hashedEnteredPassword = hashPassword(password);
-      
-      if (password === storedPassword || hashedEnteredPassword === adminHash) {
+      const adminHash = adminRows.length > 0 ? parseSettingValue(adminRows[0].setting_value)?.passwordHash : "";
+
+      if (password === storedPassword || password === String(parseSettingValue(storedPassword)) || verifyPassword(password, adminHash)) {
         return res.json({ success: true });
       }
       return res.status(400).json({ error: "ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।" });
@@ -621,11 +667,10 @@ if (process.env.VERCEL) {
       const storedPassword = pwdRows.length > 0 ? pwdRows[0].setting_value : "PASSWORD";
       
       const [adminRows]: any = await pool.query("SELECT setting_value FROM settings WHERE setting_key = 'admin'");
-      const adminHash = adminRows.length > 0 ? adminRows[0].setting_value.passwordHash : "";
-      
-      const hashedCurrentPassword = hashPassword(currentPassword);
-      
-      if (currentPassword !== storedPassword && hashedCurrentPassword !== adminHash) {
+      const adminHash = adminRows.length > 0 ? parseSettingValue(adminRows[0].setting_value)?.passwordHash : "";
+
+      const matchesSettingsPassword = currentPassword === storedPassword || currentPassword === String(parseSettingValue(storedPassword));
+      if (!matchesSettingsPassword && !verifyPassword(currentPassword, adminHash)) {
         return res.status(400).json({ error: "বর্তমান পাসওয়ার্ড সঠিক নয়!" });
       }
       

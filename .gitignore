@@ -3,3 +3,12 @@ node_modules
 push_to_github.ps1
 fix_and_push.ps1
 
+
+# Secrets and data dumps must never be committed
+.env.*
+!.env.example
+env.txt
+*.env
+backup*.sql
+*_backup*.sql
+*.dump
