@@ -158,6 +158,15 @@ body {
   background: rgba(100, 116, 139, 0.4);
 }
 
+/* Horizontal chip rows on mobile: scrollable without a visible bar */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Print configuration styled beautifully for Bengali unicode downloads */
 @media print {
   body {

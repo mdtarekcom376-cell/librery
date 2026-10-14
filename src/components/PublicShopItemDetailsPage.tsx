@@ -52,7 +52,8 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
+              className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
+              aria-label="বিক্রয় কর্নারে ফিরে যান"
               title="বিক্রয় কর্নারে ফিরে যান"
             >
               <ArrowLeft size={14} />
@@ -91,16 +92,16 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
 
       {/* Main Content */}
       <motion.main
-        className="max-w-5xl mx-auto px-4 py-8 md:py-16"
+        className="max-w-5xl mx-auto px-4 py-5 md:py-16"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="bg-white rounded-3xl overflow-hidden border border-[#E5E5EA] shadow-sm flex flex-col md:flex-row">
-          
+        <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden border border-[#E5E5EA] shadow-sm flex flex-col md:flex-row">
+
           {/* Left side: Product Image */}
-          <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
-            <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
+          <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-5 md:p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
+            <div className="w-full max-w-xs md:max-w-none aspect-square rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
               {item.imageUrl ? (
                 <FallbackImage
                   src={item.imageUrl} 
@@ -117,7 +118,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
           </div>
 
           {/* Right side: Details */}
-          <div className="w-full md:w-2/3 lg:w-3/5 p-6 md:p-10 flex flex-col">
+          <div className="w-full md:w-2/3 lg:w-3/5 p-5 sm:p-6 md:p-10 flex flex-col">
             
             {/* Meta tags */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -129,28 +130,28 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
             </div>
 
             {/* Title */}
-            <h2 className="text-2xl md:text-4xl font-bold text-[#22242A] mb-4 leading-tight font-display-bn">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-[#22242A] mb-3 md:mb-4 leading-tight font-display-bn break-words">
               {item.name}
             </h2>
             
             {/* Price */}
-            <div className="flex items-center gap-2 text-[#F25A29] mb-8 font-bold font-display-lat text-3xl">
+            <div className="flex items-center gap-2 text-[#F25A29] mb-6 md:mb-8 font-bold font-display-lat text-2xl md:text-3xl">
               <span>৳{item.price}</span>
             </div>
 
             {/* Description */}
-            <div className="mb-8 flex-1">
+            <div className="mb-2 md:mb-8 flex-1">
               <h3 className="text-sm font-bold text-[#6B6B70] uppercase tracking-wider mb-3">পণ্যের বিবরণ</h3>
-              <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap bg-slate-50 p-5 rounded-xl border border-[#E5E5EA]">
+              <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap break-words bg-slate-50 p-4 md:p-5 rounded-xl border border-[#E5E5EA]">
                 {item.description || "এই পণ্যের কোনো বিবরণ যুক্ত করা হয়নি।"}
               </p>
             </div>
 
-            {/* Action */}
-            <div className="mt-auto border-t border-[#E5E5EA] pt-6">
+            {/* Action — inline on tablet/desktop; mobile uses the sticky bar below */}
+            <div className="hidden md:block mt-auto border-t border-[#E5E5EA] pt-6">
               <button
                 onClick={handleOrder}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-[#22242A] rounded-xl font-bold transition-all cursor-pointer text-lg font-body-bn shadow-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-[#25D366]/10 text-[#1DA851] hover:bg-[#25D366] hover:text-white rounded-xl font-bold transition-all cursor-pointer text-lg font-body-bn shadow-sm"
               >
                 <MessageCircle size={20} />
                 হোয়াটসঅ্যাপে অর্ডার করুন
@@ -160,6 +161,21 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
           </div>
         </div>
       </motion.main>
+
+      {/* Mobile sticky order bar */}
+      <div className="md:hidden sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5E5EA] px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold text-[#6B6B70] font-body-bn">মূল্য</p>
+          <p className="font-display-lat font-bold text-xl text-[#F25A29] leading-none">৳{item.price}</p>
+        </div>
+        <button
+          onClick={handleOrder}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] text-white active:bg-[#1DA851] rounded-xl font-bold text-sm font-body-bn shadow-sm cursor-pointer"
+        >
+          <MessageCircle size={18} />
+          হোয়াটসঅ্যাপে অর্ডার করুন
+        </button>
+      </div>
 
       {/* Footer */}
       <footer className="border-t py-6 px-4 text-center bg-slate-50 border-[#E5E5EA] mt-auto">

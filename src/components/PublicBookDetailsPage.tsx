@@ -25,8 +25,9 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
+              className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
               title="হোম পেজে ফিরে যান"
+              aria-label="হোম পেজে ফিরে যান"
             >
               <ArrowLeft size={14} />
               <span className="hidden sm:inline">হোম পেজ</span>
@@ -64,16 +65,16 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
 
       {/* Main Content */}
       <motion.main
-        className="max-w-5xl mx-auto px-4 py-8 md:py-16"
+        className="max-w-5xl mx-auto px-4 py-5 md:py-16"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="bg-white rounded-3xl overflow-hidden border border-[#E5E5EA] shadow-sm flex flex-col md:flex-row">
-          
+        <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden border border-[#E5E5EA] shadow-sm flex flex-col md:flex-row">
+
           {/* Left side: Book Cover */}
-          <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
-            <div className="w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
+          <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-6 md:p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
+            <div className="w-full max-w-[220px] sm:max-w-xs md:max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
               {book.imageUrl ? (
                 <FallbackImage
                   src={book.imageUrl} 
@@ -101,7 +102,7 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
           </div>
 
           {/* Right side: Details */}
-          <div className="w-full md:w-2/3 lg:w-3/5 p-6 md:p-10 flex flex-col">
+          <div className="w-full md:w-2/3 lg:w-3/5 p-5 sm:p-6 md:p-10 flex flex-col">
             
             {/* Meta tags */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -116,54 +117,54 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
             </div>
 
             {/* Title */}
-            <h2 className="text-2xl md:text-4xl font-bold text-[#22242A] mb-2 leading-tight font-display-bn">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-[#22242A] mb-2 leading-tight font-display-bn break-words">
               {book.name}
             </h2>
             
             {/* Author */}
-            <div className="flex items-center gap-2 text-[#F25A29] mb-8 font-bold font-body-bn text-lg">
-              <User size={18} />
+            <div className="flex items-center gap-2 text-[#F25A29] mb-6 md:mb-8 font-bold font-body-bn text-base md:text-lg">
+              <User size={18} className="shrink-0" />
               <span>{book.author}</span>
             </div>
 
             {/* Description */}
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
               <h3 className="text-sm font-bold text-[#6B6B70] uppercase tracking-wider mb-3">বইয়ের বিবরণ</h3>
-              <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap bg-slate-50 p-5 rounded-xl border border-[#E5E5EA]">
+              <p className="text-slate-600 font-body-bn leading-relaxed text-sm md:text-base whitespace-pre-wrap break-words bg-slate-50 p-4 md:p-5 rounded-xl border border-[#E5E5EA]">
                 {book.description || "এই বইয়ের কোনো বিবরণ যুক্ত করা হয়নি।"}
               </p>
             </div>
 
             {/* Additional info */}
-            <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#E5E5EA] pt-6">
+            <div className="mt-auto grid grid-cols-2 gap-4 border-t border-[#E5E5EA] pt-5 md:pt-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
+                <div className="w-10 h-10 shrink-0 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
                   <Building size={18} />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-[10px] text-[#6B6B70] font-bold uppercase">প্রকাশনী</p>
-                  <p className="font-bold text-slate-700 text-sm font-body-bn">{book.publisher}</p>
+                  <p className="font-bold text-slate-700 text-sm font-body-bn break-words">{book.publisher}</p>
                 </div>
               </div>
               {book.pageCount && (
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
+                  <div className="w-10 h-10 shrink-0 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
                     <BookOpen size={18} />
                   </div>
                   <div>
                     <p className="text-[10px] text-[#6B6B70] font-bold uppercase">পৃষ্ঠা সংখ্যা</p>
-                    <p className="font-bold text-slate-700 text-sm font-body-bn">{book.pageCount} পৃষ্ঠা</p>
+                    <p className="font-bold text-slate-700 text-sm font-body-bn break-words">{book.pageCount} পৃষ্ঠা</p>
                   </div>
                 </div>
               )}
               {book.price != null && (
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
+                  <div className="w-10 h-10 shrink-0 rounded-full bg-[#F5F3EF] flex items-center justify-center text-[#22242A]">
                     <Hash size={18} />
                   </div>
                   <div>
                     <p className="text-[10px] text-[#6B6B70] font-bold uppercase">মূল্য</p>
-                    <p className="font-bold text-slate-700 text-sm font-body-bn">৳{book.price}</p>
+                    <p className="font-bold text-slate-700 text-sm font-body-bn break-words">৳{book.price}</p>
                   </div>
                 </div>
               )}

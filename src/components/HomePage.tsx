@@ -194,18 +194,17 @@ function SectionHeader({ eyebrow, heading, id }: { eyebrow: string; heading: str
 function BookSpine({ title, author, color }: { title: string; author: string; color: string }) {
   return (
     <div
-      className="hp-card relative overflow-hidden flex flex-col justify-between"
-      style={{ width: 160, minHeight: 220, padding: "20px 16px" }}
+      className="hp-card relative overflow-hidden flex flex-col justify-between w-full h-full px-3.5 py-4 md:px-4 md:py-5"
     >
       <div
         className="absolute top-0 left-0 w-full h-1.5"
         style={{ background: color }}
       />
       <div className="mt-2">
-        <p className="font-display-bn text-sm font-bold leading-snug" style={{ color: "var(--ink-navy)" }}>
+        <p className="font-display-bn text-sm font-bold leading-snug line-clamp-3" style={{ color: "var(--ink-navy)" }}>
           {title}
         </p>
-        <p className="font-body-bn text-xs mt-2" style={{ color: "#64748b" }}>
+        <p className="font-body-bn text-xs mt-2 line-clamp-2" style={{ color: "#64748b" }}>
           {author}
         </p>
       </div>
@@ -763,14 +762,14 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
             {/* Three Action Buttons */}
             <motion.div
-              className="flex flex-wrap items-center gap-3 sm:gap-4 mt-8"
+              className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-3 sm:gap-4 mt-8 [&>button]:justify-center sm:[&>button]:justify-start"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
               <button
                 onClick={onNavigateToBooks || (() => scrollTo("#corners"))}
-                className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 font-semibold text-sm flex items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer"
+                className="px-3 sm:px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 font-semibold text-sm flex items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer"
                 id="hero-cta-search-books"
               >
                 <Search size={16} className="text-slate-600" />
@@ -779,7 +778,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
               <button
                 onClick={onLibraryMemberLogin}
-                className="px-6 py-3 rounded-2xl bg-[#4A72D4] hover:bg-[#3258B8] text-white font-semibold text-sm flex items-center gap-2 shadow-[0_8px_20px_-4px_rgba(74,114,212,0.38)] hover:shadow-[0_12px_24px_-4px_rgba(74,114,212,0.48)] transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-95"
+                className="col-span-2 order-first sm:order-none px-6 py-3 rounded-2xl bg-[#4A72D4] hover:bg-[#3258B8] text-white font-semibold text-sm flex items-center gap-2 shadow-[0_8px_20px_-4px_rgba(74,114,212,0.38)] hover:shadow-[0_12px_24px_-4px_rgba(74,114,212,0.48)] transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-95"
                 id="hero-cta-member-login"
               >
                 <Users size={16} className="text-white/95" />
@@ -788,7 +787,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
 
               <button
                 onClick={onMemberLogin}
-                className="px-5 py-3 rounded-2xl bg-white/95 hover:bg-white border border-slate-200/90 text-slate-800 font-semibold text-sm flex items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer"
+                className="px-3 sm:px-5 py-3 rounded-2xl bg-white/95 hover:bg-white border border-slate-200/90 text-slate-800 font-semibold text-sm flex items-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer"
                 id="hero-cta-register"
               >
                 <span className="font-ui">সদস্য হতে চান?</span>
@@ -1077,7 +1076,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="আমরা যা করি" heading="জ্ঞান ও মানবিকতার জন্য আমাদের উদ্যোগ" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 max-w-5xl mx-auto">
             {[
               { icon: BookOpen, title: "জ্ঞানচর্চা ও পাঠাভ্যাসে উৎসাহ প্রদান", desc: "বই পড়ার অভ্যাস গড়ে তোলা এবং জ্ঞানচর্চায় উৎসাহ প্রদান করা আমাদের প্রধান লক্ষ্য।" },
               { icon: Users, title: "শিক্ষামূলক উদ্যোগ পরিচালনা", desc: "শিক্ষাবঞ্চিত ও সুবিধাবঞ্চিত শিশু-কিশোরদের জন্য শিক্ষামূলক কার্যক্রম ও কর্মশালা পরিচালনা।" },
@@ -1088,7 +1087,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             ].map((item, i) => (
               <motion.div
                 key={item.title}
-                className="hp-card p-6 group cursor-default"
+                className="hp-card p-4 md:p-6 group cursor-default flex md:block items-start gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-10%" }}
@@ -1096,17 +1095,19 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 whileHover={{ y: -4 }}
               >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all"
+                  className="w-11 h-11 md:w-12 md:h-12 shrink-0 rounded-xl flex items-center justify-center md:mb-4 transition-all"
                   style={{ background: "var(--sky-tint)" }}
                 >
-                  <item.icon size={24} style={{ color: "var(--book-blue)" }} />
+                  <item.icon size={22} style={{ color: "var(--book-blue)" }} />
                 </div>
-                <h4 className="font-display-bn text-base font-bold mb-2" style={{ color: "var(--ink-navy)" }}>
-                  {item.title}
-                </h4>
-                <p className="font-body-bn text-sm leading-relaxed" style={{ color: "#64748b" }}>
-                  {item.desc}
-                </p>
+                <div className="min-w-0">
+                  <h4 className="font-display-bn text-[15px] md:text-base font-bold mb-1 md:mb-2" style={{ color: "var(--ink-navy)" }}>
+                    {item.title}
+                  </h4>
+                  <p className="font-body-bn text-[13px] md:text-sm leading-relaxed" style={{ color: "#64748b" }}>
+                    {item.desc}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -1648,8 +1649,8 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
         <div className="max-w-7xl mx-auto">
           <SectionHeader eyebrow="" heading="বিক্রয় কর্নার" />
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-            {hotSalesItems.length > 0 
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
+            {hotSalesItems.length > 0
               ? hotSalesItems.map((item, i) => (
                   <motion.div
                     key={item.id}
@@ -2328,7 +2329,7 @@ function StatsSection({ stats = DEMO_STATS }: { stats?: typeof DEMO_STATS }) {
     <section id="stats" className="section-warm py-16 md:py-24 px-4" ref={ref}>
       <div className="max-w-7xl mx-auto">
         <SectionHeader eyebrow="সংক্ষেপে" heading="এক নজরে পাঠাগারের হালচাল" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 max-w-5xl mx-auto [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
           {statItems.map((stat, i) => (
             <StatCard key={stat.label} stat={stat} index={i} inView={inView} />
           ))}

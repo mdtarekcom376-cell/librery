@@ -27,8 +27,9 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
+              className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
               title="হোম পেজে ফিরে যান"
+              aria-label="হোম পেজে ফিরে যান"
             >
               <ArrowLeft size={14} />
               <span className="hidden sm:inline">হোম পেজ</span>
@@ -66,7 +67,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
 
       {/* Hero Banner */}
       <motion.section
-        className="relative overflow-hidden py-12 md:py-16 px-4 bg-slate-50 border-b border-[#E5E5EA]"
+        className="relative overflow-hidden py-8 md:py-16 px-4 bg-slate-50 border-b border-[#E5E5EA]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -90,7 +91,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <span
-              className="inline-block text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full mb-4 bg-white text-[#F25A29] border border-[#F25A29]/20 shadow-sm"
+              className="inline-block text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full mb-3 md:mb-4 bg-white text-[#F25A29] border border-[#F25A29]/20 shadow-sm"
             >
               অক্ষর পাঠাগারের অফিশিয়াল স্টোর
             </span>
@@ -117,7 +118,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
           </motion.p>
           
           <motion.div
-            className="mt-8 flex justify-center w-full"
+            className="mt-5 md:mt-8 flex justify-center w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -133,7 +134,7 @@ export default function PublicSalesPage({ onBack, logoBase64, onItemSelect }: Pu
 
       {/* Main Content - PublicShopView Component */}
       <motion.main
-        className="py-8 md:py-12 flex flex-col"
+        className="py-5 md:py-12 flex flex-col"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
