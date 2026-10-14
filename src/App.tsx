@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -34,33 +34,59 @@ import {
 } from "lucide-react";
 // JSZip is dynamically imported where used (handleBulkZipDownload) to reduce initial bundle size
 
-// Inner view components
-import Dashboard from "./components/Dashboard";
-import PublicBooksPage from "./components/PublicBooksPage";
-import BookManager from "./components/BookManager";
-import SmartSearch from "./components/SmartSearch";
-import IssueReturn from "./components/IssueReturn";
-import MemberManager from "./components/MemberManager";
-import Wishlist from "./components/Wishlist";
-import Notepad from "./components/Notepad";
-import AuditLogView from "./components/AuditLogView";
-import SmsAlerts from "./components/SmsAlerts";
-import Settings from "./components/Settings";
-import PreviewModal from "./components/PreviewModal";
-import PublicPortal from "./components/PublicPortal";
-import SalesCorner from "./components/SalesCorner";
-import ReviewManager from "./components/ReviewManager";
-import NoticeManager from "./components/NoticeManager";
-import WritingsManager from "./components/WritingsManager";
-import { RegistrationModal } from "./components/RegistrationModal";
-import Analytics from "./components/Analytics";
+// The landing page ships in the main bundle; everything else is split into chunks that load
+// on demand, so public visitors never download the admin dashboard.
 import HomePage from "./components/HomePage";
-import PublicSalesPage from "./components/PublicSalesPage";
-import PublicBookDetailsPage from "./components/PublicBookDetailsPage";
-import PublicShopItemDetailsPage from "./components/PublicShopItemDetailsPage";
-import PublicNoticeDetailsPage from "./components/PublicNoticeDetailsPage";
-import PublicBlogPage from "./components/PublicBlogPage";
-import PublicBlogDetailsPage from "./components/PublicBlogDetailsPage";
+
+// The sign-up form is only fetched when someone opens it.
+const RegistrationModalChunk = lazy(() =>
+  import("./components/RegistrationModal").then((m) => ({ default: m.RegistrationModal }))
+);
+type RegistrationModalProps = React.ComponentProps<typeof import("./components/RegistrationModal").RegistrationModal>;
+function RegistrationModal(props: RegistrationModalProps) {
+  if (!props.isOpen) return null;
+  return (
+    <Suspense fallback={null}>
+      <RegistrationModalChunk {...props} />
+    </Suspense>
+  );
+}
+
+// Dashboard (admin / member portal)
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const BookManager = lazy(() => import("./components/BookManager"));
+const SmartSearch = lazy(() => import("./components/SmartSearch"));
+const IssueReturn = lazy(() => import("./components/IssueReturn"));
+const MemberManager = lazy(() => import("./components/MemberManager"));
+const Wishlist = lazy(() => import("./components/Wishlist"));
+const Notepad = lazy(() => import("./components/Notepad"));
+const AuditLogView = lazy(() => import("./components/AuditLogView"));
+const SmsAlerts = lazy(() => import("./components/SmsAlerts"));
+const Settings = lazy(() => import("./components/Settings"));
+const PreviewModal = lazy(() => import("./components/PreviewModal"));
+const PublicPortal = lazy(() => import("./components/PublicPortal"));
+const SalesCorner = lazy(() => import("./components/SalesCorner"));
+const ReviewManager = lazy(() => import("./components/ReviewManager"));
+const NoticeManager = lazy(() => import("./components/NoticeManager"));
+const WritingsManager = lazy(() => import("./components/WritingsManager"));
+const Analytics = lazy(() => import("./components/Analytics"));
+
+// Public pages other than home
+const PublicBooksPage = lazy(() => import("./components/PublicBooksPage"));
+const PublicSalesPage = lazy(() => import("./components/PublicSalesPage"));
+const PublicBookDetailsPage = lazy(() => import("./components/PublicBookDetailsPage"));
+const PublicShopItemDetailsPage = lazy(() => import("./components/PublicShopItemDetailsPage"));
+const PublicNoticeDetailsPage = lazy(() => import("./components/PublicNoticeDetailsPage"));
+const PublicBlogPage = lazy(() => import("./components/PublicBlogPage"));
+const PublicBlogDetailsPage = lazy(() => import("./components/PublicBlogDetailsPage"));
+
+function PageLoader({ inline = false }: { inline?: boolean }) {
+  return (
+    <div className={`flex items-center justify-center ${inline ? "py-24" : "min-h-screen bg-[#F7F6F3]"}`} role="status" aria-label="লোড হচ্ছে">
+      <div className="w-8 h-8 rounded-full border-2 border-[#22242A]/15 border-t-[#22242A] animate-spin" />
+    </div>
+  );
+}
 
 import { apiClient } from "./api";
 import { Book, WishlistItem, Note, AuditLog, ShopItem } from "./types";
@@ -1399,8 +1425,9 @@ export default function App() {
 
         {/* 3. Main Pages Container Canvas */}
         <main id="main-scroll-container" className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto overflow-y-auto max-h-[calc(100vh-65px)]">
+          <Suspense fallback={<PageLoader inline />}>
           <div>
-            
+
             {userRole !== "admin" && userRole && (
               <PublicPortal
                 userRole={userRole as any}
@@ -1507,27 +1534,24 @@ export default function App() {
               />
             )}
 
-            {userRole === "admin" && activeTab === "reviews" && (
-              <ReviewManager onRefreshStats={handleRefreshStats} />
-            )}
-
-            {userRole === "admin" && activeTab === "notices" && (
-              <NoticeManager onRefreshStats={handleRefreshStats} />
-            )}
-
           </div>
+          </Suspense>
         </main>
 
       </div>
 
       {/* 4. SHARED EYE PREVIEW TEMPLATE MODAL */}
-      <PreviewModal
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        title={previewTitle}
-        dataType={previewDataType}
-        data={previewData}
-      />
+      {isPreviewOpen && (
+        <Suspense fallback={null}>
+          <PreviewModal
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            title={previewTitle}
+            dataType={previewDataType}
+            data={previewData}
+          />
+        </Suspense>
+      )}
 
       <RegistrationModal
         isOpen={isRegisterOpen}
@@ -1539,6 +1563,7 @@ export default function App() {
   );
 
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={publicHomeRender} />
       
@@ -1638,6 +1663,7 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 }
 

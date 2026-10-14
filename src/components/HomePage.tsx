@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import FallbackImage from "./FallbackImage";
 import { hasRealCover } from "./BookCover";
+import { loadCatalog } from "../lib/catalog";
 import DonationCTA from "./DonationCTA";
 import {
   motion,
@@ -364,16 +365,14 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
   const [liveCorners, setLiveCorners] = useState<{name: string; bookCount: number; topBooks: {id: string; code: string; title: string; author: string; imageUrl: string; reads: number}[]}[]>([]);
 
   useEffect(() => {
+    // Shares the catalogue request with /books (so opening it next is instant) and
+    // puts books with real covers first so the marquee shows actual book art.
     const fetchBooks = async () => {
       try {
-        const res = await fetch("/api/public/books?limit=1000");
-        if (res.ok) {
-          const data = await res.json();
-          const booksArray = Array.isArray(data) ? data : (data.books || []);
-          if (Array.isArray(booksArray)) {
-            setRealBooks(booksArray.filter((b: any) => b.imageUrl));
-          }
-        }
+        const { books } = await loadCatalog();
+        const withCovers = books.filter((b) => hasRealCover(b.imageUrl));
+        const rest = books.filter((b) => !hasRealCover(b.imageUrl));
+        setRealBooks([...withCovers, ...rest]);
       } catch (e) {
         console.warn("Failed to load real books", e);
       }
