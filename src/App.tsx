@@ -30,13 +30,15 @@ import {
   Bell,
   MessageSquare,
   Home,
-  BarChart3
+  BarChart3,
+  Stethoscope
 } from "lucide-react";
 // JSZip is dynamically imported where used (handleBulkZipDownload) to reduce initial bundle size
 
 // The landing page ships in the main bundle; everything else is split into chunks that load
 // on demand, so public visitors never download the admin dashboard.
 import HomePage from "./components/HomePage";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // The sign-up form is only fetched when someone opens it.
 const RegistrationModalChunk = lazy(() =>
@@ -70,6 +72,7 @@ const ReviewManager = lazy(() => import("./components/ReviewManager"));
 const NoticeManager = lazy(() => import("./components/NoticeManager"));
 const WritingsManager = lazy(() => import("./components/WritingsManager"));
 const Analytics = lazy(() => import("./components/Analytics"));
+const DataHealth = lazy(() => import("./components/DataHealth"));
 
 // Public pages other than home
 const PublicBooksPage = lazy(() => import("./components/PublicBooksPage"));
@@ -746,6 +749,7 @@ export default function App() {
         { id: "home", label: "হোম", icon: Home },
         { id: "dashboard", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
         { id: "books", label: "বই ক্যাটালগ", icon: BookMarked },
+        { id: "data-health", label: "ডেটা স্বাস্থ্য", icon: Stethoscope },
         { id: "search-smart", label: "স্মার্ট অনুসন্ধান", icon: SearchCode },
         { id: "issue", label: "ইস্যু ও রিটার্ন", icon: ArrowUpDown },
         { id: "members", label: "সদস্য তালিকা", icon: Users2 },
@@ -1425,6 +1429,7 @@ export default function App() {
 
         {/* 3. Main Pages Container Canvas */}
         <main id="main-scroll-container" className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto overflow-y-auto max-h-[calc(100vh-65px)]">
+          <ErrorBoundary key={activeTab}>
           <Suspense fallback={<PageLoader inline />}>
           <div>
 
@@ -1456,6 +1461,10 @@ export default function App() {
                 onPreview={dispatchBookPreview}
                 onPreviewBooksList={dispatchBooksListPreview}
               />
+            )}
+
+            {userRole === "admin" && activeTab === "data-health" && (
+              <DataHealth onRefreshStats={handleRefreshStats} />
             )}
 
             {userRole === "admin" && activeTab === "search-smart" && (
@@ -1536,6 +1545,7 @@ export default function App() {
 
           </div>
           </Suspense>
+          </ErrorBoundary>
         </main>
 
       </div>
@@ -1563,6 +1573,7 @@ export default function App() {
   );
 
   return (
+    <ErrorBoundary fullPage>
     <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={publicHomeRender} />
@@ -1664,6 +1675,7 @@ export default function App() {
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </Suspense>
+    </ErrorBoundary>
   );
 }
 

@@ -1305,6 +1305,49 @@ if (process.env.VERCEL) {
     }
   });
 
+  // ---------- Catalogue data health (admin) ----------
+  // Light listing of what each book is missing; never ships the stored images themselves.
+  const VALID_IMAGE_SQL = "(image_url LIKE 'data:image/%' OR image_url LIKE 'http://%' OR image_url LIKE 'https://%')";
+
+  app.get("/api/admin/books/health", authenticateAdmin, async (req, res) => {
+    try {
+      const [rows]: any = await pool.query(
+        `SELECT id, code, name, author, publisher, group_name, status,
+                CASE WHEN image_url IS NULL OR TRIM(image_url) = '' THEN 'none'
+                     WHEN ${VALID_IMAGE_SQL} THEN 'ok'
+                     ELSE 'invalid' END AS image_state,
+                CHAR_LENGTH(COALESCE(description, '')) AS description_length
+         FROM books ORDER BY id DESC`
+      );
+      res.json({
+        success: true,
+        books: rows.map((r: any) => ({
+          id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
+          group: r.group_name || "", status: r.status, imageState: r.image_state,
+          hasDescription: Number(r.description_length) > 0,
+        })),
+      });
+    } catch (err: any) {
+      console.error("GET /api/admin/books/health error:", err);
+      res.status(500).json({ error: "ডেটা যাচাই করা যায়নি।" });
+    }
+  });
+
+  // Clears cover values that aren't images (e.g. "200"), so the site shows its generated cover.
+  app.post("/api/admin/books/clear-invalid-images", authenticateAdmin, async (req, res) => {
+    try {
+      const [result]: any = await pool.query(
+        `UPDATE books SET image_url = '' WHERE image_url IS NOT NULL AND TRIM(image_url) <> '' AND NOT ${VALID_IMAGE_SQL}`
+      );
+      const cleared = Number(result?.affectedRows) || 0;
+      addLog("ডেটা সংশোধন", `${cleared} টি বইয়ের অকার্যকর কভার মান মুছে ফেলা হয়েছে।`);
+      res.json({ success: true, cleared });
+    } catch (err: any) {
+      console.error("POST /api/admin/books/clear-invalid-images error:", err);
+      res.status(500).json({ error: "কভার মান মুছতে সমস্যা হয়েছে।" });
+    }
+  });
+
   // Bulk Assign Group (Must be defined before /api/books/:id)
   app.put("/api/books/bulk-group", authenticateAdmin, async (req, res) => {
     const { bookIds, groupName } = req.body;
