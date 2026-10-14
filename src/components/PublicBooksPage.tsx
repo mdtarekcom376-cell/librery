@@ -17,9 +17,9 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { apiClient } from "../api";
 import { Book } from "../types";
 import BookCover, { coverTone, hasRealCover } from "./BookCover";
+import { PLACEHOLDER_AUTHORS, formatPrice, getCachedCatalog, loadCatalog, toAsciiDigits, toBn } from "../lib/catalog";
 
 interface PublicBooksPageProps {
   onBack: () => void;
@@ -35,7 +35,6 @@ interface PopularEntry {
 }
 
 const PAGE_SIZE = 24;
-const PLACEHOLDER_AUTHORS = new Set(["", "উল্লেখ নেই", "নাই", "অজ্ঞাত", "unknown", "n/a"]);
 const SORT_LABELS: Record<SortKey, string> = {
   new: "নতুন আগে",
   name: "নাম (অ → ঔ)",
@@ -43,59 +42,10 @@ const SORT_LABELS: Record<SortKey, string> = {
   "price-desc": "মূল্য: বেশি → কম",
 };
 
-const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
-const toBn = (n: number | string) => String(n).replace(/\d/g, (d) => BN_DIGITS[Number(d)]);
-const toAsciiDigits = (s: string) => s.replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)));
-// Prices arrive as DECIMAL strings ("850.00"); show "৳৮৫০", keeping real fractions.
-const formatPrice = (p: number | string) => {
-  const n = Number(p);
-  return Number.isFinite(n) ? `৳${toBn(Number.isInteger(n) ? n : n.toFixed(2))}` : "";
-};
-
 function firstGrapheme(text: string): string {
   const seg = (Intl as any).Segmenter ? new (Intl as any).Segmenter("bn", { granularity: "grapheme" }) : null;
   if (seg) return seg.segment(text)[Symbol.iterator]().next().value?.segment || "";
   return Array.from(text)[0] || "";
-}
-
-interface Catalog {
-  books: Book[];
-  groups: string[];
-  popular: { id: string; reads: number; fallback: Book }[];
-}
-
-// Survives navigation to a book's page and back, so returning is instant and the
-// global scroll restoration lands on the same spot. One shared in-flight request
-// means a remount (or StrictMode's double effect) never drops a finished load.
-let catalogCache: Catalog | null = null;
-let catalogRequest: Promise<Catalog> | null = null;
-
-function loadCatalog(): Promise<Catalog> {
-  if (!catalogRequest) {
-    catalogRequest = (async () => {
-      const [booksRes, groupsRes, popularRes] = await Promise.all([
-        apiClient.get("/public/books?limit=1000"),
-        apiClient.get("/public/groups").catch(() => null),
-        apiClient.get("/public/leaderboard/books").catch(() => null),
-      ]);
-      const books: Book[] = Array.isArray(booksRes?.books) ? booksRes.books : Array.isArray(booksRes) ? booksRes : [];
-      const groups: string[] = Array.isArray(groupsRes?.groups) ? groupsRes.groups : [];
-      const popular = (Array.isArray(popularRes?.leaderboard) ? popularRes.leaderboard : []).map((p: any) => ({
-        id: String(p.id),
-        reads: Number(p.count) || 0,
-        fallback: {
-          id: String(p.id), code: p.code, name: p.name, author: p.author, publisher: "",
-          imageUrl: p.imageUrl, status: "Available", group: p.group,
-        } as Book,
-      }));
-      catalogCache = { books, groups, popular };
-      return catalogCache;
-    })().catch((err) => {
-      catalogRequest = null; // allow a retry on the next visit
-      throw err;
-    });
-  }
-  return catalogRequest;
 }
 
 export default function PublicBooksPage({ onBack, logoBase64, onBookSelect }: PublicBooksPageProps) {
@@ -108,10 +58,11 @@ export default function PublicBooksPage({ onBack, logoBase64, onBookSelect }: Pu
   const viewAll = params.get("view") === "all";
   const isBrowsing = !q && !group && !author && !onlyAvailable && !viewAll && !params.get("sort");
 
-  const [books, setBooks] = useState<Book[]>(catalogCache?.books || []);
-  const [groups, setGroups] = useState<string[]>(catalogCache?.groups || []);
-  const [popularRaw, setPopularRaw] = useState(catalogCache?.popular || []);
-  const [loading, setLoading] = useState(!catalogCache);
+  const cached = getCachedCatalog();
+  const [books, setBooks] = useState<Book[]>(cached?.books || []);
+  const [groups, setGroups] = useState<string[]>(cached?.groups || []);
+  const [popularRaw, setPopularRaw] = useState(cached?.popular || []);
+  const [loading, setLoading] = useState(!cached);
   const [searchInput, setSearchInput] = useState(q);
 
   const updateParams = (patch: Record<string, string | null>, replace = false) => {
@@ -128,7 +79,7 @@ export default function PublicBooksPage({ onBack, logoBase64, onBookSelect }: Pu
   };
 
   useEffect(() => {
-    if (catalogCache) return;
+    if (getCachedCatalog()) return;
     let cancelled = false;
     loadCatalog()
       .then((c) => {
@@ -565,7 +516,7 @@ export default function PublicBooksPage({ onBack, logoBase64, onBookSelect }: Pu
 
 // ---------------------------------------------------------------------------
 
-const BookCard: React.FC<{ book: Book; onSelect: (b: Book) => void; rank?: number; reads?: number; eager?: boolean }> = ({ book, onSelect, rank, reads, eager }) => {
+export const BookCard: React.FC<{ book: Book; onSelect: (b: Book) => void; rank?: number; reads?: number; eager?: boolean }> = ({ book, onSelect, rank, reads, eager }) => {
   return (
     <button type="button" onClick={() => onSelect(book)} className="group block w-full text-left focus:outline-none cursor-pointer">
       <div className="relative aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-black/5 shadow-[0_2px_8px_rgba(34,36,42,0.08)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_16px_30px_-12px_rgba(34,36,42,0.4)] group-focus-visible:ring-2 group-focus-visible:ring-[#FF6B6B]">

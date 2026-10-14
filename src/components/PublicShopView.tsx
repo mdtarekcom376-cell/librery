@@ -10,6 +10,7 @@ import {
 import { motion } from "motion/react";
 import { ShopItem } from "../types";
 import { apiClient } from "../api";
+import { openWhatsAppOrder } from "../lib/whatsapp";
 
 interface PublicShopViewProps {
   onItemSelect?: (item: ShopItem) => void;
@@ -107,19 +108,7 @@ export default function PublicShopView({ onItemSelect }: PublicShopViewProps = {
     fetchData();
   }, []);
 
-  const handleOrder = (item: ShopItem) => {
-    const number = helplineNumber || "01333478448";
-    // Formatting the number: remove any non-digit chars
-    const cleanNumber = number.replace(/[^0-9]/g, "");
-    
-    // Product Link (simulated, since it's a SPA without individual item routes)
-    const productLink = `${window.location.origin}/#sales`;
-    
-    const message = `hi i want purches this product . ${productLink} and ${item.name} ok?`;
-    
-    const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  };
+  const handleOrder = (item: ShopItem) => openWhatsAppOrder(item, helplineNumber);
 
   const filteredItems = items.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 

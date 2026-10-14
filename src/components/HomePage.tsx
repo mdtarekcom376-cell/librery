@@ -50,9 +50,9 @@ import {
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
 import foundersImg from "../assets/images/founders.png";
-import karyonirbahiImg from "../assets/images/karyonirbahi.png";
-import tawhidImg from "../assets/images/tawhid.png";
-import cornerBanner from "../assets/images/corner-banner.jpg";
+import karyonirbahiImg from "../assets/images/karyonirbahi.webp";
+import tawhidImg from "../assets/images/tawhid.webp";
+import cornerBanner from "../assets/images/corner-banner.webp";
 import aboutBookStack from "../assets/images/about-books-stack.webp";
 import Hero3DImage from "./Hero3DImage";
 import NewsletterPopup, { subscribeNewsletter } from "./NewsletterPopup";

@@ -46,7 +46,7 @@ export default function PublicBlogPage({
         "অক্ষর পাঠাগারের অফিশিয়াল ব্লগ। বই পড়ার অভ্যাস, কালজয়ী বাংলা সাহিত্য, শিশু শিক্ষা, দুষ্প্রাপ্য পান্ডুলিপি ও কমিউনিটি লাইব্রেরি কার্যক্রম সম্পর্কিত ৭টি তথ্যবহুল নিবন্ধ ও সংবাদসমূহ পড়ুন।",
       keywords:
         "অক্ষর পাঠাগার ব্লগ, বই পড়ার গুরুত্ব, পাঠাভ্যাস, বাংলা সাহিত্য, বরগুনা পাঠাগার, কমিউনিটি লাইব্রেরি, akkhor pathagar blog",
-      canonicalUrl: "https://www.okkhorpathagar.org/blog",
+      canonicalUrl: "https://okkhorpathagar.com/blog",
       ogType: "website",
       ogImage:
         "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=80",
@@ -56,13 +56,13 @@ export default function PublicBlogPage({
         name: "অক্ষর পাঠাগার ব্লগ",
         description:
           "বইয়ের আলোয় আলোকিত হোক জীবন — অক্ষর পাঠাগারের গবেষণা, সংবাদ ও পাঠচর্চা বিষয়ক ব্লগ।",
-        url: "https://www.okkhorpathagar.org/blog",
+        url: "https://okkhorpathagar.com/blog",
         publisher: {
           "@type": "Organization",
           name: "অক্ষর পাঠাগার",
           logo: {
             "@type": "ImageObject",
-            url: "https://www.okkhorpathagar.org/src/assets/images/akkhor_logo_1781456142605.jpg",
+            url: "https://okkhorpathagar.com/logo.png",
           },
         },
         blogPost: DEFAULT_BLOG_POSTS.map((post) => ({
@@ -75,7 +75,7 @@ export default function PublicBlogPage({
             "@type": "Person",
             name: post.author || "অক্ষর পাঠাগার",
           },
-          url: `https://www.okkhorpathagar.org/blog/${post.slug || post.id}`,
+          url: `https://okkhorpathagar.com/blog/${post.slug || post.id}`,
         })),
       },
     });

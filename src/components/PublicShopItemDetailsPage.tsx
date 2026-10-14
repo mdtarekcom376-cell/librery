@@ -1,18 +1,65 @@
 import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import FallbackImage from "./FallbackImage";
 import { ArrowLeft, ShoppingBag, Package, Store, MessageCircle, Hash } from "lucide-react";
 import { motion } from "motion/react";
 import { ShopItem } from "../types";
 import { apiClient } from "../api";
 import DeveloperCreditBadge from "./DeveloperCreditBadge";
+import { openWhatsAppOrder } from "../lib/whatsapp";
 
 interface PublicShopItemDetailsPageProps {
-  item: ShopItem;
+  /** The item the visitor clicked, if any — shown instantly while the URL's item is confirmed. */
+  initialItem?: ShopItem | null;
   onBack: () => void;
   logoBase64?: string;
 }
 
-export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: PublicShopItemDetailsPageProps) {
+/** /shop/:id — loads the product from the URL so the page can be refreshed and shared. */
+export default function PublicShopItemDetailsPage({ initialItem, onBack, logoBase64 }: PublicShopItemDetailsPageProps) {
+  const { id = "" } = useParams();
+  const known = initialItem && String(initialItem.id) === id ? initialItem : null;
+  const [item, setItem] = useState<ShopItem | null>(known);
+  const [status, setStatus] = useState<"loading" | "missing" | "error">("loading");
+
+  useEffect(() => {
+    setItem(known);
+    let cancelled = false;
+    apiClient
+      .get(`/public/shop/items/${encodeURIComponent(id)}`)
+      .then((res) => { if (!cancelled && res?.item) setItem(res.item); })
+      .catch((err: Error) => {
+        if (!cancelled && !known) setStatus(/পাওয়া যায়নি/.test(err.message) ? "missing" : "error");
+      });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  useEffect(() => {
+    if (!item) return;
+    const previous = document.title;
+    document.title = `${item.name} | অক্ষর পাঠাগার বিক্রয় কর্নার`;
+    return () => { document.title = previous; };
+  }, [item]);
+
+  if (item) return <ShopItemView item={item} onBack={onBack} logoBase64={logoBase64} />;
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 text-center">
+      {status === "loading" ? (
+        <div className="w-8 h-8 border-2 border-[#F25A29] border-t-transparent rounded-full animate-spin" aria-label="লোড হচ্ছে" />
+      ) : (
+        <>
+          <Package size={40} className="text-slate-300" />
+          <h1 className="mt-4 text-xl font-bold text-[#22242A]">{status === "missing" ? "পণ্যটি পাওয়া যায়নি" : "পণ্যের তথ্য লোড করা যায়নি"}</h1>
+          <Link to="/shop" className="mt-6 rounded-xl bg-[#F25A29] px-5 py-2.5 text-sm font-bold text-white">বিক্রয় কর্নারে যান</Link>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ShopItemView({ item, onBack, logoBase64 }: { item: ShopItem; onBack: () => void; logoBase64?: string }) {
   const logoSrc = logoBase64 || "";
   const [helplineNumber, setHelplineNumber] = useState("");
 
@@ -27,19 +74,7 @@ export default function PublicShopItemDetailsPage({ item, onBack, logoBase64 }: 
       .catch(() => {}); // silently fail and fallback to default
   }, []);
 
-  const handleOrder = () => {
-    const number = helplineNumber || "01333478448";
-    // Formatting the number: remove any non-digit chars
-    const cleanNumber = number.replace(/[^0-9]/g, "");
-    
-    // Product Link (simulated, since it's a SPA without individual item routes)
-    const productLink = `${window.location.origin}/#sales`;
-    
-    const message = `hi i want purches this product . ${productLink} and ${item.name} ok?`;
-    
-    const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  };
+  const handleOrder = () => openWhatsAppOrder(item, helplineNumber);
 
   return (
     <div className="min-h-screen bg-white">

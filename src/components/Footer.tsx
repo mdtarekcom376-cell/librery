@@ -17,8 +17,8 @@ import {
   Check,
 } from "lucide-react";
 import akkhorLogo from "../assets/images/akkhor_logo_1781456142605.jpg";
-import sharifPortrait from "../assets/images/footer_sharif_portrait.png";
-import booksIllustration from "../assets/images/footer_books_illustration.png";
+import sharifPortrait from "../assets/images/footer_sharif_portrait.webp";
+import booksIllustration from "../assets/images/footer_books_illustration.webp";
 import { subscribeNewsletter } from "./NewsletterPopup";
 import DeveloperCreditBadge from "./DeveloperCreditBadge";
 

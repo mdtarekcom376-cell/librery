@@ -88,6 +88,7 @@ const PUBLIC_IMAGE_SOURCES: Record<string, { table: string; column: string }> = 
   books: { table: "books", column: "image_url" },
   shop: { table: "shop_items", column: "image_url" },
   notices: { table: "notices", column: "image" },
+  blog: { table: "blog_posts", column: "image" },
 };
 const INLINE_IMAGE_TOKEN = "data:#";
 const IMAGE_TOKEN_SQL = (col: string) =>
@@ -100,6 +101,144 @@ function publicImageRef(kind: keyof typeof PUBLIC_IMAGE_SOURCES, id: unknown, va
     ? value.slice(INLINE_IMAGE_TOKEN.length, INLINE_IMAGE_TOKEN.length + 12)
     : crypto.createHash("md5").update(value).digest("hex").slice(0, 12);
   return `${PUBLIC_IMAGE_URL_PREFIX}${kind}/${id}?v=${version}`;
+}
+
+// ---------- Public records shared by list/detail APIs and server-rendered page meta ----------
+
+const PUBLIC_BOOK_COLUMNS = `id, code, name, author, publisher, ${IMAGE_TOKEN_SQL("image_url")} AS image_url, status, group_name, description, page_count, price`;
+const PUBLIC_SHOP_COLUMNS = `id, name, description, price, ${IMAGE_TOKEN_SQL("image_url")} AS image_url, category, created_at`;
+
+function toPublicBook(r: any) {
+  return {
+    id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
+    imageUrl: publicImageRef("books", r.id, r.image_url) || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
+    description: r.description, pageCount: r.page_count, price: r.price,
+  };
+}
+
+function toPublicShopItem(r: any) {
+  return {
+    id: String(r.id), name: r.name, description: r.description, price: r.price,
+    imageUrl: publicImageRef("shop", r.id, r.image_url) || DEFAULT_BOOK_IMAGE_URL,
+    category: r.category, createdAt: r.created_at,
+  };
+}
+
+async function fetchPublicBook(id: string) {
+  if (!/^\d+$/.test(id)) return null;
+  const [rows]: any = await pool.query(`SELECT ${PUBLIC_BOOK_COLUMNS} FROM books WHERE id = ? LIMIT 1`, [id]);
+  return rows[0] ? toPublicBook(rows[0]) : null;
+}
+
+async function fetchPublicShopItem(id: string) {
+  if (!/^\d+$/.test(id)) return null;
+  const [rows]: any = await pool.query(`SELECT ${PUBLIC_SHOP_COLUMNS} FROM shop_items WHERE id = ? LIMIT 1`, [id]);
+  return rows[0] ? toPublicShopItem(rows[0]) : null;
+}
+
+// ---------- SEO: canonical site URL, per-page meta for shared links, sitemap ----------
+
+const SITE_URL = (process.env.SITE_URL || "https://okkhorpathagar.com").replace(/\/+$/, "");
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+
+const escapeHtml = (s: unknown) =>
+  String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+const absoluteUrl = (u: string) => (/^https?:\/\//.test(u) ? u : `${SITE_URL}${u.startsWith("/") ? "" : "/"}${u}`);
+const isRealImage = (u?: string | null) =>
+  !!u && (u.startsWith(PUBLIC_IMAGE_URL_PREFIX) || (/^https?:\/\//.test(u) && u !== DEFAULT_BOOK_IMAGE_URL));
+const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
+
+interface PageMeta {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  type?: string;
+  jsonLd?: Record<string, unknown>;
+}
+
+/** Rewrites the SPA's index.html head so link previews and crawlers see the real page. */
+function injectPageMeta(html: string, meta: PageMeta): string {
+  const url = `${SITE_URL}${meta.path}`;
+  const image = meta.image || DEFAULT_OG_IMAGE;
+  const set = (pattern: RegExp, value: string) => {
+    html = html.replace(pattern, (_m, before: string, after: string) => `${before}${escapeHtml(value)}${after}`);
+  };
+  html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(meta.title)}</title>`);
+  set(/(<meta name="description" content=")[^"]*(")/, meta.description);
+  set(/(<meta property="og:title" content=")[^"]*(")/, meta.title);
+  set(/(<meta property="og:description" content=")[^"]*(")/, meta.description);
+  set(/(<meta property="og:url" content=")[^"]*(")/, url);
+  set(/(<meta property="og:type" content=")[^"]*(")/, meta.type || "website");
+  set(/(<meta property="og:image" content=")[^"]*(")/, image);
+  set(/(<meta name="twitter:title" content=")[^"]*(")/, meta.title);
+  set(/(<meta name="twitter:description" content=")[^"]*(")/, meta.description);
+  set(/(<meta name="twitter:image" content=")[^"]*(")/, image);
+  set(/(<link rel="canonical" href=")[^"]*(")/, url);
+  if (meta.jsonLd) {
+    const ld = JSON.stringify(meta.jsonLd).replace(/</g, "\\u003c");
+    html = html.replace("</head>", () => `<script type="application/ld+json">${ld}</script>\n</head>`);
+  }
+  return html;
+}
+
+async function bookPageMeta(id: string): Promise<PageMeta | null> {
+  const book = await fetchPublicBook(id);
+  if (!book) return null;
+  const image = isRealImage(book.imageUrl) ? absoluteUrl(book.imageUrl) : undefined;
+  const availability = book.status === "Available" ? "এখন পড়ার জন্য উপলব্ধ" : "বর্তমানে ধারকৃত";
+  const description = clip(
+    (book.description || "").trim() ||
+      `${book.name} — লেখক: ${book.author || "অজ্ঞাত"}${book.publisher ? `, প্রকাশনী: ${book.publisher}` : ""}। অক্ষর পাঠাগারের সংগ্রহে ${availability}।`,
+    200,
+  );
+  return {
+    title: `${book.name} — ${book.author || "অক্ষর পাঠাগার"} | অক্ষর পাঠাগার`,
+    description,
+    path: `/books/${book.id}`,
+    image,
+    type: "book",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Book",
+      name: book.name,
+      ...(book.author ? { author: { "@type": "Person", name: book.author } } : {}),
+      ...(book.publisher ? { publisher: { "@type": "Organization", name: book.publisher } } : {}),
+      ...(book.pageCount ? { numberOfPages: Number(book.pageCount) } : {}),
+      ...(image ? { image } : {}),
+      inLanguage: "bn",
+      url: `${SITE_URL}/books/${book.id}`,
+    },
+  };
+}
+
+async function shopItemPageMeta(id: string): Promise<PageMeta | null> {
+  const item = await fetchPublicShopItem(id);
+  if (!item) return null;
+  const image = isRealImage(item.imageUrl) ? absoluteUrl(item.imageUrl) : undefined;
+  const price = Number(item.price);
+  return {
+    title: `${item.name} — ৳${Number.isFinite(price) ? price : item.price} | অক্ষর পাঠাগার বিক্রয় কর্নার`,
+    description: clip((item.description || "").trim() || `${item.name} — অক্ষর পাঠাগারের অফিশিয়াল বিক্রয় কর্নার থেকে অর্ডার করুন।`, 200),
+    path: `/shop/${item.id}`,
+    image,
+    type: "product",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: item.name,
+      ...(item.description ? { description: item.description } : {}),
+      ...(image ? { image } : {}),
+      ...(item.category ? { category: item.category } : {}),
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "BDT",
+        price: Number.isFinite(price) ? price : undefined,
+        url: `${SITE_URL}/shop/${item.id}`,
+        availability: "https://schema.org/InStock",
+      },
+    },
+  };
 }
 const DEFAULT_SHOP_CATEGORIES = ["টি-শার্ট", "প্যাড", "বই", "মগ", "অন্যান্য"];
 // Extra confirmation required to change admin credentials. Override via .env.
@@ -2950,11 +3089,23 @@ if (process.env.VERCEL) {
     }
   });
 
+  // 6.1. Public single book (for shareable /books/:id pages)
+  app.get("/api/public/books/:id", async (req, res) => {
+    try {
+      const book = await fetchPublicBook(req.params.id);
+      if (!book) return res.status(404).json({ error: "বইটি পাওয়া যায়নি।" });
+      res.json({ success: true, book });
+    } catch (err: any) {
+      console.error("GET /api/public/books/:id error:", err);
+      res.status(500).json({ error: "বইয়ের তথ্য লোড করা যায়নি।" });
+    }
+  });
+
   // 6. Public Book List (Search & Filter)
   app.get("/api/public/books", async (req, res) => {
     try {
       const { q, status, group, limit } = req.query;
-      let query = `SELECT id, code, name, author, publisher, ${IMAGE_TOKEN_SQL("image_url")} AS image_url, status, group_name, description, page_count, price FROM books WHERE 1=1`;
+      let query = `SELECT ${PUBLIC_BOOK_COLUMNS} FROM books WHERE 1=1`;
       const params: any[] = [];
       
       if (q) {
@@ -2977,11 +3128,7 @@ if (process.env.VERCEL) {
       query += ` ORDER BY id DESC LIMIT ${numLimit}`;
 
       const [rows]: any = await pool.query(query, params);
-      const books = rows.map((r: any) => ({
-        id: String(r.id), code: r.code, name: r.name, author: r.author, publisher: r.publisher,
-        imageUrl: publicImageRef("books", r.id, r.image_url) || DEFAULT_BOOK_IMAGE_URL, status: r.status, group: r.group_name,
-        description: r.description, pageCount: r.page_count, price: r.price
-      }));
+      const books = rows.map(toPublicBook);
 
       res.json({ success: true, books });
     } catch (err: any) {
@@ -3271,21 +3418,22 @@ if (process.env.VERCEL) {
   // 1. Get all shop items (Public)
   app.get("/api/public/shop/items", async (req, res) => {
     try {
-      const [rows]: any = await pool.query(
-        `SELECT id, name, description, price, ${IMAGE_TOKEN_SQL("image_url")} AS image_url, category, created_at FROM shop_items ORDER BY id DESC`
-      );
-      const shopItems = rows.map((r: any) => ({
-        id: String(r.id),
-        name: r.name,
-        description: r.description,
-        price: r.price,
-        imageUrl: publicImageRef("shop", r.id, r.image_url) || DEFAULT_BOOK_IMAGE_URL,
-        category: r.category,
-        createdAt: r.created_at
-      }));
+      const [rows]: any = await pool.query(`SELECT ${PUBLIC_SHOP_COLUMNS} FROM shop_items ORDER BY id DESC`);
+      const shopItems = rows.map(toPublicShopItem);
       res.json({ success: true, shopItems });
     } catch (err: any) {
       res.status(500).json({ error: "বিক্রয় কর্নার সামগ্রী লোড করা যায়নি।" });
+    }
+  });
+
+  // 1a. Get one shop item (Public, for shareable /shop/:id pages)
+  app.get("/api/public/shop/items/:id", async (req, res) => {
+    try {
+      const item = await fetchPublicShopItem(req.params.id);
+      if (!item) return res.status(404).json({ error: "পণ্যটি পাওয়া যায়নি।" });
+      res.json({ success: true, item });
+    } catch (err: any) {
+      res.status(500).json({ error: "পণ্যের তথ্য লোড করা যায়নি।" });
     }
   });
 
@@ -4019,13 +4167,15 @@ if (process.env.VERCEL) {
   // Public: Get all blog posts
   app.get("/api/public/blog_posts", async (req, res) => {
     try {
-      const [rows]: any = await pool.query("SELECT * FROM blog_posts ORDER BY id DESC");
+      const [rows]: any = await pool.query(
+        `SELECT id, title, content, ${IMAGE_TOKEN_SQL("image")} AS image, category, event_date, created_at FROM blog_posts ORDER BY id DESC`
+      );
       if (rows && rows.length > 0) {
         const posts = rows.map((r: any) => ({
           id: String(r.id),
           title: r.title,
           content: r.content,
-          image: r.image || null,
+          image: publicImageRef("blog", r.id, r.image) || null,
           category: r.category,
           eventDate: r.event_date || null,
           createdAt: r.created_at
@@ -4366,6 +4516,84 @@ if (process.env.VERCEL) {
     }
   }
 
+  // ---------- SEO endpoints (registered before static files so they win over dist/*.xml|txt) ----------
+
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const urls: { loc: string; priority: string; changefreq: string }[] = [
+        { loc: "/", priority: "1.0", changefreq: "weekly" },
+        { loc: "/books", priority: "0.9", changefreq: "daily" },
+        { loc: "/shop", priority: "0.7", changefreq: "weekly" },
+        { loc: "/blog", priority: "0.7", changefreq: "weekly" },
+      ];
+      const [bookRows]: any = await pool.query("SELECT id FROM books ORDER BY id DESC");
+      for (const r of bookRows) urls.push({ loc: `/books/${r.id}`, priority: "0.6", changefreq: "monthly" });
+      const [shopRows]: any = await pool.query("SELECT id FROM shop_items ORDER BY id DESC");
+      for (const r of shopRows) urls.push({ loc: `/shop/${r.id}`, priority: "0.5", changefreq: "monthly" });
+      try {
+        const [blogRows]: any = await pool.query("SELECT id FROM blog_posts ORDER BY id DESC");
+        for (const r of blogRows) urls.push({ loc: `/blog/${r.id}`, priority: "0.5", changefreq: "monthly" });
+      } catch { /* blog table is optional */ }
+
+      const body = urls
+        .map((u) => `  <url><loc>${escapeHtml(SITE_URL + u.loc)}</loc><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`)
+        .join("\n");
+      res.set({ "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+      res.send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`);
+    } catch (err: any) {
+      console.error("GET /sitemap.xml error:", err);
+      res.status(500).end();
+    }
+  });
+
+  app.get("/robots.txt", (req, res) => {
+    res.set({ "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=86400" });
+    res.send(
+      ["# অক্ষর পাঠাগার", "User-agent: *", "Allow: /", "Disallow: /api/", "Disallow: /dashboard", "Disallow: /login", "", `Sitemap: ${SITE_URL}/sitemap.xml`, ""].join("\n"),
+    );
+  });
+
+  /** Serves index.html, with book/shop pages getting their own title, description and preview image. */
+  function registerSpaRoutes(distPath: string) {
+    const indexPath = path.join(distPath, "index.html");
+    let indexHtml: string | null = null;
+    const readIndex = () => (indexHtml ??= fs.readFileSync(indexPath, "utf8"));
+    const sendWithMeta = (load: (id: string) => Promise<PageMeta | null>): express.RequestHandler => async (req, res, next) => {
+      try {
+        const meta = await load(req.params.id);
+        if (!meta) return next();
+        res.setHeader("Cache-Control", "no-cache");
+        res.type("html").send(injectPageMeta(readIndex(), meta));
+      } catch (err) {
+        console.error("page meta error:", err);
+        next();
+      }
+    };
+    app.get("/books/:id", sendWithMeta(bookPageMeta));
+    app.get("/shop/:id", sendWithMeta(shopItemPageMeta));
+    app.get("*", (req, res) => {
+      res.setHeader("Cache-Control", "no-cache");
+      res.sendFile(indexPath);
+    });
+  }
+
+  function serveBuiltApp(distPath: string) {
+    // Vite fingerprints /assets/* filenames, so they can be cached for a year;
+    // index.html must always revalidate so a new deploy shows up immediately.
+    app.use(express.static(distPath, {
+      setHeaders: (res, filePath) => {
+        if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        } else if (filePath.endsWith(".html")) {
+          res.setHeader("Cache-Control", "no-cache");
+        } else {
+          res.setHeader("Cache-Control", "public, max-age=86400");
+        }
+      },
+    }));
+    registerSpaRoutes(distPath);
+  }
+
   // Vite middleware setup and server listening
   async function startServer() {
     // Determine dist folder path reliably
@@ -4385,27 +4613,10 @@ if (process.env.VERCEL) {
         app.use(vite.middlewares);
       } catch (e) {
         console.warn("Vite not found or failed to load. Falling back to static files (Production mode).");
-        app.use(express.static(distPath));
-        app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
+        serveBuiltApp(distPath);
       }
     } else {
-      // Vite fingerprints /assets/* filenames, so they can be cached for a year;
-      // index.html must always revalidate so a new deploy shows up immediately.
-      app.use(express.static(distPath, {
-        setHeaders: (res, filePath) => {
-          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
-            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-          } else if (filePath.endsWith(".html")) {
-            res.setHeader("Cache-Control", "no-cache");
-          } else {
-            res.setHeader("Cache-Control", "public, max-age=86400");
-          }
-        },
-      }));
-      app.get("*", (req, res) => {
-        res.setHeader("Cache-Control", "no-cache");
-        res.sendFile(path.join(distPath, "index.html"));
-      });
+      serveBuiltApp(distPath);
     }
 
     if (!process.env.VERCEL) {

@@ -65,7 +65,7 @@ export default function PublicBlogDetailsPage({
   useEffect(() => {
     if (!activePost) return;
 
-    const currentUrl = `https://www.okkhorpathagar.org/blog/${activePost.slug || activePost.id}`;
+    const currentUrl = `https://okkhorpathagar.com/blog/${activePost.slug || activePost.id}`;
     const postDesc =
       activePost.metaDescription ||
       activePost.content.replace(/[#*]/g, "").slice(0, 155) + "...";
@@ -115,7 +115,7 @@ export default function PublicBlogDetailsPage({
           name: "অক্ষর পাঠাগার",
           logo: {
             "@type": "ImageObject",
-            url: "https://www.okkhorpathagar.org/src/assets/images/akkhor_logo_1781456142605.jpg",
+            url: "https://okkhorpathagar.com/logo.png",
           },
         },
       },

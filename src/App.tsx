@@ -768,6 +768,16 @@ export default function App() {
   const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
   const [selectedBlogPost, setSelectedBlogPost] = useState<any | null>(null);
 
+  const openPublicBook = (book: any) => {
+    setSelectedPublicBook(book);
+    navigate(`/books/${book.id}`);
+  };
+  // Back to wherever the visitor came from inside the app; deep links fall back to a listing.
+  const goBackOr = (fallback: string) => {
+    if ((window.history.state?.idx ?? 0) > 0) navigate(-1);
+    else navigate(fallback);
+  };
+
   const publicHomeRender = (
     <>
       <HomePage
@@ -802,10 +812,7 @@ export default function App() {
         onSalesCorner={() => {
           navigate("/shop");
         }}
-        onBookSelect={(book) => {
-          setSelectedPublicBook(book);
-          navigate("/book/view");
-        }}
+        onBookSelect={openPublicBook}
         onNoticeSelect={(notice) => {
           setSelectedNotice(notice);
           navigate("/notice/view");
@@ -1536,46 +1543,42 @@ export default function App() {
       <Route path="/" element={publicHomeRender} />
       
       <Route path="/books" element={
-        <PublicBooksPage 
-          onBack={() => navigate("/")} 
-          logoBase64={logoBase64} 
-          onBookSelect={(book) => {
-            setSelectedPublicBook(book);
-            navigate("/book/view");
-          }}
+        <PublicBooksPage
+          onBack={() => navigate("/")}
+          logoBase64={logoBase64}
+          onBookSelect={openPublicBook}
         />
       } />
-      
-      <Route path="/shop" element={
-        selectedShopItem ? (
-          <PublicShopItemDetailsPage
-            item={selectedShopItem}
-            onBack={() => { setSelectedShopItem(null); navigate("/shop"); }}
-            logoBase64={logoBase64}
-          />
-        ) : (
-          <PublicSalesPage
-            onBack={() => navigate("/")}
-            onItemSelect={(item) => setSelectedShopItem(item)}
-            logoBase64={logoBase64}
-          />
-        )
+
+      {/* Every book and product has its own shareable URL; the item already in hand renders instantly. */}
+      <Route path="/books/:id" element={
+        <PublicBookDetailsPage
+          initialBook={selectedPublicBook}
+          onBack={() => goBackOr("/books")}
+          onBookSelect={openPublicBook}
+          logoBase64={logoBase64}
+        />
       } />
-      
+
+      <Route path="/shop" element={
+        <PublicSalesPage
+          onBack={() => navigate("/")}
+          onItemSelect={(item) => { setSelectedShopItem(item); navigate(`/shop/${item.id}`); }}
+          logoBase64={logoBase64}
+        />
+      } />
+
+      <Route path="/shop/:id" element={
+        <PublicShopItemDetailsPage
+          initialItem={selectedShopItem}
+          onBack={() => goBackOr("/shop")}
+          logoBase64={logoBase64}
+        />
+      } />
+
+      {/* Old state-only URL: forward to the real one */}
       <Route path="/book/view" element={
-        selectedPublicBook ? (
-          <PublicBookDetailsPage
-            book={selectedPublicBook}
-            // Return to wherever the book was opened from (catalogue with its filters, or home).
-            onBack={() => {
-              if ((window.history.state?.idx ?? 0) > 0) navigate(-1);
-              else { setSelectedPublicBook(null); navigate("/"); }
-            }}
-            logoBase64={logoBase64}
-          />
-        ) : (
-          <Navigate to="/" replace />
-        )
+        <Navigate to={selectedPublicBook ? `/books/${selectedPublicBook.id}` : "/books"} replace />
       } />
 
       <Route path="/notice/view" element={
