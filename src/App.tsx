@@ -1566,7 +1566,11 @@ export default function App() {
         selectedPublicBook ? (
           <PublicBookDetailsPage
             book={selectedPublicBook}
-            onBack={() => { setSelectedPublicBook(null); navigate("/"); }}
+            // Return to wherever the book was opened from (catalogue with its filters, or home).
+            onBack={() => {
+              if ((window.history.state?.idx ?? 0) > 0) navigate(-1);
+              else { setSelectedPublicBook(null); navigate("/"); }
+            }}
             logoBase64={logoBase64}
           />
         ) : (

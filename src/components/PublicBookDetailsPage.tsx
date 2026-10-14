@@ -1,6 +1,6 @@
 import React from "react";
-import FallbackImage from "./FallbackImage";
-import { ArrowLeft, BookOpen, Package, User, Building, Hash } from "lucide-react";
+import BookCover from "./BookCover";
+import { ArrowLeft, BookOpen, User, Building, Hash } from "lucide-react";
 import { motion } from "motion/react";
 import { Book } from "../types";
 import DeveloperCreditBadge from "./DeveloperCreditBadge";
@@ -26,11 +26,11 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
             <button
               onClick={onBack}
               className="flex items-center gap-1.5 px-3 py-2 sm:py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all border border-[#E5E5EA] text-slate-600 hover:bg-slate-50"
-              title="হোম পেজে ফিরে যান"
-              aria-label="হোম পেজে ফিরে যান"
+              title="ফিরে যান"
+              aria-label="ফিরে যান"
             >
               <ArrowLeft size={14} />
-              <span className="hidden sm:inline">হোম পেজ</span>
+              <span className="hidden sm:inline">ফিরে যান</span>
             </button>
 
             <div className="flex items-center gap-2.5">
@@ -74,20 +74,9 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
 
           {/* Left side: Book Cover */}
           <div className="w-full md:w-1/3 lg:w-2/5 bg-slate-50 p-6 md:p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-[#E5E5EA] relative">
-            <div className="w-full max-w-[220px] sm:max-w-xs md:max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white flex items-center justify-center relative">
-              {book.imageUrl ? (
-                <FallbackImage
-                  src={book.imageUrl} 
-                  alt={book.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="text-[#22242A] flex flex-col items-center gap-3 p-6 text-center">
-                  <Package size={48} />
-                  <span className="text-xs font-bold font-body-bn">কভার ছবি নেই</span>
-                </div>
-              )}
-              
+            <div className="w-full max-w-[220px] sm:max-w-xs md:max-w-sm aspect-[2/3] rounded-2xl overflow-hidden shadow-lg border border-[#E5E5EA] bg-white relative">
+              <BookCover title={book.name} author={book.author} imageUrl={book.imageUrl} seed={book.id} eager />
+
               {/* Status Badge */}
               <div className="absolute top-4 right-4">
                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold font-body-bn shadow-sm border backdrop-blur-md ${
@@ -164,7 +153,7 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
                   </div>
                   <div>
                     <p className="text-[10px] text-[#6B6B70] font-bold uppercase">মূল্য</p>
-                    <p className="font-bold text-slate-700 text-sm font-body-bn break-words">৳{book.price}</p>
+                    <p className="font-bold text-slate-700 text-sm font-body-bn break-words">৳{Number.isFinite(Number(book.price)) ? Number(book.price) : book.price}</p>
                   </div>
                 </div>
               )}
@@ -188,7 +177,7 @@ export default function PublicBookDetailsPage({ book, onBack, logoBase64 }: Publ
           style={{ fontFamily: "'Noto Serif Bengali', serif" }}
         >
           <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
-          হোম পেজে ফিরে যান
+          ফিরে যান
         </button>
       </footer>
     </div>

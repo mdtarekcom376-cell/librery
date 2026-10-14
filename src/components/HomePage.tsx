@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import FallbackImage from "./FallbackImage";
+import { hasRealCover } from "./BookCover";
 import DonationCTA from "./DonationCTA";
 import {
   motion,
@@ -1267,7 +1268,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                       if (onBookSelect) onBookSelect(book);
                     }}
                   >
-                    {book.imageUrl ? (
+                    {hasRealCover(book.imageUrl) ? (
                       <div className="hp-card overflow-hidden flex flex-col justify-between w-[140px] h-[190px] md:w-[160px] md:h-[220px]" style={{ padding: 0 }}>
                         <FallbackImage src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
                       </div>
@@ -1297,7 +1298,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                       if (onBookSelect) onBookSelect(book);
                     }}
                   >
-                    {book.imageUrl ? (
+                    {hasRealCover(book.imageUrl) ? (
                       <div className="hp-card overflow-hidden flex flex-col justify-between w-[140px] h-[190px] md:w-[160px] md:h-[220px]" style={{ padding: 0 }}>
                         <FallbackImage src={book.imageUrl} alt={book.name || book.title} className="w-full h-full object-cover" />
                       </div>
