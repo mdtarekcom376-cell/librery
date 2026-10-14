@@ -1131,8 +1131,10 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
             >
               <div className="relative">
                 <img 
-                  src={cornerBanner} 
-                  alt="Corner Visual" 
+                  src={cornerBanner}
+                  alt="Corner Visual"
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-2xl shadow-xl w-full max-w-sm object-cover"
                   style={{ border: "4px solid white" }}
                 />
@@ -1524,7 +1526,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                 className="w-full bg-white rounded-3xl p-2.5 flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
                 style={{ boxShadow: "0 20px 50px rgba(15,23,42,0.10)" }}
               >
-                <img src={karyonirbahiImg} alt="কার্যনির্বাহী পরিষদ" className="w-full rounded-2xl block object-cover" />
+                <img src={karyonirbahiImg} alt="কার্যনির্বাহী পরিষদ" loading="lazy" decoding="async" className="w-full rounded-2xl block object-cover" />
               </div>
 
             </motion.div>
@@ -1841,6 +1843,7 @@ export default function HomePage({ onLogin, onMemberLogin, onLibraryMemberLogin,
                   <img
                     src={news.image}
                     alt="Notice"
+                    decoding="async"
                     className="w-full h-40 object-cover rounded-xl mb-3 border border-gray-200 group-hover/card:shadow-md transition-shadow"
                     loading="lazy"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

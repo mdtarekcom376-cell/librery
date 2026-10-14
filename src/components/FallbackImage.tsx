@@ -6,8 +6,11 @@ type FallbackImageProps = ImgHTMLAttributes<HTMLImageElement> & {
   fallbackSrc?: string;
 };
 
-/** Image element that replaces missing or broken remote images with the library logo. */
-export default function FallbackImage({ src, fallbackSrc = fallbackImage, onError, ...props }: FallbackImageProps) {
+/**
+ * Image element that replaces missing or broken remote images with the library logo.
+ * Lazy by default: list pages render hundreds of covers, each a separate request.
+ */
+export default function FallbackImage({ src, fallbackSrc = fallbackImage, onError, loading = "lazy", decoding = "async", ...props }: FallbackImageProps) {
   const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc);
 
   useEffect(() => {
@@ -22,5 +25,5 @@ export default function FallbackImage({ src, fallbackSrc = fallbackImage, onErro
     onError?.(event);
   };
 
-  return <img {...props} src={currentSrc} onError={handleError} />;
+  return <img loading={loading} decoding={decoding} {...props} src={currentSrc} onError={handleError} />;
 }
